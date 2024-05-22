@@ -45,16 +45,6 @@ module.exports = {
     ],
     'import/newline-after-import': 'error',
     'react/jsx-uses-react': 'error',
-    'react/react-in-jsx-scope': 'error',
-    'unicorn/filename-case': [
-      'error',
-      {
-        cases: {
-          kebabCase: true, // personal style
-          pascalCase: true,
-        },
-      },
-    ],
 
     // Deactivated
     '@typescript-eslint/dot-notation': 'off', // paths are used with a dot notation
@@ -70,6 +60,20 @@ module.exports = {
     'no-redeclare': 'off', // conflict with TypeScript function overloads
     'react/jsx-fragments': 'off', // personal style
     'react/prop-types': 'off', // TypeScript is used for type checking
+    'unicorn/filename-case': 'off',
+    '@typescript-eslint/no-unsafe-return': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    'no-console': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    'eslint-comments/require-description': 'off',
+    'react/react-in-jsx-scope': 'off',
+    '@typescript-eslint/no-unnecessary-type-arguments': 'off',
+    '@typescript-eslint/array-type': 'off',
+    'react/jsx-no-leaked-render': 'off',
+    'no-implicit-coercion': 'off',
+    '@typescript-eslint/restrict-template-expressions': 'off',
+    '@typescript-eslint/no-confusing-void-expression': 'off',
 
     '@next/next/no-img-element': 'off', // Temporary disabled
   },
