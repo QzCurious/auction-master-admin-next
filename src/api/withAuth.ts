@@ -19,7 +19,6 @@ export function withAuth<Opts extends OptsGeneric = OptsGeneric>(_apiClient: typ
     input: string,
     init?: RequestInit
   ): Promise<ApiClientResponse<Data, ErrorCode | '1003'>> {
-    'use server';
     let token = cookies().get('token')?.value;
     if (opts?.refreshToken ?? true) {
       const refreshTokenRes = await refreshTokenIfExpired();
@@ -62,7 +61,6 @@ export function withAuth<Opts extends OptsGeneric = OptsGeneric>(_apiClient: typ
 
 let sessionRefreshing: ReturnType<typeof sessionRefresh> | null = null;
 export async function refreshTokenIfExpired() {
-  'use server';
   // no token
   const token = cookies().get('token');
   if (!token?.value) {
