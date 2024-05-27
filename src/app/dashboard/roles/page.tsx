@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { roles } from '@/api/backend/rbac/roles';
 import { redirectIfAuthError } from '@/utils/auth';
