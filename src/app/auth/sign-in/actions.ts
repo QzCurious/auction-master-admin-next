@@ -1,9 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { type JwtPayload } from '@/api/JwtPayload';
 import { session } from '@/api/session';
-import { jwtDecode } from 'jwt-decode';
 
 export async function login(formData: FormData) {
   const res = await session(formData);

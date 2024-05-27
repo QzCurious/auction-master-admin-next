@@ -1,0 +1,24 @@
+'use server';
+
+import { redirect } from 'next/navigation';
+import { addPermissionsToRole } from '@/api/backend/rbac/addPermissionsToRole';
+import { removePermissionToRole } from '@/api/backend/rbac/removePermissionToRole';
+import { redirectIfAuthError } from '@/utils/auth';
+
+export async function updatePermissionsToRoleAction(payload: {
+  role: string;
+  addPermissions: number[];
+  removePermissions: number[];
+}) {
+  const [addRes, removeRes] = await Promise.all([
+    addPermissionsToRole({ role: payload.role, permissionID: payload.addPermissions }),
+    removePermissionToRole({ role: payload.role, permissionID: payload.removePermissions }),
+  ]);
+  redirectIfAuthError(addRes.error);
+  redirectIfAuthError(removeRes.error);
+
+  addRes.error satisfies null;
+  removeRes.error satisfies null;
+
+  redirect('/dashboard/roles');
+}

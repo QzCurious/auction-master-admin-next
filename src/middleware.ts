@@ -1,11 +1,28 @@
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+import { refreshTokenIfExpired } from './api/withAuth';
+
+export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
 
+  // all other routes are protected under auth
   if (!token && !request.nextUrl.pathname.startsWith('/auth/sign-in')) {
     return Response.redirect(new URL(`/auth/sign-in?goto=${request.nextUrl.pathname}`, request.url));
   }
+
+  // refresh token and set cookie
+  const response = NextResponse.next();
+  const { token: newToken } = await refreshTokenIfExpired();
+  if (newToken) {
+    response.cookies.set('token', newToken, {
+      expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+    });
+  }
+
+  return response;
 }
 
 export const config = {

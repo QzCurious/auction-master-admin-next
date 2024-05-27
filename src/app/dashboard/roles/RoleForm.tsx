@@ -12,8 +12,11 @@ import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
 import { visuallyHidden } from '@mui/utils';
 import { Controller, useForm } from 'react-hook-form';
+import * as R from 'remeda';
 import { z } from 'zod';
+
 import { createRoleAction } from './actions';
+import { updatePermissionsToRoleAction } from './edit/[role]/actions';
 
 interface RoleFromProps {
   // edit
@@ -50,7 +53,11 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
       onSubmit={handleSubmit(
         role
           ? async (data) => {
-              //
+              await updatePermissionsToRoleAction({
+                role: data.role,
+                addPermissions: data.permissionID.filter((id) => !role.permission.map((p) => p.id).includes(id)),
+                removePermissions: role.permission.filter((p) => !data.permissionID.includes(p.id)).map((p) => p.id),
+              });
             }
           : async (data) => {
               await createRoleAction(data);

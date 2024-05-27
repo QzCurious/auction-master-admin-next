@@ -3,6 +3,11 @@ import { throwIfInvalid } from '@/api/helpers';
 import { withAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
+const ReqSchema = z.object({
+  role: z.string(),
+  permissionID: z.number().array(),
+});
+
 export interface Role {
   role: string;
   description: string;
@@ -12,16 +17,13 @@ type Data = 'Success';
 
 type ErrorCode = never;
 
-const ReqSchema = z.object({
-  role: z.string(),
-  url: z.string(),
-  method: z.string(),
-});
-export async function removePermissionToRole(formData: FormData) {
-  throwIfInvalid(formData, ReqSchema);
+export async function removePermissionToRole(payload: z.input<typeof ReqSchema>) {
+  throwIfInvalid(payload, ReqSchema);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  const query = new URLSearchParams(formData as any);
+  const query = new URLSearchParams([
+    ['role', payload.role],
+    ...payload.permissionID.map((id) => ['permissionID', String(id)]),
+  ]);
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/permissions?${query.toString()}`, {
     method: 'DELETE',
   });
