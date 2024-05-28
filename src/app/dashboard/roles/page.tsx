@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
 import { config } from '@/config';
-import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
 
 import { RoleTable } from './RoleTable';
 
@@ -22,7 +21,7 @@ export default async function Page() {
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Customers</Typography>
+          <Typography variant="h4">Roles</Typography>
         </Stack>
         <div>
           <Button
@@ -35,7 +34,6 @@ export default async function Page() {
           </Button>
         </div>
       </Stack>
-      <CustomersFilters />
       <RoleTable rows={res.data.map((role) => ({ id: role.role, ...role })) ?? []} />
     </Stack>
   );
