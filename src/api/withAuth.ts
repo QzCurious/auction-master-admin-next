@@ -1,9 +1,9 @@
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 import { type apiClient, type ApiClientResponse } from './apiClient';
 import { type JwtPayload } from './JwtPayload';
-import { logout } from './logout';
 import { sessionRefresh } from './session-refresh';
 
 // token
@@ -94,7 +94,6 @@ export async function refreshTokenIfExpired() {
 
   // refresh token expired
   if (!res.data) {
-    await logout();
     if (process.env.DEV) {
       console.log('Refresh token expired', res);
     }

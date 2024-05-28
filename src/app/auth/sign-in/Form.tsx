@@ -57,16 +57,12 @@ export function SignInForm() {
           formData.append('account', data.account);
           formData.append('password', data.password);
           const res = await login(formData);
-          if (res.error) {
-            console.log(res.error);
-            alert('error');
-          }
           if (res.error === '1004' || res.error === '1502') {
             setError('root', { message: 'Account or password is incorrect' });
             return;
           }
           const goto = new URLSearchParams(location.search).get('goto');
-          router.replace(goto ?? '/dashboard');
+          router.replace(goto || '/dashboard');
         })}
       >
         <Stack spacing={2}>
