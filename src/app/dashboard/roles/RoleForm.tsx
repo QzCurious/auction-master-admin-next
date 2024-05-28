@@ -113,8 +113,25 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               <Table sx={{ minWidth: '800px' }}>
                 <TableHead>
                   <TableRow>
-                    <TableCell>
-                      <span style={visuallyHidden}>Select</span>
+                    <TableCell sx={{ p: 0, pl: 1 }}>
+                      <Controller
+                        control={control}
+                        name="permissionID"
+                        render={({ field }) => (
+                          <Checkbox
+                            {...field}
+                            checked={field.value.length === permissions.length}
+                            indeterminate={field.value.length > 0 && field.value.length < permissions.length}
+                            onChange={(event) => {
+                              if (event.target.checked) {
+                                field.onChange(permissions.map((p) => p.id));
+                              } else {
+                                field.onChange([]);
+                              }
+                            }}
+                          />
+                        )}
+                      />
                     </TableCell>
                     <TableCell>Method</TableCell>
                     <TableCell>URL</TableCell>
