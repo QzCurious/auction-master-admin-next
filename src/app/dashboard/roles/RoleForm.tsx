@@ -11,6 +11,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
 import { visuallyHidden } from '@mui/utils';
+import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -46,6 +47,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
     },
     resolver: zodResolver(FormSchema),
   });
+  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <form
@@ -57,9 +59,11 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                 addPermissions: data.permissionID.filter((id) => !role.permission.map((p) => p.id).includes(id)),
                 removePermissions: role.permission.filter((p) => !data.permissionID.includes(p.id)).map((p) => p.id),
               });
+              enqueueSnackbar('Role updated', { variant: 'success' });
             }
           : async (data) => {
               await createRoleAction(data);
+              enqueueSnackbar('Role created', { variant: 'success' });
               router.push('/dashboard/roles');
             }
       )}

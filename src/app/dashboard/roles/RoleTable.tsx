@@ -21,6 +21,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
+import { useSnackbar } from 'notistack';
 
 interface CustomersTableProps {
   rows: Role[];
@@ -73,6 +74,7 @@ function DeleteBtn({ row }: { row: Role }) {
     popupId: 'demoPopover',
   });
   const [isPending, startTransition] = useTransition();
+  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <>
@@ -107,6 +109,7 @@ function DeleteBtn({ row }: { row: Role }) {
                 popupState.close();
                 startTransition(async () => {
                   await deleteRole(row.role);
+                  enqueueSnackbar(`${row.role} deleted`, { variant: 'success' });
                 });
               }}
             >
