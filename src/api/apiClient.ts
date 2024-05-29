@@ -11,14 +11,14 @@ export async function apiClient<Data, ErrorCode extends string = never>(
   const url = process.env.API_BASE_URL + input;
   const res = await fetch(url, init);
 
+  if (process.env.API_LOG) {
+    console.log(`apiClient:`, `[${init?.method ?? 'GET'} ${url}]:`);
+    console.log(`payload:`, init?.body instanceof FormData ? Object.fromEntries(init.body) : init?.body);
+    console.log(`response:`, await res.clone().text());
+  }
+
   try {
     const j = await res.json();
-
-    if (process.env.API_LOG) {
-      console.log(`apiClient:`, `[${init?.method ?? 'GET'} ${url}]:`);
-      console.log(`payload:`, init?.body instanceof FormData ? Object.fromEntries(init.body) : init?.body);
-      console.log(`response:`, j);
-    }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return { ...j, error: !j.data ? j.status.code : null };

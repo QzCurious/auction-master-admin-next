@@ -5,8 +5,6 @@ import { refreshTokenIfExpired } from './api/withAuth';
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
 
-  console.log('url',request.url)
-
   // all other routes are protected under auth
   if (!token) {
     return Response.redirect(new URL(`/auth/sign-in?goto=${request.nextUrl.pathname}`, request.url));
