@@ -11,7 +11,7 @@ import { config } from '@/config';
 
 import { RoleTable } from './RoleTable';
 
-export const metadata = { title: `Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `Roles | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 export default async function Page() {
   const res = await roles();
