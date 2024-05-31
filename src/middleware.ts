@@ -12,9 +12,10 @@ export async function middleware(request: NextRequest) {
 
   // refresh token and set cookie
   const response = NextResponse.next();
-  const { token: newToken } = await refreshTokenIfExpired();
+  const { token: newToken, data } = await refreshTokenIfExpired();
 
   if (!newToken) {
+    console.log('middleware: refresh token error', data);
     return Response.redirect(new URL(`/auth/sign-in?goto=${request.nextUrl.pathname}`, request.url));
   }
 
