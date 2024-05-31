@@ -19,13 +19,13 @@ export async function login(formData: FormData) {
     expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
     httpOnly: true,
     sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
+    // secure: process.env.NODE_ENV === 'production',
   });
   cookies().set('refreshToken', res.data.refreshToken, {
     expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
     httpOnly: true,
     sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
+    // secure: process.env.NODE_ENV === 'production',
   });
 
   return res;
