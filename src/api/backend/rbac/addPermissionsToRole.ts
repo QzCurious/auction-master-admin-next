@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 const ReqSchema = z.object({
   role: z.string(),
-  permissionID: z.number().array(),
+  permissionKey: z.string().array(),
 });
 
 export interface Role {
@@ -22,8 +22,8 @@ export async function addPermissionsToRole(payload: z.input<typeof ReqSchema>) {
 
   const formData = new FormData();
   formData.append('role', payload.role);
-  for (const id of payload.permissionID) {
-    formData.append('permissionID', String(id));
+  for (const id of payload.permissionKey) {
+    formData.append('permissionKey', id);
   }
 
   const res = await withAuth(apiClient)<Data, ErrorCode>('/permissions', {

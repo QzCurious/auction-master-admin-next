@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 const ReqSchema = z.object({
   role: z.string(),
-  permissionID: z.number().array(),
+  permissionKey: z.string().array(),
 });
 
 export interface Role {
@@ -22,7 +22,7 @@ export async function removePermissionToRole(payload: z.input<typeof ReqSchema>)
 
   const query = new URLSearchParams([
     ['role', payload.role],
-    ...payload.permissionID.map((id) => ['permissionID', String(id)]),
+    ...payload.permissionKey.map((id) => ['permissionKey', id]),
   ]);
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/permissions?${query.toString()}`, {
     method: 'DELETE',

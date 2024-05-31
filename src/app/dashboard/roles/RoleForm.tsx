@@ -1,16 +1,17 @@
 'use client';
 
+import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { type Permission } from '@/api/backend/rbac/permissions';
 import { type RolePermissions } from '@/api/backend/rbac/rolesPermissions';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, TextField } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Button, Checkbox, Link, Table, TableBody, TableCell, TableHead, TableRow, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
-import { visuallyHidden } from '@mui/utils';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -27,7 +28,7 @@ interface RoleFromProps {
 const FormSchema = z.object({
   role: z.string().min(1, 'Role is required'),
   description: z.string().min(1, 'Description is required'),
-  permissionID: z.number().array(),
+  permissionKey: z.string().array(),
 });
 
 export default function RoleForm({ role, permissions }: RoleFromProps) {
@@ -43,7 +44,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
       role: '',
       description: '',
       ...role,
-      permissionID: role?.permission.map((p) => p.id) ?? [],
+      permissionKey: role?.permission.map((p) => p.key) ?? [],
     },
     resolver: zodResolver(FormSchema),
   });
@@ -56,8 +57,8 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
           ? async (data) => {
               await updatePermissionsToRoleAction({
                 role: data.role,
-                addPermissions: data.permissionID.filter((id) => !role.permission.map((p) => p.id).includes(id)),
-                removePermissions: role.permission.filter((p) => !data.permissionID.includes(p.id)).map((p) => p.id),
+                addPermissions: data.permissionKey.filter((key) => !role.permission.map((p) => p.key).includes(key)),
+                removePermissions: role.permission.filter((p) => !data.permissionKey.includes(p.key)).map((p) => p.key),
               });
               enqueueSnackbar('Role updated', { variant: 'success' });
             }
@@ -68,7 +69,14 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
             }
       )}
     >
-      <Typography variant="h4">{role ? 'Create Role' : 'Edit Role Permissions'}</Typography>
+      <Link component={RouterLink} href="/dashboard/roles">
+        <Stack direction="row" alignItems="center" columnGap={1}>
+          <ArrowBackIcon /> Roles
+        </Stack>
+      </Link>
+      <Typography variant="h4" sx={{ mt: 3 }}>
+        {role ? 'Create Role' : 'Edit Role Permissions'}
+      </Typography>
       <Stack rowGap={3} sx={{ mt: 4 }}>
         <Card sx={{ py: 2, px: 3 }}>
           <Stack direction="column" rowGap={2}>
@@ -116,11 +124,11 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
             <Box sx={{ overflowX: 'auto' }}>
               <Table sx={{ minWidth: '800px' }}>
                 <TableHead>
-                  <TableRow>
+                  <TableRow sx={{ '& th': { fontWeight: 700 } }}>
                     <TableCell sx={{ p: 0, pl: 1 }}>
                       <Controller
                         control={control}
-                        name="permissionID"
+                        name="permissionKey"
                         render={({ field }) => (
                           <Checkbox
                             {...field}
@@ -128,7 +136,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                             indeterminate={field.value.length > 0 && field.value.length < permissions.length}
                             onChange={(event) => {
                               if (event.target.checked) {
-                                field.onChange(permissions.map((p) => p.id));
+                                field.onChange(permissions.map((p) => p.key));
                               } else {
                                 field.onChange([]);
                               }
@@ -145,20 +153,20 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                 <TableBody>
                   {permissions.map((row) => {
                     return (
-                      <TableRow hover key={row.id}>
+                      <TableRow hover key={row.key}>
                         <TableCell sx={{ p: 0, pl: 1 }}>
                           <Controller
                             control={control}
-                            name="permissionID"
+                            name="permissionKey"
                             render={({ field }) => (
                               <Checkbox
                                 {...field}
-                                checked={field.value.includes(row.id)}
+                                checked={field.value.includes(row.key)}
                                 onChange={(event) => {
                                   if (event.target.checked) {
-                                    field.onChange([...field.value, row.id]);
+                                    field.onChange([...field.value, row.key]);
                                   } else {
-                                    field.onChange(field.value.filter((p) => p !== row.id));
+                                    field.onChange(field.value.filter((p) => p !== row.key));
                                   }
                                 }}
                               />

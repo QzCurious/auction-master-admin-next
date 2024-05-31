@@ -2,7 +2,7 @@ import { apiClient } from '@/api/apiClient';
 import { withAuth } from '@/api/withAuth';
 
 export interface Permission {
-  id: number;
+  key: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   url: string;
   description: string;

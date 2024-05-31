@@ -20,6 +20,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (token !== newToken) {
+    console.log('middleware: new token set');
     response.cookies.set('token', newToken, {
       expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
       httpOnly: true,

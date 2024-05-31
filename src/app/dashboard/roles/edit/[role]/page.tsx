@@ -3,7 +3,7 @@ import { permissions } from '@/api/backend/rbac/permissions';
 import { rolesPermissions } from '@/api/backend/rbac/rolesPermissions';
 import { redirectIfAuthError } from '@/utils/auth';
 
-import Form from '../../RoleForm';
+import RoleForm from '../../RoleForm';
 
 async function Page({ params }: { params: { role: string } }) {
   const [permissionsRes, rolesPermissionsRes] = await Promise.all([permissions(), rolesPermissions()]);
@@ -15,11 +15,7 @@ async function Page({ params }: { params: { role: string } }) {
     notFound();
   }
 
-  return (
-    <main>
-      <Form permissions={permissionsRes.data} role={role} />
-    </main>
-  );
+  return <RoleForm permissions={permissionsRes.data} role={role} />;
 }
 
 export default Page;

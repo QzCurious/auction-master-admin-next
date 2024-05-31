@@ -41,7 +41,7 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
 
   return (
     <Card>
-      <Tabs
+      {/* <Tabs
         sx={{ px: 3 }}
         value={tab}
         onChange={(_, value) => {
@@ -54,11 +54,11 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
         <Tab value="All" label="All" />
         <Tab value="Active" label="Active" />
         <Tab value="Inactive" label="Inactive" />
-      </Tabs>
+      </Tabs> */}
 
-      <Divider />
+      {/* <Divider /> */}
 
-      <Stack direction="row" columnGap={2} sx={{ px: 2, py: 1 }}>
+      {/* <Stack direction="row" columnGap={2} sx={{ px: 2, py: 1 }}>
         <FilterButton label="Role" search="role" />
 
         {searchParams.size > 0 && (
@@ -72,9 +72,7 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
             Clear Filters
           </Button>
         )}
-      </Stack>
-
-      <Divider />
+      </Stack> */}
 
       <Box sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: '800px' }}>

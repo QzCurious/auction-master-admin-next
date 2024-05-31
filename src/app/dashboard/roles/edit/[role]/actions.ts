@@ -7,12 +7,12 @@ import { redirectIfAuthError } from '@/utils/auth';
 
 export async function updatePermissionsToRoleAction(payload: {
   role: string;
-  addPermissions: number[];
-  removePermissions: number[];
+  addPermissions: string[];
+  removePermissions: string[];
 }) {
   const [addRes, removeRes] = await Promise.all([
-    addPermissionsToRole({ role: payload.role, permissionID: payload.addPermissions }),
-    removePermissionToRole({ role: payload.role, permissionID: payload.removePermissions }),
+    addPermissionsToRole({ role: payload.role, permissionKey: payload.addPermissions }),
+    removePermissionToRole({ role: payload.role, permissionKey: payload.removePermissions }),
   ]);
   redirectIfAuthError(addRes.error);
   redirectIfAuthError(removeRes.error);
