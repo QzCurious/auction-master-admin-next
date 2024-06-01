@@ -61,6 +61,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                 removePermissions: role.permission.filter((p) => !data.permissionKey.includes(p.key)).map((p) => p.key),
               });
               enqueueSnackbar('Role updated', { variant: 'success' });
+              router.push('/dashboard/roles');
             }
           : async (data) => {
               await createRoleAction(data);
@@ -75,7 +76,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
         </Stack>
       </Link>
       <Typography variant="h4" sx={{ mt: 3 }}>
-        {role ? 'Create Role' : 'Edit Role Permissions'}
+        {role ? 'Edit Role Permissions' : 'Create Role'}
       </Typography>
       <Stack rowGap={3} sx={{ mt: 4 }}>
         <Card sx={{ py: 2, px: 3 }}>

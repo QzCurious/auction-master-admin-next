@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 import { apiClient } from './apiClient';
@@ -13,6 +14,8 @@ interface Data {
 }
 
 type ErrorCode =
+  // PermissionDenied
+  | '1001'
   // PasswordIncorrect
   | '1004'
   // AdminNotExist
@@ -32,6 +35,8 @@ export async function session(formData: FormData) {
   if (res.error) {
     return { ...res, parseError: null };
   }
+
+  revalidatePath('/', 'layout');
 
   return { ...res, parseError: null };
 }

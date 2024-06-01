@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import RouterLink from 'next/link';
-import { useRouter } from 'next/navigation';
 import { logout } from '@/api/logout';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -24,7 +23,6 @@ export interface UserPopoverProps {
 }
 
 export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): React.JSX.Element {
-  const router = useRouter();
   return (
     <Popover
       anchorEl={anchorEl}
@@ -53,12 +51,7 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
           </ListItemIcon>
           Profile
         </MenuItem>
-        <MenuItem
-          onClick={async () => {
-            await logout();
-            router.replace('/auth/sign-in');
-          }}
-        >
+        <MenuItem onClick={() => logout()}>
           <ListItemIcon>
             <SignOutIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>

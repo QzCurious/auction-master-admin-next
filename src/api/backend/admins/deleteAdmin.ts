@@ -8,12 +8,12 @@ type Data = 'Success';
 
 type ErrorCode = never;
 
-export async function deleteRole(role: string) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/roles/${role}`, {
+export async function deleteAdmin(id: number) {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/${id}`, {
     method: 'DELETE',
   });
 
-  revalidateTag('roles');
+  revalidateTag('admins');
 
   return res;
 }

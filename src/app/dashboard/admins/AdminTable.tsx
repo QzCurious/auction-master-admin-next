@@ -1,19 +1,21 @@
 'use client';
 
 import * as React from 'react';
-import { useTransition } from 'react';
+import { useMemo, useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { type Admin } from '@/api/backend/admins/admins';
+import { type Data as BackendConfigs } from '@/api/backend/configs';
 import { deleteRole } from '@/api/backend/rbac/deleteRole';
-import { type Role } from '@/api/backend/rbac/roles';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
-import { TableContainer, TextField } from '@mui/material';
+import { Chip, TableContainer, TablePagination, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
@@ -26,37 +28,56 @@ import Typography from '@mui/material/Typography';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 
+import SearchParamsTablePagination from '@/components/SearchParamsTablePagination';
+import { deleteAdmin } from '@/api/backend/admins/deleteAdmin';
+
 interface CustomersTableProps {
-  rows: Role[];
+  adminStatus: BackendConfigs['adminStatus'];
+  rows: Admin[];
+  count: number;
 }
 
-export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
+export function RoleTable({ adminStatus, rows, count }: CustomersTableProps): React.JSX.Element {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const tab = searchParams.get('tab') || 'All';
+  const status = searchParams.get('status');
+  const account = searchParams.get('account');
+
+  const filteredRows = useMemo(
+    () =>
+      rows
+        .filter((row) => {
+          if (status === null) return true;
+          return row.status === parseInt(status);
+        })
+        .filter((row) => {
+          if (account === null) return true;
+          return row.account.includes(account);
+        }),
+    [account, rows, status]
+  );
 
   return (
     <Card>
       {/* <Tabs
         sx={{ px: 3 }}
-        value={tab}
+        value={status ?? 'All'}
         onChange={(_, value) => {
           const newSearchParams = new URLSearchParams(searchParams);
-          if (value === 'All') newSearchParams.delete('tab');
-          else newSearchParams.set('tab', value as string);
+          if (value === 'All') newSearchParams.delete('status');
+          else newSearchParams.set('status', value as string);
           router.replace(`${pathname}?${newSearchParams.toString()}`);
         }}
       >
-        <Tab value="All" label="All" />
-        <Tab value="Active" label="Active" />
-        <Tab value="Inactive" label="Inactive" />
+        <Tab value="All" label="全部" />
+        {adminStatus.map((x) => (
+          <Tab key={x.value} value={x.value.toString()} label={x.message} />
+        ))}
       </Tabs> */}
 
-      {/* <Divider /> */}
-
       {/* <Stack direction="row" columnGap={2} sx={{ px: 2, py: 1 }}>
-        <FilterButton label="Role" search="role" />
+        <FilterButton label="Account" search="account" />
 
         {searchParams.size > 0 && (
           <Button
@@ -71,52 +92,65 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
         )}
       </Stack> */}
 
+      {/* <Divider /> */}
+
       <Box sx={{ overflowX: 'auto' }}>
         <TableContainer>
           <Table sx={{ minWidth: '800px' }}>
             <TableHead>
               <TableRow>
-                <TableCell>Role</TableCell>
-                <TableCell>Description</TableCell>
+                <TableCell>Account</TableCell>
+                <TableCell>Roles</TableCell>
+                <TableCell>Status</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows
-                .filter((row) => {
-                  const searchRole = searchParams.get('role');
-                  if (!searchRole) return true;
-                  return row.role.toLowerCase().includes(searchRole.toLowerCase());
-                })
-                .map((row) => {
-                  return (
-                    <TableRow hover key={row.role} selected={false}>
-                      <TableCell>
-                        <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                          {row.role}
-                        </Stack>
-                      </TableCell>
-                      <TableCell>{row.description}</TableCell>
-                      <TableCell>
-                        <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                          <IconButton LinkComponent={Link} href={`/dashboard/roles/edit/${row.role}`}>
-                            <EditIcon />
-                          </IconButton>
-                          <DeleteBtn row={row} />
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+              {filteredRows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={999} sx={{ textAlign: 'center', py: 3 }}>
+                    No results
+                  </TableCell>
+                </TableRow>
+              )}
+              {filteredRows.map((row) => {
+                return (
+                  <TableRow hover key={row.id} selected={false}>
+                    <TableCell>
+                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+                        {row.account}
+                      </Stack>
+                    </TableCell>
+                    <TableCell>
+                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+                        {row.roles.map((role) => (
+                          <Chip key={role} label={role} variant="outlined" />
+                        ))}
+                      </Stack>
+                    </TableCell>
+                    <TableCell>{adminStatus.find((x) => x.value === row.status)?.message}</TableCell>
+                    <TableCell>
+                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+                        <IconButton LinkComponent={Link} href={`/dashboard/admins/edit/${row.id}`}>
+                          <EditIcon />
+                        </IconButton>
+                        <DeleteBtn row={row} />
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
+        <Divider />
+        <SearchParamsTablePagination count={count} />
       </Box>
     </Card>
   );
 }
 
-function DeleteBtn({ row }: { row: Role }) {
+function DeleteBtn({ row }: { row: Admin }) {
   const popupState = usePopupState({
     variant: 'popover',
     popupId: 'demoPopover',
@@ -141,7 +175,7 @@ function DeleteBtn({ row }: { row: Role }) {
         }}
       >
         <Box sx={{ p: '16px 20px ' }}>
-          <Typography variant="subtitle1">Deleting {row.role}</Typography>
+          <Typography variant="subtitle1">Deleting {row.account}</Typography>
           <Typography color="text.secondary" variant="body2">
             Press delete to confirm
           </Typography>
@@ -156,8 +190,8 @@ function DeleteBtn({ row }: { row: Role }) {
               onClick={() => {
                 popupState.close();
                 startTransition(async () => {
-                  await deleteRole(row.role);
-                  enqueueSnackbar(`${row.role} deleted`, { variant: 'success' });
+                  await deleteAdmin(row.id);
+                  enqueueSnackbar(`${row.account} deleted`, { variant: 'success' });
                 });
               }}
             >
