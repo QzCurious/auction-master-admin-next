@@ -1,22 +1,18 @@
+import { cookies } from 'next/headers';
 import { NextResponse, type NextRequest } from 'next/server';
 
 import { refreshTokenIfExpired } from './api/withAuth';
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value;
-
-  // all other routes are protected under auth
-  if (!token) {
-    return Response.redirect(new URL(`/auth/sign-in?goto=${request.nextUrl.pathname}`, request.url));
-  }
-
   // refresh token and set cookie
   const response = NextResponse.next();
+  const token = cookies().get('token')?.value;
   const { token: newToken, data } = await refreshTokenIfExpired();
 
   if (!newToken) {
     console.log('middleware: refresh token error', data);
-    return Response.redirect(new URL(`/auth/sign-in?goto=${request.nextUrl.pathname}`, request.url));
+    const goto = request.nextUrl.pathname === '/' ? '/dashboard' : request.nextUrl.pathname;
+    return Response.redirect(new URL(`/auth/sign-in?goto=${goto}`, request.url));
   }
 
   if (token !== newToken) {

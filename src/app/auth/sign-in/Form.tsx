@@ -66,7 +66,6 @@ export function SignInForm() {
             return;
           }
           const goto = new URLSearchParams(location.search).get('goto');
-          router.prefetch(goto || '/dashboard');
           router.replace(goto || '/dashboard');
         })}
       >
