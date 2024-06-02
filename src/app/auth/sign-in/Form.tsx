@@ -61,11 +61,12 @@ export function SignInForm() {
             setError('root', { message: 'Account or password is incorrect' });
             return;
           }
-          if(res.error==='1001'){
+          if (res.error === '1001') {
             setError('root', { message: 'Permission denied' });
             return;
           }
           const goto = new URLSearchParams(location.search).get('goto');
+          router.prefetch(goto || '/dashboard');
           router.replace(goto || '/dashboard');
         })}
       >
