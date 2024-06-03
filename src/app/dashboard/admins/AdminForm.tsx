@@ -7,9 +7,12 @@ import { createAdmin } from '@/api/backend/admins/createAdmin';
 import { type Admin } from '@/api/backend/admins/getAdmin';
 import { updateAdmin } from '@/api/backend/admins/updateAdmin';
 import { type Data as BackendConfigs } from '@/api/backend/configs';
+import { addRolesToAdmin } from '@/api/backend/rbac/addRolesToAdmin';
+import { removeRolesFromAdmin } from '@/api/backend/rbac/removeRolesFromAdmin';
+import { type Role } from '@/api/backend/rbac/roles';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Button, Grid, InputLabel, Link, MenuItem, Select, TextField } from '@mui/material';
+import { Button, Chip, Grid, InputLabel, Link, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -25,6 +28,7 @@ interface AdminFromProps {
   // edit
   admin?: Admin;
   adminStatus?: BackendConfigs['adminStatus'];
+  roles: Role[];
 }
 
 const CreateFormSchema = z
@@ -32,6 +36,7 @@ const CreateFormSchema = z
     account: z.string().min(1, 'Account is required'),
     password: z.string().min(1, 'Password is required'),
     confirmPassword: z.string().min(1, 'Confirm password is required'),
+    roles: z.string().array(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
@@ -43,13 +48,14 @@ const EditFormSchema = z
     password: z.string(),
     confirmPassword: z.string(),
     status: z.number().optional(),
+    roles: z.string().array(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
   });
 
-export default function AdminForm({ admin, adminStatus }: AdminFromProps) {
+export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>();
   const {
@@ -61,6 +67,7 @@ export default function AdminForm({ admin, adminStatus }: AdminFromProps) {
   } = useForm({
     defaultValues: {
       account: '',
+      roles: [],
       ...admin,
       password: '',
       confirmPassword: '',
@@ -78,6 +85,10 @@ export default function AdminForm({ admin, adminStatus }: AdminFromProps) {
                 password: data.password,
                 status: data.status ?? admin.status,
               });
+              await addRolesToAdmin(admin.account, { roles: data.roles.filter((role) => !admin.roles.includes(role)) });
+              await removeRolesFromAdmin(admin.account, {
+                roles: admin.roles.filter((role) => !data.roles.includes(role)),
+              });
               enqueueSnackbar('Admin updated', { variant: 'success' });
               router.push('/dashboard/admins');
             }
@@ -86,6 +97,7 @@ export default function AdminForm({ admin, adminStatus }: AdminFromProps) {
                 account: data.account,
                 password: data.password,
               });
+              await addRolesToAdmin(data.account, { roles: data.roles });
               enqueueSnackbar('Admin created', { variant: 'success' });
               router.push('/dashboard/admins');
             }
@@ -217,6 +229,37 @@ export default function AdminForm({ admin, adminStatus }: AdminFromProps) {
                         ),
                       }}
                     />
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={6}>
+              <Controller
+                control={control}
+                name="roles"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <InputLabel>Roles</InputLabel>
+                    <Select
+                      {...field}
+                      multiple
+                      input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((value) => (
+                            <Chip key={value} label={value} />
+                          ))}
+                        </Box>
+                      )}
+                    >
+                      {roles.map((r) => (
+                        <MenuItem key={r.role} value={r.role}>
+                          {r.role}
+                        </MenuItem>
+                      ))}
+                    </Select>
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                   </FormControl>
                 )}

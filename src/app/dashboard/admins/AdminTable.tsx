@@ -5,13 +5,13 @@ import { useMemo, useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { type Admin } from '@/api/backend/admins/admins';
+import { deleteAdmin } from '@/api/backend/admins/deleteAdmin';
 import { type Data as BackendConfigs } from '@/api/backend/configs';
-import { deleteRole } from '@/api/backend/rbac/deleteRole';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
-import { Chip, TableContainer, TablePagination, TextField } from '@mui/material';
+import { Chip, TableContainer, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -29,7 +29,6 @@ import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state
 import { useSnackbar } from 'notistack';
 
 import SearchParamsTablePagination from '@/components/SearchParamsTablePagination';
-import { deleteAdmin } from '@/api/backend/admins/deleteAdmin';
 
 interface CustomersTableProps {
   adminStatus: BackendConfigs['adminStatus'];
@@ -122,7 +121,7 @@ export function RoleTable({ adminStatus, rows, count }: CustomersTableProps): Re
                       </Stack>
                     </TableCell>
                     <TableCell>
-                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={1}>
                         {row.roles.map((role) => (
                           <Chip key={role} label={role} variant="outlined" />
                         ))}

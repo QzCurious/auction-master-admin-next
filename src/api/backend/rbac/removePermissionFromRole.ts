@@ -8,11 +8,6 @@ const ReqSchema = z.object({
   permissionKey: z.string().array(),
 });
 
-export interface Role {
-  role: string;
-  description: string;
-}
-
 type Data = 'Success';
 
 type ErrorCode = never;

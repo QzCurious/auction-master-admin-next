@@ -7,7 +7,10 @@ import { withAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
-  password: z.string(),
+  password: z
+    .string()
+    .optional()
+    .transform((val) => val || undefined),
   status: z.number(),
 });
 

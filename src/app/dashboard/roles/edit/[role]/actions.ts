@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { addPermissionsToRole } from '@/api/backend/rbac/addPermissionsToRole';
-import { removePermissionToRole } from '@/api/backend/rbac/removePermissionToRole';
+import { removePermissionToRole } from '@/api/backend/rbac/removePermissionFromRole';
 import { redirectIfAuthError } from '@/utils/auth';
 
 export async function updatePermissionsToRoleAction(payload: {

@@ -6,6 +6,7 @@ import { withAuth } from '@/api/withAuth';
 export interface Admin {
   id: number;
   account: string;
+  roles: string[];
   password: string;
   status: number;
   createdAt: string;
