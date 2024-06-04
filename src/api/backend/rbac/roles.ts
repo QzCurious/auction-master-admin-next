@@ -1,5 +1,5 @@
 import { apiClient } from '@/api/apiClient';
-import { withAuth } from '@/api/withAuth';
+import { handleAuth } from '@/api/withAuth';
 
 export interface Role {
   role: string;
@@ -13,7 +13,7 @@ type ErrorCode = never;
 export async function roles() {
   'use server';
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/roles', {
+  const res = await handleAuth(apiClient)<Data, ErrorCode>('/roles', {
     method: 'GET',
     next: {
       tags: ['roles'],

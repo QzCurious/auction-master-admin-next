@@ -1,8 +1,8 @@
 'use server'
 
 import { apiClient } from '@/api/apiClient';
-import { throwIfInvalid } from '@/api/helpers';
-import { withAuth } from '@/api/withAuth';
+import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
+import { handleAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -21,7 +21,7 @@ export async function addRolesToAdmin(account: string, payload: z.input<typeof R
     formData.append('role', role);
   }
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/roles/account/${account}`, {
+  const res = await handleAuth(apiClient)<Data, ErrorCode>(`/roles/account/${account}`, {
     method: 'POST',
     body: formData,
   });

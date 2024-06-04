@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 import { type apiClient, type ApiClientResponse } from './apiClient';
+import { NOT_SIGN_IN_ERROR, PERMISSION_DENIED_ERROR } from './Errors';
 import { type JwtPayload } from './JwtPayload';
 import { sessionRefresh } from './session-refresh';
 
@@ -11,56 +11,57 @@ import { sessionRefresh } from './session-refresh';
 // refresh token
 // c897dfd4-b666-4cc3-9216-964a990c83ba
 
-interface OptsGeneric {
-  refreshToken?: boolean;
-}
-export function withAuth<Opts extends OptsGeneric = OptsGeneric>(_apiClient: typeof apiClient, opts?: Opts) {
+export function handleAuth(_apiClient: typeof apiClient) {
   const middleware = async function <Data, ErrorCode extends string = never>(
     input: string,
     init?: RequestInit
-  ): Promise<ApiClientResponse<Data, ErrorCode | '1003'>> {
-    let token = cookies().get('token')?.value;
-    if (opts?.refreshToken ?? true) {
-      const refreshTokenRes = await refreshTokenIfExpired();
-      if (!refreshTokenRes.token) {
-        return {
-          data: null,
-          status: {
-            code: '1003',
-            message: 'frontend mock error: ' + refreshTokenRes.data,
-            dateTime: '',
-            traceCode: '',
-          },
-        } as any;
-      }
-      token = refreshTokenRes.token;
-    }
+  ): Promise<ApiClientResponse<Data, ErrorCode>> {
+    const refreshTokenRes = await tryRefreshToken();
+    let token = refreshTokenRes.token;
 
     if (!token) {
-      return {
-        data: null,
-        status: {
-          code: '1003',
-          message: 'frontend mock error: NO_TOKEN',
-          dateTime: '',
-          traceCode: '',
-        },
-      } as any;
+      throw new Error(NOT_SIGN_IN_ERROR);
     }
 
-    return _apiClient(input, {
+    const res = await _apiClient<Data, ErrorCode>(input, {
       ...init,
       headers: {
         Authorization: token ? `Bearer ${token}` : '',
         ...init?.headers,
       },
     });
+
+    if (res.error) {
+      if (res.error === '1001') {
+        const { token: newToken } = await tryRefreshToken({ force: true });
+        console.log('token === newToken', token === newToken);
+        console.log('token', token);
+        console.log('newToken', newToken);
+        token = newToken;
+        const tryAgainRes = await _apiClient<Data, ErrorCode>(input, {
+          ...init,
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',
+            ...init?.headers,
+          },
+        });
+        if (tryAgainRes.error === '1001') {
+          throw new Error(PERMISSION_DENIED_ERROR);
+        }
+      }
+
+      if (res.error === '1003') {
+        throw new Error(NOT_SIGN_IN_ERROR);
+      }
+    }
+
+    return res;
   };
   return middleware;
 }
 
 let sessionRefreshing: ReturnType<typeof sessionRefresh> | null = null;
-export async function refreshTokenIfExpired() {
+export async function tryRefreshToken({ force }: { force?: boolean } = { force: false }) {
   // no token
   const token = cookies().get('token');
   if (!token?.value) {
@@ -73,7 +74,7 @@ export async function refreshTokenIfExpired() {
   if (!jwt) return { token: null, data: 'NO_JWT' } as const;
 
   // jwt still valid
-  if (jwt.exp * 1000 > Date.now() - 30 * 1000) {
+  if (!force && jwt.exp * 1000 > Date.now() - 30 * 1000) {
     return { token: token.value, data: 'NOT_EXPIRED' } as const;
   }
 

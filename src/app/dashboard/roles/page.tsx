@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { roles } from '@/api/backend/rbac/roles';
-import { redirectIfAuthError } from '@/utils/auth';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -15,7 +14,6 @@ export const metadata = { title: `Roles | Dashboard | ${config.site.name}` } sat
 
 export default async function Page() {
   const res = await roles();
-  redirectIfAuthError(res.error);
 
   return (
     <Stack spacing={3}>

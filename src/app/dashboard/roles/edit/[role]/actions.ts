@@ -3,7 +3,6 @@
 import { redirect } from 'next/navigation';
 import { addPermissionsToRole } from '@/api/backend/rbac/addPermissionsToRole';
 import { removePermissionToRole } from '@/api/backend/rbac/removePermissionFromRole';
-import { redirectIfAuthError } from '@/utils/auth';
 
 export async function updatePermissionsToRoleAction(payload: {
   role: string;
@@ -14,8 +13,6 @@ export async function updatePermissionsToRoleAction(payload: {
     addPermissionsToRole({ role: payload.role, permissionKey: payload.addPermissions }),
     removePermissionToRole({ role: payload.role, permissionKey: payload.removePermissions }),
   ]);
-  redirectIfAuthError(addRes.error);
-  redirectIfAuthError(removeRes.error);
 
   addRes.error satisfies null;
   removeRes.error satisfies null;

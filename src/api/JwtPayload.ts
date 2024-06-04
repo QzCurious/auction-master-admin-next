@@ -1,7 +1,10 @@
+import { type Permission } from './permissions.data';
+
 export interface JwtPayload {
   id: number;
   account: string;
-  status: 11;
+  role: Array<string>;
+  permissions: Array<Permission>;
   exp: number;
   iat: number;
   nbf: number;

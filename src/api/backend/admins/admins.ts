@@ -1,8 +1,8 @@
 'use server';
 
 import { apiClient } from '@/api/apiClient';
-import { throwIfInvalid } from '@/api/helpers';
-import { withAuth } from '@/api/withAuth';
+import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
+import { handleAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
 import { type Role } from '../rbac/roles';
@@ -39,7 +39,7 @@ export async function admins(payload: z.input<typeof ReqSchema>) {
     limit: payload.limit?.toString() || '10',
     offset: payload.offset?.toString() || '0',
   });
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins?${query.toString()}`, {
+  const res = await handleAuth(apiClient)<Data, ErrorCode>(`/admins?${query.toString()}`, {
     method: 'GET',
     next: {
       tags: ['admins'],

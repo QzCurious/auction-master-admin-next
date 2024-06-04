@@ -1,7 +1,7 @@
 import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
-import { throwIfInvalid } from '@/api/helpers';
-import { withAuth } from '@/api/withAuth';
+import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
+import { handleAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -25,7 +25,7 @@ export async function createRole(payload: z.input<typeof ReqSchema>) {
   formData.append('role', payload.role);
   formData.append('description', payload.description);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/roles', {
+  const res = await handleAuth(apiClient)<Data, ErrorCode>('/roles', {
     method: 'POST',
     body: formData,
   });

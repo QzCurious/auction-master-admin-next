@@ -1,6 +1,5 @@
 import { type Metadata } from 'next';
 import { roles } from '@/api/backend/rbac/roles';
-import { redirectIfAuthError } from '@/utils/auth';
 
 import { config } from '@/config';
 
@@ -10,7 +9,6 @@ export const metadata = { title: `Create admin | Dashboard | ${config.site.name}
 
 async function Page() {
   const [rolesRes] = await Promise.all([roles()]);
-  redirectIfAuthError(rolesRes.error);
   return <AdminForm roles={rolesRes.data} />;
 }
 

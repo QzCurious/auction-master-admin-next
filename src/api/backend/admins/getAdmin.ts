@@ -1,7 +1,7 @@
 'use server';
 
 import { apiClient } from '@/api/apiClient';
-import { withAuth } from '@/api/withAuth';
+import { handleAuth } from '@/api/withAuth';
 
 export interface Admin {
   id: number;
@@ -18,7 +18,7 @@ interface Data extends Admin {}
 type ErrorCode = never;
 
 export async function getAdmin(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/${id}`, {
+  const res = await handleAuth(apiClient)<Data, ErrorCode>(`/admins/${id}`, {
     method: 'GET',
     next: {
       tags: ['admins'],

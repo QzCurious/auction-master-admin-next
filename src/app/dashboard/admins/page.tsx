@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { admins } from '@/api/backend/admins/admins';
 import { configs } from '@/api/backend/configs';
-import { redirectIfAuthError } from '@/utils/auth';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -22,8 +21,6 @@ export default async function Page({
   const limit = Number.isNaN(Number(rowsPerPage)) ? 10 : Number(rowsPerPage);
   const offset = Number.isNaN(Number(page)) ? 0 : Number(page) * limit;
   const [adminRes, configsRes] = await Promise.all([admins({ limit, offset }), configs()]);
-  redirectIfAuthError(adminRes.error);
-  redirectIfAuthError(configsRes.error);
 
   return (
     <Stack spacing={3}>

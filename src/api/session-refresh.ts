@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { apiClient } from './apiClient';
-import { throwIfInvalid } from './helpers';
+import { throwIfInvalid } from './helpers/throwIfInvalid';
 
 const ReqSchema = z.object({
   token: z.string(),
