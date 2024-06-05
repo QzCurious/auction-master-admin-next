@@ -2,7 +2,7 @@ import { jwtDecode } from 'jwt-decode';
 
 import { type JwtPayload } from '../JwtPayload';
 import { type Permission } from '../permissions.data';
-import { tryRefreshToken } from '../withAuth';
+import { getToken } from '../getToken';
 
 export async function havePermissions(...permissions: Permission[]) {
   const permitted = await tryPermissions(permissions);
@@ -16,7 +16,7 @@ export async function havePermissions(...permissions: Permission[]) {
 }
 
 async function tryPermissions(permissions: Permission[], force = false) {
-  const { token } = await tryRefreshToken({ force });
+  const { token } = await getToken({ force });
   if (!token) {
     return false;
   }

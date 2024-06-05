@@ -1,13 +1,12 @@
 import { cookies } from 'next/headers';
 import { NextResponse, type NextRequest } from 'next/server';
-
-import { tryRefreshToken } from './api/withAuth';
+import { getToken } from '@/api/getToken';
 
 export async function middleware(request: NextRequest) {
   // refresh token and set cookie
   const response = NextResponse.next();
   const token = cookies().get('token')?.value;
-  const { token: newToken, res } = await tryRefreshToken();
+  const { token: newToken, res } = await getToken();
 
   if (!newToken) {
     console.log('middleware: refresh token error', res);
