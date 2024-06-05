@@ -1,6 +1,6 @@
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
-import { handleAuth } from '@/api/withAuth';
+import { withAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -21,7 +21,7 @@ export async function addPermissionsToRole(payload: z.input<typeof ReqSchema>) {
     formData.append('permissionKey', id);
   }
 
-  const res = await handleAuth(apiClient)<Data, ErrorCode>('/permissions', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/permissions', {
     method: 'POST',
     body: formData,
   });

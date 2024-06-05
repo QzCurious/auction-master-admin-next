@@ -1,5 +1,5 @@
 import { apiClient } from '@/api/apiClient';
-import { handleAuth } from '@/api/withAuth';
+import { withAuth } from '@/api/withAuth';
 
 export interface Data {
   yahooAuctionFeeRate: number;
@@ -44,7 +44,7 @@ type ErrorCode = never;
 export async function configs() {
   'use server';
 
-  const res = await handleAuth(apiClient)<Data, ErrorCode>('/configs', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/configs', {
     method: 'GET',
     next: {
       tags: ['config'],

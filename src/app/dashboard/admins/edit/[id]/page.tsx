@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getAdmin } from '@/api/backend/admins/getAdmin';
 import { configs } from '@/api/backend/configs';
 import { roles } from '@/api/backend/rbac/roles';
+import { redirectAuthError } from '@/app/utils/redirectAuthError';
 
 import { config } from '@/config';
 
@@ -12,6 +13,9 @@ export const metadata = { title: `Edit admin | Dashboard | ${config.site.name}` 
 
 async function Page({ params }: { params: { id: string } }) {
   const [adminRes, configsRes, rolesRes] = await Promise.all([getAdmin(parseInt(params.id)), configs(), roles()]);
+  redirectAuthError(adminRes);
+  redirectAuthError(configsRes);
+  redirectAuthError(rolesRes);
 
   if (!adminRes.data) {
     notFound();

@@ -1,5 +1,5 @@
 import { apiClient } from '@/api/apiClient';
-import { handleAuth } from '@/api/withAuth';
+import { withAuth } from '@/api/withAuth';
 
 export interface Permission {
   key: string;
@@ -13,7 +13,7 @@ type Data = Array<Permission>;
 type ErrorCode = never;
 
 export async function permissions() {
-  const res = await handleAuth(apiClient)<Data, ErrorCode>('/permissions', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/permissions', {
     method: 'GET',
   });
 

@@ -1,5 +1,6 @@
 import { type Metadata } from 'next';
 import { permissions } from '@/api/backend/rbac/permissions';
+import { redirectAuthError } from '@/app/utils/redirectAuthError';
 
 import { config } from '@/config';
 
@@ -9,6 +10,7 @@ export const metadata = { title: `Create role | Dashboard | ${config.site.name}`
 
 async function Page() {
   const res = await permissions();
+  redirectAuthError(res);
 
   return <RoleForm permissions={res.data} />;
 }

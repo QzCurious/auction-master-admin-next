@@ -2,7 +2,6 @@ import { cookies } from 'next/headers';
 import { jwtDecode } from 'jwt-decode';
 
 import { type apiClient, type ApiClientResponse } from './apiClient';
-import { NOT_SIGN_IN_ERROR, PERMISSION_DENIED_ERROR } from './Errors';
 import { type JwtPayload } from './JwtPayload';
 import { sessionRefresh } from './session-refresh';
 
@@ -11,48 +10,48 @@ import { sessionRefresh } from './session-refresh';
 // refresh token
 // c897dfd4-b666-4cc3-9216-964a990c83ba
 
-export function handleAuth(_apiClient: typeof apiClient) {
+export function withAuth(_apiClient: typeof apiClient) {
   const middleware = async function <Data, ErrorCode extends string = never>(
     input: string,
     init?: RequestInit
-  ): Promise<ApiClientResponse<Data, ErrorCode>> {
-    const refreshTokenRes = await tryRefreshToken();
-    let token = refreshTokenRes.token;
+  ): Promise<ApiClientResponse<Data, ErrorCode | '1001' | '1003'>> {
+    const refresh = await tryRefreshToken();
 
-    if (!token) {
-      throw new Error(NOT_SIGN_IN_ERROR);
+    if (refresh.token === null) {
+      console.log('Auth: failed to refresh token');
+      return (
+        refresh.res ?? {
+          data: null,
+          error: '1003',
+          status: {
+            code: '1003',
+            message: 'Failed to refresh token',
+            dateTime: Date.now().toString(),
+            traceCode: 'mocked response',
+          },
+        }
+      );
     }
 
     const res = await _apiClient<Data, ErrorCode>(input, {
       ...init,
       headers: {
-        Authorization: token ? `Bearer ${token}` : '',
+        Authorization: refresh.token ? `Bearer ${refresh.token}` : '',
         ...init?.headers,
       },
     });
 
-    if (res.error) {
-      if (res.error === '1001') {
-        const { token: newToken } = await tryRefreshToken({ force: true });
-        console.log('token === newToken', token === newToken);
-        console.log('token', token);
-        console.log('newToken', newToken);
-        token = newToken;
-        const tryAgainRes = await _apiClient<Data, ErrorCode>(input, {
-          ...init,
-          headers: {
-            Authorization: token ? `Bearer ${token}` : '',
-            ...init?.headers,
-          },
-        });
-        if (tryAgainRes.error === '1001') {
-          throw new Error(PERMISSION_DENIED_ERROR);
-        }
-      }
-
-      if (res.error === '1003') {
-        throw new Error(NOT_SIGN_IN_ERROR);
-      }
+    // Retry 1001 Permission denied
+    if (res.error === '1001') {
+      const { token } = await tryRefreshToken({ force: true });
+      const tryAgainRes = await _apiClient<Data, ErrorCode>(input, {
+        ...init,
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',
+          ...init?.headers,
+        },
+      });
+      return tryAgainRes;
     }
 
     return res;
@@ -65,25 +64,19 @@ export async function tryRefreshToken({ force }: { force?: boolean } = { force: 
   // no token
   const token = cookies().get('token');
   if (!token?.value) {
-    return { token: null, data: 'NO_TOKEN' } as const;
+    return { token: null, res: null } as const;
   }
 
   const jwt = jwtDecode<JwtPayload>(token.value);
 
-  // no jwt
-  if (!jwt) return { token: null, data: 'NO_JWT' } as const;
-
   // jwt still valid
   if (!force && jwt.exp * 1000 > Date.now() - 30 * 1000) {
-    return { token: token.value, data: 'NOT_EXPIRED' } as const;
+    return { token: token.value, res: null } as const;
   }
 
   const refreshToken = cookies().get('refreshToken');
   if (!refreshToken?.value) {
-    if (process.env.DEV) {
-      console.log('BUG: Token expired without refresh token');
-    }
-    return { token: null, data: 'NO_REFRESH_TOKEN' } as const;
+    throw new Error('BUG: Token expired without refresh token');
   }
 
   if (!sessionRefreshing) {
@@ -93,16 +86,16 @@ export async function tryRefreshToken({ force }: { force?: boolean } = { force: 
   const res = await sessionRefreshing;
   sessionRefreshing = null;
 
-  // refresh token expired
+  // 1003 refresh token expired
   if (!res.data) {
     if (process.env.DEV) {
       console.log('Refresh token expired', res);
     }
-    return { token: null, data: 'REFRESH_TOKEN_EXPIRED' } as const;
+    return { token: null, res } as const;
   }
 
   if (process.env.DEV) {
     console.log('Token renewed');
   }
-  return { token: res.data.token, data: 'REFRESHED' } as const;
+  return { token: res.data.token, res } as const;
 }

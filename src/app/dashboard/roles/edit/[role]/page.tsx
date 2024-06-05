@@ -6,11 +6,15 @@ import { rolesPermissions } from '@/api/backend/rbac/rolesPermissions';
 import { config } from '@/config';
 
 import RoleForm from '../../RoleForm';
+import { redirectAuthError } from '@/app/utils/redirectAuthError';
 
 export const metadata = { title: `Create role | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 async function Page({ params }: { params: { role: string } }) {
   const [permissionsRes, rolesPermissionsRes] = await Promise.all([permissions(), rolesPermissions()]);
+  redirectAuthError(permissionsRes);
+  redirectAuthError(rolesPermissionsRes);
+
   const role = rolesPermissionsRes.data.find((role) => params.role === role.role);
 
   if (!role) {

@@ -10,6 +10,7 @@ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { config } from '@/config';
 
 import { RoleTable } from './AdminTable';
+import { redirectAuthError } from '@/app/utils/redirectAuthError';
 
 export const metadata = { title: `Roles | Dashboard | ${config.site.name}` } satisfies Metadata;
 
@@ -21,6 +22,8 @@ export default async function Page({
   const limit = Number.isNaN(Number(rowsPerPage)) ? 10 : Number(rowsPerPage);
   const offset = Number.isNaN(Number(page)) ? 0 : Number(page) * limit;
   const [adminRes, configsRes] = await Promise.all([admins({ limit, offset }), configs()]);
+  redirectAuthError(adminRes);
+  redirectAuthError(configsRes);
 
   return (
     <Stack spacing={3}>

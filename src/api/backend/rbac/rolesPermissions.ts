@@ -1,5 +1,5 @@
 import { apiClient } from '@/api/apiClient';
-import { handleAuth } from '@/api/withAuth';
+import { withAuth } from '@/api/withAuth';
 
 import { type Permission } from './permissions';
 import { type Role } from './roles';
@@ -13,7 +13,7 @@ type Data = Array<RolePermissions>;
 type ErrorCode = never;
 
 export async function rolesPermissions() {
-  const res = await handleAuth(apiClient)<Data, ErrorCode>('/roles/permissions', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/roles/permissions', {
     method: 'GET',
   });
 

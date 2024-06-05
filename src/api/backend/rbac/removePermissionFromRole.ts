@@ -1,6 +1,6 @@
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
-import { handleAuth } from '@/api/withAuth';
+import { withAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -19,7 +19,7 @@ export async function removePermissionToRole(payload: z.input<typeof ReqSchema>)
     ['role', payload.role],
     ...payload.permissionKey.map((id) => ['permissionKey', id]),
   ]);
-  const res = await handleAuth(apiClient)<Data, ErrorCode>(`/permissions?${query.toString()}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/permissions?${query.toString()}`, {
     method: 'DELETE',
   });
 

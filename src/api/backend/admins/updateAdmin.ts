@@ -3,7 +3,7 @@
 import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
-import { handleAuth } from '@/api/withAuth';
+import { withAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -25,7 +25,7 @@ export async function updateAdmin(id: number, payload: z.input<typeof ReqSchema>
   payload.password && formData.append('password', payload.password);
   payload.status && formData.append('status', payload.status.toString());
 
-  const res = await handleAuth(apiClient)<Data, ErrorCode>(`/admins/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/${id}`, {
     method: 'PATCH',
     body: formData,
   });

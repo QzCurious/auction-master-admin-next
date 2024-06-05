@@ -7,10 +7,10 @@ export async function middleware(request: NextRequest) {
   // refresh token and set cookie
   const response = NextResponse.next();
   const token = cookies().get('token')?.value;
-  const { token: newToken, data } = await tryRefreshToken();
+  const { token: newToken, res } = await tryRefreshToken();
 
   if (!newToken) {
-    console.log('middleware: refresh token error', data);
+    console.log('middleware: refresh token error', res);
     const goto = request.nextUrl.pathname === '/' ? '/dashboard' : request.nextUrl.pathname;
     return Response.redirect(new URL(`/auth/sign-in?goto=${goto}`, request.url));
   }
