@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
@@ -24,6 +25,8 @@ export async function removeRolesFromAdmin(account: string, payload: z.input<typ
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/roles/account/${account}?${query.toString()}`, {
     method: 'DELETE',
   });
+
+  revalidateTag('admins');
 
   return res;
 }

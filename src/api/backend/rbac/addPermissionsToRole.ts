@@ -1,6 +1,7 @@
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { revalidateTag } from 'next/cache';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -25,6 +26,8 @@ export async function addPermissionsToRole(payload: z.input<typeof ReqSchema>) {
     method: 'POST',
     body: formData,
   });
+
+  revalidateTag('roles');
 
   return res;
 }

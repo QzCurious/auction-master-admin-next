@@ -15,6 +15,9 @@ type ErrorCode = never;
 export async function rolesPermissions() {
   const res = await withAuth(apiClient)<Data, ErrorCode>('/roles/permissions', {
     method: 'GET',
+    next: {
+      tags: ['roles'],
+    }
   });
 
   return res;

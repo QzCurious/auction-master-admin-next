@@ -2,15 +2,17 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { admins } from '@/api/backend/admins/admins';
 import { configs } from '@/api/backend/configs';
+import { havePermissions } from '@/api/helpers/havePermissions';
+import { redirectAuthError } from '@/app/utils/redirectAuthError';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
 import { config } from '@/config';
+import WithPermissionsOnlySection from '@/components/WithPermissionsOnlySection/WithPermissionsOnlySection';
 
-import { RoleTable } from './AdminTable';
-import { redirectAuthError } from '@/app/utils/redirectAuthError';
+import { AdminTable } from './AdminTable';
 
 export const metadata = { title: `Roles | Dashboard | ${config.site.name}` } satisfies Metadata;
 
@@ -31,7 +33,8 @@ export default async function Page({
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4">Admins</Typography>
         </Stack>
-        <div>
+
+        {(await havePermissions('CreateAdmin')) && (
           <Button
             LinkComponent={Link}
             href="/dashboard/admins/create"
@@ -40,9 +43,18 @@ export default async function Page({
           >
             Add
           </Button>
-        </div>
+        )}
       </Stack>
-      <RoleTable rows={adminRes.data.admins} count={adminRes.data.count} adminStatus={configsRes.data.adminStatus} />
+
+      <WithPermissionsOnlySection permissions={['GetAdmins']}>
+        {() => (
+          <AdminTable
+            rows={adminRes.data.admins}
+            count={adminRes.data.count}
+            adminStatus={configsRes.data.adminStatus}
+          />
+        )}
+      </WithPermissionsOnlySection>
     </Stack>
   );
 }

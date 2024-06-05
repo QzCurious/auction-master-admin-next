@@ -1,3 +1,4 @@
+import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
@@ -22,6 +23,8 @@ export async function removePermissionToRole(payload: z.input<typeof ReqSchema>)
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/permissions?${query.toString()}`, {
     method: 'DELETE',
   });
+
+  revalidateTag('roles');
 
   return res;
 }

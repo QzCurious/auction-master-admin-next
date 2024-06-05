@@ -28,6 +28,7 @@ import Typography from '@mui/material/Typography';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 
+import EmptyTableRow from '@/components/EmptyTableRow';
 import SearchParamsTablePagination from '@/components/SearchParamsTablePagination';
 
 interface CustomersTableProps {
@@ -36,7 +37,7 @@ interface CustomersTableProps {
   count: number;
 }
 
-export function RoleTable({ adminStatus, rows, count }: CustomersTableProps): React.JSX.Element {
+export function AdminTable({ adminStatus, rows, count }: CustomersTableProps): React.JSX.Element {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -105,13 +106,7 @@ export function RoleTable({ adminStatus, rows, count }: CustomersTableProps): Re
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRows.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={999} sx={{ textAlign: 'center', py: 3 }}>
-                    No results
-                  </TableCell>
-                </TableRow>
-              )}
+              {filteredRows.length === 0 && <EmptyTableRow />}
               {filteredRows.map((row) => {
                 return (
                   <TableRow hover key={row.id} selected={false}>
