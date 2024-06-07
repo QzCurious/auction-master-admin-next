@@ -50,7 +50,7 @@ export function SignInForm() {
           </Link>
         </Typography>
       </Stack>
-      {errors.root && <Alert color="error">{errors.root.message}</Alert>}
+      {errors.root && <Alert severity="error">{errors.root.message}</Alert>}
       <form
         onSubmit={handleSubmit(async (data) => {
           const formData = new FormData();
@@ -128,7 +128,7 @@ export function SignInForm() {
           </Button>
         </Stack>
       </form>
-      <Alert color="warning">
+      <Alert severity="warning">
         Use{' '}
         <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
           admin

@@ -144,13 +144,13 @@ export function SignUpForm(): React.JSX.Element {
               </div>
             )}
           />
-          {errors.root ? <Alert color="error">{errors.root.message}</Alert> : null}
+          {errors.root ? <Alert severity="error">{errors.root.message}</Alert> : null}
           <Button disabled={isPending} type="submit" variant="contained">
             Sign up
           </Button>
         </Stack>
       </form>
-      <Alert color="warning">Created users are not persisted</Alert>
+      <Alert severity="warning">Created users are not persisted</Alert>
     </Stack>
   );
 }

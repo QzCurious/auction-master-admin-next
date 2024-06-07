@@ -66,7 +66,7 @@ export function ResetPasswordForm(): React.JSX.Element {
               </FormControl>
             )}
           />
-          {errors.root ? <Alert color="error">{errors.root.message}</Alert> : null}
+          {errors.root ? <Alert severity="error">{errors.root.message}</Alert> : null}
           <Button disabled={isPending} type="submit" variant="contained">
             Send recovery link
           </Button>
