@@ -1,18 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
-import { createAdmin } from '@/api/backend/admins/createAdmin';
 import { type Admin } from '@/api/backend/admins/getAdmin';
-import { updateAdmin } from '@/api/backend/admins/updateAdmin';
 import { type Data as BackendConfigs } from '@/api/backend/configs';
-import { addRolesToAdmin } from '@/api/backend/rbac/addRolesToAdmin';
-import { removeRolesFromAdmin } from '@/api/backend/rbac/removeRolesFromAdmin';
 import { type Role } from '@/api/backend/rbac/roles';
 import { zodResolver } from '@hookform/resolvers/zod';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Button, Chip, Grid, InputLabel, Link, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
+import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -23,6 +17,10 @@ import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlas
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import { useHandleNoPermissions } from '@/contexts/UserContext';
+
+import { createAdminAction, updateAdminAction } from './actions';
 
 interface AdminFromProps {
   // edit
@@ -75,43 +73,40 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
     resolver: zodResolver(admin ? EditFormSchema : CreateFormSchema),
   });
   const { enqueueSnackbar } = useSnackbar();
+  const handleNoPermissions = useHandleNoPermissions();
 
   return (
     <form
       onSubmit={handleSubmit(
         admin
           ? async (data) => {
-              await updateAdmin(admin.id, {
-                password: data.password,
-                status: data.status ?? admin.status,
+              const errors = await updateAdminAction({
+                id: admin.id,
+                account: admin.account,
+                status: admin.status,
+                addRoles: data.roles.filter((role) => !admin.roles.includes(role)),
+                removeRoles: admin.roles.filter((role) => !data.roles.includes(role)),
               });
-              await addRolesToAdmin(admin.account, { roles: data.roles.filter((role) => !admin.roles.includes(role)) });
-              await removeRolesFromAdmin(admin.account, {
-                roles: admin.roles.filter((role) => !data.roles.includes(role)),
-              });
+              if (errors) {
+                for (const error of errors) {
+                  enqueueSnackbar(error, { variant: 'error' });
+                }
+                return;
+              }
               enqueueSnackbar('Admin updated', { variant: 'success' });
               router.push('/dashboard/admins');
             }
           : async (data) => {
-              await createAdmin({
-                account: data.account,
-                password: data.password,
-              });
-              await addRolesToAdmin(data.account, { roles: data.roles });
+              const error = await createAdminAction(data);
+              if (error) {
+                enqueueSnackbar(error, { variant: 'error' });
+                return;
+              }
               enqueueSnackbar('Admin created', { variant: 'success' });
               router.push('/dashboard/admins');
             }
       )}
     >
-      <Link component={RouterLink} href="/dashboard/admins">
-        <Stack direction="row" alignItems="center" columnGap={1}>
-          <ArrowBackIcon /> Admins
-        </Stack>
-      </Link>
-      <Typography variant="h4" sx={{ mt: 3 }}>
-        {admin ? 'Edit Admin' : 'Create Admin'}
-      </Typography>
-
       <Stack rowGap={3} sx={{ mt: 4 }}>
         <Card sx={{ py: 2, px: 3 }}>
           <Stack direction="row" columnGap={2}>
@@ -120,7 +115,12 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
             {process.env.NODE_ENV === 'development' && (
               <Button onClick={() => console.log(getValues())}>Get form values</Button>
             )}
-            <Button type="submit" variant="contained" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isSubmitting}
+              onClick={admin ? handleNoPermissions(['UpdateAdmin']) : handleNoPermissions(['CreateAdmin'])}
+            >
               Submit
             </Button>
           </Stack>

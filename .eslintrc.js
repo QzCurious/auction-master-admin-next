@@ -28,12 +28,6 @@ module.exports = {
         allowSingleExtends: true,
       },
     ],
-    '@typescript-eslint/no-shadow': [
-      'error',
-      {
-        ignoreOnInitialization: true,
-      },
-    ],
     'import/newline-after-import': 'error',
     'react/jsx-uses-react': 'error',
 
@@ -67,6 +61,7 @@ module.exports = {
     '@typescript-eslint/no-confusing-void-expression': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     'no-unused-vars': 'off',
+    '@typescript-eslint/no-shadow': 'off',
 
     '@next/next/no-img-element': 'off', // Temporary disabled
   },

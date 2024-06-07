@@ -1,28 +1,16 @@
 'use client';
 
-import { NOT_SIGN_IN_ERROR, PERMISSION_DENIED_ERROR } from '@/api/Errors';
-import { useRouter } from 'next/navigation';
-import { useSnackbar } from 'notistack';
-import { useEffect } from 'react';
+import { Alert, AlertTitle, Button } from '@mui/material';
 
 export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
-  const router = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
-
-  useEffect(() => {
-    if (error.message === NOT_SIGN_IN_ERROR) {
-      enqueueSnackbar('Please sign in first', { variant: 'error', preventDuplicate: true });
-      router.push('/auth/sign-in');
-      return;
-    }
-    if (error.message === PERMISSION_DENIED_ERROR) {
-      enqueueSnackbar('Permission denied', { variant: 'error', preventDuplicate: true });
-      router.push('/dashboard');
-      return;
-    }
-
-    enqueueSnackbar(error.message, { variant: 'error' });
-  }, [enqueueSnackbar, error, router]);
-
-  return null;
+  return (
+    <Alert severity="error">
+      <AlertTitle>Error</AlertTitle>
+      Some error occurred, please{' '}
+      <Button type="button" sx={{ p: 0 }} variant="text" size="small" onClick={reset}>
+        try again
+      </Button>{' '}
+      or report it to engineers with digest code: <code>{error.digest}</code>.
+    </Alert>
+  );
 }

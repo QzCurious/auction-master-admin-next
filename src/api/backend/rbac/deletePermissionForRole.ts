@@ -13,7 +13,7 @@ type Data = 'Success';
 
 type ErrorCode = never;
 
-export async function removePermissionToRole(payload: z.input<typeof ReqSchema>) {
+export async function deletePermissionForRole(payload: z.input<typeof ReqSchema>) {
   throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams([

@@ -32,19 +32,19 @@ export const permissions = [
     description: '刪除角色',
   },
   {
-    key: 'GetPermisstions',
+    key: 'GetPermissions',
     method: 'GET',
     url: '/auction-master/backend/permissions',
     description: '取得所有角色的權限',
   },
   {
-    key: 'AddPermisstionForRole',
+    key: 'AddPermissionForRole',
     method: 'POST',
     url: '/auction-master/backend/permissions',
     description: '新增角色的權限',
   },
   {
-    key: 'DeletePermisstionForRole',
+    key: 'DeletePermissionForRole',
     method: 'DELETE',
     url: '/auction-master/backend/permissions',
     description: '刪除角色的權限',
@@ -252,5 +252,11 @@ export const permissions = [
     method: 'POST',
     url: '/auction-master/backend/items/:id/bidding',
     description: '物品上架',
+  },
+  {
+    key: 'ItemReclaimed',
+    method: 'POST',
+    url: '/auction-master/backend/items/:id/reclaimed',
+    description: '物品收回',
   },
 ] as const;

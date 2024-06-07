@@ -1,8 +1,12 @@
 import * as React from 'react';
+import { getToken } from '@/api/getToken';
+import { type JwtPayload } from '@/api/JwtPayload';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
+import { jwtDecode } from 'jwt-decode';
 
+import { UserContext } from '@/contexts/UserContext';
 import { MainNav } from '@/components/dashboard/layout/main-nav';
 import { SideNav } from '@/components/dashboard/layout/side-nav';
 
@@ -11,6 +15,9 @@ interface LayoutProps {
 }
 
 export default async function Layout({ children }: LayoutProps) {
+  const { token } = await getToken();
+  const jwt = token ? jwtDecode<JwtPayload>(token) : null;
+
   return (
     <>
       <GlobalStyles
@@ -39,7 +46,19 @@ export default async function Layout({ children }: LayoutProps) {
           <MainNav />
           <main>
             <Container maxWidth="xl" sx={{ py: '24px' }}>
-              {children}
+              <UserContext
+                user={
+                  jwt
+                    ? {
+                        id: jwt.id,
+                        account: jwt.account,
+                        permissions: jwt.permissions,
+                      }
+                    : null
+                }
+              >
+                {children}
+              </UserContext>
             </Container>
           </main>
         </Box>

@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 import { apiClient } from './apiClient';

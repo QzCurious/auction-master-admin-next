@@ -1,24 +1,21 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { roles } from '@/api/backend/rbac/roles';
-import { havePermissions } from '@/api/helpers/havePermissions';
-import { redirectAuthError } from '@/app/utils/redirectAuthError';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
 import { config } from '@/config';
-import WithPermissionsOnlySection from '@/components/WithPermissionsOnlySection/WithPermissionsOnlySection';
+import { HavePermissionsOnly } from '@/contexts/UserContext';
+import RedirectAuthError from '@/components/RedirectAuthError';
+import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import { RoleTable } from './RoleTable';
 
 export const metadata = { title: `Roles | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 export default async function Page() {
-  const res = await roles();
-  redirectAuthError(res);
-
   return (
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
@@ -26,7 +23,7 @@ export default async function Page() {
           <Typography variant="h4">Roles</Typography>
         </Stack>
 
-        {(await havePermissions('CreateAdmin')) && (
+        <HavePermissionsOnly permissions={['CreateRole']}>
           <Button
             LinkComponent={Link}
             href="/dashboard/roles/create"
@@ -35,12 +32,23 @@ export default async function Page() {
           >
             Add
           </Button>
-        )}
+        </HavePermissionsOnly>
       </Stack>
 
-      <WithPermissionsOnlySection permissions={['GetRoles']}>
-        {() => <RoleTable rows={res.data.map((role) => ({ id: role.role, ...role })) ?? []} />}
-      </WithPermissionsOnlySection>
+      <Table />
     </Stack>
   );
+}
+
+async function Table() {
+  const res = await roles();
+  if (res.error === '1001') {
+    return <WithoutPermissionsError permissions={['GetRoles']} />;
+  }
+
+  if (res.error === '1003') {
+    return <RedirectAuthError />;
+  }
+
+  return <RoleTable rows={res.data.map((role) => ({ id: role.role, ...role })) ?? []} />;
 }

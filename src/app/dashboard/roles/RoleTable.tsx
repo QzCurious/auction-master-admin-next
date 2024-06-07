@@ -26,6 +26,8 @@ import Typography from '@mui/material/Typography';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 
+import { HavePermissionsOnly } from '@/contexts/UserContext';
+
 interface CustomersTableProps {
   rows: Role[];
 }
@@ -99,10 +101,14 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
                       <TableCell>{row.description}</TableCell>
                       <TableCell>
                         <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                          <IconButton LinkComponent={Link} href={`/dashboard/roles/edit/${row.role}`}>
-                            <EditIcon />
-                          </IconButton>
-                          <DeleteBtn row={row} />
+                          <HavePermissionsOnly permissions={['AddPermissionForRole', 'DeletePermissionForRole']}>
+                            <IconButton LinkComponent={Link} href={`/dashboard/roles/edit/${row.role}`}>
+                              <EditIcon />
+                            </IconButton>
+                          </HavePermissionsOnly>
+                          <HavePermissionsOnly permissions={['DeleteRole']}>
+                            <DeleteBtn row={row} />
+                          </HavePermissionsOnly>
                         </Stack>
                       </TableCell>
                     </TableRow>

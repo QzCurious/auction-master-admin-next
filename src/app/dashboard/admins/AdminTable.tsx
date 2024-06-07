@@ -28,6 +28,7 @@ import Typography from '@mui/material/Typography';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 
+import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import SearchParamsTablePagination from '@/components/SearchParamsTablePagination';
 
@@ -125,10 +126,14 @@ export function AdminTable({ adminStatus, rows, count }: CustomersTableProps): R
                     <TableCell>{adminStatus.find((x) => x.value === row.status)?.message}</TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        <IconButton LinkComponent={Link} href={`/dashboard/admins/edit/${row.id}`}>
-                          <EditIcon />
-                        </IconButton>
-                        <DeleteBtn row={row} />
+                        <HavePermissionsOnly permissions={['UpdateAdmin']}>
+                          <IconButton LinkComponent={Link} href={`/dashboard/admins/edit/${row.id}`}>
+                            <EditIcon />
+                          </IconButton>
+                        </HavePermissionsOnly>
+                        <HavePermissionsOnly permissions={['DeleteAdmin']}>
+                          <DeleteBtn row={row} />
+                        </HavePermissionsOnly>
                       </Stack>
                     </TableCell>
                   </TableRow>

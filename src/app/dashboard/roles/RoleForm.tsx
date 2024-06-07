@@ -1,23 +1,22 @@
 'use client';
 
-import RouterLink from 'next/link';
-import { useRouter } from 'next/navigation';
 import { type Permission } from '@/api/backend/rbac/permissions';
 import { type RolePermissions } from '@/api/backend/rbac/rolesPermissions';
 import { zodResolver } from '@hookform/resolvers/zod';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Button, Checkbox, Link, Table, TableBody, TableCell, TableHead, TableRow, TextField } from '@mui/material';
+import { Button, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
+import { useRouter } from 'next/navigation';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { createRoleAction } from './actions';
-import { updatePermissionsToRoleAction } from './edit/[role]/actions';
+import { useHandleNoPermissions } from '@/contexts/UserContext';
+
+import { createRoleAction, updatePermissionsToRoleAction } from './actions';
 
 interface RoleFromProps {
   // edit
@@ -49,17 +48,26 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
     resolver: zodResolver(FormSchema),
   });
   const { enqueueSnackbar } = useSnackbar();
+  const handleNoPermissions = useHandleNoPermissions();
 
   return (
     <form
       onSubmit={handleSubmit(
         role
           ? async (data) => {
-              await updatePermissionsToRoleAction({
+              const errors = await updatePermissionsToRoleAction({
                 role: data.role,
                 addPermissions: data.permissionKey.filter((key) => !role.permission.map((p) => p.key).includes(key)),
                 removePermissions: role.permission.filter((p) => !data.permissionKey.includes(p.key)).map((p) => p.key),
               });
+
+              if (errors) {
+                for (const error of errors) {
+                  enqueueSnackbar(error, { variant: 'error' });
+                }
+                return;
+              }
+
               enqueueSnackbar('Role updated', { variant: 'success' });
               router.push('/dashboard/roles');
             }
@@ -70,14 +78,6 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
             }
       )}
     >
-      <Link component={RouterLink} href="/dashboard/roles">
-        <Stack direction="row" alignItems="center" columnGap={1}>
-          <ArrowBackIcon /> Roles
-        </Stack>
-      </Link>
-      <Typography variant="h4" sx={{ mt: 3 }}>
-        {role ? 'Edit Role Permissions' : 'Create Role'}
-      </Typography>
       <Stack rowGap={3} sx={{ mt: 4 }}>
         <Card sx={{ py: 2, px: 3 }}>
           <Stack direction="column" rowGap={2}>
@@ -87,7 +87,16 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               {process.env.NODE_ENV === 'development' && (
                 <Button onClick={() => console.log(getValues())}>Get form values</Button>
               )}
-              <Button type="submit" variant="contained" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={isSubmitting}
+                onClick={
+                  role
+                    ? handleNoPermissions(['AddPermissionForRole', 'DeletePermissionForRole'])
+                    : handleNoPermissions(['CreateRole'])
+                }
+              >
                 Submit
               </Button>
             </Stack>
@@ -146,8 +155,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                         )}
                       />
                     </TableCell>
-                    <TableCell>Method</TableCell>
-                    <TableCell>URL</TableCell>
+                    <TableCell>Key</TableCell>
                     <TableCell>Description</TableCell>
                   </TableRow>
                 </TableHead>
@@ -174,8 +182,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                             )}
                           />
                         </TableCell>
-                        <TableCell>{row.method}</TableCell>
-                        <TableCell>{row.url}</TableCell>
+                        <TableCell>{row.key}</TableCell>
                         <TableCell>{row.description}</TableCell>
                       </TableRow>
                     );

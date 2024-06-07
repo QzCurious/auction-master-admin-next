@@ -13,7 +13,7 @@ type Data = 'Success';
 
 type ErrorCode = never;
 
-export async function addPermissionsToRole(payload: z.input<typeof ReqSchema>) {
+export async function addPermissionsForRole(payload: z.input<typeof ReqSchema>) {
   throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
