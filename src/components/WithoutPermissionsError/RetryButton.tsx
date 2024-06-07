@@ -4,6 +4,8 @@ import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@mui/material';
 
+import { refreshTokenAction } from './actions';
+
 export default function RetryButton() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -11,8 +13,9 @@ export default function RetryButton() {
   return (
     <Button
       color="primary"
-      onClick={() => {
-        startTransition(() => {
+      onClick={async () => {
+        startTransition(async () => {
+          await refreshTokenAction();
           router.refresh();
         });
       }}

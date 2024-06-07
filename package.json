@@ -33,6 +33,7 @@
     "@phosphor-icons/react": "2.0.15",
     "@redux-devtools/extension": "^3.3.0",
     "apexcharts": "3.46.0",
+    "copy-to-clipboard": "^3.3.3",
     "dayjs": "1.11.10",
     "jwt-decode": "^4.0.0",
     "material-ui-popup-state": "^5.1.2",

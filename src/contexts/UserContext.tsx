@@ -6,6 +6,7 @@ import { type JwtPayload } from '@/api/JwtPayload';
 import { type Permission } from '@/api/permissions.data';
 import { Chip, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
+import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 
 export interface User extends Pick<JwtPayload, 'id' | 'account' | 'permissions'> {}
@@ -60,12 +61,7 @@ export function useHandleNoPermissions() {
             </Typography>
             <Stack alignItems="center" direction="row" spacing={1}>
               {permissions.map((permission) => (
-                <Chip
-                  key={permission}
-                  label={permission}
-                  variant="outlined"
-                  onClick={() => navigator.clipboard.writeText(permission)}
-                />
+                <Chip key={permission} label={permission} variant="outlined" onClick={() => copy(permission)} />
               ))}
             </Stack>
           </Stack>,
