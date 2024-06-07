@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import RouterLink from 'next/link';
 import { getToken } from '@/api/getToken';
 import { logout } from '@/api/logout';
+import refreshTokenAction from '@/api/refreshTokenAction';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -18,7 +19,6 @@ import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 import { useSnackbar } from 'notistack';
 
 import { paths } from '@/paths';
-import { refreshTokenAction } from './actions';
 
 export interface UserPopoverProps {
   anchorEl: Element | null;
@@ -59,9 +59,10 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
         </MenuItem>
         <MenuItem
           onClick={async () => {
-            const token = await refreshTokenAction();
-            if (!token.token) {
-              enqueueSnackbar(`Failed to refresh token: ${token.res?.error}`, { variant: 'error' });
+            const error = await refreshTokenAction();
+            if (error) {
+              enqueueSnackbar(error, { variant: 'error' });
+              return
             }
             enqueueSnackbar('Token refreshed', { variant: 'success' });
           }}
