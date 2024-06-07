@@ -22,7 +22,7 @@ export function useHavePermissions() {
 
   const havePermissions = useCallback(
     (permissions: Array<Permission>) =>
-      user && permissions.every((permission) => user.permissions.includes(permission)),
+      !!user && permissions.every((permission) => user.permissions.includes(permission)),
     [user]
   );
 

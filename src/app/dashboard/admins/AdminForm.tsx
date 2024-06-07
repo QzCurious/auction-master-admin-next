@@ -18,7 +18,7 @@ import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useHandleNoPermissions } from '@/contexts/UserContext';
+import { useHandleNoPermissions, useHavePermissions } from '@/contexts/UserContext';
 
 import { createAdminAction, updateAdminAction } from './actions';
 
@@ -74,6 +74,7 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
   });
   const { enqueueSnackbar } = useSnackbar();
   const handleNoPermissions = useHandleNoPermissions();
+  const havePermissions = useHavePermissions();
 
   return (
     <form
@@ -244,6 +245,7 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
                     <InputLabel>Roles</InputLabel>
                     <Select
                       {...field}
+                      readOnly={!havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])}
                       multiple
                       input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
                       renderValue={(selected) => (
