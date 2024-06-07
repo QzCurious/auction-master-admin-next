@@ -51,23 +51,26 @@ export function useHandleNoPermissions() {
   const { enqueueSnackbar } = useSnackbar();
 
   return useCallback(
-    (permissions: Array<Permission>, opts?: { message?: string; action?: string }) => (e: React.MouseEvent) => {
-      if (!havePermissions(permissions)) {
-        e.preventDefault();
-        enqueueSnackbar(
-          <Stack alignItems="center" spacing={1} sx={{ p: 3 }}>
-            <Typography variant="body1">
-              {opts?.message ?? <>You need following permissions to {opts?.action ?? 'perform this action'}</>}
-            </Typography>
-            <Stack alignItems="center" direction="row" spacing={1}>
-              {permissions.map((permission) => (
-                <Chip key={permission} label={permission} variant="outlined" onClick={() => copy(permission)} />
-              ))}
-            </Stack>
-          </Stack>,
-          { variant: 'error', persist: true }
-        );
+    (permissions: Array<Permission>, opts?: { message?: string; action?: string }) => (e?: React.MouseEvent) => {
+      if (havePermissions(permissions)) {
+        return false;
       }
+
+      e?.preventDefault();
+      enqueueSnackbar(
+        <Stack alignItems="center" spacing={1} sx={{ p: 3 }}>
+          <Typography variant="body1">
+            {opts?.message ?? <>You need following permissions to {opts?.action ?? 'perform this action'}</>}
+          </Typography>
+          <Stack alignItems="center" direction="row" spacing={1}>
+            {permissions.map((permission) => (
+              <Chip key={permission} label={permission} variant="outlined" onClick={() => copy(permission)} />
+            ))}
+          </Stack>
+        </Stack>,
+        { variant: 'error', persist: true }
+      );
+      return true;
     },
     [enqueueSnackbar, havePermissions]
   );

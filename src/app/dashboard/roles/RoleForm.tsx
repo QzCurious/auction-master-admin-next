@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { type Permission } from '@/api/backend/rbac/permissions';
 import { type RolePermissions } from '@/api/backend/rbac/rolesPermissions';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,7 +10,6 @@ import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
-import { useRouter } from 'next/navigation';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -106,7 +106,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               name="role"
               render={({ field, fieldState }) => (
                 <FormControl error={!!fieldState.error}>
-                  <TextField {...field} label="Role" type="text" fullWidth />
+                  <TextField inputProps={{ readOnly: !!role }} {...field} label="Role" type="text" fullWidth />
                   {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                 </FormControl>
               )}
@@ -117,7 +117,16 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               name="description"
               render={({ field, fieldState }) => (
                 <FormControl error={!!fieldState.error}>
-                  <TextField {...field} fullWidth multiline label="Description" type="text" margin="normal" rows={4} />
+                  <TextField
+                    inputProps={{ readOnly: !!role }}
+                    {...field}
+                    fullWidth
+                    multiline
+                    label="Description"
+                    type="text"
+                    margin="normal"
+                    rows={4}
+                  />
                   {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                 </FormControl>
               )}

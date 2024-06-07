@@ -162,7 +162,11 @@ function DeleteBtn({ row }: { row: Role }) {
               onClick={() => {
                 popupState.close();
                 startTransition(async () => {
-                  await deleteRole(row.role);
+                  const res = await deleteRole(row.role);
+                  if (res.error) {
+                    enqueueSnackbar(`Failed to delete ${row.role}: ${res.error}`, { variant: 'error' });
+                    return;
+                  }
                   enqueueSnackbar(`${row.role} deleted`, { variant: 'success' });
                 });
               }}
