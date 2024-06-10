@@ -1,13 +1,22 @@
-import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
+import type { NavItemConfig } from '@/types/nav';
+import { ChartPie as ChartPieIcon } from '@phosphor-icons/react/dist/ssr/ChartPie';
+import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
+import { PlugsConnected as PlugsConnectedIcon } from '@phosphor-icons/react/dist/ssr/PlugsConnected';
+import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
+import { UserCircleGear } from '@phosphor-icons/react/dist/ssr/UserCircleGear';
+import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
+import { XSquare } from '@phosphor-icons/react/dist/ssr/XSquare';
+
 
 export const navItems = [
-  { key: 'overview', title: 'Overview', href: paths.dashboard.overview, icon: 'chart-pie' },
-  { key: 'customers', title: 'Customers', href: paths.dashboard.customers, icon: 'users' },
-  { key: 'roles', title: 'Roles', href:  '/dashboard/roles', icon: 'users' },
-  { key: 'admins', title: 'Admins', href:  '/dashboard/admins', icon: 'users' },
-  { key: 'integrations', title: 'Integrations', href: paths.dashboard.integrations, icon: 'plugs-connected' },
-  { key: 'settings', title: 'Settings', href: paths.dashboard.settings, icon: 'gear-six' },
-  { key: 'account', title: 'Account', href: paths.dashboard.account, icon: 'user' },
-  { key: 'error', title: 'Error', href: paths.errors.notFound, icon: 'x-square' },
+  { key: 'roles', title: 'Roles', href: '/dashboard/roles', PhosphorIcon: UserCircleGear, permissions: ['GetRoles'] },
+  { key: 'admins', title: 'Admins', href: '/dashboard/admins', PhosphorIcon: UsersIcon, permissions: ['GetAdmins'] },
+
+  { key: 'overview', title: 'Overview', href: paths.dashboard.overview, PhosphorIcon: ChartPieIcon },
+  { key: 'customers', title: 'Customers', href: paths.dashboard.customers, PhosphorIcon: UserIcon },
+  { key: 'integrations', title: 'Integrations', href: paths.dashboard.integrations, PhosphorIcon: PlugsConnectedIcon },
+  { key: 'settings', title: 'Settings', href: paths.dashboard.settings, PhosphorIcon: GearSixIcon },
+  { key: 'account', title: 'Account', href: paths.dashboard.account, PhosphorIcon: UserIcon },
+  { key: 'error', title: 'Error', href: paths.errors.notFound, PhosphorIcon: XSquare },
 ] satisfies NavItemConfig[];

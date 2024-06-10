@@ -1,10 +1,13 @@
+import { type Permission } from "@/api/permissions.data";
+import { type Icon } from "@phosphor-icons/react";
+
 export interface NavItemConfig {
   key: string;
   title?: string;
   disabled?: boolean;
   external?: boolean;
   label?: string;
-  icon?: string;
+  PhosphorIcon?: Icon;
   href?: string;
   items?: NavItemConfig[];
   // Matcher cannot be a function in order
@@ -12,4 +15,6 @@ export interface NavItemConfig {
   // If you need to match multiple paths,
   // can extend it to accept multiple matchers.
   matcher?: { type: 'startsWith' | 'equals'; href: string };
+
+  permissions?: Permission[];
 }

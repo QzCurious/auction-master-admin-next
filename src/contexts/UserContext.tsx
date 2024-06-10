@@ -21,8 +21,13 @@ export function useHavePermissions() {
   const user = useContext(Ctx);
 
   const havePermissions = useCallback(
-    (permissions: Array<Permission>) =>
-      !!user && permissions.every((permission) => user.permissions.includes(permission)),
+    (permissions: Array<Permission>) => {
+      if (permissions.length === 0) {
+        return true;
+      }
+
+      return !!user && permissions.every((permission) => user.permissions.includes(permission));
+    },
     [user]
   );
 

@@ -14,7 +14,7 @@ interface LayoutProps {
 
 export default async function Layout({ children }: LayoutProps) {
   return (
-    <>
+    <WithUserContext>
       <GlobalStyles
         styles={{
           body: {
@@ -41,11 +41,11 @@ export default async function Layout({ children }: LayoutProps) {
           <MainNav />
           <main>
             <Container maxWidth="xl" sx={{ py: '24px' }}>
-              <WithUserContext>{children}</WithUserContext>
+              {children}
             </Container>
           </main>
         </Box>
       </Box>
-    </>
+    </WithUserContext>
   );
 }
