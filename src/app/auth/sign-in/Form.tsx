@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ReqSchema } from '@/api/session';
+import { session } from '@/api/session';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -17,11 +17,14 @@ import Typography from '@mui/material/Typography';
 import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Controller, useForm } from 'react-hook-form';
-import { type z } from 'zod';
+import { z } from 'zod';
 
 import { paths } from '@/paths';
 
-import { login } from './actions';
+const Schema = z.object({
+  account: z.string().min(1, { message: 'Account is required' }),
+  password: z.string().min(1, { message: 'Password is required' }),
+});
 
 export function SignInForm() {
   const [showPassword, setShowPassword] = useState<boolean>();
@@ -30,12 +33,12 @@ export function SignInForm() {
     handleSubmit,
     setError,
     formState: { isSubmitting, errors },
-  } = useForm<z.input<typeof ReqSchema>>({
+  } = useForm<z.input<typeof Schema>>({
     defaultValues: {
       account: '',
       password: '',
     },
-    resolver: zodResolver(ReqSchema),
+    resolver: zodResolver(Schema),
   });
   const router = useRouter();
 
@@ -53,10 +56,7 @@ export function SignInForm() {
       {errors.root && <Alert severity="error">{errors.root.message}</Alert>}
       <form
         onSubmit={handleSubmit(async (data) => {
-          const formData = new FormData();
-          formData.append('account', data.account);
-          formData.append('password', data.password);
-          const res = await login(formData);
+          const res = await session(data);
           if (res.error === '1004' || res.error === '1502') {
             setError('root', { message: 'Account or password is incorrect' });
             return;

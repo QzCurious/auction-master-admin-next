@@ -3,14 +3,14 @@ import { getToken } from '@/api/getToken';
 import { type JwtPayload } from '@/api/JwtPayload';
 import { jwtDecode } from 'jwt-decode';
 
-import { UserContext } from '@/contexts/UserContext';
+import { UserContextProvider } from '@/contexts/UserContext';
 
 export default async function WithUserContext({ children }: { children: React.ReactNode }) {
   const { token } = await getToken();
   const jwt = token ? jwtDecode<JwtPayload>(token) : null;
 
   return (
-    <UserContext
+    <UserContextProvider
       user={
         jwt
           ? {
@@ -22,6 +22,6 @@ export default async function WithUserContext({ children }: { children: React.Re
       }
     >
       {children}
-    </UserContext>
+    </UserContextProvider>
   );
 }

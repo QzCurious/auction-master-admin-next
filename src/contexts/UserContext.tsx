@@ -11,14 +11,14 @@ import { useSnackbar } from 'notistack';
 
 export interface User extends Pick<JwtPayload, 'id' | 'account' | 'permissions'> {}
 
-export const Ctx = createContext<User | null>(null);
+export const UserContext = createContext<User | null>(null);
 
-export function UserContext({ user, children }: { user: User | null; children: React.ReactNode }) {
-  return <Ctx.Provider value={user}>{children}</Ctx.Provider>;
+export function UserContextProvider({ user, children }: { user: User | null; children: React.ReactNode }) {
+  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }
 
 export function useHavePermissions() {
-  const user = useContext(Ctx);
+  const user = useContext(UserContext);
 
   const havePermissions = useCallback(
     (permissions: Array<Permission>) => {
