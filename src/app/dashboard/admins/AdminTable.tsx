@@ -28,7 +28,7 @@ import Typography from '@mui/material/Typography';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly, useHavePermissions } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import SearchParamsTablePagination from '@/components/SearchParamsTablePagination';
 
@@ -44,6 +44,7 @@ export function AdminTable({ adminStatus, rows, count }: CustomersTableProps): R
   const pathname = usePathname();
   const status = searchParams.get('status');
   const account = searchParams.get('account');
+  const havePermissions = useHavePermissions();
 
   const filteredRows = useMemo(
     () =>
@@ -119,7 +120,18 @@ export function AdminTable({ adminStatus, rows, count }: CustomersTableProps): R
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={1}>
                         {row.roles.map((role) => (
-                          <Chip key={role} label={role} variant="outlined" />
+                          <Chip
+                            key={role}
+                            component={Link}
+                            href={`/dashboard/roles/edit/${role}`}
+                            onClick={(e) => {
+                              if (!havePermissions(['GetAdmin', 'GetPermissions'])) {
+                                e.preventDefault();
+                              }
+                            }}
+                            label={role}
+                            variant="outlined"
+                          />
                         ))}
                       </Stack>
                     </TableCell>
