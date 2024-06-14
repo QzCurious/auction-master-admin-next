@@ -78,9 +78,9 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
           <Table sx={{ minWidth: '800px' }}>
             <TableHead>
               <TableRow>
-                <TableCell>Role</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell>角色</TableCell>
+                <TableCell>描述</TableCell>
+                <TableCell>操作</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -147,13 +147,13 @@ function DeleteBtn({ row }: { row: Role }) {
         }}
       >
         <Box sx={{ p: '16px 20px ' }}>
-          <Typography variant="subtitle1">Deleting {row.role}</Typography>
+          <Typography variant="subtitle1">刪除角色</Typography>
           <Typography color="text.secondary" variant="body2">
-            Press delete to confirm
+            您確定要刪除 {row.role} 嗎?
           </Typography>
           <Stack direction="row" gap={2} justifyContent="space-between" sx={{ mt: 1 }}>
             <Button variant="text" size="small" onClick={popupState.close}>
-              Cancel
+              取消
             </Button>
             <Button
               disabled={isPending}
@@ -171,7 +171,7 @@ function DeleteBtn({ row }: { row: Role }) {
                 });
               }}
             >
-              Delete
+              刪除
             </Button>
           </Stack>
         </Box>

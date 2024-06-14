@@ -45,13 +45,7 @@ export function SignInForm() {
   return (
     <Stack spacing={4}>
       <Stack spacing={1}>
-        <Typography variant="h4">Sign in</Typography>
-        <Typography color="text.secondary" variant="body2">
-          Don&apos;t have an account?{' '}
-          <Link component={RouterLink} href={paths.auth.signUp} underline="hover" variant="subtitle2">
-            Sign up
-          </Link>
-        </Typography>
+        <Typography variant="h4">登入</Typography>
       </Stack>
       {errors.root && <Alert severity="error">{errors.root.message}</Alert>}
       <form
@@ -75,8 +69,8 @@ export function SignInForm() {
             name="account"
             render={({ field, fieldState }) => (
               <FormControl error={!!fieldState.error}>
-                <InputLabel>Account</InputLabel>
-                <OutlinedInput label="Account" type="text" {...field} />
+                <InputLabel>帳號</InputLabel>
+                <OutlinedInput label="帳號" type="text" {...field} />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -87,7 +81,7 @@ export function SignInForm() {
             name="password"
             render={({ field, fieldState }) => (
               <FormControl error={!!fieldState.error}>
-                <InputLabel>Password</InputLabel>
+                <InputLabel>密碼</InputLabel>
                 <OutlinedInput
                   endAdornment={
                     showPassword ? (
@@ -108,7 +102,7 @@ export function SignInForm() {
                       />
                     )
                   }
-                  label="Password"
+                  label="密碼"
                   type={showPassword ? 'text' : 'password'}
                   {...field}
                 />
@@ -119,12 +113,12 @@ export function SignInForm() {
 
           <div>
             <Link component={RouterLink} href={paths.auth.resetPassword} variant="subtitle2">
-              Forgot password?
+              忘記密碼
             </Link>
           </div>
 
           <Button disabled={isSubmitting} type="submit" variant="contained">
-            Sign in
+            登入
           </Button>
         </Stack>
       </form>

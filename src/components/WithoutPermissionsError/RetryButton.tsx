@@ -19,7 +19,7 @@ export default function RetryButton() {
       variant="contained"
       disabled={isPending}
     >
-      Retry
+      再試一次
     </Button>
   );
 }

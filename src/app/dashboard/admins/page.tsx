@@ -25,7 +25,7 @@ export default async function Page(pageProps: PageProps) {
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Admins</Typography>
+          <Typography variant="h4">管理員列表</Typography>
         </Stack>
 
         <HavePermissionsOnly permissions={['CreateAdmin']}>
@@ -35,7 +35,7 @@ export default async function Page(pageProps: PageProps) {
             startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
             variant="contained"
           >
-            Add
+            新增
           </Button>
         </HavePermissionsOnly>
       </Stack>

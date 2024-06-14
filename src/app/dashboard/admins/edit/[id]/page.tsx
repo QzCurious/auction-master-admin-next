@@ -1,3 +1,6 @@
+import { type Metadata } from 'next';
+import RouterLink from 'next/link';
+import { notFound } from 'next/navigation';
 import { getAdmin } from '@/api/backend/admins/getAdmin';
 import { configs } from '@/api/backend/configs';
 import { roles } from '@/api/backend/rbac/roles';
@@ -5,13 +8,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Stack } from '@mui/system';
-import { type Metadata } from 'next';
-import RouterLink from 'next/link';
-import { notFound } from 'next/navigation';
 
+import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
-import { config } from '@/config';
 
 import AdminForm from '../../AdminForm';
 
@@ -26,11 +26,11 @@ async function Page(pageProps: PageProps) {
     <>
       <Link component={RouterLink} href="/dashboard/admins">
         <Stack direction="row" alignItems="center" columnGap={1}>
-          <ArrowBackIcon /> Admins
+          <ArrowBackIcon /> 回到管理員列表
         </Stack>
       </Link>
       <Typography variant="h4" sx={{ mt: 3 }}>
-        Edit Admin
+        編輯管理員
       </Typography>
 
       <Form {...pageProps} />

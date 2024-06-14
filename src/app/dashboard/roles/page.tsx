@@ -20,7 +20,7 @@ export default async function Page() {
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Roles</Typography>
+          <Typography variant="h4">角色列表</Typography>
         </Stack>
 
         <HavePermissionsOnly permissions={['CreateRole']}>
@@ -30,7 +30,7 @@ export default async function Page() {
             startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
             variant="contained"
           >
-            Add
+          新增
           </Button>
         </HavePermissionsOnly>
       </Stack>

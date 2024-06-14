@@ -25,11 +25,11 @@ async function Page(pageProps: PageProps) {
     <>
       <Link component={RouterLink} href="/dashboard/roles">
         <Stack direction="row" alignItems="center" columnGap={1}>
-          <ArrowBackIcon /> Roles
+          <ArrowBackIcon /> 回到角色列表
         </Stack>
       </Link>
       <Typography variant="h4" sx={{ mt: 3 }}>
-        Edit Role Permissions
+        編輯角色權限
       </Typography>
 
       <Form {...pageProps} />

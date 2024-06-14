@@ -111,7 +111,7 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
       <Stack rowGap={3} sx={{ mt: 4 }}>
         <Card sx={{ py: 2, px: 3 }}>
           <Stack direction="row" columnGap={2}>
-            <Typography variant="h6">Account information</Typography>
+            <Typography variant="h6">管理員資訊</Typography>
             <Box sx={{ ml: 'auto' }} />
             {process.env.NODE_ENV === 'development' && (
               <Button onClick={() => console.log(getValues())}>Get form values</Button>
@@ -122,7 +122,7 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
               disabled={isSubmitting}
               onClick={admin ? handleNoPermissions(['UpdateAdmin']) : handleNoPermissions(['CreateAdmin'])}
             >
-              Submit
+              送出
             </Button>
           </Stack>
 
@@ -133,7 +133,7 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
                 name="account"
                 render={({ field, fieldState }) => (
                   <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField {...field} label="Admin" type="text" fullWidth />
+                    <TextField {...field} label="帳號" type="text" fullWidth />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                   </FormControl>
                 )}
@@ -147,7 +147,7 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
                   name="status"
                   render={({ field, fieldState }) => (
                     <FormControl fullWidth error={!!fieldState.error}>
-                      <InputLabel>Status</InputLabel>
+                      <InputLabel>狀態</InputLabel>
                       <Select {...field} label="Status" fullWidth>
                         {adminStatus.map((status) => (
                           <MenuItem key={status.value} value={status.value}>
@@ -171,7 +171,7 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
                     <TextField
                       {...field}
                       fullWidth
-                      label="Password"
+                      label="密碼"
                       type={showPassword ? 'text' : 'password'}
                       InputProps={{
                         endAdornment: showPassword ? (
@@ -208,7 +208,7 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
                     <TextField
                       {...field}
                       fullWidth
-                      label="Confirm password"
+                      label="確認密碼"
                       type={showPassword ? 'text' : 'password'}
                       InputProps={{
                         endAdornment: showPassword ? (
@@ -242,7 +242,7 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
                 name="roles"
                 render={({ field, fieldState }) => (
                   <FormControl fullWidth error={!!fieldState.error}>
-                    <InputLabel>Roles</InputLabel>
+                    <InputLabel>角色</InputLabel>
                     <Select
                       {...field}
                       readOnly={!havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])}

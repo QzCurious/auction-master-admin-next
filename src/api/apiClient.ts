@@ -11,10 +11,16 @@ export async function apiClient<Data, ErrorCode extends string = never>(
   const url = process.env.API_BASE_URL + input;
   const res = await fetch(url, init);
 
-  if (process.env.API_LOG) {
+  if (process.env.API_LOG || !res.ok) {
     console.log(`apiClient:`, `[${init?.method ?? 'GET'} ${url}]:`);
     console.log(`payload:`, init?.body instanceof FormData ? Object.fromEntries(init.body) : init?.body);
-    console.log(`response:`, await res.clone().text());
+    console.log(
+      `response:`,
+      await res
+        .clone()
+        .json()
+        .catch(() => res.clone().text())
+    );
   }
 
   try {

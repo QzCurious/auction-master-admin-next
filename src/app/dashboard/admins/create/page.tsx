@@ -19,11 +19,11 @@ async function Page() {
     <>
       <Link component={RouterLink} href="/dashboard/admins">
         <Stack direction="row" alignItems="center" columnGap={1}>
-          <ArrowBackIcon /> Admins
+          <ArrowBackIcon /> 回到管理員列表
         </Stack>
       </Link>
       <Typography variant="h4" sx={{ mt: 3 }}>
-        Create Admin
+        新增管理員
       </Typography>
 
       <Form />

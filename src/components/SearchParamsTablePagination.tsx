@@ -9,6 +9,8 @@ export default function SearchParamsTablePagination({ count }: { count: number }
   return (
     <TablePagination
       rowsPerPageOptions={[5, 10, 20, 30]}
+      labelRowsPerPage="每頁顯示筆數"
+      labelDisplayedRows={({ from, to, count }) => `${from} ~ ${to}, 共 ${count} 筆`}
       component="div"
       count={count}
       rowsPerPage={Number(searchParams.get('rowsPerPage') ?? 10)}

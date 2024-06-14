@@ -100,10 +100,10 @@ export function AdminTable({ adminStatus, rows, count }: CustomersTableProps): R
           <Table sx={{ minWidth: '800px' }}>
             <TableHead>
               <TableRow>
-                <TableCell>Account</TableCell>
-                <TableCell>Roles</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell>帳號</TableCell>
+                <TableCell>角色</TableCell>
+                <TableCell>狀態</TableCell>
+                <TableCell>操作</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -174,13 +174,13 @@ function DeleteBtn({ row }: { row: Admin }) {
         }}
       >
         <Box sx={{ p: '16px 20px ' }}>
-          <Typography variant="subtitle1">Deleting {row.account}</Typography>
+          <Typography variant="subtitle1">刪除管理員</Typography>
           <Typography color="text.secondary" variant="body2">
-            Press delete to confirm
+            您確定要刪除 {row.account} 嗎?
           </Typography>
           <Stack direction="row" gap={2} justifyContent="space-between" sx={{ mt: 1 }}>
             <Button variant="text" size="small" onClick={popupState.close}>
-              Cancel
+              取消
             </Button>
             <Button
               disabled={isPending}
@@ -194,7 +194,7 @@ function DeleteBtn({ row }: { row: Admin }) {
                 });
               }}
             >
-              Delete
+              刪除
             </Button>
           </Stack>
         </Box>

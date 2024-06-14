@@ -1,5 +1,3 @@
-import { paths } from '@/paths';
-import type { NavItemConfig } from '@/types/nav';
 import { ChartPie as ChartPieIcon } from '@phosphor-icons/react/dist/ssr/ChartPie';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { PlugsConnected as PlugsConnectedIcon } from '@phosphor-icons/react/dist/ssr/PlugsConnected';
@@ -8,10 +6,18 @@ import { UserCircleGear } from '@phosphor-icons/react/dist/ssr/UserCircleGear';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 import { XSquare } from '@phosphor-icons/react/dist/ssr/XSquare';
 
+import type { NavItemConfig } from '@/types/nav';
+import { paths } from '@/paths';
 
 export const navItems = [
-  { key: 'roles', title: 'Roles', href: '/dashboard/roles', PhosphorIcon: UserCircleGear, permissions: ['GetRoles'] },
-  { key: 'admins', title: 'Admins', href: '/dashboard/admins', PhosphorIcon: UsersIcon, permissions: ['GetAdmins'] },
+  { key: 'roles', title: '角色', href: '/dashboard/roles', PhosphorIcon: UserCircleGear, permissions: ['GetRoles'] },
+  {
+    key: 'admins',
+    title: '管理員帳號',
+    href: '/dashboard/admins',
+    PhosphorIcon: UsersIcon,
+    permissions: ['GetAdmins'],
+  },
 
   { key: 'overview', title: 'Overview', href: paths.dashboard.overview, PhosphorIcon: ChartPieIcon },
   { key: 'customers', title: 'Customers', href: paths.dashboard.customers, PhosphorIcon: UserIcon },

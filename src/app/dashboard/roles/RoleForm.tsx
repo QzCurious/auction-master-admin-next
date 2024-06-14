@@ -82,7 +82,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
         <Card sx={{ py: 2, px: 3 }}>
           <Stack direction="column" rowGap={2}>
             <Stack direction="row" columnGap={2}>
-              <Typography variant="h6">Account information</Typography>
+              <Typography variant="h6">帳號資訊</Typography>
               <Box sx={{ ml: 'auto' }} />
               {process.env.NODE_ENV === 'development' && (
                 <Button onClick={() => console.log(getValues())}>Get form values</Button>
@@ -97,7 +97,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                     : handleNoPermissions(['CreateRole'])
                 }
               >
-                Submit
+                送出
               </Button>
             </Stack>
 
@@ -106,7 +106,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               name="role"
               render={({ field, fieldState }) => (
                 <FormControl error={!!fieldState.error}>
-                  <TextField inputProps={{ readOnly: !!role }} {...field} label="Role" type="text" fullWidth />
+                  <TextField inputProps={{ readOnly: !!role }} {...field} label="角色名稱" type="text" fullWidth />
                   {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                 </FormControl>
               )}
@@ -122,7 +122,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                     {...field}
                     fullWidth
                     multiline
-                    label="Description"
+                    label="角色描述"
                     type="text"
                     margin="normal"
                     rows={4}
@@ -137,7 +137,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
         <Card>
           <Stack direction="column" rowGap={2}>
             <Typography variant="h6" sx={{ pt: 2, px: 3 }}>
-              Permissions
+              權限
             </Typography>
 
             <Box sx={{ overflowX: 'auto' }}>
@@ -164,8 +164,8 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                         )}
                       />
                     </TableCell>
-                    <TableCell>Key</TableCell>
-                    <TableCell>Description</TableCell>
+                    <TableCell title="key">權限</TableCell>
+                    <TableCell>描述</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

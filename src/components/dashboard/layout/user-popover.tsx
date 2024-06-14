@@ -1,9 +1,7 @@
 'use client';
 
-import * as React from 'react';
-import { revalidatePath } from 'next/cache';
+import { useContext } from 'react';
 import RouterLink from 'next/link';
-import { getToken } from '@/api/getToken';
 import { logout } from '@/api/logout';
 import refreshTokenAction from '@/api/refreshTokenAction';
 import Box from '@mui/material/Box';
@@ -19,6 +17,7 @@ import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 import { useSnackbar } from 'notistack';
 
 import { paths } from '@/paths';
+import { UserContext } from '@/contexts/UserContext';
 
 export interface UserPopoverProps {
   anchorEl: Element | null;
@@ -26,8 +25,9 @@ export interface UserPopoverProps {
   open: boolean;
 }
 
-export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): React.JSX.Element {
+export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps) {
   const { enqueueSnackbar } = useSnackbar();
+  const user = useContext(UserContext);
 
   return (
     <Popover
@@ -38,9 +38,9 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
       slotProps={{ paper: { sx: { width: '240px' } } }}
     >
       <Box sx={{ p: '16px 20px ' }}>
-        <Typography variant="subtitle1">Sofia Rivers</Typography>
+        <Typography variant="subtitle1">{user?.account}</Typography>
         <Typography color="text.secondary" variant="body2">
-          sofia.rivers@devias.io
+          fake@email.com
         </Typography>
       </Box>
       <Divider />
@@ -62,7 +62,7 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
             const error = await refreshTokenAction();
             if (error) {
               enqueueSnackbar(error, { variant: 'error' });
-              return
+              return;
             }
             enqueueSnackbar('Token refreshed', { variant: 'success' });
           }}
@@ -70,13 +70,13 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
           <ListItemIcon>
             <SignOutIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
-          Refresh token
+          刷新 Token
         </MenuItem>
         <MenuItem onClick={() => logout()}>
           <ListItemIcon>
             <SignOutIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
-          Sign out
+          登出
         </MenuItem>
       </MenuList>
     </Popover>

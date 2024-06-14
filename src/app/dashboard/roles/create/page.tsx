@@ -19,11 +19,11 @@ async function Page() {
     <>
       <Link component={RouterLink} href="/dashboard/roles">
         <Stack direction="row" alignItems="center" columnGap={1}>
-          <ArrowBackIcon /> Roles
+          <ArrowBackIcon /> 回到角色列表
         </Stack>
       </Link>
       <Typography variant="h4" sx={{ mt: 3 }}>
-        Create Role
+        新增角色
       </Typography>
 
       <Form />
