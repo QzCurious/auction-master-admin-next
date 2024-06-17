@@ -1,4 +1,4 @@
-'use server'
+'use server';
 
 import { cookies } from 'next/headers';
 import { jwtDecode } from 'jwt-decode';
@@ -18,7 +18,7 @@ export async function getToken({ force }: { force?: boolean } = { force: false }
   const jwt = jwtDecode<JwtPayload>(token.value);
 
   // jwt still valid
-  if (!force && jwt.exp * 1000 > Date.now() - 30 * 1000) {
+  if (!force && jwt.exp * 1000 - 30 * 1000 > Date.now()) {
     return { token: token.value, res: null } as const;
   }
 

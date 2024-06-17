@@ -37,7 +37,8 @@ export function withAuth(_apiClient: typeof apiClient) {
     });
 
     if (res.error === '1003') {
-      console.log('1003 bug token might not yet expired', refresh.token);
+      console.log('1003 bug token might not yet expired');
+      console.log(refresh.token);
     }
 
     // Retry 1001 Permission denied
