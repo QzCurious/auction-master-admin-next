@@ -6,7 +6,7 @@
   "homepage": "https://devias.io",
   "private": false,
   "scripts": {
-    "dev": "next dev",
+    "dev": "PORT=16001 next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
