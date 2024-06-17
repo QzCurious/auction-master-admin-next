@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { cookieConfigs } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from './apiClient';
@@ -41,18 +42,8 @@ export async function session(payload: z.input<typeof ReqSchema>) {
     return res;
   }
 
-  cookies().set('token', res.data.token, {
-    expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
-    httpOnly: true,
-    sameSite: 'strict',
-    // secure: process.env.NODE_ENV === 'production',
-  });
-  cookies().set('refreshToken', res.data.refreshToken, {
-    expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
-    httpOnly: true,
-    sameSite: 'strict',
-    // secure: process.env.NODE_ENV === 'production',
-  });
+  cookies().set(cookieConfigs.token.name, res.data.token, cookieConfigs.token.opts);
+  cookies().set(cookieConfigs.refreshToken.name, res.data.refreshToken, cookieConfigs.refreshToken.opts);
 
   revalidatePath('/', 'layout');
 

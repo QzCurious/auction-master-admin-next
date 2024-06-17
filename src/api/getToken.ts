@@ -1,6 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { cookieConfigs } from '@/static';
 import { jwtDecode } from 'jwt-decode';
 
 import { type JwtPayload } from './JwtPayload';
@@ -10,7 +11,7 @@ let sessionRefreshing: ReturnType<typeof sessionRefresh> | null = null;
 
 export async function getToken({ force }: { force?: boolean } = { force: false }) {
   // no token
-  const token = cookies().get('token');
+  const token = cookies().get(cookieConfigs.token.name);
   if (!token?.value) {
     return { token: null, res: null } as const;
   }
@@ -22,7 +23,7 @@ export async function getToken({ force }: { force?: boolean } = { force: false }
     return { token: token.value, res: null } as const;
   }
 
-  const refreshToken = cookies().get('refreshToken');
+  const refreshToken = cookies().get(cookieConfigs.refreshToken.name);
   if (!refreshToken?.value) {
     throw new Error('BUG: Token expired without refresh token');
   }
@@ -46,4 +47,22 @@ export async function getToken({ force }: { force?: boolean } = { force: false }
     console.log('Token renewed');
   }
   return { token: res.data.token, res } as const;
+}
+
+export async function getJwt() {
+  const { token } = await getToken();
+  const jwt = token ? jwtDecode<JwtPayload>(token) : null;
+  return jwt;
+}
+
+export async function getUser() {
+  const jwt = await getJwt();
+  if (!jwt) return null;
+
+  const user = {
+    id: jwt.id,
+    account: jwt.account,
+    permissions: jwt.permissions,
+  };
+  return user;
 }

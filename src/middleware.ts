@@ -2,10 +2,12 @@ import { cookies } from 'next/headers';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getToken } from '@/api/getToken';
 
+import { cookieConfigs } from './static';
+
 export async function middleware(request: NextRequest) {
   // refresh token and set cookie
   const response = NextResponse.next();
-  const token = cookies().get('token')?.value;
+  const token = cookies().get(cookieConfigs.token.name)?.value;
   const { token: newToken, res } = await getToken();
 
   if (!newToken) {
@@ -16,12 +18,7 @@ export async function middleware(request: NextRequest) {
 
   if (token !== newToken) {
     console.log('middleware: new token set');
-    response.cookies.set('token', newToken, {
-      expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
-      httpOnly: true,
-      sameSite: 'strict',
-      // secure: process.env.NODE_ENV === 'production',
-    });
+    response.cookies.set(cookieConfigs.token.name, newToken, cookieConfigs.token.opts);
   }
   return response;
 }
