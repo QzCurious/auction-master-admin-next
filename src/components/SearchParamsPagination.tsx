@@ -1,6 +1,7 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE } from '@/static';
 import { TablePagination } from '@mui/material';
+import { unique } from 'remeda';
 
 export function SearchParamsPagination({ count }: { count: number }) {
   const router = useRouter();
@@ -10,7 +11,7 @@ export function SearchParamsPagination({ count }: { count: number }) {
 
   return (
     <TablePagination
-      rowsPerPageOptions={[pagination[ROWS_PER_PAGE], 5, 10, 20, 30].sort((a, b) => a - b)}
+      rowsPerPageOptions={unique([pagination[ROWS_PER_PAGE], 5, 10, 20, 30]).sort((a, b) => a - b)}
       labelRowsPerPage="每頁顯示筆數"
       labelDisplayedRows={({ from, to, count }) => `${from} ~ ${to}, 共 ${count} 筆`}
       component="div"
