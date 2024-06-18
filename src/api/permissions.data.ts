@@ -182,10 +182,16 @@ export const permissions = [
     description: '日拍競標商品成交',
   },
   {
-    key: 'GetConsignors',
+    key: 'AdminGetConsignors',
     method: 'GET',
     url: '/auction-master/backend/consignors',
     description: '取得寄售人列表',
+  },
+  {
+    key: 'AdminGetConsignor',
+    method: 'GET',
+    url: '/auction-master/backend/consignors/:id',
+    description: '取得寄售人',
   },
   {
     key: 'AdminUpdateConsignor',
@@ -194,7 +200,7 @@ export const permissions = [
     description: '管理者修改寄售人資訊',
   },
   {
-    key: 'GetConsignorVerifications',
+    key: 'AdminGetConsignorVerifications',
     method: 'GET',
     url: '/auction-master/backend/consignors/verifications',
     description: '取得寄售人身分驗證列表',
@@ -206,22 +212,40 @@ export const permissions = [
     description: '審核寄售人身分驗證',
   },
   {
-    key: 'GetItems',
+    key: 'GetItemsAndDetails',
     method: 'GET',
     url: '/auction-master/backend/items',
-    description: '取得物品列表',
+    description: '取得物品與細項列表',
   },
   {
-    key: 'UpdateItem',
+    key: 'GetItemAndDetails',
+    method: 'GET',
+    url: '/auction-master/backend/items/:id',
+    description: '取得物品與細項',
+  },
+  {
+    key: 'AdminUpdateItem',
     method: 'PATCH',
     url: '/auction-master/backend/items/:id',
     description: '修改物品',
   },
   {
-    key: 'UpsertItemPhoto',
-    method: 'PATCH',
-    url: '/auction-master/backend/items/:id/photo',
+    key: 'AdminUpsertItemPhoto',
+    method: 'POST',
+    url: '/auction-master/backend/items/:id/photos',
     description: '上傳物品照片',
+  },
+  {
+    key: 'AdminReorderItemPhoto',
+    method: 'PATCH',
+    url: '/auction-master/backend/items/:id/photos',
+    description: '重新排序物品照片',
+  },
+  {
+    key: 'AdminDeleteItemPhoto',
+    method: 'DELETE',
+    url: '/auction-master/backend/items/:id/photos/:sorted',
+    description: '刪除物品照片',
   },
   {
     key: 'ItemAppraisalReview',

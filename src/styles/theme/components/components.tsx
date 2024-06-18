@@ -8,7 +8,7 @@ import { MuiCardContent } from './card-content';
 import { MuiCardHeader } from './card-header';
 import { MuiLink } from './link';
 import { MuiStack } from './stack';
-import { MuiTab } from './tab';
+import { MuiTab, MuiTabs } from './tab';
 import { MuiTableBody } from './table-body';
 import { MuiTableCell } from './table-cell';
 import { MuiTableHead } from './table-head';
@@ -22,6 +22,7 @@ export const components = {
   MuiLink,
   MuiStack,
   MuiTab,
+  MuiTabs,
   MuiTableBody,
   MuiTableCell,
   MuiTableHead,

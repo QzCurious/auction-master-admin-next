@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { type Admin } from '@/api/backend/admins/getAdmin';
-import { type Data as BackendConfigs } from '@/api/backend/configs';
+import { type Configs } from '@/api/backend/configs';
 import { type Role } from '@/api/backend/rbac/roles';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
@@ -25,7 +25,7 @@ import { createAdminAction, updateAdminAction } from './actions';
 interface AdminFromProps {
   // edit
   admin?: Admin;
-  adminStatus?: BackendConfigs['adminStatus'];
+  adminStatus?: Configs['adminStatus'];
   roles: Role[];
 }
 

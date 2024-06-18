@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { admins } from '@/api/backend/admins/admins';
 import { configs } from '@/api/backend/configs';
+import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -14,10 +15,10 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 
 import { AdminTable } from './AdminTable';
 
-export const metadata = { title: `Roles | Dashboard | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `管理員列表 | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 interface PageProps {
-  searchParams: { rowsPerPage?: string; page?: string };
+  searchParams: PaginationSearchParams;
 }
 
 export default async function Page(pageProps: PageProps) {
@@ -45,10 +46,15 @@ export default async function Page(pageProps: PageProps) {
   );
 }
 
-async function Table({ searchParams: { rowsPerPage = '10', page = '0' } }: PageProps) {
-  const limit = Number.isNaN(Number(rowsPerPage)) ? 10 : Number(rowsPerPage);
-  const offset = Number.isNaN(Number(page)) ? 0 : Number(page) * limit;
-  const [adminRes, configsRes] = await Promise.all([admins({ limit, offset }), configs()]);
+async function Table({ searchParams }: PageProps) {
+  const pagination = PaginationSchema.parse(searchParams);
+  const [adminRes, configsRes] = await Promise.all([
+    admins({
+      limit: pagination[ROWS_PER_PAGE],
+      offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
+    }),
+    configs(),
+  ]);
 
   if (adminRes.error === '1001' || configsRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetAdmins', 'GetBackendConfigs']} />;

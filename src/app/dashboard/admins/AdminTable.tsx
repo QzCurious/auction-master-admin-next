@@ -6,11 +6,11 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { type Admin } from '@/api/backend/admins/admins';
 import { deleteAdmin } from '@/api/backend/admins/deleteAdmin';
-import { type Data as BackendConfigs } from '@/api/backend/configs';
-import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import { type Configs } from '@/api/backend/configs';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { Chip, TableContainer, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -30,18 +30,16 @@ import { useSnackbar } from 'notistack';
 
 import { HavePermissionsOnly, useHavePermissions } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
-import SearchParamsTablePagination from '@/components/SearchParamsTablePagination';
+import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
-interface CustomersTableProps {
-  adminStatus: BackendConfigs['adminStatus'];
+interface AdminTableProps {
+  adminStatus: Configs['adminStatus'];
   rows: Admin[];
   count: number;
 }
 
-export function AdminTable({ adminStatus, rows, count }: CustomersTableProps): React.JSX.Element {
+export function AdminTable({ adminStatus, rows, count }: AdminTableProps): React.JSX.Element {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
   const status = searchParams.get('status');
   const account = searchParams.get('account');
   const havePermissions = useHavePermissions();
@@ -155,7 +153,7 @@ export function AdminTable({ adminStatus, rows, count }: CustomersTableProps): R
           </Table>
         </TableContainer>
         <Divider />
-        <SearchParamsTablePagination count={count} />
+        <SearchParamsPagination count={count} />
       </Box>
     </Card>
   );
@@ -234,7 +232,7 @@ function FilterButton({ label, search }: { label: string; search: string }) {
         size="small"
         startIcon={
           value ? (
-            <RemoveCircleOutlineOutlinedIcon
+            <RemoveCircleOutlineIcon
               onClick={(e) => {
                 e.stopPropagation();
                 const newSearchParams = new URLSearchParams(searchParams);
@@ -244,7 +242,7 @@ function FilterButton({ label, search }: { label: string; search: string }) {
               }}
             />
           ) : (
-            <AddCircleOutlineOutlinedIcon />
+            <AddCircleOutlineIcon />
           )
         }
       >

@@ -2,6 +2,17 @@ import type { Components } from '@mui/material/styles';
 
 import type { Theme } from '../types';
 
+export const MuiTabs = {
+  styleOverrides: {
+    root: {
+      '& .MuiTabs-indicator': {
+        borderRadius: '9999px 9999px 0px 0px',
+        height: '3px',
+      },
+    },
+  },
+} satisfies Components<Theme>['MuiTab'];
+
 export const MuiTab = {
   styleOverrides: {
     root: {

@@ -13,7 +13,7 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 
 import { RoleTable } from './RoleTable';
 
-export const metadata = { title: `Roles | Dashboard | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `角色列表 | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 export default async function Page() {
   return (

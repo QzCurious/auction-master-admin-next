@@ -1,20 +1,26 @@
-import * as React from 'react';
+import { getUser } from '@/api/getToken';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
+import { redirect } from 'next/navigation';
+import * as React from 'react';
 
 import { MainNav } from '@/components/dashboard/layout/main-nav';
 import { SideNav } from '@/components/dashboard/layout/side-nav';
-
-import WithUserContext from './WithUserContext';
+import { UserContextProvider } from '@/contexts/UserContext';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export default async function Layout({ children }: LayoutProps) {
+  const user = await getUser();
+  if (!user) {
+    redirect('/auth/sign-in');
+  }
+
   return (
-    <WithUserContext>
+    <UserContextProvider user={user}>
       <GlobalStyles
         styles={{
           body: {
@@ -46,6 +52,6 @@ export default async function Layout({ children }: LayoutProps) {
           </main>
         </Box>
       </Box>
-    </WithUserContext>
+    </UserContextProvider>
   );
 }
