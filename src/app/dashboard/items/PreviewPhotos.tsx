@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Stack } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { visuallyHidden } from '@mui/utils';
 import useEmblaCarousel from 'embla-carousel-react';
-import { grey } from '@mui/material/colors';
 
 export default function PreviewPhotos({
   photos,
@@ -30,7 +30,6 @@ export default function PreviewPhotos({
     <Box
       ref={emblaRef}
       sx={{
-        maxWidth: '100%',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -42,6 +41,7 @@ export default function PreviewPhotos({
               component="img"
               src={photo}
               sx={{
+                aspectRatio: '16/10',
                 width: '100%',
                 height: '100%',
                 backgroundColor: grey['100'],
