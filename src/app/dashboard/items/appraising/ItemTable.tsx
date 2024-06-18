@@ -70,7 +70,7 @@ export function ItemTable({ rows, count }: ItemTableProps): React.JSX.Element {
                 <Typography component="h2" variant="h5">
                   {row.name}
                 </Typography>
-                <Typography variant="body2">底價: {row.reservePrice}</Typography>
+                <Typography variant="body2">期望價格: {row.reservePrice}</Typography>
                 <Typography color="text.secondary" variant="body2">
                   時效: {format(row.createdAt, DATE_FORMAT)}
                 </Typography>
