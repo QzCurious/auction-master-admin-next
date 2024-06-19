@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { type Admin } from '@/api/backend/admins/admins';
 import { deleteAdmin } from '@/api/backend/admins/deleteAdmin';
-import { ADMIN_STATUS_DATA } from '@/api/backend/configs';
+import { ADMIN_STATUS_DATA } from '@/api/backend/configs.data';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';

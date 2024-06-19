@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { type Admin } from '@/api/backend/admins/getAdmin';
-import { ADMIN_STATUS_DATA } from '@/api/backend/configs';
+import { ADMIN_STATUS_DATA } from '@/api/backend/configs.data';
 import { type Role } from '@/api/backend/rbac/roles';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';

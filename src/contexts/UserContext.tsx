@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { createContext, useCallback, useContext } from 'react';
-import { type PermissionKey } from '@/api/backend/rbac/permissions';
+import { type PermissionKey } from '@/api/backend/rbac/permissions.data';
 import { type JwtPayload } from '@/api/JwtPayload';
 import { Chip, Typography } from '@mui/material';
 import { Stack } from '@mui/system';

@@ -1,6 +1,6 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
-import { PERMISSIONS_DATA } from '@/api/backend/rbac/permissions';
+import { PERMISSIONS_DATA } from '@/api/backend/rbac/permissions.data';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
