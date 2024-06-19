@@ -6,26 +6,26 @@ export interface Configs {
   commissionRate: number;
   commissionBonusRate: number;
   itemType: Array<{
-    key: (typeof DATA)['itemType'][number]['key'];
+    key: (typeof CONFIGS_DATA)['itemType'][number]['key'];
     message: string;
     value: number;
   }>;
   itemStatus: Array<{
-    key: (typeof DATA)['itemStatus'][number]['key'];
+    key: (typeof CONFIGS_DATA)['itemStatus'][number]['key'];
     message: string;
     value: number;
   }>;
   auctionItemStatus: Array<{
-    key: (typeof DATA)['auctionItemStatus'][number]['key'];
+    key: (typeof CONFIGS_DATA)['auctionItemStatus'][number]['key'];
     message: string;
     value: number;
   }>;
   consignorStatus: Array<{
-    message: (typeof DATA)['consignorStatus'][number]['message'];
+    message: (typeof CONFIGS_DATA)['consignorStatus'][number]['message'];
     value: number;
   }>;
   consignorVerificationStatus: Array<{
-    message: (typeof DATA)['consignorVerificationStatus'][number]['message'];
+    message: (typeof CONFIGS_DATA)['consignorVerificationStatus'][number]['message'];
     value: number;
   }>;
   shippingInfo: string;
@@ -56,7 +56,7 @@ export async function configs() {
   return res;
 }
 
-const DATA = {
+const CONFIGS_DATA = {
   yahooAuctionFeeRate: 0.1,
   commissionRate: 0.2,
   commissionBonusRate: 0.05,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { type Permission } from '@/api/backend/rbac/permissions';
+import { Permission } from '@/api/backend/rbac/permissions';
 import { type RolePermissions } from '@/api/backend/rbac/rolesPermissions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, TextField } from '@mui/material';
@@ -57,7 +57,9 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
           ? async (data) => {
               const errors = await updatePermissionsToRoleAction({
                 role: data.role,
-                addPermissions: data.permissionKey.filter((key) => !role.permission.map((p) => p.key).includes(key)),
+                addPermissions: data.permissionKey.filter(
+                  (key) => !role.permission.map((p) => p.key).includes(key as never)
+                ),
                 removePermissions: role.permission.filter((p) => !data.permissionKey.includes(p.key)).map((p) => p.key),
               });
 

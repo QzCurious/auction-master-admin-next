@@ -2,8 +2,8 @@
 
 import type React from 'react';
 import { createContext, useCallback, useContext } from 'react';
+import { type PermissionKey } from '@/api/backend/rbac/permissions';
 import { type JwtPayload } from '@/api/JwtPayload';
-import { type Permission } from '@/api/permissions.data';
 import { Chip, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import copy from 'copy-to-clipboard';
@@ -21,12 +21,12 @@ export function useHavePermissions() {
   const user = useContext(UserContext);
 
   const havePermissions = useCallback(
-    (permissions: Array<Permission>) => {
-      if (permissions.length === 0) {
+    (permissionKeys: Array<PermissionKey>) => {
+      if (permissionKeys.length === 0) {
         return true;
       }
 
-      return !!user && permissions.every((permission) => user.permissions.includes(permission));
+      return !!user && permissionKeys.every((permission) => user.permissions.includes(permission));
     },
     [user]
   );
@@ -36,13 +36,13 @@ export function useHavePermissions() {
 
 export function HavePermissionsOnly({
   children,
-  permissions,
+  permissionKeys,
 }: {
   children: React.ReactNode;
-  permissions: Array<Permission>;
+  permissionKeys: Array<PermissionKey>;
 }) {
   const havePermissions = useHavePermissions();
-  const permitted = havePermissions(permissions);
+  const permitted = havePermissions(permissionKeys);
 
   if (!permitted) {
     return null;
@@ -56,7 +56,7 @@ export function useHandleNoPermissions() {
   const { enqueueSnackbar } = useSnackbar();
 
   return useCallback(
-    (permissions: Array<Permission>, opts?: { message?: string; action?: string }) => (e?: React.MouseEvent) => {
+    (permissions: Array<PermissionKey>, opts?: { message?: string; action?: string }) => (e?: React.MouseEvent) => {
       if (havePermissions(permissions)) {
         return false;
       }

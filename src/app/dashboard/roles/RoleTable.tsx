@@ -101,12 +101,12 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
                       <TableCell>{row.description}</TableCell>
                       <TableCell>
                         <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                          <HavePermissionsOnly permissions={['AddPermissionForRole', 'DeletePermissionForRole']}>
+                          <HavePermissionsOnly permissionKeys={['AddPermissionForRole', 'DeletePermissionForRole']}>
                             <IconButton LinkComponent={Link} href={`/dashboard/roles/edit/${row.role}`}>
                               <EditIcon />
                             </IconButton>
                           </HavePermissionsOnly>
-                          <HavePermissionsOnly permissions={['DeleteRole']}>
+                          <HavePermissionsOnly permissionKeys={['DeleteRole']}>
                             <DeleteBtn row={row} />
                           </HavePermissionsOnly>
                         </Stack>

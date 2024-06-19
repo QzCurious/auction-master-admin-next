@@ -23,7 +23,7 @@ export default async function Page() {
           <Typography variant="h4">角色列表</Typography>
         </Stack>
 
-        <HavePermissionsOnly permissions={['CreateRole']}>
+        <HavePermissionsOnly permissionKeys={['CreateRole']}>
           <Button
             LinkComponent={Link}
             href="/dashboard/roles/create"

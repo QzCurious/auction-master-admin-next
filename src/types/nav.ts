@@ -1,5 +1,5 @@
-import { type Permission } from "@/api/permissions.data";
-import { type Icon } from "@phosphor-icons/react";
+import { type PermissionKey } from '@/api/backend/rbac/permissions';
+import { type Icon } from '@phosphor-icons/react';
 
 export interface NavItemConfig {
   key: string;
@@ -16,5 +16,5 @@ export interface NavItemConfig {
   // can extend it to accept multiple matchers.
   matcher?: { type: 'startsWith' | 'equals'; href: string };
 
-  permissions?: Permission[];
+  permissions?: PermissionKey[];
 }

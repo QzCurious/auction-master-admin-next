@@ -29,7 +29,7 @@ export default async function Page(pageProps: PageProps) {
           <Typography variant="h4">管理員列表</Typography>
         </Stack>
 
-        <HavePermissionsOnly permissions={['CreateAdmin']}>
+        <HavePermissionsOnly permissionKeys={['CreateAdmin']}>
           <Button
             LinkComponent={Link}
             href="/dashboard/admins/create"

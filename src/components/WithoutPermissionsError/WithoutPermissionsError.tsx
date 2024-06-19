@@ -1,4 +1,4 @@
-import { type Permission } from '@/api/permissions.data';
+import { type PermissionKey } from '@/api/backend/rbac/permissions';
 import { Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 
@@ -6,7 +6,7 @@ import PermissionChip from './PermissionChip';
 import RetryButton from './RetryButton';
 
 interface WithPermissionsOnlySectionProps {
-  permissions: Permission[];
+  permissions: PermissionKey[];
 }
 
 export default function WithoutPermissionsError({ permissions }: WithPermissionsOnlySectionProps) {

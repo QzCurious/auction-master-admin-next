@@ -136,12 +136,12 @@ export function AdminTable({ adminStatus, rows, count }: AdminTableProps): React
                     <TableCell>{adminStatus.find((x) => x.value === row.status)?.message}</TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        <HavePermissionsOnly permissions={['UpdateAdmin']}>
+                        <HavePermissionsOnly permissionKeys={['UpdateAdmin']}>
                           <IconButton LinkComponent={Link} href={`/dashboard/admins/edit/${row.id}`}>
                             <EditIcon />
                           </IconButton>
                         </HavePermissionsOnly>
-                        <HavePermissionsOnly permissions={['DeleteAdmin']}>
+                        <HavePermissionsOnly permissionKeys={['DeleteAdmin']}>
                           <DeleteBtn row={row} />
                         </HavePermissionsOnly>
                       </Stack>
