@@ -14,7 +14,7 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 
 import { AdminTable } from './AdminTable';
 
-export const metadata = { title: `管理員列表 | Dashboard | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `管理員列表 | ${config.site.name}` } satisfies Metadata;
 
 interface PageProps {
   searchParams: PaginationSearchParams;

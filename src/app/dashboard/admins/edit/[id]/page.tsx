@@ -14,7 +14,8 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 
 import AdminForm from '../../AdminForm';
 
-export const metadata = { title: `Edit admin | Dashboard | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `編輯管理員 | ${config.site.name}` } satisfies Metadata;
+
 
 interface PageProps {
   params: { id: string };

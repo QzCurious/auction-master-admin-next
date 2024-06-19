@@ -14,7 +14,7 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 
 import RoleForm from '../../RoleForm';
 
-export const metadata = { title: `Create role | Dashboard | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `編輯角色 | ${config.site.name}` } satisfies Metadata;
 
 interface PageProps {
   params: { role: string };

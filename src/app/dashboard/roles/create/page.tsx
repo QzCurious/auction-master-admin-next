@@ -10,7 +10,7 @@ import { config } from '@/config';
 
 import RoleForm from '../RoleForm';
 
-export const metadata = { title: `Create role | Dashboard | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `新增角色 | ${config.site.name}` } satisfies Metadata;
 
 async function Page() {
   return (

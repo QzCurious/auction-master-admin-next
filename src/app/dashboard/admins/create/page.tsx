@@ -12,7 +12,7 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 
 import AdminForm from '../AdminForm';
 
-export const metadata = { title: `Create admin | Dashboard | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `新增管理員 | ${config.site.name}` } satisfies Metadata;
 
 async function Page() {
   return (
