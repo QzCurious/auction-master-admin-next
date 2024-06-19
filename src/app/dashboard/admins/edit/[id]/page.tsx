@@ -2,7 +2,6 @@ import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAdmin } from '@/api/backend/admins/getAdmin';
-import { configs } from '@/api/backend/configs';
 import { roles } from '@/api/backend/rbac/roles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
@@ -41,13 +40,13 @@ async function Page(pageProps: PageProps) {
 export default Page;
 
 async function Form({ params }: PageProps) {
-  const [adminRes, configsRes, rolesRes] = await Promise.all([getAdmin(parseInt(params.id)), configs(), roles()]);
+  const [adminRes, rolesRes] = await Promise.all([getAdmin(parseInt(params.id)), roles()]);
 
-  if (adminRes.error === '1001' || configsRes.error === '1001' || rolesRes.error === '1001') {
+  if (adminRes.error === '1001' || rolesRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetAdmin', 'GetBackendConfigs', 'GetRoles']} />;
   }
 
-  if (adminRes.error === '1003' || configsRes.error === '1003' || rolesRes.error === '1003') {
+  if (adminRes.error === '1003' || rolesRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
@@ -55,5 +54,5 @@ async function Form({ params }: PageProps) {
     notFound();
   }
 
-  return <AdminForm admin={adminRes.data} adminStatus={configsRes.data.adminStatus} roles={rolesRes.data} />;
+  return <AdminForm admin={adminRes.data} roles={rolesRes.data} />;
 }

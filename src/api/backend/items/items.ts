@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { configs } from '../configs';
+import { ITEM_STATUS_DATA } from '../configs';
 
 export const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),
@@ -45,16 +45,10 @@ export async function items(payload: z.input<typeof ReqSchema>) {
   'use server';
   const parsed = throwIfInvalid(payload, ReqSchema);
 
-  const configsRes = await configs();
-
-  if (configsRes.error) {
-    return configsRes;
-  }
-
-  const status = configsRes.data.itemStatus.find(({ key }) => key === 'InitStatus');
+  const status = ITEM_STATUS_DATA.find(({ key }) => key === 'InitStatus')?.value;
 
   if (!status) {
-    throw new Error('Backend bug');
+    throw new Error('ITEM_STATUS_DATA might not be up to date');
   }
 
   const query = new URLSearchParams();

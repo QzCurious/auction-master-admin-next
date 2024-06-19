@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { configs } from '@/api/backend/configs';
+import { ITEM_STATUS_DATA } from '@/api/backend/configs';
 import { items } from '@/api/backend/items/items';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import { Stack } from '@mui/material';
@@ -36,18 +36,11 @@ export default async function Page(pageProps: PageProps) {
 }
 
 async function Table({ searchParams }: PageProps) {
-  const configsRes = await configs();
-  if (configsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetItemsAndDetails', 'GetBackendConfigs']} />;
-  }
-  if (configsRes.error === '1003') {
-    return <RedirectAuthError />;
+  const status = ITEM_STATUS_DATA.find((status) => status.key === STATUS)?.value;
+  if (!status) {
+    throw new Error('ITEM_STATUS_DATA might not be up to date');
   }
 
-  const status = configsRes.data.itemStatus.find((status) => status.key === STATUS)?.value;
-  if (!status) {
-    throw new Error('Backend bug');
-  }
   const pagination = PaginationSchema.parse(searchParams);
   pagination[ROWS_PER_PAGE];
   pagination[PAGE];
@@ -59,11 +52,11 @@ async function Table({ searchParams }: PageProps) {
     consignorID: searchParams.consignor ? Number(searchParams.consignor) : undefined,
   });
 
-  if (itemsRes.error === '1001' || configsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetItemsAndDetails', 'GetBackendConfigs']} />;
+  if (itemsRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['GetItemsAndDetails']} />;
   }
 
-  if (itemsRes.error === '1003' || configsRes.error === '1003') {
+  if (itemsRes.error === '1003') {
     return <RedirectAuthError />;
   }
 

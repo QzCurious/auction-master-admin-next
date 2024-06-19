@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { admins } from '@/api/backend/admins/admins';
-import { configs } from '@/api/backend/configs';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -48,23 +47,22 @@ export default async function Page(pageProps: PageProps) {
 
 async function Table({ searchParams }: PageProps) {
   const pagination = PaginationSchema.parse(searchParams);
-  const [adminRes, configsRes] = await Promise.all([
+  const [adminRes] = await Promise.all([
     admins({
       limit: pagination[ROWS_PER_PAGE],
       offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
     }),
-    configs(),
   ]);
 
-  if (adminRes.error === '1001' || configsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAdmins', 'GetBackendConfigs']} />;
+  if (adminRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['GetAdmins']} />;
   }
 
-  if (adminRes.error === '1003' || configsRes.error === '1003') {
+  if (adminRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
   return (
-    <AdminTable rows={adminRes.data.admins} count={adminRes.data.count} adminStatus={configsRes.data.adminStatus} />
+    <AdminTable rows={adminRes.data.admins} count={adminRes.data.count}  />
   );
 }

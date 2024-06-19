@@ -56,7 +56,7 @@ export async function configs() {
   return res;
 }
 
-const CONFIGS_DATA = {
+export const CONFIGS_DATA = {
   yahooAuctionFeeRate: 0.1,
   commissionRate: 0.2,
   commissionBonusRate: 0.05,
@@ -231,3 +231,12 @@ const CONFIGS_DATA = {
     },
   ],
 } as const;
+
+export const ITEM_TYPE_DATA = CONFIGS_DATA.itemType;
+export const ITEM_STATUS_DATA = CONFIGS_DATA.itemStatus;
+export const AUCTION_ITEM_STATUS_DATA = CONFIGS_DATA.auctionItemStatus;
+export const CONSIGNOR_STATUS_DATA = CONFIGS_DATA.consignorStatus;
+export const CONSIGNOR_VERIFICATION_STATUS_DATA = CONFIGS_DATA.consignorVerificationStatus;
+export const SHIPPING_INFO_DATA = CONFIGS_DATA.shippingInfo;
+export const WORKER_TYPE_DATA = CONFIGS_DATA.workerType;
+export const ADMIN_STATUS_DATA = CONFIGS_DATA.adminStatus;

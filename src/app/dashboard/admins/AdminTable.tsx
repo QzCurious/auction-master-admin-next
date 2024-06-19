@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { type Admin } from '@/api/backend/admins/admins';
 import { deleteAdmin } from '@/api/backend/admins/deleteAdmin';
-import { type Configs } from '@/api/backend/configs';
+import { ADMIN_STATUS_DATA } from '@/api/backend/configs';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -33,12 +33,11 @@ import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
 interface AdminTableProps {
-  adminStatus: Configs['adminStatus'];
   rows: Admin[];
   count: number;
 }
 
-export function AdminTable({ adminStatus, rows, count }: AdminTableProps): React.JSX.Element {
+export function AdminTable({ rows, count }: AdminTableProps): React.JSX.Element {
   const searchParams = useSearchParams();
   const status = searchParams.get('status');
   const account = searchParams.get('account');
@@ -133,7 +132,7 @@ export function AdminTable({ adminStatus, rows, count }: AdminTableProps): React
                         ))}
                       </Stack>
                     </TableCell>
-                    <TableCell>{adminStatus.find((x) => x.value === row.status)?.message}</TableCell>
+                    <TableCell>{ADMIN_STATUS_DATA.find((x) => x.value === row.status)?.message}</TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
                         <HavePermissionsOnly permissionKeys={['UpdateAdmin']}>

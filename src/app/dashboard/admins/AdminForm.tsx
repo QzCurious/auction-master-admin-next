@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { type Admin } from '@/api/backend/admins/getAdmin';
-import { type Configs } from '@/api/backend/configs';
+import { ADMIN_STATUS_DATA } from '@/api/backend/configs';
 import { type Role } from '@/api/backend/rbac/roles';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
@@ -25,7 +25,6 @@ import { createAdminAction, updateAdminAction } from './actions';
 interface AdminFromProps {
   // edit
   admin?: Admin;
-  adminStatus?: Configs['adminStatus'];
   roles: Role[];
 }
 
@@ -53,7 +52,7 @@ const EditFormSchema = z
     path: ['confirmPassword'],
   });
 
-export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps) {
+export default function AdminForm({ admin, roles }: AdminFromProps) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>();
   const {
@@ -141,25 +140,23 @@ export default function AdminForm({ admin, adminStatus, roles }: AdminFromProps)
             </Grid>
 
             <Grid item xs={6}>
-              {adminStatus && (
-                <Controller
-                  control={control}
-                  name="status"
-                  render={({ field, fieldState }) => (
-                    <FormControl fullWidth error={!!fieldState.error}>
-                      <InputLabel>狀態</InputLabel>
-                      <Select {...field} label="Status" fullWidth>
-                        {adminStatus.map((status) => (
-                          <MenuItem key={status.value} value={status.value}>
-                            {status.message}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                    </FormControl>
-                  )}
-                />
-              )}
+              <Controller
+                control={control}
+                name="status"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <InputLabel>狀態</InputLabel>
+                    <Select {...field} label="Status" fullWidth>
+                      {ADMIN_STATUS_DATA.map((status) => (
+                        <MenuItem key={status.value} value={status.value}>
+                          {status.message}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
             </Grid>
 
             <Grid item xs={6}>
