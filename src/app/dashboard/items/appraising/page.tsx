@@ -12,7 +12,7 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 import { ItemTable } from './ItemTable';
 import StatusTabs from './StatusTabs';
 
-export const metadata = { title: `物品列表 | Dashboard | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `物品列表 | ${config.site.name}` } satisfies Metadata;
 
 const STATUS = 'SubmitAppraisalStatus';
 

@@ -1,8 +1,8 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
-import { getAdmin } from '@/api/backend/admins/getAdmin';
-import { roles } from '@/api/backend/rbac/roles';
+import { getConsignor } from '@/api/backend/consignor/getConsignor';
+import { getItem } from '@/api/backend/items/getItem';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
@@ -12,9 +12,9 @@ import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
-import AdminForm from '../../AdminForm';
+import ItemForm from '../../ItemForm';
 
-export const metadata = { title: `編輯管理員 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `編輯物品 | ${config.site.name}` } satisfies Metadata;
 
 interface PageProps {
   params: { id: string };
@@ -25,11 +25,11 @@ async function Page(pageProps: PageProps) {
     <>
       <Link component={RouterLink} href="/dashboard/admins">
         <Stack direction="row" alignItems="center" columnGap={1}>
-          <ArrowBackIcon /> 回到管理員列表
+          <ArrowBackIcon /> 回到物品列表
         </Stack>
       </Link>
       <Typography variant="h4" sx={{ mt: 3 }}>
-        編輯管理員
+        編輯物品
       </Typography>
 
       <Form {...pageProps} />
@@ -40,19 +40,29 @@ async function Page(pageProps: PageProps) {
 export default Page;
 
 async function Form({ params }: PageProps) {
-  const [adminRes, rolesRes] = await Promise.all([getAdmin(parseInt(params.id)), roles()]);
+  const itemRes = await getItem(parseInt(params.id));
 
-  if (adminRes.error === '1001' || rolesRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAdmin', 'GetBackendConfigs', 'GetRoles']} />;
+  if (itemRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['GetItemAndDetails']} />;
   }
 
-  if (adminRes.error === '1003' || rolesRes.error === '1003') {
+  if (itemRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
-  if (!adminRes.data) {
+  if (!itemRes.data) {
     notFound();
   }
 
-  return <AdminForm admin={adminRes.data} roles={rolesRes.data} />;
+  const consignor = await getConsignor(itemRes.data.consignorID);
+
+  if (consignor.error === '1001') {
+    return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
+  }
+
+  if (consignor.error === '1003') {
+    return <RedirectAuthError />;
+  }
+
+  return <ItemForm item={itemRes.data} consignor={consignor.data} />;
 }

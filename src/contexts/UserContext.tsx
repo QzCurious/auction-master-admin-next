@@ -56,7 +56,7 @@ export function useHandleNoPermissions() {
   const { enqueueSnackbar } = useSnackbar();
 
   return useCallback(
-    (permissions: Array<PermissionKey>, opts?: { message?: string; action?: string }) => (e?: React.MouseEvent) => {
+    (permissions: Array<PermissionKey>, opts?: { message?: string }) => (e?: React.MouseEvent) => {
       if (havePermissions(permissions)) {
         return false;
       }
@@ -64,9 +64,7 @@ export function useHandleNoPermissions() {
       e?.preventDefault();
       enqueueSnackbar(
         <Stack alignItems="center" spacing={1} sx={{ p: 3 }}>
-          <Typography variant="body1">
-            {opts?.message ?? <>You need following permissions to {opts?.action ?? 'perform this action'}</>}
-          </Typography>
+          <Typography variant="body1">{opts?.message ?? <>你需要以下權限才能繼續</>}</Typography>
           <Stack alignItems="center" direction="row" spacing={1}>
             {permissions.map((permission) => (
               <Chip key={permission} label={permission} variant="outlined" onClick={() => copy(permission)} />

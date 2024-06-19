@@ -1,10 +1,12 @@
 'use client';
 
 import * as React from 'react';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { zhTW } from 'date-fns/locale/zh-TW';
 import { SnackbarProvider } from 'notistack';
 
-import { LocalizationProvider } from '@/components/core/localization-provider';
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -22,7 +24,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <LocalizationProvider>
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={zhTW}>
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
           <SnackbarProvider>{children}</SnackbarProvider>

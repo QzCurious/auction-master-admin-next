@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { type Admin } from '@/api/backend/admins/admins';
 import { deleteAdmin } from '@/api/backend/admins/deleteAdmin';
@@ -9,8 +10,8 @@ import { consignors } from '@/api/backend/consignor/consignors';
 import { getConsignor } from '@/api/backend/consignor/getConsignor';
 import { type Item } from '@/api/backend/items/items';
 import { clearSearchFields, hasSearchFields, useSearchField } from '@/helper/searchParams';
-import { DATE_FORMAT } from '@/static';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { Autocomplete, Grid, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -20,7 +21,6 @@ import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 
@@ -67,13 +67,14 @@ export function ItemTable({ rows, count }: ItemTableProps): React.JSX.Element {
             <Card>
               <PreviewPhotos photos={row.photos} />
               <Box sx={{ pt: 1, pb: 2, px: 1.5 }}>
-                <Typography component="h2" variant="h5">
-                  {row.name}
-                </Typography>
-                <Typography variant="body2">期望價格: {row.reservePrice}</Typography>
-                <Typography color="text.secondary" variant="body2">
-                  時效: {format(row.createdAt, DATE_FORMAT)}
-                </Typography>
+                <Stack direction="row" justifyContent="space-between" alignItems='center'>
+                  <Typography component="h2" variant="h5">
+                    {row.name}
+                  </Typography>
+                  <IconButton LinkComponent={Link} href={`/dashboard/items/appraising/edit/${row.id}`}>
+                    <EditIcon />
+                  </IconButton>
+                </Stack>
               </Box>
             </Card>
           </Grid>

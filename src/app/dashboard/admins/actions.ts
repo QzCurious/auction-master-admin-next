@@ -30,7 +30,6 @@ export async function updateAdminAction(payload: {
   addRoles: string[];
   removeRoles: string[];
 }) {
-  console.log(payload)
   const [updateAdminRes, addRolesToAdminRes, removeRolesFromAdminRes] = await Promise.all([
     updateAdmin(payload.id, { password: payload.password, status: payload.status }),
     addRolesToAdmin(payload.account, { roles: payload.addRoles }),
