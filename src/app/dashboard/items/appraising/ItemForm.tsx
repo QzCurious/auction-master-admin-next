@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ITEM_STATUS_DATA, ITEM_TYPE_DATA } from '@/api/backend/configs.data';
+import { ITEM_TYPE_DATA, ITEM_TYPE_MAP } from '@/api/backend/configs.data';
 import { type Consignor } from '@/api/backend/consignor/getConsignor';
 import { type Item } from '@/api/backend/items/getItem';
 import { updateItem } from '@/api/backend/items/updateItem';
@@ -13,10 +13,10 @@ import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
-import { DateTimePicker } from '@mui/x-date-pickers';
 import { format } from 'date-fns';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
+import * as R from 'remeda';
 import { z } from 'zod';
 
 import { useHandleNoPermissions } from '@/contexts/UserContext';
@@ -34,15 +34,13 @@ const FormSchema = z.object({
   space: z.number().min(1, 'Space is required'),
   minEstimatedPrice: z.coerce.number().optional(),
   maxEstimatedPrice: z.coerce.number().optional(),
-  sellerID: z.number().optional(),
   reservePrice: z.number().min(1, 'Reserve price is required'),
-  expireAt: z.date().nullable(),
-  status: z.number().optional(),
 });
 
 export default function ItemForm({ item, consignor }: ItemFromProps) {
   const router = useRouter();
   const {
+    watch,
     control,
     handleSubmit,
     setError,
@@ -50,9 +48,17 @@ export default function ItemForm({ item, consignor }: ItemFromProps) {
     getValues,
   } = useForm<z.input<typeof FormSchema>>({
     defaultValues: {
-      ...item,
+      ...R.pick(item, [
+        'consignorID',
+        'type',
+        'name',
+        'description',
+        'space',
+        'minEstimatedPrice',
+        'maxEstimatedPrice',
+        'reservePrice',
+      ]),
       description: item.description ?? '',
-      expireAt: item.expireAt ? new Date(item.expireAt) : null,
     },
     resolver: zodResolver(FormSchema),
   });
@@ -75,7 +81,13 @@ export default function ItemForm({ item, consignor }: ItemFromProps) {
           sx={{ py: 2, px: 3 }}
           component="form"
           onSubmit={handleSubmit(async (data) => {
-            const res = await updateItem(item.id, data);
+            const res = await updateItem(
+              item.id,
+              data.type === ITEM_TYPE_MAP['FixedPriceItemType'] ||
+                data.type === ITEM_TYPE_MAP['NonAppraisableAuctionItemType']
+                ? R.omit(data, ['minEstimatedPrice', 'maxEstimatedPrice'])
+                : data
+            );
             if (res.error) {
               enqueueSnackbar(res.error, { variant: 'error' });
               return;
@@ -121,25 +133,7 @@ export default function ItemForm({ item, consignor }: ItemFromProps) {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Controller
-                control={control}
-                name="status"
-                render={({ field, fieldState }) => (
-                  <FormControl fullWidth error={!!fieldState.error}>
-                    <InputLabel>狀態</InputLabel>
-                    <Select {...field} label="狀態" fullWidth>
-                      {ITEM_STATUS_DATA.map((status) => (
-                        <MenuItem key={status.value} value={status.value}>
-                          {status.message}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                  </FormControl>
-                )}
-              />
-            </Grid>
+            <Grid item xs />
 
             <Grid item xs={12} sm={6}>
               <Controller
@@ -230,64 +224,52 @@ export default function ItemForm({ item, consignor }: ItemFromProps) {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="minEstimatedPrice"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField
-                      {...field}
-                      label="最低估值"
-                      type="number"
-                      fullWidth
-                      onChange={(e) => {
-                        field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
-                      }}
+            {watch('type') === ITEM_TYPE_MAP['FixedPriceItemType'] ||
+              watch('type') === ITEM_TYPE_MAP['NonAppraisableAuctionItemType'] || (
+                <>
+                  <Grid item xs={12} sm={6}>
+                    <Controller
+                      name="minEstimatedPrice"
+                      control={control}
+                      render={({ field, fieldState }) => (
+                        <FormControl fullWidth error={!!fieldState.error}>
+                          <TextField
+                            {...field}
+                            label="最低估值"
+                            type="number"
+                            fullWidth
+                            onChange={(e) => {
+                              field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                            }}
+                          />
+                          {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                        </FormControl>
+                      )}
                     />
-                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                  </FormControl>
-                )}
-              />
-            </Grid>
+                  </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="maxEstimatedPrice"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField
-                      {...field}
-                      label="最高估值"
-                      type="number"
-                      fullWidth
-                      onChange={(e) => {
-                        field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
-                      }}
+                  <Grid item xs={12} sm={6}>
+                    <Controller
+                      name="maxEstimatedPrice"
+                      control={control}
+                      render={({ field, fieldState }) => (
+                        <FormControl fullWidth error={!!fieldState.error}>
+                          <TextField
+                            {...field}
+                            label="最高估值"
+                            type="number"
+                            fullWidth
+                            onChange={(e) => {
+                              field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                            }}
+                          />
+                          {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                        </FormControl>
+                      )}
                     />
-                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                  </FormControl>
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="expireAt"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <DateTimePicker
-                    label="過期時間"
-                    {...field}
-                    slotProps={{ textField: { fullWidth: true } }}
-                    format={DATE_TIME_FORMAT}
-                    timeSteps={{ minutes: 1 }}
-                    ampm={false}
-                  />
-                )}
-              />
-            </Grid>
+                  </Grid>
+                </>
+              )}
           </Grid>
         </Card>
       </Stack>
