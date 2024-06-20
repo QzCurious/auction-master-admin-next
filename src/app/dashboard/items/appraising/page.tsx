@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ITEM_STATUS_DATA } from '@/api/backend/configs.data';
+import { ITEM_STATUS_MAP } from '@/api/backend/configs.data';
 import { items } from '@/api/backend/items/items';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import { Stack } from '@mui/material';
@@ -36,17 +36,12 @@ export default async function Page(pageProps: PageProps) {
 }
 
 async function Table({ searchParams }: PageProps) {
-  const status = ITEM_STATUS_DATA.find((status) => status.key === STATUS)?.value;
-  if (!status) {
-    throw new Error('ITEM_STATUS_DATA might not be up to date');
-  }
-
   const pagination = PaginationSchema.parse(searchParams);
   pagination[ROWS_PER_PAGE];
   pagination[PAGE];
 
   const itemsRes = await items({
-    status,
+    status: ITEM_STATUS_MAP[STATUS],
     limit: pagination[ROWS_PER_PAGE],
     offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
     consignorID: searchParams.consignor ? Number(searchParams.consignor) : undefined,

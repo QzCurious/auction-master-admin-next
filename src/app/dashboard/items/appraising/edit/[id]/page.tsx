@@ -23,7 +23,7 @@ interface PageProps {
 async function Page(pageProps: PageProps) {
   return (
     <>
-      <Link component={RouterLink} href="/dashboard/admins">
+      <Link component={RouterLink} href="/dashboard/items/appraising">
         <Stack direction="row" alignItems="center" columnGap={1}>
           <ArrowBackIcon /> 回到物品列表
         </Stack>

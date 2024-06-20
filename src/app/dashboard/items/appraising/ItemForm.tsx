@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ITEM_TYPE_DATA, ITEM_TYPE_MAP } from '@/api/backend/configs.data';
 import { type Consignor } from '@/api/backend/consignor/getConsignor';
 import { type Item } from '@/api/backend/items/getItem';
+import { reviewItem } from '@/api/backend/items/reviewItem';
 import { updateItem } from '@/api/backend/items/updateItem';
 import { DATE_TIME_FORMAT } from '@/static';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,12 +16,14 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
 import { format } from 'date-fns';
+import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
 
 import { useHandleNoPermissions } from '@/contexts/UserContext';
+import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
 interface ItemFromProps {
   item: Item;
@@ -38,16 +42,8 @@ const FormSchema = z.object({
 });
 
 export default function ItemForm({ item, consignor }: ItemFromProps) {
-  const router = useRouter();
-  const {
-    watch,
-    control,
-    handleSubmit,
-    setError,
-    formState: { isSubmitting, errors },
-    getValues,
-  } = useForm<z.input<typeof FormSchema>>({
-    defaultValues: {
+  const defaultValues = useMemo(
+    () => ({
       ...R.pick(item, [
         'consignorID',
         'type',
@@ -59,9 +55,37 @@ export default function ItemForm({ item, consignor }: ItemFromProps) {
         'reservePrice',
       ]),
       description: item.description ?? '',
-    },
+    }),
+    [item]
+  );
+  const form = useForm<z.input<typeof FormSchema>>({
+    defaultValues,
     resolver: zodResolver(FormSchema),
   });
+
+  // 編輯成功後重置表單預設值
+  const { reset } = form;
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
+
+  return (
+    <FormProvider {...form}>
+      <WithInFormContext item={item} consignor={consignor} />
+    </FormProvider>
+  );
+}
+
+function WithInFormContext({ item, consignor }: ItemFromProps) {
+  const {
+    watch,
+    control,
+    handleSubmit,
+    setError,
+    formState: { isSubmitting, errors, isDirty },
+    getValues,
+    reset,
+  } = useFormContext<z.input<typeof FormSchema>>();
   const { enqueueSnackbar } = useSnackbar();
   const handleNoPermissions = useHandleNoPermissions();
 
@@ -93,7 +117,6 @@ export default function ItemForm({ item, consignor }: ItemFromProps) {
               return;
             }
             enqueueSnackbar('更新成功', { variant: 'success' });
-            router.push('/dashboard/items/appraising');
           })}
         >
           <Stack direction="row" columnGap={2}>
@@ -101,6 +124,12 @@ export default function ItemForm({ item, consignor }: ItemFromProps) {
             <Box sx={{ ml: 'auto' }} />
             {process.env.NODE_ENV === 'development' && (
               <Button onClick={() => console.log(getValues())}>Get form values</Button>
+            )}
+
+            {isDirty && (
+              <Button type="button" color="secondary" variant="text" onClick={() => reset()}>
+                重設
+              </Button>
             )}
             <Button
               type="submit"
@@ -156,7 +185,7 @@ export default function ItemForm({ item, consignor }: ItemFromProps) {
                   <FormControl fullWidth error={!!fieldState.error}>
                     <InputLabel>類型</InputLabel>
                     <Select {...field} label="類型" fullWidth>
-                      <MenuItem value={0}>(待定)</MenuItem>
+                      {item.type === 0 && <MenuItem value={0}>(待定)</MenuItem>}
                       {ITEM_TYPE_DATA.map((type) => (
                         <MenuItem key={type.value} value={type.value}>
                           {type.message}
@@ -272,7 +301,96 @@ export default function ItemForm({ item, consignor }: ItemFromProps) {
               )}
           </Grid>
         </Card>
+
+        <Stack direction="row" spacing={2} justifyContent="end">
+          <RejectBtn item={item} />
+          <ApproveBtn item={item} />
+        </Stack>
       </Stack>
+    </>
+  );
+}
+
+function RejectBtn({ item }: { item: Item }) {
+  const {
+    watch,
+    formState: { isDirty },
+  } = useFormContext<z.input<typeof FormSchema>>();
+  const popupState = usePopupState({
+    variant: 'popover',
+  });
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return (
+    <>
+      <Button {...bindTrigger(popupState)} type="submit" color="error" variant="outlined" disabled={isDirty}>
+        審核失敗
+      </Button>
+      <DoubleCheckPopover
+        {...bindPopover(popupState)}
+        title="標記為審核失敗"
+        onConfirm={async () => {
+          const res = await reviewItem(item.id, { action: 'reject' });
+          if (res.error) {
+            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+            return;
+          }
+          enqueueSnackbar('已將物品標記為審核失敗', { variant: 'success' });
+          router.push('/dashboard/items/appraising');
+        }}
+      />
+    </>
+  );
+}
+
+function ApproveBtn({ item }: { item: Item }) {
+  const {
+    watch,
+    setError,
+    formState: { isDirty },
+  } = useFormContext<z.input<typeof FormSchema>>();
+  const popupState = usePopupState({
+    variant: 'popover',
+  });
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+  const type = watch('type');
+  const minEstimatedPrice = watch('minEstimatedPrice');
+
+  return (
+    <>
+      <Button
+        {...bindTrigger(popupState)}
+        type="submit"
+        variant="contained"
+        disabled={isDirty}
+        {...(type === 0 && {
+          onClick: () => {
+            setError('type', { type: 'manual', message: '請選擇審核方式' });
+          },
+        })}
+        {...(!(type === ITEM_TYPE_MAP['AppraisableAuctionItemType'] && minEstimatedPrice) && {
+          onClick: () => {
+            setError('minEstimatedPrice', { type: 'manual', message: '請輸入最低估值' });
+          },
+        })}
+      >
+        審核成功
+      </Button>
+      <DoubleCheckPopover
+        {...bindPopover(popupState)}
+        title="標記為審核成功"
+        onConfirm={async () => {
+          const res = await reviewItem(item.id, { action: 'approve' });
+          if (res.error) {
+            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+            return;
+          }
+          enqueueSnackbar('已將物品標記為審核成功', { variant: 'success' });
+          router.push('/dashboard/items/appraising');
+        }}
+      />
     </>
   );
 }

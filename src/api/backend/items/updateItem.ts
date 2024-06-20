@@ -33,17 +33,17 @@ export async function updateItem(id: number, payload: z.input<typeof ReqSchema>)
   const data = throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
-  data.consignorID && formData.append('consignorID', data.consignorID.toString());
-  data.type && formData.append('type', data.type.toString());
-  data.name && formData.append('name', data.name);
-  data.description && formData.append('description', data.description);
-  data.space && formData.append('space', data.space.toString());
-  data.minEstimatedPrice && formData.append('minEstimatedPrice', data.minEstimatedPrice.toString());
-  data.maxEstimatedPrice && formData.append('maxEstimatedPrice', data.maxEstimatedPrice.toString());
-  data.sellerID && formData.append('sellerID', data.sellerID.toString());
-  data.reservePrice && formData.append('reservePrice', data.reservePrice.toString());
-  data.expireAt && formData.append('expireAt', data.expireAt.toISOString());
-  data.status && formData.append('status', data.status.toString());
+  data.consignorID != null && formData.append('consignorID', data.consignorID.toString());
+  data.type != null && formData.append('type', data.type.toString());
+  data.name != null && formData.append('name', data.name);
+  data.description != null && formData.append('description', data.description);
+  data.space != null && formData.append('space', data.space.toString());
+  data.minEstimatedPrice != null && formData.append('minEstimatedPrice', data.minEstimatedPrice.toString());
+  data.maxEstimatedPrice != null && formData.append('maxEstimatedPrice', data.maxEstimatedPrice.toString());
+  data.sellerID != null && formData.append('sellerID', data.sellerID.toString());
+  data.reservePrice != null && formData.append('reservePrice', data.reservePrice.toString());
+  data.expireAt != null && formData.append('expireAt', data.expireAt.toISOString());
+  data.status != null && formData.append('status', data.status.toString());
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}`, {
     method: 'PATCH',

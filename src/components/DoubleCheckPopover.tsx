@@ -6,7 +6,7 @@ interface DoubleCheckPopoverProps extends Omit<PopoverProps, 'title'> {
   title: string | React.ReactNode;
   description?: string | React.ReactNode;
   onConfirm: () => void | Promise<void>;
-  onCancel: () => void | Promise<void>;
+  onCancel?: () => void | Promise<void>;
 }
 
 export default function DoubleCheckPopover({
@@ -35,8 +35,8 @@ export default function DoubleCheckPopover({
         <Typography color="text.secondary" variant="body2">
           {description}
         </Typography>
-        <Stack direction="row" gap={2} justifyContent="space-between" sx={{ mt: 1 }}>
-          <Button variant="text" size="small" onClick={() => startTransition(async () => onCancel())}>
+        <Stack direction="row" gap={2} justifyContent="end" sx={{ mt: 1 }}>
+          <Button variant="text" size="small" onClick={() => startTransition(async () => onCancel?.())}>
             取消
           </Button>
           <Button
