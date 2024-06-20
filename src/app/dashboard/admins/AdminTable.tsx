@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useMemo, useTransition } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { type Admin } from '@/api/backend/admins/admins';
@@ -29,6 +29,7 @@ import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state
 import { useSnackbar } from 'notistack';
 
 import { HavePermissionsOnly, useHavePermissions } from '@/contexts/UserContext';
+import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
@@ -163,7 +164,6 @@ function DeleteBtn({ row }: { row: Admin }) {
     variant: 'popover',
     popupId: 'demoPopover',
   });
-  const [isPending, startTransition] = useTransition();
   const { enqueueSnackbar } = useSnackbar();
 
   return (
@@ -171,43 +171,17 @@ function DeleteBtn({ row }: { row: Admin }) {
       <IconButton {...bindTrigger(popupState)}>
         <DeleteIcon />
       </IconButton>
-      <Popover
+      <DoubleCheckPopover
         {...bindPopover(popupState)}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
+        title="刪除管理員"
+        description={`您確定要刪除 ${row.account} 嗎?`}
+        onConfirm={async () => {
+          await deleteAdmin(row.id);
+          enqueueSnackbar(`${row.account} deleted`, { variant: 'success' });
+          popupState.close();
         }}
-        transformOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-      >
-        <Box sx={{ p: '16px 20px ' }}>
-          <Typography variant="subtitle1">刪除管理員</Typography>
-          <Typography color="text.secondary" variant="body2">
-            您確定要刪除 {row.account} 嗎?
-          </Typography>
-          <Stack direction="row" gap={2} justifyContent="space-between" sx={{ mt: 1 }}>
-            <Button variant="text" size="small" onClick={popupState.close}>
-              取消
-            </Button>
-            <Button
-              disabled={isPending}
-              variant="contained"
-              size="small"
-              onClick={() => {
-                popupState.close();
-                startTransition(async () => {
-                  await deleteAdmin(row.id);
-                  enqueueSnackbar(`${row.account} deleted`, { variant: 'success' });
-                });
-              }}
-            >
-              刪除
-            </Button>
-          </Stack>
-        </Box>
-      </Popover>
+        onCancel={popupState.close}
+      />
     </>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { deleteRole } from '@/api/backend/rbac/deleteRole';
@@ -27,6 +26,7 @@ import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state
 import { useSnackbar } from 'notistack';
 
 import { HavePermissionsOnly } from '@/contexts/UserContext';
+import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
 interface CustomersTableProps {
   rows: Role[];
@@ -127,7 +127,6 @@ function DeleteBtn({ row }: { row: Role }) {
     variant: 'popover',
     popupId: 'demoPopover',
   });
-  const [isPending, startTransition] = useTransition();
   const { enqueueSnackbar } = useSnackbar();
 
   return (
@@ -135,47 +134,21 @@ function DeleteBtn({ row }: { row: Role }) {
       <IconButton {...bindTrigger(popupState)}>
         <DeleteIcon />
       </IconButton>
-      <Popover
+      <DoubleCheckPopover
         {...bindPopover(popupState)}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
+        title="刪除角色"
+        description={`您確定要刪除 ${row.role} 嗎?`}
+        onConfirm={async () => {
+          const res = await deleteRole(row.role);
+          if (res.error) {
+            enqueueSnackbar(`Failed to delete ${row.role}: ${res.error}`, { variant: 'error' });
+            return;
+          }
+          enqueueSnackbar(`${row.role} deleted`, { variant: 'success' });
+          popupState.close();
         }}
-        transformOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-      >
-        <Box sx={{ p: '16px 20px ' }}>
-          <Typography variant="subtitle1">刪除角色</Typography>
-          <Typography color="text.secondary" variant="body2">
-            您確定要刪除 {row.role} 嗎?
-          </Typography>
-          <Stack direction="row" gap={2} justifyContent="space-between" sx={{ mt: 1 }}>
-            <Button variant="text" size="small" onClick={popupState.close}>
-              取消
-            </Button>
-            <Button
-              disabled={isPending}
-              variant="contained"
-              size="small"
-              onClick={() => {
-                popupState.close();
-                startTransition(async () => {
-                  const res = await deleteRole(row.role);
-                  if (res.error) {
-                    enqueueSnackbar(`Failed to delete ${row.role}: ${res.error}`, { variant: 'error' });
-                    return;
-                  }
-                  enqueueSnackbar(`${row.role} deleted`, { variant: 'success' });
-                });
-              }}
-            >
-              刪除
-            </Button>
-          </Stack>
-        </Box>
-      </Popover>
+        onCancel={popupState.close}
+      />
     </>
   );
 }
