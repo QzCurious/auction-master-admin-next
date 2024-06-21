@@ -126,7 +126,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
           </Stack>
 
           <Grid container spacing={3} sx={{ mt: 0 }}>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <Controller
                 control={control}
                 name="account"
@@ -139,7 +139,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
               />
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <Controller
                 control={control}
                 name="status"
@@ -159,7 +159,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
               />
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <Controller
                 control={control}
                 name="password"
@@ -196,7 +196,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
               />
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <Controller
                 control={control}
                 name="confirmPassword"
@@ -233,7 +233,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
               />
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <Controller
                 control={control}
                 name="roles"
