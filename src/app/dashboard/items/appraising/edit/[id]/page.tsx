@@ -23,11 +23,13 @@ interface PageProps {
 async function Page(pageProps: PageProps) {
   return (
     <>
-      <Link component={RouterLink} href="/dashboard/items/appraising">
-        <Stack direction="row" alignItems="center" columnGap={1}>
-          <ArrowBackIcon /> 回到物品列表
-        </Stack>
-      </Link>
+      <Stack alignItems="start">
+        <Link component={RouterLink} href="/dashboard/items/appraising">
+          <Stack direction="row" alignItems="center" columnGap={1}>
+            <ArrowBackIcon /> 回到物品列表
+          </Stack>
+        </Link>
+      </Stack>
       <Typography variant="h4" sx={{ mt: 3 }}>
         編輯物品
       </Typography>
