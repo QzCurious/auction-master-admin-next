@@ -30,16 +30,24 @@ interface ItemFromProps {
   consignor: Consignor;
 }
 
-const FormSchema = z.object({
-  consignorID: z.number(),
-  type: z.number().optional(),
-  name: z.string().min(1, 'Name is required'),
-  description: z.string().nullable(),
-  space: z.number().min(1, 'Space is required'),
-  minEstimatedPrice: z.coerce.number().optional(),
-  maxEstimatedPrice: z.coerce.number().optional(),
-  reservePrice: z.number().min(1, 'Reserve price is required'),
-});
+const FormSchema = z
+  .object({
+    consignorID: z.number(),
+    type: z.number().optional(),
+    name: z.string().min(1, 'Name is required'),
+    description: z.string().nullable(),
+    space: z.number().min(1, 'Space is required'),
+    minEstimatedPrice: z.coerce.number().optional(),
+    maxEstimatedPrice: z.coerce.number().optional(),
+    reservePrice: z.number().min(1, 'Reserve price is required'),
+  })
+  .refine(
+    (data) =>
+      data.minEstimatedPrice != null && data.maxEstimatedPrice != null
+        ? data.minEstimatedPrice <= data.maxEstimatedPrice
+        : true,
+    { message: '需大於最低估值', path: ['maxEstimatedPrice'] }
+  );
 
 export default function ItemForm({ item, consignor }: ItemFromProps) {
   const defaultValues = useMemo(
@@ -357,6 +365,15 @@ function ApproveBtn({ item }: { item: Item }) {
   const { enqueueSnackbar } = useSnackbar();
   const type = watch('type');
   const minEstimatedPrice = watch('minEstimatedPrice');
+  const maxEstimatedPrice = watch('maxEstimatedPrice');
+
+  const errors = {
+    type: type === 0 ? '請選擇審核方式' : null,
+    minEstimatedPrice:
+      type === ITEM_TYPE_MAP['AppraisableAuctionItemType'] && minEstimatedPrice ? null : '請輸入最低估值',
+    maxEstimatedPrice:
+      type === ITEM_TYPE_MAP['AppraisableAuctionItemType'] && maxEstimatedPrice ? null : '請輸入最高估值',
+  };
 
   return (
     <>
@@ -365,14 +382,13 @@ function ApproveBtn({ item }: { item: Item }) {
         type="submit"
         variant="contained"
         disabled={isDirty}
-        {...(type === 0 && {
+        {...(Object.values(errors).some(Boolean) && {
           onClick: () => {
-            setError('type', { type: 'manual', message: '請選擇審核方式' });
-          },
-        })}
-        {...(!(type === ITEM_TYPE_MAP['AppraisableAuctionItemType'] && minEstimatedPrice) && {
-          onClick: () => {
-            setError('minEstimatedPrice', { type: 'manual', message: '請輸入最低估值' });
+            for (const [key, value] of Object.entries(errors)) {
+              if (value) {
+                setError(key as keyof typeof errors, { message: value });
+              }
+            }
           },
         })}
       >
