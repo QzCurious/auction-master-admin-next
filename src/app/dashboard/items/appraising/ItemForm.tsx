@@ -390,52 +390,51 @@ function WithInFormContext({ item, consignor }: ItemFromProps) {
             />
           </Grid>
 
-          {watch('type') === ITEM_TYPE_MAP['FixedPriceItemType'] ||
-            watch('type') === ITEM_TYPE_MAP['NonAppraisableAuctionItemType'] || (
-              <>
-                <Grid item xs={12} sm={6}>
-                  <Controller
-                    name="minEstimatedPrice"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <FormControl fullWidth error={!!fieldState.error}>
-                        <TextField
-                          {...field}
-                          label="最低估值"
-                          type="number"
-                          fullWidth
-                          onChange={(e) => {
-                            field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
-                          }}
-                        />
-                        {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                      </FormControl>
-                    )}
-                  />
-                </Grid>
+          {watch('type') === ITEM_TYPE_MAP['AppraisableAuctionItemType'] && (
+            <>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  name="minEstimatedPrice"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <FormControl fullWidth error={!!fieldState.error}>
+                      <TextField
+                        {...field}
+                        label="最低估值"
+                        type="number"
+                        fullWidth
+                        onChange={(e) => {
+                          field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                        }}
+                      />
+                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                    </FormControl>
+                  )}
+                />
+              </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <Controller
-                    name="maxEstimatedPrice"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <FormControl fullWidth error={!!fieldState.error}>
-                        <TextField
-                          {...field}
-                          label="最高估值"
-                          type="number"
-                          fullWidth
-                          onChange={(e) => {
-                            field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
-                          }}
-                        />
-                        {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                      </FormControl>
-                    )}
-                  />
-                </Grid>
-              </>
-            )}
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  name="maxEstimatedPrice"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <FormControl fullWidth error={!!fieldState.error}>
+                      <TextField
+                        {...field}
+                        label="最高估值"
+                        type="number"
+                        fullWidth
+                        onChange={(e) => {
+                          field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                        }}
+                      />
+                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                    </FormControl>
+                  )}
+                />
+              </Grid>
+            </>
+          )}
         </Grid>
       </Card>
 
@@ -496,11 +495,11 @@ function ApproveBtn({ item }: { item: Item }) {
   const maxEstimatedPrice = watch('maxEstimatedPrice');
 
   const errors = {
-    type: type === 0 ? '請選擇審核方式' : null,
+    type: type === 0 ? '請選類型' : null,
     minEstimatedPrice:
-      type === ITEM_TYPE_MAP['AppraisableAuctionItemType'] && minEstimatedPrice ? null : '請輸入最低估值',
+      type === ITEM_TYPE_MAP['AppraisableAuctionItemType'] && !minEstimatedPrice ? '請輸入最低估值' : null,
     maxEstimatedPrice:
-      type === ITEM_TYPE_MAP['AppraisableAuctionItemType'] && maxEstimatedPrice ? null : '請輸入最高估值',
+      type === ITEM_TYPE_MAP['AppraisableAuctionItemType'] && !maxEstimatedPrice ? '請輸入最高估值' : null,
   };
 
   return (
@@ -512,9 +511,9 @@ function ApproveBtn({ item }: { item: Item }) {
         disabled={isDirty}
         {...(Object.values(errors).some(Boolean) && {
           onClick: () => {
-            for (const [key, value] of Object.entries(errors)) {
-              if (value) {
-                setError(key as keyof typeof errors, { message: value });
+            for (const [key, error] of Object.entries(errors)) {
+              if (error) {
+                setError(key as keyof typeof errors, { message: error });
               }
             }
           },
