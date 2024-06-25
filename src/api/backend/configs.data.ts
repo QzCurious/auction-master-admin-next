@@ -4,6 +4,7 @@ export const CONFIGS_DATA = {
   yahooAuctionFeeRate: 0.1,
   commissionRate: 0.2,
   commissionBonusRate: 0.05,
+  lineURL: 'https://lin.ee/YgTRcyc',
   itemType: [
     {
       key: 'AppraisableAuctionItemType',
@@ -127,28 +128,34 @@ export const CONFIGS_DATA = {
   ],
   consignorStatus: [
     {
+      key: 'EnabledStatus',
       message: '啟用',
       value: 1,
     },
     {
+      key: 'AwaitingVerificationCompletionStatus',
       message: '身份尚未驗證',
       value: 11,
     },
     {
+      key: 'DisabledStatus',
       message: '禁用',
       value: 99,
     },
   ],
   consignorVerificationStatus: [
     {
+      key: 'AwaitingVerificationCompletionStatus',
       message: '尚未審核',
       value: 11,
     },
     {
+      key: 'VerificationSuccessfulStatus',
       message: '驗證成功',
       value: 12,
     },
     {
+      key: 'VerificationFailedStatus',
       message: '驗證失敗',
       value: 13,
     },
@@ -156,20 +163,24 @@ export const CONFIGS_DATA = {
   shippingInfo: '',
   workerType: [
     {
+      key: 'SellerType',
       message: '出品',
       value: 'Seller',
     },
     {
+      key: 'WatcherType',
       message: '盯標',
       value: 'Watcher',
     },
   ],
   adminStatus: [
     {
+      key: 'EnabledStatus',
       message: '啟用',
       value: 1,
     },
     {
+      key: 'DisabledStatus',
       message: '禁用',
       value: 99,
     },
@@ -183,8 +194,20 @@ export const ITEM_STATUS_DATA = CONFIGS_DATA.itemStatus;
 export const ITEM_STATUS_MAP = mapToObj(ITEM_STATUS_DATA, ({ key, value }) => [key, value]);
 
 export const AUCTION_ITEM_STATUS_DATA = CONFIGS_DATA.auctionItemStatus;
+export const AUCTION_ITEM_STATUS_MAP = mapToObj(AUCTION_ITEM_STATUS_DATA, ({ key, value }) => [key, value]);
+
 export const CONSIGNOR_STATUS_DATA = CONFIGS_DATA.consignorStatus;
+export const CONSIGNOR_STATUS_MAP = mapToObj(CONSIGNOR_STATUS_DATA, ({ key, value }) => [key, value]);
+
 export const CONSIGNOR_VERIFICATION_STATUS_DATA = CONFIGS_DATA.consignorVerificationStatus;
-export const SHIPPING_INFO_DATA = CONFIGS_DATA.shippingInfo;
+export const CONSIGNOR_VERIFICATION_STATUS_MAP = mapToObj(CONSIGNOR_VERIFICATION_STATUS_DATA, ({ key, value }) => [
+  key,
+  value,
+]);
+
+
 export const WORKER_TYPE_DATA = CONFIGS_DATA.workerType;
+export const WORKER_TYPE_MAP = mapToObj(WORKER_TYPE_DATA, ({ key, value }) => [key, value]);
+
 export const ADMIN_STATUS_DATA = CONFIGS_DATA.adminStatus;
+export const ADMIN_STATUS_MAP = mapToObj(ADMIN_STATUS_DATA, ({ key, value }) => [key, value]);
