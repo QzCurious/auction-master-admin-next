@@ -1,6 +1,6 @@
 import type React from 'react';
 import { usePathname, useRouter, useSearchParams, type ReadonlyURLSearchParams } from 'next/navigation';
-import { defaultPagination, PAGE, ROWS_PER_PAGE } from '@/static';
+import { PAGE, ROWS_PER_PAGE } from '@/static';
 
 export function useSearchField(field: string, opts: { removeEmpty?: boolean } = { removeEmpty: true }) {
   const searchParams = useSearchParams();
@@ -43,6 +43,10 @@ export function hasSearchFields(searchParams: ReadonlyURLSearchParams) {
 export function clearSearchFields(searchParams: URLSearchParams) {
   const rowsPerPage = searchParams.get(ROWS_PER_PAGE);
   const newSearchParams = new URLSearchParams();
-  newSearchParams.set(ROWS_PER_PAGE, rowsPerPage ?? defaultPagination[ROWS_PER_PAGE].toString());
+  if (rowsPerPage) {
+    newSearchParams.set(ROWS_PER_PAGE, rowsPerPage);
+  } else {
+    newSearchParams.delete(ROWS_PER_PAGE);
+  }
   return newSearchParams;
 }

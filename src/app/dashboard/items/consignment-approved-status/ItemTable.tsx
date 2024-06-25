@@ -59,7 +59,7 @@ export function ItemTable({ rows, count }: ItemTableProps): React.JSX.Element {
                   <Typography component="h2" variant="h5">
                     {row.name}
                   </Typography>
-                  <IconButton LinkComponent={Link} href={`/dashboard/items/submit-appraisal-status/edit/${row.id}`}>
+                  <IconButton LinkComponent={Link} href={`/dashboard/items/consignment-approved-status/edit/${row.id}`}>
                     <EditIcon />
                   </IconButton>
                 </Stack>

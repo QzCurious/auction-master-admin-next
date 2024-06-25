@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ITEM_STATUS_MAP, type ITEM_STATUS_DATA } from '@/api/backend/configs.data';
 import { items } from '@/api/backend/items/items';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
-import { Stack } from '@mui/material';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { config } from '@/config';
@@ -14,7 +14,7 @@ import { ItemTable } from './ItemTable';
 
 export const metadata = { title: `物品列表 | ${config.site.name}` } satisfies Metadata;
 
-const STATUS = 'SubmitAppraisalStatus' satisfies (typeof ITEM_STATUS_DATA)[number]['key'];
+const STATUS = 'ConsignmentApprovedStatus' satisfies (typeof ITEM_STATUS_DATA)[number]['key'];
 
 interface PageProps {
   searchParams: { consignor?: string } & PaginationSearchParams;

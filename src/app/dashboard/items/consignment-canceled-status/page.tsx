@@ -14,7 +14,7 @@ import { ItemTable } from './ItemTable';
 
 export const metadata = { title: `物品列表 | ${config.site.name}` } satisfies Metadata;
 
-const STATUS = 'SubmitAppraisalStatus' satisfies (typeof ITEM_STATUS_DATA)[number]['key'];
+const STATUS = 'ConsignmentCanceledStatus' satisfies (typeof ITEM_STATUS_DATA)[number]['key'];
 
 interface PageProps {
   searchParams: { consignor?: string } & PaginationSearchParams;

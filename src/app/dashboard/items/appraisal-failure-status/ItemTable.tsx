@@ -1,16 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { type Item } from '@/api/backend/items/items';
 import { clearSearchFields, hasSearchFields } from '@/helper/searchParams';
-import EditIcon from '@mui/icons-material/Edit';
 import { Grid } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
@@ -59,9 +56,6 @@ export function ItemTable({ rows, count }: ItemTableProps): React.JSX.Element {
                   <Typography component="h2" variant="h5">
                     {row.name}
                   </Typography>
-                  <IconButton LinkComponent={Link} href={`/dashboard/items/submit-appraisal-status/edit/${row.id}`}>
-                    <EditIcon />
-                  </IconButton>
                 </Stack>
               </Box>
             </Card>
