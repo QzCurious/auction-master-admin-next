@@ -132,7 +132,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                 name="account"
                 render={({ field, fieldState }) => (
                   <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField {...field} label="帳號" type="text" fullWidth />
+                    <TextField {...field} InputProps={{ readOnly: !!admin }} label="帳號" type="text" fullWidth />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                   </FormControl>
                 )}

@@ -25,7 +25,7 @@ import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state
 import { useSnackbar } from 'notistack';
 
 import { useHavePermissions } from '@/contexts/UserContext';
-import { FilterPopup } from '@/components/FilterPopup';
+import { FilterPopover } from '@/components/FilterPopover';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
 import PreviewPhotos from '../PreviewPhotos';
@@ -158,7 +158,7 @@ function ConsignorFilter() {
   if (error || consignorQuery.error) throw new Error('Bug');
 
   return (
-    <FilterPopup
+    <FilterPopover
       label="寄售人"
       field="consignor"
       transform={() => consignorQuery.data?.data?.nickname ?? '--'}
@@ -191,6 +191,6 @@ function ConsignorFilter() {
         loadingText="載入中..."
         noOptionsText="無結果"
       />
-    </FilterPopup>
+    </FilterPopover>
   );
 }

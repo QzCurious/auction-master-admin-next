@@ -1,3 +1,5 @@
+import type React from 'react';
+import { useSearchParams } from 'next/navigation';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Button from '@mui/material/Button';
@@ -5,10 +7,8 @@ import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
-import { useSearchParams } from 'next/navigation';
-import type React from 'react';
 
-export function FilterPopup({
+export function FilterPopover({
   label,
   field,
   transform,
@@ -56,7 +56,7 @@ export function FilterPopup({
         )}
       </Button>
       <Popover
-        sx={{ mt: 1 }}
+        sx={{ mt: 1, '.MuiPopover-paper': { border: '1px solid var(--mui-palette-TableCell-border)' } }}
         {...bindPopover(popupState)}
         anchorOrigin={{
           vertical: 'bottom',
