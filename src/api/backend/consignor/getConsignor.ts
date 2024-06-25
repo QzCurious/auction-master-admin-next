@@ -2,6 +2,7 @@
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
+import { type CONSIGNOR_STATUS_DATA } from '../configs.data';
 
 export interface Consignor {
   id: number;
@@ -13,7 +14,7 @@ export interface Consignor {
   phone: string;
   bankCode: string;
   bankAccount: string;
-  status: number;
+  status: (typeof CONSIGNOR_STATUS_DATA)[number]['value'];
   createdAt: string;
   updatedAt: string;
 }

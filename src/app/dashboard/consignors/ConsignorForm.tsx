@@ -6,7 +6,7 @@ import { CONSIGNOR_STATUS_DATA } from '@/api/backend/configs.data';
 import { type Consignor } from '@/api/backend/consignor/getConsignor';
 import { updateConsignor } from '@/api/backend/consignor/updateConsignor';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Grid, TextField } from '@mui/material';
+import { Button, Chip, Grid, InputLabel, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -19,6 +19,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { useHandleNoPermissions } from '@/contexts/UserContext';
+
+import { statusColor } from './statusColor';
 
 interface ConsignorFromProps {
   consignor: Consignor;
@@ -100,13 +102,26 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
 
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
-                <TextField
-                  InputProps={{ readOnly: true }}
+                <InputLabel>狀態</InputLabel>
+                <Select
+                  readOnly
                   label="狀態"
                   type="text"
-                  value={CONSIGNOR_STATUS_DATA.find(({ value }) => value === consignor.status)?.message}
+                  value={consignor.status}
+                  renderValue={(selected) => (
+                    <Chip
+                      label={CONSIGNOR_STATUS_DATA.find(({ value }) => value === selected)?.message}
+                      color={statusColor(selected)}
+                    />
+                  )}
                   fullWidth
-                />
+                >
+                  {CONSIGNOR_STATUS_DATA.map(({ value, message }) => (
+                    <option key={value} value={value}>
+                      {message}
+                    </option>
+                  ))}
+                </Select>
               </FormControl>
             </Grid>
 
