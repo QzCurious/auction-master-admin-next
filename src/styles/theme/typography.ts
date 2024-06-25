@@ -1,8 +1,8 @@
+import { font } from '@/font';
 import type { TypographyOptions } from '@mui/material/styles/createTypography';
 
 export const typography = {
-  fontFamily:
-    '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
+  fontFamily: font.style.fontFamily,
   body1: { fontSize: '1rem', fontWeight: 400, lineHeight: 1.5 },
   body2: { fontSize: '0.875rem', fontWeight: 400, lineHeight: 1.57 },
   button: { fontWeight: 500 },

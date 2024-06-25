@@ -17,15 +17,6 @@ dependencies:
   '@emotion/styled':
     specifier: 11.11.0
     version: 11.11.0(@emotion/react@11.11.4)(@types/react@18.2.64)(react@18.2.0)
-  '@fontsource/inter':
-    specifier: 5.0.17
-    version: 5.0.17
-  '@fontsource/plus-jakarta-sans':
-    specifier: 5.0.19
-    version: 5.0.19
-  '@fontsource/roboto-mono':
-    specifier: 5.0.17
-    version: 5.0.17
   '@hookform/resolvers':
     specifier: 3.3.4
     version: 3.3.4(react-hook-form@7.51.0)
@@ -693,18 +684,6 @@ packages:
 
   /@floating-ui/utils@0.2.2:
     resolution: {integrity: sha512-J4yDIIthosAsRZ5CPYP/jQvUAQtlZTTD/4suA08/FEnlxqW3sKS9iAhgsa9VYLZ6vDHn/ixJgIqRQPotoBjxIw==}
-    dev: false
-
-  /@fontsource/inter@5.0.17:
-    resolution: {integrity: sha512-2meBGx1kt7u5LwzGc5Sz5rka6ZDrydg6nT3x6Wkt310vHXUchIywrO8pooWMzZdHYcyFY/cv4lEpJZgMD94bCg==}
-    dev: false
-
-  /@fontsource/plus-jakarta-sans@5.0.19:
-    resolution: {integrity: sha512-LWMReNfB3s3tLRCPlFkqTfheqV40+2RQ4pOFhmKKB+9QrFsSf+g4Sl5r2V0+FNWHzdjfCas7uF4d+PejipqvUw==}
-    dev: false
-
-  /@fontsource/roboto-mono@5.0.17:
-    resolution: {integrity: sha512-MU6FrAyG7DWMCL8mu0JDPvB2tnFcn/lYvVKixzqHb2uefRsLaD6OBFfF1q5RMFsKcFHyPySHM7ZcGw/Q6A1/FA==}
     dev: false
 
   /@hookform/resolvers@3.3.4(react-hook-form@7.51.0):
