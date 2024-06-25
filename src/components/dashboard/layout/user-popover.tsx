@@ -49,14 +49,14 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps) {
           <ListItemIcon>
             <GearSixIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
-          Settings
+          設定
         </MenuItem>
-        <MenuItem component={RouterLink} href={paths.dashboard.account} onClick={onClose}>
+        {/* <MenuItem component={RouterLink} href={paths.dashboard.account} onClick={onClose}>
           <ListItemIcon>
             <UserIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
           Profile
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem
           onClick={async () => {
             const error = await refreshTokenAction();
