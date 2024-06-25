@@ -1,28 +1,22 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { type Admin } from '@/api/backend/admins/admins';
-import { deleteAdmin } from '@/api/backend/admins/deleteAdmin';
 import { consignors } from '@/api/backend/consignor/consignors';
 import { getConsignor } from '@/api/backend/consignor/getConsignor';
 import { type Item } from '@/api/backend/items/items';
 import { clearSearchFields, hasSearchFields, useSearchField } from '@/helper/searchParams';
-import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Autocomplete, Grid, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
-import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
-import { useSnackbar } from 'notistack';
 
 import { useHavePermissions } from '@/contexts/UserContext';
 import { FilterPopover } from '@/components/FilterPopover';
@@ -67,7 +61,7 @@ export function ItemTable({ rows, count }: ItemTableProps): React.JSX.Element {
             <Card>
               <PreviewPhotos photos={row.photos} />
               <Box sx={{ pt: 1, pb: 2, px: 1.5 }}>
-                <Stack direction="row" justifyContent="space-between" alignItems='center'>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <Typography component="h2" variant="h5">
                     {row.name}
                   </Typography>
@@ -82,60 +76,6 @@ export function ItemTable({ rows, count }: ItemTableProps): React.JSX.Element {
       </Grid>
 
       <SearchParamsPagination count={count} />
-    </>
-  );
-}
-
-function DeleteBtn({ row }: { row: Admin }) {
-  const popupState = usePopupState({
-    variant: 'popover',
-    popupId: 'demoPopover',
-  });
-  const [isPending, startTransition] = useTransition();
-  const { enqueueSnackbar } = useSnackbar();
-
-  return (
-    <>
-      <IconButton {...bindTrigger(popupState)}>
-        <DeleteIcon />
-      </IconButton>
-      <Popover
-        {...bindPopover(popupState)}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-      >
-        <Box sx={{ p: '16px 20px ' }}>
-          <Typography variant="subtitle1">刪除管理員</Typography>
-          <Typography color="text.secondary" variant="body2">
-            您確定要刪除 {row.account} 嗎?
-          </Typography>
-          <Stack direction="row" gap={2} justifyContent="space-between" sx={{ mt: 1 }}>
-            <Button variant="text" size="small" onClick={popupState.close}>
-              取消
-            </Button>
-            <Button
-              disabled={isPending}
-              variant="contained"
-              size="small"
-              onClick={() => {
-                popupState.close();
-                startTransition(async () => {
-                  await deleteAdmin(row.id);
-                  enqueueSnackbar(`${row.account} deleted`, { variant: 'success' });
-                });
-              }}
-            >
-              刪除
-            </Button>
-          </Stack>
-        </Box>
-      </Popover>
     </>
   );
 }
@@ -159,7 +99,7 @@ function ConsignorFilter() {
 
   return (
     <FilterPopover
-      label="寄售人"
+      label="暱稱"
       field="consignor"
       transform={() => consignorQuery.data?.data?.nickname ?? '--'}
       onRemove={remove}

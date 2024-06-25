@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { type Configs } from '@/api/backend/configs';
+import { ITEM_STATUS_DATA } from '@/api/backend/configs.data';
 import { Divider, Tab, Tabs } from '@mui/material';
 
 const tabs = [
-  { name: '已提交審核', href: '/dashboard/items/appraising', status: 'SubmitAppraisalStatus' },
+  { href: '/dashboard/items/appraising', status: 'SubmitAppraisalStatus' },
   // { name: '審核通過', href: '/dashboard/items/appraised', status: 'AppraisedStatus' },
 ] satisfies Array<{
-  name: string;
   href: string;
   status: Configs['itemStatus'][number]['key'];
 }>;
@@ -22,7 +22,13 @@ export default function StatusTabs({ status }: StatusTabsProps) {
     <div>
       <Tabs sx={{ px: 3 }} value={status}>
         {tabs.map((x) => (
-          <Tab key={x.status} LinkComponent={Link} href={x.href} value={x.status} label={x.name} />
+          <Tab
+            key={x.status}
+            LinkComponent={Link}
+            href={x.href}
+            value={x.status}
+            label={ITEM_STATUS_DATA.find(({ key }) => key === x.status)?.message}
+          />
         ))}
       </Tabs>
       <Divider />
