@@ -209,13 +209,13 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
           <Button
             type="button"
             disabled={isPending}
-            variant="text"
+            variant="outlined"
             color="error"
             onClick={() => {
               startTransition(async () => {
                 const res = await rejectConsignorVerification(consignorVerification.id);
                 if (res.error) {
-                  setError('root', { message: res.error });
+                  enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
                   return;
                 }
                 setOpen(false);
@@ -242,7 +242,7 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
                   return;
                 }
                 if (res.error) {
-                  setError('root', { message: res.error });
+                  enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
                   return;
                 }
                 setOpen(false);
