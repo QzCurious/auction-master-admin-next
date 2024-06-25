@@ -6,7 +6,7 @@ import { ITEM_STATUS_DATA } from '@/api/backend/configs.data';
 import { Divider, Tab, Tabs } from '@mui/material';
 
 const tabs = [
-  { href: '/dashboard/items/appraising', status: 'SubmitAppraisalStatus' },
+  { href: '/dashboard/items/submit-appraisal-status', status: 'SubmitAppraisalStatus' },
   // { name: '審核通過', href: '/dashboard/items/appraised', status: 'AppraisedStatus' },
 ] satisfies Array<{
   href: string;

@@ -24,7 +24,7 @@ async function Page(pageProps: PageProps) {
   return (
     <>
       <Stack alignItems="start">
-        <Link component={RouterLink} href="/dashboard/items/appraising">
+        <Link component={RouterLink} href="/dashboard/items/submit-appraisal-status">
           <Stack direction="row" alignItems="center" columnGap={1}>
             <ArrowBackIcon /> 回到物品列表
           </Stack>

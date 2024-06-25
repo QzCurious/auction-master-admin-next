@@ -44,7 +44,7 @@ export const navItems = [
   {
     key: 'items',
     title: '物品列表',
-    href: '/dashboard/items/appraising',
+    href: '/dashboard/items/submit-appraisal-status',
     PhosphorIcon: StackSimple,
     permissions: ['GetRoles'],
   },
