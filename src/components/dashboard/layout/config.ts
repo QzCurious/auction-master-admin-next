@@ -1,13 +1,9 @@
-import { ChartPie as ChartPieIcon } from '@phosphor-icons/react/dist/ssr/ChartPie';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { Handshake } from '@phosphor-icons/react/dist/ssr/Handshake';
-import { PlugsConnected as PlugsConnectedIcon } from '@phosphor-icons/react/dist/ssr/PlugsConnected';
 import { ShieldStar } from '@phosphor-icons/react/dist/ssr/ShieldStar';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
-import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 import { UserCircleGear } from '@phosphor-icons/react/dist/ssr/UserCircleGear';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
-import { XSquare } from '@phosphor-icons/react/dist/ssr/XSquare';
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
@@ -49,10 +45,12 @@ export const navItems = [
     permissions: ['GetRoles'],
   },
 
-  { key: 'overview', title: 'Overview', href: paths.dashboard.overview, PhosphorIcon: ChartPieIcon },
-  { key: 'customers', title: 'Customers', href: paths.dashboard.customers, PhosphorIcon: UserIcon },
-  { key: 'integrations', title: 'Integrations', href: paths.dashboard.integrations, PhosphorIcon: PlugsConnectedIcon },
-  { key: 'settings', title: 'Settings', href: paths.dashboard.settings, PhosphorIcon: GearSixIcon },
-  { key: 'account', title: 'Account', href: paths.dashboard.account, PhosphorIcon: UserIcon },
-  { key: 'error', title: 'Error', href: paths.errors.notFound, PhosphorIcon: XSquare },
+  {
+    key: 'settings',
+    title: '設定',
+    href: paths.dashboard.settings,
+    PhosphorIcon: GearSixIcon,
+    permissions: ['UpdateAdminPassword'],
+  },
+  // { key: 'account', title: 'Account', href: paths.dashboard.account, PhosphorIcon: UserIcon },
 ] satisfies NavItemConfig[];

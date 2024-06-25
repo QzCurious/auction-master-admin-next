@@ -30,13 +30,13 @@ interface AdminFromProps {
 
 const CreateFormSchema = z
   .object({
-    account: z.string().min(1, 'Account is required'),
-    password: z.string().min(1, 'Password is required'),
-    confirmPassword: z.string().min(1, 'Confirm password is required'),
+    account: z.string().min(1, '必填'),
+    password: z.string().min(1, '必填'),
+    confirmPassword: z.string().min(1, '必填'),
     roles: z.string().array(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
+    message: '請重新確認新密碼',
     path: ['confirmPassword'],
   });
 
@@ -48,7 +48,7 @@ const EditFormSchema = z
     roles: z.string().array(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
+    message: '請重新確認新密碼',
     path: ['confirmPassword'],
   });
 
@@ -93,7 +93,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                 }
                 return;
               }
-              enqueueSnackbar('Admin updated', { variant: 'success' });
+              enqueueSnackbar('管理員資訊已更新', { variant: 'success' });
               router.push('/dashboard/admins');
             }
           : async (data) => {
@@ -102,7 +102,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                 enqueueSnackbar(error, { variant: 'error' });
                 return;
               }
-              enqueueSnackbar('Admin created', { variant: 'success' });
+              enqueueSnackbar('已建立新的管理員', { variant: 'success' });
               router.push('/dashboard/admins');
             }
       )}
