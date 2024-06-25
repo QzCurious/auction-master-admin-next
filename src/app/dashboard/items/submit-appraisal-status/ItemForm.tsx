@@ -472,7 +472,7 @@ function RejectBtn({ item }: { item: Item }) {
             return;
           }
           enqueueSnackbar('已將物品標記為審核失敗', { variant: 'success' });
-          router.push('/dashboard/items/submit-appraisal-status');
+          router.push('/dashboard/items/appraisal-failure-status');
         }}
       />
     </>
@@ -531,7 +531,7 @@ function ApproveBtn({ item }: { item: Item }) {
             return;
           }
           enqueueSnackbar('已將物品標記為審核成功', { variant: 'success' });
-          router.push('/dashboard/items/submit-appraisal-status');
+          router.push('/dashboard/items/appraised-status');
         }}
       />
     </>

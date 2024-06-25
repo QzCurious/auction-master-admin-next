@@ -136,7 +136,7 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
       <IconButton onClick={() => setOpen(true)}>
         <EditNoteIcon />
       </IconButton>
-      <Dialog open={open} onClose={() => setOpen(false)} closeAfterTransition>
+      <Dialog open={open} onClose={() => setOpen(false)} closeAfterTransition >
         <DialogTitle>寄售人身份驗證</DialogTitle>
         <DialogContent>
           <Stack spacing={3} mt={2}>
@@ -234,11 +234,11 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
               startTransition(async () => {
                 const res = await acceptConsignorVerification(consignorVerification.id, data);
                 if (res.error === '1005') {
-                  setError('name', { message: '姓名錯誤' });
+                  setError('name', { message: '姓名與寄售人輸入資料不一致' });
                   return;
                 }
                 if (res.error === '1006') {
-                  setError('identification', { message: '身分證字號錯誤' });
+                  setError('identification', { message: '身分證字號與寄售人輸入資料不一致' });
                   return;
                 }
                 if (res.error) {
