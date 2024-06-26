@@ -23,7 +23,7 @@ import { useHandleNoPermissions, UserContext } from '@/contexts/UserContext';
 
 const FormSchema = z
   .object({
-    oldPassword: z.string().min(1, { message: '請輸入舊密碼' }),
+    oldPassword: z.string().min(1, { message: '請輸入當前密碼' }),
     password: z.string().min(1, { message: '請輸入新密碼' }),
     confirmPassword: z.string().min(1, { message: '請再次輸入新密碼' }),
   })
@@ -43,7 +43,7 @@ export function UpdatePasswordForm(): React.JSX.Element {
     getValues,
     reset,
   } = useForm<z.input<typeof FormSchema>>({
-    defaultValues: { password: '', confirmPassword: '' },
+    defaultValues: { oldPassword: '', password: '', confirmPassword: '' },
     resolver: zodResolver(FormSchema),
   });
   const { enqueueSnackbar } = useSnackbar();
@@ -58,14 +58,14 @@ export function UpdatePasswordForm(): React.JSX.Element {
           password: data.password,
         });
 
-        // if (res.error === '11') {
-        //   setError('password', { message: '新密碼不能與舊密碼相同' });
-        //   return;
-        // }
-        // if (res.error === '1004') {
-        //   setError('oldPassword', { message: '舊密碼錯誤' });
-        //   return;
-        // }
+        if (res.error === '11') {
+          setError('password', { message: '新密碼不能與舊密碼相同' });
+          return;
+        }
+        if (res.error === '1004') {
+          setError('oldPassword', { message: '舊密碼錯誤' });
+          return;
+        }
         if (res.error) {
           enqueueSnackbar(`密碼變更失敗: ${res.error}`, { variant: 'error' });
           return;
@@ -84,7 +84,7 @@ export function UpdatePasswordForm(): React.JSX.Element {
               name="oldPassword"
               control={control}
               render={({ field, fieldState }) => (
-                <FormControl fullWidth>
+                <FormControl fullWidth error={!!fieldState.error}>
                   <TextField
                     {...field}
                     label="當前密碼"
@@ -118,7 +118,7 @@ export function UpdatePasswordForm(): React.JSX.Element {
               name="password"
               control={control}
               render={({ field, fieldState }) => (
-                <FormControl fullWidth>
+                <FormControl fullWidth error={!!fieldState.error}>
                   <TextField
                     {...field}
                     label="新密碼"
@@ -152,7 +152,7 @@ export function UpdatePasswordForm(): React.JSX.Element {
               name="confirmPassword"
               control={control}
               render={({ field, fieldState }) => (
-                <FormControl fullWidth>
+                <FormControl fullWidth error={!!fieldState.error}>
                   <TextField
                     {...field}
                     label="確認密碼"

@@ -23,7 +23,7 @@ export async function changePassword(id: number, payload: z.input<typeof ReqSche
   data.oldPassword && formData.append('oldPassword', data.oldPassword);
   data.password && formData.append('password', data.password);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/${id}/password`, {
     method: 'PATCH',
     body: formData,
   });
