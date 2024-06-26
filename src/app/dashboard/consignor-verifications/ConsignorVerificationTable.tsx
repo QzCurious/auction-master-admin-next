@@ -136,7 +136,7 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
       <IconButton onClick={() => setOpen(true)}>
         <EditNoteIcon />
       </IconButton>
-      <Dialog open={open} onClose={() => setOpen(false)} closeAfterTransition >
+      <Dialog open={open} onClose={() => setOpen(false)} closeAfterTransition>
         <DialogTitle>寄售人身份驗證</DialogTitle>
         <DialogContent>
           <Stack spacing={3} mt={2}>
@@ -239,6 +239,10 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
                 }
                 if (res.error === '1006') {
                   setError('identification', { message: '身分證字號與寄售人輸入資料不一致' });
+                  return;
+                }
+                if (res.error === '1604') {
+                  enqueueSnackbar(`此身份驗證申請不存在: ${res.error}`, { variant: 'error' });
                   return;
                 }
                 if (res.error) {

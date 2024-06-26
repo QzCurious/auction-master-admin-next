@@ -14,8 +14,8 @@ const ReqSchema = z.object({
 
 export type Data = 'Success';
 
-// 1005: name incorrect, 1006: identification incorrect
-export type ErrorCode = '1005' | '1006';
+// 1005: name incorrect, 1006: identification incorrect, 1604: consignor verification not exist
+export type ErrorCode = '1005' | '1006' | '1604';
 
 export async function acceptConsignorVerification(id: number, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
