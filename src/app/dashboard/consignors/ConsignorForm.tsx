@@ -2,11 +2,11 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { CONSIGNOR_STATUS_DATA } from '@/api/backend/configs.data';
+import { CONSIGNOR_STATUS_DATA, CONSIGNOR_STATUS_MAP } from '@/api/backend/configs.data';
 import { type Consignor } from '@/api/backend/consignor/getConsignor';
 import { updateConsignor } from '@/api/backend/consignor/updateConsignor';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Chip, Grid, InputLabel, Select, TextField } from '@mui/material';
+import { Button, Chip, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -28,9 +28,10 @@ interface ConsignorFromProps {
 
 const FormSchema = z
   .object({
+    nickname: z.string().min(1, '必填'),
+    status: z.number(),
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
-    nickname: z.string().min(1, '必填'),
   })
   .refine((data) => (!data.password ? true : data.password === data.confirmPassword), {
     message: '請重新確認新密碼',
@@ -39,7 +40,7 @@ const FormSchema = z
 
 export default function ConsignorForm({ consignor }: ConsignorFromProps) {
   const defaultValues = useMemo(
-    () => ({ nickname: consignor.nickname, password: '', confirmPassword: '' }),
+    () => ({ nickname: consignor.nickname, status: consignor.status, password: '', confirmPassword: '' }),
     [consignor]
   );
   const router = useRouter();
@@ -101,28 +102,41 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>狀態</InputLabel>
-                <Select
-                  readOnly
-                  label="狀態"
-                  type="text"
-                  value={consignor.status}
-                  renderValue={(selected) => (
-                    <Chip
-                      label={CONSIGNOR_STATUS_DATA.find(({ value }) => value === selected)?.message}
-                      color={statusColor(selected)}
-                    />
-                  )}
-                  fullWidth
-                >
-                  {CONSIGNOR_STATUS_DATA.map(({ value, message }) => (
-                    <option key={value} value={value}>
-                      {message}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
+              <Controller
+                control={control}
+                name="status"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth>
+                    <InputLabel>狀態</InputLabel>
+                    <Select
+                      label="狀態"
+                      type="text"
+                      {...field}
+                      renderValue={(selected) => (
+                        <Chip
+                          label={CONSIGNOR_STATUS_DATA.find(({ value }) => value === selected)?.message}
+                          color={statusColor(selected as never)}
+                        />
+                      )}
+                      fullWidth
+                    >
+                      {CONSIGNOR_STATUS_DATA.map(({ value, message }) => (
+                        <MenuItem
+                          key={value}
+                          value={value}
+                          disabled={
+                            value === CONSIGNOR_STATUS_MAP.EnabledStatus &&
+                            (!consignor.name || !consignor.identification)
+                          }
+                        >
+                          {message}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
             </Grid>
 
             <Grid item xs={12} sm={6}>

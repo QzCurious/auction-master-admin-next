@@ -10,6 +10,7 @@ import { withAuth } from '../../withAuth';
 const ReqSchema = z.object({
   password: z.string().optional(),
   nickname: z.string().optional(),
+  status: z.number().optional(),
 });
 
 type Data = 'Success';
@@ -22,6 +23,7 @@ export async function updateConsignor(id: number, payload: z.input<typeof ReqSch
   const formData = new FormData();
   data.password && formData.append('password', data.password);
   data.nickname != null && formData.append('nickname', data.nickname);
+  data.status != null && formData.append('status', data.status.toString());
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/consignors/${id}`, {
     method: 'PATCH',
