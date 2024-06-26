@@ -52,11 +52,11 @@ export function SignInForm() {
         onSubmit={handleSubmit(async (data) => {
           const res = await session(data);
           if (res.error === '1004' || res.error === '1502') {
-            setError('root', { message: 'Account or password is incorrect' });
+            setError('root', { message: '帳號或密碼錯誤' });
             return;
           }
           if (res.error === '1001') {
-            setError('root', { message: 'Permission denied' });
+            setError('root', { message: '沒有權限' });
             return;
           }
           const goto = new URLSearchParams(location.search).get('goto');
