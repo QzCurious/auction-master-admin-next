@@ -59,6 +59,10 @@ export function SignInForm() {
             setError('root', { message: '沒有權限' });
             return;
           }
+          if (res.error === '1002') {
+            setError('root', { message: '此帳號為禁用狀態，無法登入' });
+            return;
+          }
           const goto = new URLSearchParams(location.search).get('goto');
           router.replace(goto || '/dashboard');
         })}

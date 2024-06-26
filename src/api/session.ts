@@ -1,8 +1,8 @@
 'use server';
 
+import { cookieConfigs } from '@/static';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { cookieConfigs } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from './apiClient';
@@ -21,10 +21,12 @@ interface Data {
 type ErrorCode =
   // PermissionDenied
   | '1001'
+  // block user
+  | '1002'
   // PasswordIncorrect
   | '1004'
   // AdminNotExist
-  | '1502';
+  | '1502'
 
 export async function session(payload: z.input<typeof ReqSchema>) {
   throwIfInvalid(payload, ReqSchema);

@@ -20,6 +20,7 @@ import { z } from 'zod';
 
 import { useHandleNoPermissions, useHavePermissions } from '@/contexts/UserContext';
 
+import { statusColor } from '../consignors/statusColor';
 import { createAdminAction, updateAdminAction } from './actions';
 
 interface AdminFromProps {
@@ -33,6 +34,7 @@ const CreateFormSchema = z
     account: z.string().min(1, '必填'),
     password: z.string().min(1, '必填'),
     confirmPassword: z.string().min(1, '必填'),
+    status: z.number(),
     roles: z.string().array(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -44,7 +46,7 @@ const EditFormSchema = z
   .object({
     password: z.string(),
     confirmPassword: z.string(),
-    status: z.number().optional(),
+    status: z.number(),
     roles: z.string().array(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -65,6 +67,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
     defaultValues: {
       account: '',
       roles: [],
+      status: null,
       ...admin,
       password: '',
       confirmPassword: '',
@@ -83,7 +86,8 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
               const errors = await updateAdminAction({
                 id: admin.id,
                 account: admin.account,
-                status: admin.status,
+                status: data.status ?? admin.status,
+                password: data.password ?? undefined,
                 addRoles: data.roles.filter((role) => !admin.roles.includes(role)),
                 removeRoles: admin.roles.filter((role) => !data.roles.includes(role)),
               });
@@ -146,7 +150,21 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                 render={({ field, fieldState }) => (
                   <FormControl fullWidth error={!!fieldState.error}>
                     <InputLabel>狀態</InputLabel>
-                    <Select {...field} label="Status" fullWidth>
+                    <Select
+                      {...field}
+                      label="Status"
+                      value={field.value ?? ('' as const)}
+                      fullWidth
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          <Chip
+                            key={selected}
+                            label={ADMIN_STATUS_DATA.find(({ value }) => value === selected)?.message}
+                            color={statusColor(selected as never)}
+                          />
+                        </Box>
+                      )}
+                    >
                       {ADMIN_STATUS_DATA.map((status) => (
                         <MenuItem key={status.value} value={status.value}>
                           {status.message}
