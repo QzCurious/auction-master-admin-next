@@ -7,6 +7,7 @@ export interface Configs {
   yahooAuctionFeeRate: number;
   commissionRate: number;
   commissionBonusRate: number;
+  lineURL: string;
   itemType: Array<{
     key: (typeof CONFIGS_DATA)['itemType'][number]['key'];
     message: string;
@@ -23,19 +24,23 @@ export interface Configs {
     value: number;
   }>;
   consignorStatus: Array<{
-    message: (typeof CONFIGS_DATA)['consignorStatus'][number]['message'];
+    key: (typeof CONFIGS_DATA)['consignorStatus'][number]['key'];
+    message: string;
     value: number;
   }>;
   consignorVerificationStatus: Array<{
-    message: (typeof CONFIGS_DATA)['consignorVerificationStatus'][number]['message'];
+    key: (typeof CONFIGS_DATA)['consignorVerificationStatus'][number]['key'];
+    message: string;
     value: number;
   }>;
   shippingInfo: string;
   workerType: Array<{
+    key: (typeof CONFIGS_DATA)['workerType'][number]['key'];
     message: string;
     value: string;
   }>;
   adminStatus: Array<{
+    key: (typeof CONFIGS_DATA)['adminStatus'][number]['key'];
     message: string;
     value: number;
   }>;

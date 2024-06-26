@@ -33,3 +33,11 @@ export const PaginationSchema = z.object({
 });
 export type PaginationSearchParams = z.output<typeof PaginationSchema>;
 export const defaultPagination = PaginationSchema.parse({});
+
+export const toPercent = (num: number) => {
+  return num.toLocaleString('en-US', {
+    style: 'percent',
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 2,
+  });
+};
