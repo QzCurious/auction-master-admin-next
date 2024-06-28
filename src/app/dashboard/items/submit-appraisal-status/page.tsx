@@ -45,6 +45,8 @@ async function Table({ searchParams }: PageProps) {
     limit: pagination[ROWS_PER_PAGE],
     offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
     consignorID: searchParams.consignor ? Number(searchParams.consignor) : undefined,
+    sort: 'createdAt',
+    order: 'desc',
   });
 
   if (itemsRes.error === '1001') {
