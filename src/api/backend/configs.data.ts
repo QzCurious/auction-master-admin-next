@@ -24,24 +24,19 @@ export const CONFIGS_DATA = {
   ],
   itemStatus: [
     {
-      key: 'InitStatus',
-      message: '初始化',
-      value: 1,
-    },
-    {
       key: 'SubmitAppraisalStatus',
       message: '已提交估價',
-      value: 2,
+      value: 1,
     },
     {
       key: 'AppraisalFailureStatus',
       message: '估價失敗',
-      value: 3,
+      value: 2,
     },
     {
       key: 'AppraisedStatus',
       message: '已估價',
-      value: 4,
+      value: 3,
     },
     {
       key: 'ConsignmentApprovedStatus',
@@ -204,7 +199,6 @@ export const CONSIGNOR_VERIFICATION_STATUS_MAP = mapToObj(CONSIGNOR_VERIFICATION
   key,
   value,
 ]);
-
 
 export const WORKER_TYPE_DATA = CONFIGS_DATA.workerType;
 export const WORKER_TYPE_MAP = mapToObj(WORKER_TYPE_DATA, ({ key, value }) => [key, value]);

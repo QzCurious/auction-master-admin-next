@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { ITEM_STATUS_DATA } from '../configs.data';
 
 export const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),
@@ -44,12 +43,6 @@ type ErrorCode = never;
 export async function items(payload: z.input<typeof ReqSchema>) {
   'use server';
   const parsed = throwIfInvalid(payload, ReqSchema);
-
-  const status = ITEM_STATUS_DATA.find(({ key }) => key === 'InitStatus')?.value;
-
-  if (!status) {
-    throw new Error('ITEM_STATUS_DATA might not be up to date');
-  }
 
   const query = new URLSearchParams();
   parsed.consignorID != null && query.append('consignorID', parsed.consignorID.toString());
