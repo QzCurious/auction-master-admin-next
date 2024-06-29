@@ -1,3 +1,5 @@
+'use client';
+
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE } from '@/static';
 import { TablePagination } from '@mui/material';

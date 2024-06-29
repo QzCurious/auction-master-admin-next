@@ -19,12 +19,13 @@ export function FilterPopover({
   field: string;
   transform?: (value: string) => string;
   onRemove?: () => void;
-  children?: React.ReactNode;
+  children?: React.ReactNode | (({ close }: { close: () => void }) => React.ReactNode);
 }) {
   const searchParams = useSearchParams();
   const value = searchParams.get(field) || '';
   const popupState = usePopupState({
     variant: 'popover',
+    disableAutoFocus: true,
   });
 
   return (
@@ -50,7 +51,7 @@ export function FilterPopover({
       >
         {label}
         {value && (
-          <Typography color="primary" variant="subtitle2">
+          <Typography color="primary" variant="inherit">
             : {transform ? transform(value) : value}
           </Typography>
         )}
@@ -69,7 +70,7 @@ export function FilterPopover({
       >
         <Stack sx={{ p: '16px 20px' }} gap={1}>
           <Typography variant="subtitle2">以{label}篩選</Typography>
-          {children}
+          {typeof children === 'function' ? children({ close: popupState.close }) : children}
         </Stack>
       </Popover>
     </>

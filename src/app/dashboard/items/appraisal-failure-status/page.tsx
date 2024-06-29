@@ -41,7 +41,7 @@ async function Table({ searchParams }: PageProps) {
   pagination[PAGE];
 
   const itemsRes = await items({
-    status: ITEM_STATUS_MAP[STATUS],
+    // status: ITEM_STATUS_MAP[STATUS],
     limit: pagination[ROWS_PER_PAGE],
     offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
     consignorID: searchParams.consignor ? Number(searchParams.consignor) : undefined,
