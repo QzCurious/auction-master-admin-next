@@ -7,7 +7,6 @@ import { unique } from 'remeda';
 
 export function SearchParamsPagination({ count }: { count: number }) {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const pagination = PaginationSchema.parse(Object.fromEntries(searchParams));
 
@@ -23,13 +22,13 @@ export function SearchParamsPagination({ count }: { count: number }) {
       onPageChange={(_, newPage) => {
         const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.set(PAGE, newPage.toString());
-        router.replace(`${pathname}?${newSearchParams.toString()}`);
+        router.replace(`?${newSearchParams.toString()}`);
       }}
       onRowsPerPageChange={(event) => {
         const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.set(ROWS_PER_PAGE, event.target.value);
         newSearchParams.delete(PAGE);
-        router.replace(`${pathname}?${newSearchParams.toString()}`);
+        router.replace(`?${newSearchParams.toString()}`);
       }}
     />
   );
