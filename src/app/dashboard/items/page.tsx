@@ -4,20 +4,37 @@ import { items } from '@/api/backend/items/items';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import { Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
+import * as R from 'remeda';
+import { z } from 'zod';
 
 import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
-import StatusTabs from '../StatusTabs';
+import { ConsignorFilter } from './ConsignorFilter';
+import RemoveSearchBtn from './RemoveSearchBtn';
 import { ItemTable } from './ItemTable';
+import { StatusFilter } from './StatusFilter';
 
 export const metadata = { title: `物品列表 | ${config.site.name}` } satisfies Metadata;
 
-const STATUS = 'ConsignmentCanceledStatus' satisfies (typeof ITEM_STATUS_DATA)[number]['key'];
+const STATUS = 'SubmitAppraisalStatus' satisfies (typeof ITEM_STATUS_DATA)[number]['key'];
+
+const filterSchema = z.object({
+  consignor: z.number().optional().catch(undefined),
+  status: z
+    .preprocess(
+      (v) => (typeof v === 'string' ? [v] : v),
+      z.coerce
+        .number()
+        .refine((v) => R.isIncludedIn(v, Object.values(ITEM_STATUS_MAP)))
+        .array()
+    )
+    .default([]),
+});
 
 interface PageProps {
-  searchParams: { consignor?: string } & PaginationSearchParams;
+  searchParams: { consignor?: string; status?: string | string[] } & PaginationSearchParams;
 }
 
 export default async function Page(pageProps: PageProps) {
@@ -29,7 +46,6 @@ export default async function Page(pageProps: PageProps) {
         </Stack>
       </Stack>
 
-      <StatusTabs status={STATUS} />
       <Table {...pageProps} />
     </Stack>
   );
@@ -37,14 +53,13 @@ export default async function Page(pageProps: PageProps) {
 
 async function Table({ searchParams }: PageProps) {
   const pagination = PaginationSchema.parse(searchParams);
-  pagination[ROWS_PER_PAGE];
-  pagination[PAGE];
+  const filters = filterSchema.parse(searchParams);
 
   const itemsRes = await items({
-    // status: ITEM_STATUS_MAP[STATUS],
+    status: filters.status,
     limit: pagination[ROWS_PER_PAGE],
     offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
-    consignorID: searchParams.consignor ? Number(searchParams.consignor) : undefined,
+    consignorID: filters.consignor,
     sort: 'createdAt',
     order: 'desc',
   });
@@ -57,5 +72,15 @@ async function Table({ searchParams }: PageProps) {
     return <RedirectAuthError />;
   }
 
-  return <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} />;
+  return (
+    <>
+      <Stack direction="row" columnGap={2}>
+        <ConsignorFilter />
+        <StatusFilter status={filters.status} />
+        <RemoveSearchBtn fields={['consignor', 'status']} />
+      </Stack>
+
+      <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} />
+    </>
+  );
 }

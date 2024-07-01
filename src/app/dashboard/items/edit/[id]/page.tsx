@@ -12,7 +12,7 @@ import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
-import ItemForm from '../../ItemForm';
+import ItemForm from './ItemForm';
 
 export const metadata = { title: `編輯物品 | ${config.site.name}` } satisfies Metadata;
 
@@ -24,7 +24,7 @@ async function Page(pageProps: PageProps) {
   return (
     <>
       <Stack alignItems="start">
-        <Link component={RouterLink} href="/dashboard/items/consignment-approved-status">
+        <Link component={RouterLink} href="/dashboard/items">
           <Stack direction="row" alignItems="center" columnGap={1}>
             <ArrowBackIcon /> 回到物品列表
           </Stack>

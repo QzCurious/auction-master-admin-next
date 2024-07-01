@@ -15,6 +15,7 @@ export const navItems = [
     href: '/dashboard/roles',
     PhosphorIcon: UserCircleGear,
     permissions: ['GetRoles'],
+    matcher: { type: 'startsWith', href: '/dashboard/roles' },
   },
   {
     key: 'admins',
@@ -22,6 +23,7 @@ export const navItems = [
     href: '/dashboard/admins',
     PhosphorIcon: ShieldStar,
     permissions: ['GetAdmins'],
+    matcher: { type: 'startsWith', href: '/dashboard/admins' },
   },
   {
     key: 'consignor-verifications',
@@ -36,13 +38,15 @@ export const navItems = [
     href: '/dashboard/consignors',
     PhosphorIcon: UsersIcon,
     permissions: ['AdminGetConsignors'],
+    matcher: { type: 'startsWith', href: '/dashboard/consignors' },
   },
   {
     key: 'items',
     title: '物品列表',
-    href: '/dashboard/items/submit-appraisal-status',
+    href: '/dashboard/items',
     PhosphorIcon: StackSimple,
     permissions: ['GetRoles'],
+    matcher: { type: 'startsWith', href: '/dashboard/items' },
   },
 
   {

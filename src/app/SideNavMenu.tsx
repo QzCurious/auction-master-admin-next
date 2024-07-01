@@ -1,48 +1,19 @@
-'use client';
+'use client'
 
-import * as React from 'react';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import { ArrowSquareUpRight as ArrowSquareUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareUpRight';
-
 import { paths } from '@/paths';
 import { Logo } from '@/components/core/logo';
+import { navItems } from '@/components/dashboard/layout/config';
+import { NavItem } from '@/components/dashboard/layout/NavItem';
 
-import { navItems } from './config';
-import { NavItem } from './NavItem';
-
-export function SideNav(): React.JSX.Element {
+export default function SideNavMenu() {
   return (
-    <Box
-      sx={{
-        '--SideNav-background': 'var(--mui-palette-neutral-950)',
-        '--SideNav-color': 'var(--mui-palette-common-white)',
-        '--NavItem-color': 'var(--mui-palette-neutral-300)',
-        '--NavItem-hover-background': 'rgba(255, 255, 255, 0.04)',
-        '--NavItem-active-background': 'var(--mui-palette-primary-main)',
-        '--NavItem-active-color': 'var(--mui-palette-primary-contrastText)',
-        '--NavItem-disabled-color': 'var(--mui-palette-neutral-500)',
-        '--NavItem-icon-color': 'var(--mui-palette-neutral-400)',
-        '--NavItem-icon-active-color': 'var(--mui-palette-primary-contrastText)',
-        '--NavItem-icon-disabled-color': 'var(--mui-palette-neutral-600)',
-        bgcolor: 'var(--SideNav-background)',
-        color: 'var(--SideNav-color)',
-        display: { xs: 'none', lg: 'flex' },
-        flexDirection: 'column',
-        height: '100%',
-        left: 0,
-        maxWidth: '100%',
-        position: 'fixed',
-        scrollbarWidth: 'none',
-        top: 0,
-        width: 'var(--SideNav-width)',
-        zIndex: 'var(--SideNav-zIndex)',
-        '&::-webkit-scrollbar': { display: 'none' },
-      }}
-    >
+    <>
       <Stack spacing={2} sx={{ p: 3 }}>
         <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex' }}>
           <Logo color="light" height={32} width={122} />
@@ -52,7 +23,7 @@ export function SideNav(): React.JSX.Element {
       <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
         <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0 }}>
           {navItems.map(({ key, ...item }) => (
-            <NavItem key={key} {...item} />
+            <NavItem key={key}  {...item}/>
           ))}
         </Stack>
       </Box>
@@ -72,6 +43,6 @@ export function SideNav(): React.JSX.Element {
           </Button>
         )}
       </Stack>
-    </Box>
+    </>
   );
 }

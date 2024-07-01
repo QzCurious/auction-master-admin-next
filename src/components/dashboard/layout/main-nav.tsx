@@ -1,19 +1,16 @@
 'use client';
 
 import * as React from 'react';
+import SideNavMenu from '@/app/SideNavMenu';
+import { Drawer } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
-import Tooltip from '@mui/material/Tooltip';
-import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
-import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 
 import { usePopover } from '@/hooks/use-popover';
 
-import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
 
 export function MainNav(): React.JSX.Element {
@@ -47,6 +44,38 @@ export function MainNav(): React.JSX.Element {
             >
               <ListIcon />
             </IconButton>
+
+            <Drawer
+              PaperProps={{
+                sx: {
+                  '--MobileNav-background': 'var(--mui-palette-neutral-950)',
+                  '--MobileNav-color': 'var(--mui-palette-common-white)',
+                  '--NavItem-color': 'var(--mui-palette-neutral-300)',
+                  '--NavItem-hover-background': 'rgba(255, 255, 255, 0.04)',
+                  '--NavItem-active-background': 'var(--mui-palette-primary-main)',
+                  '--NavItem-active-color': 'var(--mui-palette-primary-contrastText)',
+                  '--NavItem-disabled-color': 'var(--mui-palette-neutral-500)',
+                  '--NavItem-icon-color': 'var(--mui-palette-neutral-400)',
+                  '--NavItem-icon-active-color': 'var(--mui-palette-primary-contrastText)',
+                  '--NavItem-icon-disabled-color': 'var(--mui-palette-neutral-600)',
+                  bgcolor: 'var(--MobileNav-background)',
+                  color: 'var(--MobileNav-color)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  maxWidth: '100%',
+                  scrollbarWidth: 'none',
+                  width: 'var(--MobileNav-width)',
+                  zIndex: 'var(--MobileNav-zIndex)',
+                  '&::-webkit-scrollbar': { display: 'none' },
+                },
+              }}
+              onClose={() => {
+                setOpenNav(false);
+              }}
+              open={openNav}
+            >
+              <SideNavMenu />
+            </Drawer>
           </Stack>
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
             {/* <Tooltip title="Contacts">
@@ -71,12 +100,6 @@ export function MainNav(): React.JSX.Element {
         </Stack>
       </Box>
       <UserPopover anchorEl={userPopover.anchorRef.current} onClose={userPopover.handleClose} open={userPopover.open} />
-      <MobileNav
-        onClose={() => {
-          setOpenNav(false);
-        }}
-        open={openNav}
-      />
     </React.Fragment>
   );
 }
