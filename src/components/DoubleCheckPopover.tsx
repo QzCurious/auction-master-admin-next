@@ -36,7 +36,12 @@ export default function DoubleCheckPopover({
           {description}
         </Typography>
         <Stack direction="row" gap={2} justifyContent="end" sx={{ mt: 1 }}>
-          <Button variant="text" size="small" onClick={() => startTransition(async () => onCancel?.())}>
+          <Button
+            variant="outlined"
+            size="small"
+            color="error"
+            onClick={() => startTransition(async () => onCancel?.())}
+          >
             取消
           </Button>
           <Button

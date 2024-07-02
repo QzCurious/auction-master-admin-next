@@ -1,13 +1,22 @@
 'use client';
 
+import type React from 'react';
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { ITEM_STATUS_DATA, ITEM_STATUS_MAP, ITEM_TYPE_DATA, ITEM_TYPE_MAP } from '@/api/backend/configs.data';
+import {
+  ITEM_STATUS_DATA,
+  ITEM_STATUS_MAP,
+  ITEM_STATUS_MESSAGE_MAP,
+  ITEM_TYPE_DATA,
+  ITEM_TYPE_MAP,
+} from '@/api/backend/configs.data';
 import { type Consignor } from '@/api/backend/consignor/getConsignor';
 import { changeItemPhotoSort } from '@/api/backend/items/changeItemPhotoSort';
 import { deleteItemPhoto } from '@/api/backend/items/deleteItemPhoto';
 import { type Item } from '@/api/backend/items/getItem';
 import { itemArrival } from '@/api/backend/items/itemArrival';
+import { itemBidding } from '@/api/backend/items/itemBidding';
+import { itemCompleteDetail } from '@/api/backend/items/itemCompleteDetail';
 import { reviewItem } from '@/api/backend/items/reviewItem';
 import { updateItem } from '@/api/backend/items/updateItem';
 import { uploadItemPhotos } from '@/api/backend/items/uploadItemPhotos';
@@ -15,18 +24,7 @@ import { useObjectURL } from '@/helper/useObjectURL';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ClearIcon from '@mui/icons-material/Clear';
 import DragHandleOutlinedIcon from '@mui/icons-material/DragHandleOutlined';
-import {
-  Button,
-  Chip,
-  colors,
-  Grid,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  useTheme,
-} from '@mui/material';
+import { Button, colors, Grid, IconButton, InputLabel, MenuItem, Select, TextField, useTheme } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -394,9 +392,9 @@ function WithInFormContext({ item, consignor }: ItemFromProps) {
     watch,
     control,
     handleSubmit,
-    setError,
-    formState: { isSubmitting, errors, isDirty },
+    formState: { isSubmitting, isDirty },
     getValues,
+    setValue,
     reset,
   } = useFormContext<z.input<typeof FormSchema>>();
   const { enqueueSnackbar } = useSnackbar();
@@ -404,7 +402,7 @@ function WithInFormContext({ item, consignor }: ItemFromProps) {
   const readOnly = item.status !== ITEM_STATUS_MAP.SubmitAppraisalStatus;
 
   return (
-    <Stack rowGap={3}>
+    <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
       <Card
         sx={{ py: 2, px: 3 }}
         component="form"
@@ -468,26 +466,7 @@ function WithInFormContext({ item, consignor }: ItemFromProps) {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>狀愛</InputLabel>
-              <Select
-                label="狀態"
-                value={item.status}
-                inputProps={{ sx: { py: 1.5 } }}
-                readOnly
-                renderValue={() => (
-                  <Chip label={ITEM_STATUS_DATA.find(({ value }) => value === item.status)?.message} />
-                )}
-              >
-                {ITEM_STATUS_DATA.map((type) => (
-                  <MenuItem key={type.value} value={type.value}>
-                    {type.message}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+          <Grid item xs />
 
           <Grid item xs={12} sm={6}>
             <Controller
@@ -638,19 +617,318 @@ function WithInFormContext({ item, consignor }: ItemFromProps) {
         </Grid>
       </Card>
 
-      {item.status === ITEM_STATUS_MAP['SubmitAppraisalStatus'] && (
-        <Stack direction="row" spacing={2} justifyContent="end">
-          <RejectAppraisalBtn item={item} />
-          <ApproveAppraisalBtn item={item} />
-        </Stack>
-      )}
-      {item.status === ITEM_STATUS_MAP['ConsignmentApprovedStatus'] && (
-        <Stack direction="row" spacing={2} justifyContent="end">
-          <RejectArrivalBtn item={item} />
-          <ApproveArrivalBtn item={item} />
-        </Stack>
-      )}
+      <StatueFlow item={item} />
     </Stack>
+  );
+}
+
+function StatueFlow({ ...props }: { item: Item }) {
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+
+  // for debugging purposes
+  const [item, setItem] = useState(props.item);
+  useEffect(() => setItem(props.item), [props.item]);
+
+  return (
+    <Card
+      sx={{
+        py: 2,
+        px: 3,
+        position: 'relative',
+        minWidth: 'fit-content',
+        width: { xs: '100%', md: 220 },
+        flexShrink: 0,
+        alignSelf: 'flex-start',
+      }}
+    >
+      <Typography variant="h6">狀態流程</Typography>
+
+      <FormControl fullWidth sx={{ mt: 2.5 }}>
+        <InputLabel>狀態 (debug)</InputLabel>
+        <Select
+          label="狀態 (debug)"
+          value={item.status}
+          inputProps={{ sx: { py: 1.5 } }}
+          onChange={(e) => setItem({ ...item, status: e.target.value as number })}
+        >
+          {ITEM_STATUS_DATA.map((type) => (
+            <MenuItem key={type.value} value={type.value}>
+              {type.message}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <Box mt={2}>
+        <StatusStep
+          text={ITEM_STATUS_MESSAGE_MAP['SubmitAppraisalStatus']}
+          active={item.status === ITEM_STATUS_MAP['SubmitAppraisalStatus']}
+        >
+          {item.status === ITEM_STATUS_MAP['SubmitAppraisalStatus'] && (
+            <>
+              <RejectBtn
+                text="審核失敗"
+                popoverTitle="標記為審核失敗"
+                onConfirm={async () => {
+                  const res = await reviewItem(item.id, { action: 'reject' });
+                  if (res.error) {
+                    enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                    return;
+                  }
+                  enqueueSnackbar('已將物品標記為審核失敗', { variant: 'success' });
+                  router.refresh();
+                }}
+              />
+              <ApproveBtn
+                text="審核通過"
+                popoverTitle="標記為審核通過"
+                onConfirm={async () => {
+                  const res = await reviewItem(item.id, { action: 'approve' });
+                  if (res.error) {
+                    enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                    return;
+                  }
+                  enqueueSnackbar('已將物品標記為審核成功', { variant: 'success' });
+                  router.push('/dashboard/items');
+                }}
+              />
+            </>
+          )}
+        </StatusStep>
+
+        {item.status === ITEM_STATUS_MAP['AppraisalFailureStatus'] ? (
+          <StatusStep failed text={ITEM_STATUS_MESSAGE_MAP['AppraisalFailureStatus']} />
+        ) : (
+          <StatusStep
+            text={ITEM_STATUS_MESSAGE_MAP['AppraisedStatus']}
+            active={item.status === ITEM_STATUS_MAP['AppraisedStatus']}
+          />
+        )}
+
+        {item.status === ITEM_STATUS_MAP['ConsignmentCanceledStatus'] ? (
+          <StatusStep failed text={ITEM_STATUS_MESSAGE_MAP['ConsignmentCanceledStatus']} />
+        ) : (
+          <StatusStep
+            text={ITEM_STATUS_MESSAGE_MAP['ConsignmentApprovedStatus']}
+            active={item.status === ITEM_STATUS_MAP['ConsignmentApprovedStatus']}
+          >
+            {item.status === ITEM_STATUS_MAP['ConsignmentApprovedStatus'] && (
+              <>
+                <RejectBtn
+                  text="退貨"
+                  popoverTitle="標記為退貨"
+                  onConfirm={async () => {
+                    const res = await itemArrival(item.id, { action: 'reject' });
+                    if (res.error) {
+                      enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                      return;
+                    }
+                    enqueueSnackbar('已將物品標記為退貨', { variant: 'success' });
+                  }}
+                />
+                <ApproveBtn
+                  text="到貨"
+                  popoverTitle="標記為到貨"
+                  onConfirm={async () => {
+                    const res = await itemArrival(item.id, { action: 'approve' });
+                    if (res.error) {
+                      enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                      return;
+                    }
+                    enqueueSnackbar('已將物品標記為到貨', { variant: 'success' });
+                  }}
+                />
+              </>
+            )}
+          </StatusStep>
+        )}
+
+        {item.status === ITEM_STATUS_MAP['WarehouseReturnPendingStatus'] ? (
+          <StatusStep
+            text={ITEM_STATUS_MESSAGE_MAP['WarehouseReturnPendingStatus']}
+            active={item.status === ITEM_STATUS_MAP['WarehouseReturnPendingStatus']}
+          />
+        ) : (
+          <>
+            <StatusStep
+              text={ITEM_STATUS_MESSAGE_MAP['WarehouseArrivalStatus']}
+              active={item.status === ITEM_STATUS_MAP['WarehouseArrivalStatus']}
+            >
+              {item.status === ITEM_STATUS_MAP['WarehouseArrivalStatus'] && (
+                <>
+                  <RejectBtn
+                    text="退貨"
+                    popoverTitle="標記為退貨"
+                    onConfirm={async () => {
+                      const res = await itemArrival(item.id, { action: 'reject' });
+                      if (res.error) {
+                        enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                        return;
+                      }
+                      enqueueSnackbar('已將物品標記為退貨', { variant: 'success' });
+                    }}
+                  />
+
+                  <ApproveBtn
+                    text="可出售"
+                    popoverTitle="標記為可出售"
+                    onConfirm={async () => {
+                      const res = await itemCompleteDetail(item.id);
+                      if (res.error) {
+                        enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                        return;
+                      }
+                      enqueueSnackbar('已將物品標記為可出售', { variant: 'success' });
+                    }}
+                  />
+                </>
+              )}
+            </StatusStep>
+            <StatusStep
+              text={ITEM_STATUS_MESSAGE_MAP['DetailsFullyCompletedStatus']}
+              active={item.status === ITEM_STATUS_MAP['DetailsFullyCompletedStatus']}
+            />
+            <StatusStep
+              text={ITEM_STATUS_MESSAGE_MAP['ReadyStatus']}
+              active={item.status === ITEM_STATUS_MAP['ReadyStatus']}
+            >
+              {item.status === ITEM_STATUS_MAP['ReadyStatus'] && (
+                <ApproveBtn
+                  text="上架"
+                  popoverTitle="標記為上架"
+                  onConfirm={async () => {
+                    const res = await itemBidding(item.id);
+                    if (res.error) {
+                      enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                      return;
+                    }
+                    enqueueSnackbar('已將物品標記為上架', { variant: 'success' });
+                  }}
+                />
+              )}
+            </StatusStep>
+          </>
+        )}
+      </Box>
+    </Card>
+  );
+}
+
+function StatusStep({
+  text,
+  children,
+  ...props
+}: {
+  text: string;
+  children?: React.ReactNode;
+} & ({ active: boolean } | { failed: boolean })) {
+  const active = 'active' in props ? props.active : false;
+  const failed = 'failed' in props ? props.failed : false;
+
+  return (
+    <Stack
+      direction="row"
+      alignItems="start"
+      position="relative"
+      spacing={1.5}
+      sx={{
+        pb: 2,
+        '&[data-active]~[data-status-step]': {
+          '--color': 'var(--mui-palette-grey-400)',
+        },
+        '&[data-active], &[data-active]~[data-status-step]': {
+          '--tail-color': 'var(--mui-palette-grey-400)',
+        },
+        '&:last-of-type': { '[data-tail]': { display: 'none' } },
+        '&[data-failed] [data-tail],&[data-failed]~[data-status-step]': { display: 'none' },
+      }}
+      data-status-step
+      data-active={active ? true : undefined}
+      data-failed={failed ? true : undefined}
+    >
+      <Box
+        data-tail
+        sx={{
+          position: 'absolute',
+          top: 8,
+          left: 4,
+          right: 0,
+          height: '100%',
+          width: 2,
+          bgcolor: 'var(--tail-color, var(--mui-palette-primary-main))',
+        }}
+      />
+      <Stack height={21} justifyContent="center" position="relative">
+        <Box
+          sx={{
+            width: 10,
+            height: 10,
+            bgcolor: failed ? 'var(--mui-palette-grey-600)' : 'var(--color, var(--mui-palette-primary-main))',
+            borderRadius: '50%',
+          }}
+        />
+      </Stack>
+      <Stack spacing={1}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: failed || active ? 'var(--mui-palette-text-primary)' : 'var(--mui-palette-grey-600)',
+          }}
+        >
+          {text}
+        </Typography>
+
+        {children && (
+          <Stack direction="row" spacing={2} justifyContent="end">
+            {children}
+          </Stack>
+        )}
+      </Stack>
+    </Stack>
+  );
+}
+
+function RejectBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTitle: string; onConfirm: () => void }) {
+  const {
+    formState: { isDirty },
+  } = useFormContext<z.input<typeof FormSchema>>();
+  const popupState = usePopupState({
+    variant: 'popover',
+  });
+
+  return (
+    <>
+      <Button
+        {...bindTrigger(popupState)}
+        type="submit"
+        size="small"
+        color="error"
+        variant="outlined"
+        disabled={isDirty}
+      >
+        {text}
+      </Button>
+      <DoubleCheckPopover {...bindPopover(popupState)} title={popoverTitle} onConfirm={onConfirm} />
+    </>
+  );
+}
+
+function ApproveBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTitle: string; onConfirm: () => void }) {
+  const {
+    formState: { isDirty },
+  } = useFormContext<z.input<typeof FormSchema>>();
+  const popupState = usePopupState({
+    variant: 'popover',
+  });
+
+  return (
+    <>
+      <Button {...bindTrigger(popupState)} type="submit" size="small" variant="contained" disabled={isDirty}>
+        {text}
+      </Button>
+      <DoubleCheckPopover {...bindPopover(popupState)} title={popoverTitle} onConfirm={onConfirm} />
+    </>
   );
 }
 
@@ -667,7 +945,14 @@ function RejectAppraisalBtn({ item }: { item: Item }) {
 
   return (
     <>
-      <Button {...bindTrigger(popupState)} type="submit" color="error" variant="outlined" disabled={isDirty}>
+      <Button
+        {...bindTrigger(popupState)}
+        type="submit"
+        size="small"
+        color="error"
+        variant="outlined"
+        disabled={isDirty}
+      >
         審核失敗
       </Button>
       <DoubleCheckPopover
@@ -704,6 +989,7 @@ function ApproveAppraisalBtn({ item }: { item: Item }) {
       <Button
         {...bindTrigger(popupState)}
         type="submit"
+        size="small"
         variant="contained"
         disabled={isDirty}
         onClick={async (e) => {
@@ -741,7 +1027,7 @@ function RejectArrivalBtn({ item }: { item: Item }) {
 
   return (
     <>
-      <Button {...bindTrigger(popupState)} type="submit" color="error" variant="outlined">
+      <Button {...bindTrigger(popupState)} type="submit" size="small" color="error" variant="outlined">
         退貨
       </Button>
       <DoubleCheckPopover
@@ -770,7 +1056,7 @@ function ApproveArrivalBtn({ item }: { item: Item }) {
 
   return (
     <>
-      <Button {...bindTrigger(popupState)} type="submit" variant="contained">
+      <Button {...bindTrigger(popupState)} type="submit" size="small" variant="contained">
         到貨
       </Button>
       <DoubleCheckPopover
