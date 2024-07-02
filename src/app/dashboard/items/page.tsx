@@ -18,10 +18,8 @@ import { StatusFilter } from './StatusFilter';
 
 export const metadata = { title: `物品列表 | ${config.site.name}` } satisfies Metadata;
 
-const STATUS = 'SubmitAppraisalStatus' satisfies (typeof ITEM_STATUS_DATA)[number]['key'];
-
 const filterSchema = z.object({
-  consignor: z.number().optional().catch(undefined),
+  consignor: z.coerce.number().optional().catch(undefined),
   status: z
     .preprocess(
       (v) => (typeof v === 'string' ? [v] : v),
