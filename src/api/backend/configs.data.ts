@@ -50,23 +50,23 @@ export const CONFIGS_DATA = {
     },
     {
       key: 'WarehouseArrivalStatus',
-      message: '已到倉庫',
-      value: 21,
+      message: '倉管已確認',
+      value: 23,
     },
     {
       key: 'WarehouseReturnPendingStatus',
-      message: '準備退回客戶',
-      value: 22,
+      message: '準備退回',
+      value: 21,
     },
     {
       key: 'DetailsFullyCompletedStatus',
-      message: '上架資料已齊全',
-      value: 23,
+      message: '客服已確認',
+      value: 24,
     },
     {
       key: 'ReadyStatus',
       message: '準備上架',
-      value: 24,
+      value: 25,
     },
     {
       key: 'SoldStatus',
@@ -187,7 +187,7 @@ export const ITEM_TYPE_MAP = mapToObj(ITEM_TYPE_DATA, ({ key, value }) => [key, 
 
 export const ITEM_STATUS_DATA = CONFIGS_DATA.itemStatus;
 export const ITEM_STATUS_MAP = mapToObj(ITEM_STATUS_DATA, ({ key, value }) => [key, value]);
-
+export const ITEM_STATUS_MESSAGE_MAP = mapToObj(ITEM_STATUS_DATA, ({ key, message }) => [key, message]);
 
 export const AUCTION_ITEM_STATUS_DATA = CONFIGS_DATA.auctionItemStatus;
 export const AUCTION_ITEM_STATUS_MAP = mapToObj(AUCTION_ITEM_STATUS_DATA, ({ key, value }) => [key, value]);
