@@ -12,6 +12,8 @@ export async function middleware(request: NextRequest) {
 
   if (!newToken) {
     console.log('middleware: refresh token error', res);
+    response.cookies.delete(cookieConfigs.token.name);
+    response.cookies.delete(cookieConfigs.refreshToken.name);
     const goto = request.nextUrl.pathname === '/' ? '/dashboard' : request.nextUrl.pathname;
     return Response.redirect(new URL(`/auth/sign-in?goto=${goto}`, request.url));
   }
