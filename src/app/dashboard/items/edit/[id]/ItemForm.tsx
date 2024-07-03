@@ -1,8 +1,5 @@
 'use client';
 
-import type React from 'react';
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   ITEM_STATUS_DATA,
   ITEM_STATUS_MAP,
@@ -24,7 +21,19 @@ import { useObjectURL } from '@/helper/useObjectURL';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ClearIcon from '@mui/icons-material/Clear';
 import DragHandleOutlinedIcon from '@mui/icons-material/DragHandleOutlined';
-import { Button, colors, Grid, IconButton, InputLabel, MenuItem, Select, TextField, useTheme } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {
+  Button,
+  Chip,
+  colors,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  useTheme,
+} from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -35,12 +44,14 @@ import { useGesture } from '@use-gesture/react';
 import { useMotionValue } from 'framer-motion';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
+import type React from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { Controller, FormProvider, useFieldArray, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import { useHandleNoPermissions } from '@/contexts/UserContext';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
+import { useHandleNoPermissions } from '@/contexts/UserContext';
 
 interface ItemFromProps {
   item: Item;
@@ -49,6 +60,7 @@ interface ItemFromProps {
 
 const FormSchema = z
   .object({
+    status: z.number(),
     consignorID: z.number(),
     type: z.number().optional(),
     name: z.string().min(1, '必填'),
@@ -81,6 +93,7 @@ export default function ItemForm({ item, consignor }: ItemFromProps) {
   const defaultValues = useMemo(
     () => ({
       ...R.pick(item, [
+        'status',
         'consignorID',
         'type',
         'name',
@@ -622,13 +635,15 @@ function WithInFormContext({ item, consignor }: ItemFromProps) {
   );
 }
 
-function StatueFlow({ ...props }: { item: Item }) {
-  const router = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
+function StatueFlow({ item }: { item: Item }) {
+  const [status, setStatus] = useState(item.status);
+  useEffect(() => setStatus(item.status), [item.status]);
 
-  // for debugging purposes
-  const [item, setItem] = useState(props.item);
-  useEffect(() => setItem(props.item), [props.item]);
+  const [showMore, setShowMore] = useState(false);
+  const popupState = usePopupState({
+    variant: 'popover',
+  });
+  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <Card
@@ -644,21 +659,52 @@ function StatueFlow({ ...props }: { item: Item }) {
     >
       <Typography variant="h6">狀態流程</Typography>
 
-      <FormControl fullWidth sx={{ mt: 2.5 }}>
-        <InputLabel>狀態 (debug)</InputLabel>
-        <Select
-          label="狀態 (debug)"
-          value={item.status}
-          inputProps={{ sx: { py: 1.5 } }}
-          onChange={(e) => setItem({ ...item, status: e.target.value as number })}
-        >
-          {ITEM_STATUS_DATA.map((type) => (
-            <MenuItem key={type.value} value={type.value}>
-              {type.message}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <IconButton sx={{ position: 'absolute', top: 6, right: 6 }} onClick={() => setShowMore(!showMore)}>
+        <MoreVertIcon />
+      </IconButton>
+
+      {showMore && (
+        <Stack mt={2.5} mb={5} mx={-1} spacing={1}>
+          <FormControl fullWidth>
+            <InputLabel>狀態</InputLabel>
+            <Select
+              label="狀態"
+              size="small"
+              renderValue={(v) => <Chip label={ITEM_STATUS_DATA.find(({ value }) => value === v)?.message} />}
+              value={status}
+              onChange={(e) => setStatus(e.target.value as typeof status)}
+            >
+              {ITEM_STATUS_DATA.map((type) => (
+                <MenuItem key={type.value} value={type.value}>
+                  {type.message}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <Button size="small" variant="contained" color="error" {...bindTrigger(popupState)}>
+            更新
+          </Button>
+          <DoubleCheckPopover
+            {...bindPopover(popupState)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+            title="更新物品狀態"
+            description="此欄位修改需再確認"
+            onConfirm={async () => {
+              const res = await updateItem(item.id, { status });
+              if (res.error) {
+                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                setShowMore(false);
+                return;
+              }
+              enqueueSnackbar('已更新物品狀態', { variant: 'success' });
+              setShowMore(false);
+              popupState.close();
+            }}
+          />
+        </Stack>
+      )}
 
       <Box mt={2}>
         <StatusStep
@@ -677,7 +723,6 @@ function StatueFlow({ ...props }: { item: Item }) {
                     return;
                   }
                   enqueueSnackbar('已將物品標記為審核失敗', { variant: 'success' });
-                  router.refresh();
                 }}
               />
               <ApproveBtn
@@ -690,7 +735,6 @@ function StatueFlow({ ...props }: { item: Item }) {
                     return;
                   }
                   enqueueSnackbar('已將物品標記為審核成功', { variant: 'success' });
-                  router.push('/dashboard/items');
                 }}
               />
             </>
@@ -928,150 +972,6 @@ function ApproveBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTi
         {text}
       </Button>
       <DoubleCheckPopover {...bindPopover(popupState)} title={popoverTitle} onConfirm={onConfirm} />
-    </>
-  );
-}
-
-function RejectAppraisalBtn({ item }: { item: Item }) {
-  const {
-    watch,
-    formState: { isDirty },
-  } = useFormContext<z.input<typeof FormSchema>>();
-  const popupState = usePopupState({
-    variant: 'popover',
-  });
-  const router = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
-
-  return (
-    <>
-      <Button
-        {...bindTrigger(popupState)}
-        type="submit"
-        size="small"
-        color="error"
-        variant="outlined"
-        disabled={isDirty}
-      >
-        審核失敗
-      </Button>
-      <DoubleCheckPopover
-        {...bindPopover(popupState)}
-        title="標記為審核失敗"
-        onConfirm={async () => {
-          const res = await reviewItem(item.id, { action: 'reject' });
-          if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-            return;
-          }
-          enqueueSnackbar('已將物品標記為審核失敗', { variant: 'success' });
-          router.push('/dashboard/items');
-        }}
-      />
-    </>
-  );
-}
-
-function ApproveAppraisalBtn({ item }: { item: Item }) {
-  const {
-    formState: { isDirty },
-    setError,
-    getValues,
-  } = useFormContext<z.input<typeof FormSchema>>();
-  const popupState = usePopupState({
-    variant: 'popover',
-  });
-  const router = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
-
-  return (
-    <>
-      <Button
-        {...bindTrigger(popupState)}
-        type="submit"
-        size="small"
-        variant="contained"
-        disabled={isDirty}
-        onClick={async (e) => {
-          if (!getValues().type) {
-            setError('type', { message: '請選類型' });
-          }
-          bindTrigger(popupState).onClick(e);
-        }}
-      >
-        審核成功
-      </Button>
-      <DoubleCheckPopover
-        {...bindPopover(popupState)}
-        title="標記為審核成功"
-        onConfirm={async () => {
-          const res = await reviewItem(item.id, { action: 'approve' });
-          if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-            return;
-          }
-          enqueueSnackbar('已將物品標記為審核成功', { variant: 'success' });
-          router.push('/dashboard/items');
-        }}
-      />
-    </>
-  );
-}
-
-function RejectArrivalBtn({ item }: { item: Item }) {
-  const popupState = usePopupState({
-    variant: 'popover',
-  });
-  const router = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
-
-  return (
-    <>
-      <Button {...bindTrigger(popupState)} type="submit" size="small" color="error" variant="outlined">
-        退貨
-      </Button>
-      <DoubleCheckPopover
-        {...bindPopover(popupState)}
-        title="標記為退貨"
-        onConfirm={async () => {
-          const res = await itemArrival(item.id, { action: 'reject' });
-          if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-            return;
-          }
-          enqueueSnackbar('已將物品標記為退貨', { variant: 'success' });
-          router.push('/dashboard/items');
-        }}
-      />
-    </>
-  );
-}
-
-function ApproveArrivalBtn({ item }: { item: Item }) {
-  const popupState = usePopupState({
-    variant: 'popover',
-  });
-  const router = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
-
-  return (
-    <>
-      <Button {...bindTrigger(popupState)} type="submit" size="small" variant="contained">
-        到貨
-      </Button>
-      <DoubleCheckPopover
-        {...bindPopover(popupState)}
-        title="標記為到貨"
-        onConfirm={async () => {
-          const res = await itemArrival(item.id, { action: 'approve' });
-          if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-            return;
-          }
-          enqueueSnackbar('已將物品標記為到貨', { variant: 'success' });
-          router.push('/dashboard/items');
-        }}
-      />
     </>
   );
 }

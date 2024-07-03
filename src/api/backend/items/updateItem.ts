@@ -20,7 +20,7 @@ const ReqSchema = z.object({
   minEstimatedPrice: z.number().optional(),
   maxEstimatedPrice: z.number().optional(),
   sellerID: z.number().optional(),
-  reservePrice: z.number().min(1),
+  reservePrice: z.number().min(1).optional(),
   expireAt: z.date().nullable().optional(),
   status: z.number().optional(),
 });
