@@ -49,14 +49,19 @@ export const CONFIGS_DATA = {
       value: 12,
     },
     {
-      key: 'WarehouseArrivalStatus',
-      message: '倉管已確認',
-      value: 23,
-    },
-    {
       key: 'WarehouseReturnPendingStatus',
       message: '準備退回',
       value: 21,
+    },
+    {
+      key: 'WarehouseReturningStatus',
+      message: '退貨準備中',
+      value: 22,
+    },
+    {
+      key: 'WarehouseArrivalStatus',
+      message: '倉管已確認',
+      value: 23,
     },
     {
       key: 'DetailsFullyCompletedStatus',
@@ -67,6 +72,11 @@ export const CONFIGS_DATA = {
       key: 'ReadyStatus',
       message: '準備上架',
       value: 25,
+    },
+    {
+      key: 'BiddingStatus',
+      message: '競標中',
+      value: 26,
     },
     {
       key: 'SoldStatus',
