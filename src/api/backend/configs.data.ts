@@ -79,6 +79,11 @@ export const CONFIGS_DATA = {
       value: 26,
     },
     {
+      key: 'CompanyReclaimedStatus',
+      message: '被公司收回',
+      value: 27,
+    },
+    {
       key: 'SoldStatus',
       message: '已售出',
       value: 31,
@@ -198,6 +203,7 @@ export const ITEM_TYPE_MAP = mapToObj(ITEM_TYPE_DATA, ({ key, value }) => [key, 
 export const ITEM_STATUS_DATA = CONFIGS_DATA.itemStatus;
 export const ITEM_STATUS_MAP = mapToObj(ITEM_STATUS_DATA, ({ key, value }) => [key, value]);
 export const ITEM_STATUS_MESSAGE_MAP = mapToObj(ITEM_STATUS_DATA, ({ key, message }) => [key, message]);
+export const ITEM_STATUS_KEY_MAP = mapToObj(ITEM_STATUS_DATA, ({ key, value }) => [value, key]);
 
 export const AUCTION_ITEM_STATUS_DATA = CONFIGS_DATA.auctionItemStatus;
 export const AUCTION_ITEM_STATUS_MAP = mapToObj(AUCTION_ITEM_STATUS_DATA, ({ key, value }) => [key, value]);

@@ -1,18 +1,20 @@
-import { type Metadata } from 'next';
-import RouterLink from 'next/link';
-import { notFound } from 'next/navigation';
 import { getConsignor } from '@/api/backend/consignor/getConsignor';
 import { getItem } from '@/api/backend/items/getItem';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Link } from '@mui/material';
+import { Box, Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Stack } from '@mui/system';
+import { type Metadata } from 'next';
+import RouterLink from 'next/link';
+import { notFound } from 'next/navigation';
 
-import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import { config } from '@/config';
 
-import ItemForm from './ItemForm';
+import { ItemForm, ItemFormProvider } from './ItemForm';
+import PhotoListSection from './PhotoListSection';
+import StatusFlowSection from './StatusFlowSection';
 
 export const metadata = { title: `編輯物品 | ${config.site.name}` } satisfies Metadata;
 
@@ -34,14 +36,14 @@ async function Page(pageProps: PageProps) {
         編輯物品
       </Typography>
 
-      <Form {...pageProps} />
+      <Content {...pageProps} />
     </>
   );
 }
 
 export default Page;
 
-async function Form({ params }: PageProps) {
+async function Content({ params }: PageProps) {
   const itemRes = await getItem(parseInt(params.id));
 
   if (itemRes.error === '1001') {
@@ -56,15 +58,30 @@ async function Form({ params }: PageProps) {
     notFound();
   }
 
-  const consignor = await getConsignor(itemRes.data.consignorID);
+  const consignorRes = await getConsignor(itemRes.data.consignorID);
 
-  if (consignor.error === '1001') {
+  if (consignorRes.error === '1001') {
     return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
   }
 
-  if (consignor.error === '1003') {
+  if (consignorRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
-  return <ItemForm item={itemRes.data} consignor={consignor.data} />;
+  return (
+    <>
+      <Box mt={2}>
+        <PhotoListSection item={itemRes.data} />
+      </Box>
+
+      <Box mt={4}>
+        <ItemFormProvider item={itemRes.data}>
+          <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
+            <ItemForm item={itemRes.data} consignor={consignorRes.data} />
+            <StatusFlowSection item={itemRes.data} />
+          </Stack>
+        </ItemFormProvider>
+      </Box>
+    </>
+  );
 }

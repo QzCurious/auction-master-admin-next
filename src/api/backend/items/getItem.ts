@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
+import { type ITEM_STATUS_KEY_MAP } from '../configs.data';
 
 export const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),
@@ -31,7 +32,7 @@ export interface Item {
   sellerID: number;
   reservePrice: number;
   expireAt: string | null;
-  status: number;
+  status: keyof typeof ITEM_STATUS_KEY_MAP;
   createdAt: string;
   updatedAt: string;
 }

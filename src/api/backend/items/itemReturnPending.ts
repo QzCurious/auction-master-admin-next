@@ -9,8 +9,8 @@ type Data = 'Success';
 
 type ErrorCode = never;
 
-export async function itemBidding(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/bidding`, {
+export async function itemReturnPending(id: number) {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/return-pending`, {
     method: 'POST',
   });
 
