@@ -1,0 +1,109 @@
+import Quill, { type Delta, type EmitterSource, type Range } from 'quill/core';
+
+import 'quill/dist/quill.snow.css';
+
+import { BackgroundStyle } from 'quill/formats/background';
+import Bold from 'quill/formats/bold';
+import { ColorStyle } from 'quill/formats/color';
+import Header from 'quill/formats/header';
+import IndentClass from 'quill/formats/indent';
+import Italic from 'quill/formats/italic';
+import Link from 'quill/formats/link';
+import ListItem from 'quill/formats/list';
+import Underline from 'quill/formats/underline';
+import Toolbar from 'quill/modules/toolbar';
+import SnowTheme from 'quill/themes/snow';
+import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
+
+import './QuillTextEditor.css';
+
+Quill.register('modules/toolbar', Toolbar);
+Quill.register('themes/snow', SnowTheme);
+Quill.register('formats/bold', Bold);
+Quill.register('formats/italic', Italic);
+Quill.register('formats/underline', Underline);
+Quill.register('formats/header', Header);
+Quill.register('formats/color', ColorStyle);
+Quill.register('formats/background', BackgroundStyle);
+Quill.register('formats/indent', IndentClass);
+Quill.register('formats/link', Link);
+Quill.register('formats/list', ListItem);
+
+interface EditorProps {
+  readOnly?: boolean;
+  defaultValue?: Delta;
+  onTextChange?: (delta: Delta, oldContent: Delta, source: EmitterSource) => void;
+  onSelectionChange?: (range: Range, oldRange: Range, source: EmitterSource) => void;
+}
+
+// Editor is an uncontrolled React component
+const QuillTextEditor = forwardRef<Quill, EditorProps>(function QuillTextEditor(
+  { readOnly, defaultValue, onTextChange, onSelectionChange },
+  ref
+) {
+  const quillRef = useRef<Quill>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const defaultValueRef = useRef(defaultValue);
+  const onTextChangeRef = useRef(onTextChange);
+  const onSelectionChangeRef = useRef(onSelectionChange);
+
+  useLayoutEffect(() => {
+    onTextChangeRef.current = onTextChange;
+    onSelectionChangeRef.current = onSelectionChange;
+  });
+
+  useEffect(() => {
+    quillRef.current?.enable(!readOnly);
+  }, [ref, readOnly]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const editorContainer = container.appendChild(container.ownerDocument.createElement('div'));
+    const quill = new Quill(editorContainer, {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline'], // toggled buttons
+          ['link'],
+          // ['link', 'image'],
+
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          [{ indent: '-1' }, { indent: '+1' }], // outdent/indent
+
+          [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+
+          ['clean'], // remove formatting button
+        ],
+      },
+      theme: 'snow',
+    });
+
+    (quillRef.current as any) = quill;
+    if (typeof ref === 'function') ref(quill);
+    if (ref && typeof ref === 'object') ref.current = quill;
+
+    if (defaultValueRef.current) {
+      quill.setContents(defaultValueRef.current);
+    }
+
+    quill.on(Quill.events.TEXT_CHANGE, (...args) => {
+      onTextChangeRef.current?.(...args);
+    });
+
+    quill.on(Quill.events.SELECTION_CHANGE, (...args) => {
+      onSelectionChangeRef.current?.(...args);
+    });
+
+    return () => {
+      (quillRef.current as any) = null;
+      if (typeof ref === 'function') ref(null);
+      if (ref && typeof ref === 'object') ref.current = null;
+      container.innerHTML = '';
+    };
+  }, [ref]);
+
+  return <div ref={containerRef}></div>;
+});
+
+export default QuillTextEditor;

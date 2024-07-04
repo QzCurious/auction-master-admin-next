@@ -23,11 +23,10 @@ import { Box, Stack } from '@mui/system';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 import { useFormContext } from 'react-hook-form';
-import { type z } from 'zod';
 
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
-import { type FormSchema } from './ItemForm';
+import { FormSchemaType } from './ItemForm';
 
 export default function StatusFlowSection({ item }: { item: Item }) {
   const [status, setStatus] = useState(item.status);
@@ -306,11 +305,7 @@ function StatusFlow({ item }: { item: Item }) {
     const step = steps[status];
     const active = ITEM_STATUS_MAP[step.status] === item.status;
     return (
-      <StatusStep
-        key={step.status}
-        text={ITEM_STATUS_MESSAGE_MAP[step.status]}
-        active={active}
-      >
+      <StatusStep key={step.status} text={ITEM_STATUS_MESSAGE_MAP[step.status]} active={active}>
         {active ? step.actions : null}
       </StatusStep>
     );
@@ -380,7 +375,7 @@ function StatusStep({ text, children, active }: { text: string; children?: React
 function RejectBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTitle: string; onConfirm: () => void }) {
   const {
     formState: { isDirty },
-  } = useFormContext<z.input<typeof FormSchema>>();
+  } = useFormContext<FormSchemaType>();
   const popupState = usePopupState({
     variant: 'popover',
   });
@@ -405,7 +400,7 @@ function RejectBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTit
 function ApproveBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTitle: string; onConfirm: () => void }) {
   const {
     formState: { isDirty },
-  } = useFormContext<z.input<typeof FormSchema>>();
+  } = useFormContext<FormSchemaType>();
   const popupState = usePopupState({
     variant: 'popover',
   });

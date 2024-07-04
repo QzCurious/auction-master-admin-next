@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { ITEM_STATUS_MAP, ITEM_TYPE_DATA, ITEM_TYPE_MAP } from '@/api/backend/configs.data';
 import { type Consignor } from '@/api/backend/consignor/getConsignor';
 import { type Item } from '@/api/backend/items/getItem';
@@ -14,24 +14,29 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
 import { useSnackbar } from 'notistack';
+import type Quill from 'quill/core';
+import { Delta } from 'quill/core';
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
 
 import { useHandleNoPermissions } from '@/contexts/UserContext';
 
+import QuillTextEditor from '../../QuillTextEditor';
+
 interface ItemFromProps {
   item: Item;
   consignor: Consignor;
 }
 
-export const FormSchema = z
+export type FormSchemaType = z.infer<typeof FormSchema>;
+const FormSchema = z
   .object({
     status: z.number(),
     consignorID: z.number(),
     type: z.number().optional(),
     name: z.string().min(1, '必填'),
-    description: z.string().nullable(),
+    description: z.string().default(''),
     space: z.number().min(1, '必填'),
     minEstimatedPrice: z.coerce.number().optional(),
     maxEstimatedPrice: z.coerce.number().optional(),
@@ -64,13 +69,12 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
         'consignorID',
         'type',
         'name',
-        'description',
         'space',
         'minEstimatedPrice',
         'maxEstimatedPrice',
         'reservePrice',
       ]),
-      description: item.description ?? '',
+      description: item.description ? item.description : JSON.stringify(new Delta().insert('\n').ops),
     }),
     [item]
   );
@@ -96,10 +100,11 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
     formState: { isSubmitting, isDirty },
     getValues,
     reset,
-  } = useFormContext<z.input<typeof FormSchema>>();
+  } = useFormContext<z.output<typeof FormSchema>>();
   const { enqueueSnackbar } = useSnackbar();
   const handleNoPermissions = useHandleNoPermissions();
   const readOnly = item.status !== ITEM_STATUS_MAP.SubmitAppraisalStatus;
+  const quillRef = useRef<Quill>(null);
 
   return (
     <Card
@@ -201,27 +206,6 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
           />
         </Grid>
 
-        <Grid item xs={12} sm={12}>
-          <Controller
-            control={control}
-            name="description"
-            render={({ field, fieldState }) => (
-              <FormControl fullWidth error={!!fieldState.error}>
-                <TextField
-                  {...field}
-                  label="描述"
-                  type="text"
-                  fullWidth
-                  multiline
-                  minRows={2}
-                  InputProps={{ readOnly }}
-                />
-                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-              </FormControl>
-            )}
-          />
-        </Grid>
-
         <Grid item xs={12} sm={6}>
           <Controller
             name="space"
@@ -313,6 +297,28 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
             </Grid>
           </>
         )}
+
+        <Grid item xs={12} sm={12}>
+          <Typography variant="h6" mb={1}>
+            描述
+          </Typography>
+
+          <Controller
+            name="description"
+            control={control}
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <QuillTextEditor
+                  ref={quillRef}
+                  readOnly={readOnly}
+                  defaultValue={new Delta({ ops: JSON.parse(field.value) })}
+                  onTextChange={(delta, oldDelta) => field.onChange(JSON.stringify(oldDelta.compose(delta).ops))}
+                />
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
+        </Grid>
       </Grid>
     </Card>
   );
