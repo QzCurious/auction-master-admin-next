@@ -103,7 +103,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
   } = useFormContext<z.output<typeof FormSchema>>();
   const { enqueueSnackbar } = useSnackbar();
   const handleNoPermissions = useHandleNoPermissions();
-  const readOnly = item.status !== ITEM_STATUS_MAP.SubmitAppraisalStatus;
+  // const readOnly = item.status !== ITEM_STATUS_MAP.SubmitAppraisalStatus;
+  const readOnly = false
   const quillRef = useRef<Quill>(null);
 
   return (
