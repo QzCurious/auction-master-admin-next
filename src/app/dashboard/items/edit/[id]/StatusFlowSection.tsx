@@ -272,7 +272,11 @@ function StatusFlow({ item }: { item: Item }) {
     }
   }
 
-  function getTravelPath(start: keyof typeof steps, end: keyof typeof steps, visited = new Set<keyof typeof steps>()): Array<keyof typeof steps> {
+  function getTravelPath(
+    start: keyof typeof steps,
+    end: keyof typeof steps,
+    visited = new Set<keyof typeof steps>()
+  ): Array<keyof typeof steps> {
     if (visited.has(start)) return [];
     visited.add(start);
 
@@ -306,7 +310,6 @@ function StatusFlow({ item }: { item: Item }) {
         key={step.status}
         text={ITEM_STATUS_MESSAGE_MAP[step.status]}
         active={active}
-        end={active && !step.next}
       >
         {active ? step.actions : null}
       </StatusStep>
@@ -314,17 +317,7 @@ function StatusFlow({ item }: { item: Item }) {
   });
 }
 
-function StatusStep({
-  text,
-  children,
-  active,
-  end,
-}: {
-  text: string;
-  children?: React.ReactNode;
-  active: boolean;
-  end: boolean;
-}) {
+function StatusStep({ text, children, active }: { text: string; children?: React.ReactNode; active: boolean }) {
   return (
     <Stack
       direction="row"
@@ -361,7 +354,7 @@ function StatusStep({
           sx={{
             width: 10,
             height: 10,
-            bgcolor: end ? 'var(--mui-palette-grey-600)' : 'var(--color, var(--mui-palette-primary-main))',
+            bgcolor: 'var(--color, var(--mui-palette-primary-main))',
             borderRadius: '50%',
           }}
         />
@@ -369,9 +362,7 @@ function StatusStep({
       <Stack spacing={1}>
         <Typography
           variant="body2"
-          sx={{
-            color: end || active ? 'var(--mui-palette-text-primary)' : 'var(--mui-palette-grey-600)',
-          }}
+          sx={{ color: active ? 'var(--mui-palette-text-primary)' : 'var(--mui-palette-grey-600)' }}
         >
           {text}
         </Typography>
