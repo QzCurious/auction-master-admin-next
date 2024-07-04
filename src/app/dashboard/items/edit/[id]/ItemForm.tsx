@@ -1,8 +1,9 @@
 'use client';
 
 import type React from 'react';
-import { useEffect, useMemo, useRef } from 'react';
-import { ITEM_STATUS_MAP, ITEM_TYPE_DATA, ITEM_TYPE_MAP } from '@/api/backend/configs.data';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { ITEM_TYPE_DATA, ITEM_TYPE_MAP } from '@/api/backend/configs.data';
 import { type Consignor } from '@/api/backend/consignor/getConsignor';
 import { type Item } from '@/api/backend/items/getItem';
 import { updateItem } from '@/api/backend/items/updateItem';
@@ -64,26 +65,34 @@ const FormSchema = z
 export function ItemFormProvider({ item, children }: { item: Item; children: React.ReactNode }) {
   const defaultValues = useMemo(
     () => ({
-      ...R.pick(item, [
-        'status',
-        'consignorID',
-        'type',
-        'name',
-        'space',
-        'minEstimatedPrice',
-        'maxEstimatedPrice',
-        'reservePrice',
-      ]),
+      status: item.status,
+      consignorID: item.consignorID,
+      type: item.type,
+      name: item.name,
+      space: item.space,
+      minEstimatedPrice: item.minEstimatedPrice,
+      maxEstimatedPrice: item.maxEstimatedPrice,
+      reservePrice: item.reservePrice,
       description: item.description ? item.description : JSON.stringify(new Delta().insert('\n').ops),
     }),
-    [item]
+    [
+      item.consignorID,
+      item.description,
+      item.maxEstimatedPrice,
+      item.minEstimatedPrice,
+      item.name,
+      item.reservePrice,
+      item.space,
+      item.status,
+      item.type,
+    ]
   );
   const form = useForm<z.input<typeof FormSchema>>({
     defaultValues,
     resolver: zodResolver(FormSchema),
   });
 
-  // 編輯成功後重置表單預設值
+  // 編輯成功後重置表單，對應 server data
   const { reset } = form;
   useEffect(() => {
     reset(defaultValues);
@@ -103,9 +112,19 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
   } = useFormContext<z.output<typeof FormSchema>>();
   const { enqueueSnackbar } = useSnackbar();
   const handleNoPermissions = useHandleNoPermissions();
-  // const readOnly = item.status !== ITEM_STATUS_MAP.SubmitAppraisalStatus;
-  const readOnly = false
+  const readOnly = false;
   const quillRef = useRef<Quill>(null);
+  const router = useRouter();
+
+  const handleReset = useCallback(() => {
+    reset();
+    quillRef.current?.setContents(
+      item.description ? new Delta({ ops: JSON.parse(item.description) }) : new Delta().insert('\n').ops
+    );
+  }, [item.description, reset]);
+  useEffect(() => {
+    handleReset();
+  }, [handleReset]);
 
   return (
     <Card
@@ -134,7 +153,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
         )}
 
         {isDirty && (
-          <Button type="button" color="secondary" variant="text" onClick={() => reset()}>
+          <Button type="button" color="secondary" variant="text" onClick={handleReset}>
             重設
           </Button>
         )}
