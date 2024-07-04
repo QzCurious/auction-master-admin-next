@@ -23,7 +23,7 @@ import { z } from 'zod';
 
 import { useHandleNoPermissions } from '@/contexts/UserContext';
 
-import QuillTextEditor from '../../QuillTextEditor';
+import QuillTextEditor from '../../../../../components/QuillTextEditor/QuillTextEditor';
 
 interface ItemFromProps {
   item: Item;
