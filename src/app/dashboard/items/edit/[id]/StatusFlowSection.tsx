@@ -255,7 +255,7 @@ function StatusFlow({ item }: { item: Item }) {
     },
     BiddingStatus: {
       status: 'BiddingStatus',
-      next: ['SoldStatus', 'CompanyRepurchasedStatus'],
+      next: ['SoldStatus', 'CompanyRepurchasedStatus', 'ReadyStatus'],
     },
     CompanyRepurchasedStatus: {
       status: 'CompanyRepurchasedStatus',
@@ -272,12 +272,15 @@ function StatusFlow({ item }: { item: Item }) {
     }
   }
 
-  function getTravelPath(start: keyof typeof steps, end: keyof typeof steps): Array<keyof typeof steps> {
+  function getTravelPath(start: keyof typeof steps, end: keyof typeof steps, visited = new Set<keyof typeof steps>()): Array<keyof typeof steps> {
+    if (visited.has(start)) return [];
+    visited.add(start);
+
     if (!steps[start].next) return [];
     if (start === end) return [start];
     if (steps[start].next.includes(end)) return [start, end];
-    for (const next of steps[start].next) {
-      const path = getTravelPath(next, end);
+    for (const each of steps[start].next) {
+      const path = getTravelPath(each, end, visited);
       if (path.length > 1) return [start, ...path];
     }
     return [];
