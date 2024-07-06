@@ -133,7 +133,7 @@ export function SignInForm() {
         </Typography>{' '}
         with password{' '}
         <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          1234
+          as123456
         </Typography>
       </Alert>
     </Stack>
