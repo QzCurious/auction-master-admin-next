@@ -1,61 +1,89 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ITEM_STATUS_DATA } from '@/api/backend/configs.data';
+import { ITEM_STATUS_DATA, ITEM_STATUS_MAP } from '@/api/backend/configs.data';
+import { type StatusCount } from '@/api/backend/items/items';
 import { PAGE } from '@/static';
-import { Box, Chip, MenuItem, Select } from '@mui/material';
+import { Badge, Box, Chip, colors, MenuItem, Select, Typography } from '@mui/material';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
 interface StatusFilterProps {
-  status: Array<(typeof ITEM_STATUS_DATA)[number]['value']>;
+  selected: Array<(typeof ITEM_STATUS_DATA)[number]['value']>;
+  statusCount: StatusCount;
 }
 
-export function StatusFilter({ status }: StatusFilterProps) {
+const statusForAdmin = [
+  ITEM_STATUS_MAP.SubmitAppraisalStatus,
+  ITEM_STATUS_MAP.ConsignmentApprovedStatus,
+  ITEM_STATUS_MAP.WarehouseArrivalStatus,
+  ITEM_STATUS_MAP.ReadyStatus,
+  ITEM_STATUS_MAP.WarehouseReturningStatus,
+] as const;
+
+export function StatusFilter({ selected, statusCount }: StatusFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   return (
-    <FilterPopover
-      label="狀態"
-      field="status"
-      transform={() => status.map((v) => ITEM_STATUS_DATA.find(({ value }) => value === v)?.message).join(', ')}
-      onRemove={() => {
-        const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.delete('status');
-        newSearchParams.delete(PAGE);
-        router.push(`?${newSearchParams}`);
-      }}
+    <Badge
+      color="primary"
+      variant="dot"
+      sx={{ '& .MuiBadge-dot': { mt: '2px', mr: '4px' } }}
+      invisible={statusForAdmin.map((v) => statusCount[v]).every((v) => !v)}
     >
-      {({ close }) => (
-        <Select
-          sx={{ minWidth: 240, maxWidth: 360 }}
-          multiple
-          value={status}
-          renderValue={(selected) => (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected.map((v) => (
-                <Chip key={v} label={ITEM_STATUS_DATA.find(({ value }) => value === v)?.message} />
-              ))}
-            </Box>
-          )}
-          onChange={(v) => {
-            const newSearchParams = new URLSearchParams(searchParams);
-            newSearchParams.delete('status');
-            for (const value of v.target.value) {
-              newSearchParams.append('status', value.toString());
-            }
-            router.push(`?${newSearchParams.toString()}`);
-          }}
-          onClose={close}
-        >
-          {ITEM_STATUS_DATA.map(({ value, message }) => (
-            <MenuItem key={value} value={value}>
-              {message}
-            </MenuItem>
-          ))}
-        </Select>
-      )}
-    </FilterPopover>
+      <FilterPopover
+        label="狀態"
+        field="status"
+        transform={() => selected.map((v) => ITEM_STATUS_DATA.find(({ value }) => value === v)?.message).join(', ')}
+        onRemove={() => {
+          const newSearchParams = new URLSearchParams(searchParams);
+          newSearchParams.delete('status');
+          newSearchParams.delete(PAGE);
+          router.push(`?${newSearchParams}`);
+        }}
+      >
+        {({ close }) => (
+          <Select
+            sx={{ minWidth: 240, maxWidth: 360 }}
+            multiple
+            size="small"
+            value={selected}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selected.map((v) => (
+                  <Chip key={v} label={ITEM_STATUS_DATA.find(({ value }) => value === v)?.message} />
+                ))}
+              </Box>
+            )}
+            onChange={(v) => {
+              const newSearchParams = new URLSearchParams(searchParams);
+              newSearchParams.delete('status');
+              for (const value of v.target.value) {
+                newSearchParams.append('status', value.toString());
+              }
+              router.push(`?${newSearchParams.toString()}`);
+            }}
+            onClose={close}
+          >
+            {ITEM_STATUS_DATA.map(({ key, value, message }) => (
+              <MenuItem
+                key={value}
+                value={value}
+                sx={{ columnGap: 1, color: !statusForAdmin.includes(value) ? colors.grey[600] : undefined }}
+                title={`${key} ${value}`}
+              >
+                {message}
+                {statusForAdmin.includes(value) && (
+                  <Typography component="span" color={colors.grey[600]}>
+                    ({statusCount[value] ?? 0})
+                  </Typography>
+                )}
+              </MenuItem>
+            ))}
+          </Select>
+        )}
+      </FilterPopover>
+    </Badge>
   );
 }

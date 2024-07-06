@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
+import { type ITEM_STATUS_KEY_MAP } from '../configs.data';
 
 export const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),
@@ -33,9 +34,14 @@ export interface Item {
   updatedAt: string;
 }
 
+export type StatusCount = {
+  [k in keyof typeof ITEM_STATUS_KEY_MAP]?: number;
+};
+
 interface Data {
   items: Array<Item>;
   count: number;
+  statusCounts: StatusCount;
 }
 
 type ErrorCode = never;

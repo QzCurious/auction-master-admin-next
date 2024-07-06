@@ -1,3 +1,5 @@
+'use client';
+
 import type React from 'react';
 import { useSearchParams } from 'next/navigation';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
