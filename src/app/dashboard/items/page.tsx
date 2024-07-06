@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ITEM_STATUS_MAP } from '@/api/backend/configs.data';
 import { items } from '@/api/backend/items/items';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
-import { Box, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import * as R from 'remeda';
 import { z } from 'zod';
@@ -38,7 +38,7 @@ interface PageProps {
 
 export default async function Page(pageProps: PageProps) {
   return (
-    <>
+    <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4">物品列表</Typography>
@@ -46,7 +46,7 @@ export default async function Page(pageProps: PageProps) {
       </Stack>
 
       <Content {...pageProps} />
-    </>
+    </Stack>
   );
 }
 
@@ -73,15 +73,13 @@ async function Content({ searchParams }: PageProps) {
 
   return (
     <AutoRefreshPage ms={10_000}>
-      <Stack mt={3} direction="row" columnGap={2}>
+      <Stack direction="row" columnGap={2}>
         <ConsignorFilter />
         <StatusFilter selected={filters.status} statusCount={itemsRes.data.statusCounts} />
         <RemoveSearchBtn fields={['consignor', 'status']} />
       </Stack>
 
-      <Box mt={3}>
-        <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} />
-      </Box>
+      <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} />
     </AutoRefreshPage>
   );
 }
