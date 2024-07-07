@@ -27,6 +27,8 @@ import { useFormContext } from 'react-hook-form';
 
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
+import { FormSchemaType } from './ItemForm';
+
 export default function StatusFlowSection({ item }: { item: Item }) {
   const [status, setStatus] = useState(item.status);
   useEffect(() => setStatus(item.status), [item.status]);
@@ -115,6 +117,7 @@ function NotImplemented() {
 
 function StatusFlowUI({ item }: { item: Item }) {
   const { enqueueSnackbar } = useSnackbar();
+  const { setError } = useFormContext<FormSchemaType>();
 
   const statusFlowWithAdminActions = StatusFlow.withActions('admin', {
     SubmitAppraisalStatus: (
@@ -135,6 +138,10 @@ function StatusFlowUI({ item }: { item: Item }) {
           text="審核通過"
           popoverTitle="標記為審核通過"
           onConfirm={async () => {
+            if (item.type === 0) {
+              setError('type', { message: '請選擇物品類型' });
+              return;
+            }
             const res = await reviewItem(item.id, { action: 'approve' });
             if (res.error) {
               enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });

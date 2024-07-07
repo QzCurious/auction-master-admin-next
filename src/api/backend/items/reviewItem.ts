@@ -13,7 +13,9 @@ const ReqSchema = z.object({
 
 type Data = 'Success';
 
-type ErrorCode = never;
+type ErrorCode =
+  // item type not set
+  '1023';
 
 export async function reviewItem(id: number, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
