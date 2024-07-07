@@ -79,11 +79,6 @@ export const CONFIGS_DATA = {
       value: 26,
     },
     {
-      key: 'CompanyReclaimedStatus',
-      message: '被公司收回',
-      value: 27,
-    },
-    {
       key: 'SoldStatus',
       message: '已售出',
       value: 31,
@@ -97,6 +92,11 @@ export const CONFIGS_DATA = {
       key: 'CompanyRepurchasedStatus',
       message: '被公司買回',
       value: 33,
+    },
+    {
+      key: 'CompanyReclaimedStatus',
+      message: '被公司收回',
+      value: 34,
     },
   ],
   auctionItemStatus: [

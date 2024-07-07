@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ITEM_STATUS_DATA, ITEM_STATUS_MAP } from '@/api/backend/configs.data';
 import { type StatusCount } from '@/api/backend/items/items';
 import { PAGE } from '@/static';
+import { StatusFlow } from '@/StatusFlow';
 import { Badge, Box, Chip, colors, MenuItem, Select, Typography } from '@mui/material';
 
 import { FilterPopover } from '@/components/FilterPopover';
@@ -13,13 +14,9 @@ interface StatusFilterProps {
   statusCount: StatusCount;
 }
 
-const statusForAdmin = [
-  ITEM_STATUS_MAP.SubmitAppraisalStatus,
-  ITEM_STATUS_MAP.ConsignmentApprovedStatus,
-  ITEM_STATUS_MAP.WarehouseArrivalStatus,
-  ITEM_STATUS_MAP.ReadyStatus,
-  ITEM_STATUS_MAP.WarehouseReturningStatus,
-] as const;
+const statusForAdmin = Object.values(StatusFlow.flow)
+  .filter((v) => 'adjudicator' in v && v.adjudicator === 'admin')
+  .map((v) => ITEM_STATUS_MAP[v.status]);
 
 export function StatusFilter({ selected, statusCount }: StatusFilterProps) {
   const router = useRouter();

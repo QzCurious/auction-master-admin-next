@@ -14,8 +14,9 @@ import { itemCompleteDetails } from '@/api/backend/items/itemCompleteDetails';
 import { itemReturnPending } from '@/api/backend/items/itemReturnPending';
 import { reviewItem } from '@/api/backend/items/reviewItem';
 import { updateItem } from '@/api/backend/items/updateItem';
+import { StatusFlow } from '@/StatusFlow';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Button, Chip, IconButton, InputLabel, MenuItem, Select } from '@mui/material';
+import { Button, Chip, colors, IconButton, InputLabel, MenuItem, Select } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import Typography from '@mui/material/Typography/Typography';
@@ -25,8 +26,6 @@ import { useSnackbar } from 'notistack';
 import { useFormContext } from 'react-hook-form';
 
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
-
-import { FormSchemaType } from './ItemForm';
 
 export default function StatusFlowSection({ item }: { item: Item }) {
   const [status, setStatus] = useState(item.status);
@@ -100,189 +99,137 @@ export default function StatusFlowSection({ item }: { item: Item }) {
       )}
 
       <Box mt={2}>
-        <StatusFlow item={item} />
+        <StatusFlowUI item={item} />
       </Box>
     </Card>
   );
 }
 
-type Step =
-  | {
-      status: keyof typeof ITEM_STATUS_MAP;
-      next?: never;
-      actions?: never;
-    }
-  | {
-      status: keyof typeof ITEM_STATUS_MAP;
-      next: [keyof typeof ITEM_STATUS_MAP, ...Array<keyof typeof ITEM_STATUS_MAP>];
-      actions?: React.ReactNode;
-    };
+function NotImplemented() {
+  return (
+    <Box sx={{ color: colors.grey[600], bgcolor: colors.grey[100], px: 2, py: 0.5 }}>
+      <Typography variant="body2">尚未實作</Typography>
+    </Box>
+  );
+}
 
-function StatusFlow({ item }: { item: Item }) {
+function StatusFlowUI({ item }: { item: Item }) {
   const { enqueueSnackbar } = useSnackbar();
 
-  // 要從 flowchart 的 root 依序排到 leaf; happy path 要排在 next 的最前面
-  const steps: Record<keyof typeof ITEM_STATUS_MAP, Step> = {
-    SubmitAppraisalStatus: {
-      status: 'SubmitAppraisalStatus',
-      next: ['AppraisedStatus', 'AppraisalFailureStatus'],
-      actions: (
-        <>
-          <RejectBtn
-            text="審核失敗"
-            popoverTitle="標記為審核失敗"
-            onConfirm={async () => {
-              const res = await reviewItem(item.id, { action: 'reject' });
-              if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-                return;
-              }
-              enqueueSnackbar('已將物品標記為審核失敗', { variant: 'success' });
-            }}
-          />
-          <ApproveBtn
-            text="審核通過"
-            popoverTitle="標記為審核通過"
-            onConfirm={async () => {
-              const res = await reviewItem(item.id, { action: 'approve' });
-              if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-                return;
-              }
-              enqueueSnackbar('已將物品標記為審核成功', { variant: 'success' });
-            }}
-          />
-        </>
-      ),
-    },
-    AppraisalFailureStatus: {
-      status: 'AppraisalFailureStatus',
-    },
-    AppraisedStatus: {
-      status: 'AppraisedStatus',
-      next: ['ConsignmentApprovedStatus', 'ConsignmentCanceledStatus'],
-    },
-    ConsignmentCanceledStatus: {
-      status: 'ConsignmentCanceledStatus',
-    },
-    ConsignmentApprovedStatus: {
-      status: 'ConsignmentApprovedStatus',
-      next: ['WarehouseArrivalStatus', 'WarehouseReturnPendingStatus'],
-      actions: (
-        <>
-          <RejectBtn
-            text="退貨"
-            popoverTitle="標記為退貨"
-            onConfirm={async () => {
-              const res = await itemArrival(item.id, { action: 'reject' });
-              if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-                return;
-              }
-              enqueueSnackbar('已將物品標記為退貨', { variant: 'success' });
-            }}
-          />
-          <ApproveBtn
-            text="到貨"
-            popoverTitle="標記為到貨"
-            onConfirm={async () => {
-              const res = await itemArrival(item.id, { action: 'approve' });
-              if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-                return;
-              }
-              enqueueSnackbar('已將物品標記為到貨', { variant: 'success' });
-            }}
-          />
-        </>
-      ),
-    },
-    WarehouseReturnPendingStatus: {
-      status: 'WarehouseReturnPendingStatus',
-      next: ['WarehouseReturningStatus'],
-    },
-    WarehouseReturningStatus: {
-      status: 'WarehouseReturningStatus',
-      next: ['ReturnedStatus'],
-    },
-    ReturnedStatus: {
-      status: 'ReturnedStatus',
-    },
-    WarehouseArrivalStatus: {
-      status: 'WarehouseArrivalStatus',
-      next: ['DetailsFullyCompletedStatus', 'WarehouseReturnPendingStatus'],
-      actions: (
-        <>
-          <RejectBtn
-            text="準備退貨"
-            popoverTitle="標記為準備退貨"
-            onConfirm={async () => {
-              const res = await itemReturnPending(item.id);
-              if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-                return;
-              }
-              enqueueSnackbar('已將物品標記為準備退貨', { variant: 'success' });
-            }}
-          />
+  const statusFlowWithAdminActions = StatusFlow.withActions('admin', {
+    SubmitAppraisalStatus: (
+      <>
+        <RejectBtn
+          text="審核失敗"
+          popoverTitle="標記為審核失敗"
+          onConfirm={async () => {
+            const res = await reviewItem(item.id, { action: 'reject' });
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為審核失敗', { variant: 'success' });
+          }}
+        />
+        <ApproveBtn
+          text="審核通過"
+          popoverTitle="標記為審核通過"
+          onConfirm={async () => {
+            const res = await reviewItem(item.id, { action: 'approve' });
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為審核成功', { variant: 'success' });
+          }}
+        />
+      </>
+    ),
+    ConsignmentApprovedStatus: (
+      <>
+        <RejectBtn
+          text="退貨"
+          popoverTitle="標記為退貨"
+          onConfirm={async () => {
+            const res = await itemArrival(item.id, { action: 'reject' });
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為退貨', { variant: 'success' });
+          }}
+        />
+        <ApproveBtn
+          text="到貨"
+          popoverTitle="標記為到貨"
+          onConfirm={async () => {
+            const res = await itemArrival(item.id, { action: 'approve' });
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為到貨', { variant: 'success' });
+          }}
+        />
+      </>
+    ),
+    WarehouseReturnPendingStatus: <NotImplemented />,
+    WarehouseReturningStatus: <NotImplemented />,
+    WarehouseArrivalStatus: (
+      <>
+        <RejectBtn
+          text="準備退貨"
+          popoverTitle="標記為準備退貨"
+          onConfirm={async () => {
+            const res = await itemReturnPending(item.id);
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為準備退貨', { variant: 'success' });
+          }}
+        />
 
-          <ApproveBtn
-            text="檢查完成"
-            popoverTitle="標記為檢查完成"
-            onConfirm={async () => {
-              const res = await itemCompleteDetails(item.id);
-              if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-                return;
-              }
-              enqueueSnackbar('已將物品標記為檢查完成', { variant: 'success' });
-            }}
-          />
-        </>
-      ),
-    },
-    DetailsFullyCompletedStatus: {
-      status: 'DetailsFullyCompletedStatus',
-      next: ['ReadyStatus', 'WarehouseReturnPendingStatus'],
-    },
-    ReadyStatus: {
-      status: 'ReadyStatus',
-      next: ['BiddingStatus', 'CompanyReclaimedStatus'],
-    },
-    CompanyReclaimedStatus: {
-      status: 'CompanyReclaimedStatus',
-    },
-    BiddingStatus: {
-      status: 'BiddingStatus',
-      next: ['SoldStatus', 'CompanyRepurchasedStatus', 'ReadyStatus'],
-    },
-    CompanyRepurchasedStatus: {
-      status: 'CompanyRepurchasedStatus',
-    },
-    SoldStatus: {
-      status: 'SoldStatus',
-    },
-  };
+        <ApproveBtn
+          text="檢查完成"
+          popoverTitle="標記為檢查完成"
+          onConfirm={async () => {
+            const res = await itemCompleteDetails(item.id);
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為檢查完成', { variant: 'success' });
+          }}
+        />
+      </>
+    ),
+    ReadyStatus: <NotImplemented />,
+    BiddingStatus: <NotImplemented />,
+  });
 
   if (process.env.NODE_ENV === 'development') {
-    if (Object.keys(steps).length !== ITEM_STATUS_DATA.length) {
-      const missing = ITEM_STATUS_DATA.map((s) => s.key).filter((s) => !Object.keys(steps).includes(s));
+    if (Object.keys(statusFlowWithAdminActions).length !== ITEM_STATUS_DATA.length) {
+      const missing = ITEM_STATUS_DATA.map((s) => s.key).filter(
+        (s) => !Object.keys(statusFlowWithAdminActions).includes(s)
+      );
       console.error(`Steps length mismatch, missing: ${missing.join(', ')}`);
     }
   }
 
   function getTravelPath(
-    start: keyof typeof steps,
-    end: keyof typeof steps,
-    visited = new Set<keyof typeof steps>()
-  ): Array<keyof typeof steps> {
+    start: keyof typeof statusFlowWithAdminActions,
+    end: keyof typeof statusFlowWithAdminActions,
+    visited = new Set<keyof typeof statusFlowWithAdminActions>()
+  ): Array<keyof typeof statusFlowWithAdminActions> {
     if (visited.has(start)) return [];
     visited.add(start);
 
-    if (!steps[start].next) return [];
+    const step = statusFlowWithAdminActions[start];
+    if (!('next' in step)) return [];
     if (start === end) return [start];
-    if (steps[start].next.includes(end)) return [start, end];
-    for (const each of steps[start].next) {
+    if (step.next.includes(end as never)) return [start, end];
+    for (const each of step.next) {
       const path = getTravelPath(each, end, visited);
       if (path.length > 1) return [start, ...path];
     }
@@ -295,18 +242,19 @@ function StatusFlow({ item }: { item: Item }) {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const last = path[path.length - 1];
-      const happyNext = steps[last].next?.[0];
+      const step = statusFlowWithAdminActions[last];
+      const happyNext = 'next' in step && step.next?.[0];
       if (!happyNext) break;
       path.push(happyNext);
     }
   }
 
   return path.map((status) => {
-    const step = steps[status];
+    const step = statusFlowWithAdminActions[status];
     const active = ITEM_STATUS_MAP[step.status] === item.status;
     return (
       <StatusStep key={step.status} text={ITEM_STATUS_MESSAGE_MAP[step.status]} active={active}>
-        {active ? step.actions : null}
+        {active && 'actions' in step && step.actions}
       </StatusStep>
     );
   });
@@ -375,7 +323,7 @@ function StatusStep({ text, children, active }: { text: string; children?: React
 function RejectBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTitle: string; onConfirm: () => void }) {
   const {
     formState: { isDirty },
-  } = useFormContext<FormSchemaType>();
+  } = useFormContext();
   const popupState = usePopupState({
     variant: 'popover',
   });
@@ -400,7 +348,7 @@ function RejectBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTit
 function ApproveBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTitle: string; onConfirm: () => void }) {
   const {
     formState: { isDirty },
-  } = useFormContext<FormSchemaType>();
+  } = useFormContext();
   const popupState = usePopupState({
     variant: 'popover',
   });

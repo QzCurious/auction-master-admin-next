@@ -30,7 +30,6 @@ interface ItemFromProps {
   consignor: Consignor;
 }
 
-export type FormSchemaType = z.infer<typeof FormSchema>;
 const FormSchema = z
   .object({
     status: z.number(),
