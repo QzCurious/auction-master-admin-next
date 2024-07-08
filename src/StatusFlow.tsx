@@ -9,7 +9,7 @@ type Adjudicator = 'admin' | 'consignor';
 type Step =
   | {
       status: keyof typeof ITEM_STATUS_MAP;
-      next?: never;
+      next: [];
       adjudicator?: never;
     }
   | {
@@ -29,6 +29,7 @@ export class StatusFlow {
     },
     AppraisalFailureStatus: {
       status: 'AppraisalFailureStatus',
+      next: [],
     },
     AppraisedStatus: {
       status: 'AppraisedStatus',
@@ -37,6 +38,7 @@ export class StatusFlow {
     },
     ConsignmentCanceledStatus: {
       status: 'ConsignmentCanceledStatus',
+      next: [],
     },
     ConsignmentApprovedStatus: {
       status: 'ConsignmentApprovedStatus',
@@ -55,6 +57,7 @@ export class StatusFlow {
     },
     ReturnedStatus: {
       status: 'ReturnedStatus',
+      next: [],
     },
     WarehouseArrivalStatus: {
       status: 'WarehouseArrivalStatus',
@@ -73,6 +76,7 @@ export class StatusFlow {
     },
     CompanyReclaimedStatus: {
       status: 'CompanyReclaimedStatus',
+      next: [],
     },
     BiddingStatus: {
       status: 'BiddingStatus',
@@ -81,9 +85,11 @@ export class StatusFlow {
     },
     CompanyRepurchasedStatus: {
       status: 'CompanyRepurchasedStatus',
+      next: [],
     },
     SoldStatus: {
       status: 'SoldStatus',
+      next: [],
     },
   } satisfies Record<keyof typeof ITEM_STATUS_MAP, Step>;
 
@@ -121,8 +127,85 @@ export class StatusFlow {
 const s = StatusFlow.withActions('consignor', { AppraisedStatus: 'dd', DetailsFullyCompletedStatus: 'bb' });
 s.SubmitAppraisalStatus;
 s.AppraisedStatus;
+s.CompanyRepurchasedStatus;
 
 const key: keyof typeof StatusFlow.flow = 'SubmitAppraisalStatus' as keyof typeof StatusFlow.flow;
 const dd = s[key];
 'next' in s[key] && s[key].next;
 'next' in dd && dd.next;
+
+const bbb = dfs(
+  Object.values(StatusFlow.flow).map((v) => ({ value: v.status, next: v.next })),
+  'SubmitAppraisalStatus',
+  'ReturnedStatus'
+); //?
+const aaa = bfs(
+  Object.values(StatusFlow.flow).map((v) => ({ value: v.status, next: v.next })),
+  'SubmitAppraisalStatus',
+  'ReturnedStatus'
+); //?
+
+interface TreeNode<T> {
+  value: T;
+  next: T[];
+}
+
+export function dfs<T>(nodes: TreeNode<T>[], from: T, to: T): T[] | null {
+  const startNode = nodes.find((node) => node.value === from);
+  if (!startNode) return null;
+
+  const visited = new Set<T>();
+  const path: T[] = [];
+
+  function dfsRecursive(node: TreeNode<T>): boolean {
+    visited.add(node.value);
+    path.push(node.value);
+
+    if (node.value === to) {
+      return true;
+    }
+
+    for (const nextValue of node.next) {
+      if (!visited.has(nextValue)) {
+        const nextNode = nodes.find((n) => n.value === nextValue);
+        if (nextNode && dfsRecursive(nextNode)) {
+          return true;
+        }
+      }
+    }
+
+    path.pop();
+    return false;
+  }
+
+  return dfsRecursive(startNode) ? path : null;
+}
+
+export function bfs<T>(nodes: TreeNode<T>[], from: T, to: T): T[] | null {
+  const startNode = nodes.find((node) => node.value === from);
+  if (!startNode) return null;
+
+  const queue: [TreeNode<T>, T[]][] = [[startNode, []]];
+  const visited = new Set<T>();
+
+  while (queue.length > 0) {
+    const [currentNode, path] = queue.shift()!;
+
+    if (currentNode.value === to) {
+      return [...path, currentNode.value];
+    }
+
+    visited.add(currentNode.value);
+
+    for (const nextValue of currentNode.next) {
+      if (!visited.has(nextValue)) {
+        const nextNode = nodes.find((n) => n.value === nextValue);
+        if (nextNode) {
+          queue.push([nextNode, [...path, currentNode.value]]);
+        }
+      }
+    }
+  }
+
+  return null;
+}

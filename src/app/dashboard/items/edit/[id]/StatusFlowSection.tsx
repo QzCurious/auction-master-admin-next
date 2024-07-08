@@ -15,7 +15,7 @@ import { itemReturning } from '@/api/backend/items/itemReturning';
 import { itemReturnPending } from '@/api/backend/items/itemReturnPending';
 import { reviewItem } from '@/api/backend/items/reviewItem';
 import { updateItem } from '@/api/backend/items/updateItem';
-import { StatusFlow } from '@/StatusFlow';
+import { bfs, StatusFlow } from '@/StatusFlow';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Button, Chip, colors, IconButton, InputLabel, MenuItem, Select } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -239,36 +239,24 @@ function StatusFlowUI({ item }: { item: Item }) {
     }
   }
 
-  function getTravelPath(
-    start: keyof typeof statusFlowWithAdminActions,
-    end: keyof typeof statusFlowWithAdminActions,
-    visited = new Set<keyof typeof statusFlowWithAdminActions>()
-  ): Array<keyof typeof statusFlowWithAdminActions> {
-    if (visited.has(start)) return [];
-    visited.add(start);
+  const path = bfs(
+    Object.values(statusFlowWithAdminActions).map((v) => ({ value: v.status, next: v.next })),
+    'SubmitAppraisalStatus',
+    ITEM_STATUS_KEY_MAP[item.status]
+  );
 
-    const step = statusFlowWithAdminActions[start];
-    if (!('next' in step)) return [];
-    if (start === end) return [start];
-    if (step.next.includes(end as never)) return [start, end];
-    for (const each of step.next) {
-      const path = getTravelPath(each, end, visited);
-      if (path.length > 1) return [start, ...path];
-    }
-    return [];
+  if (!path) {
+    return null;
   }
-  const path = getTravelPath('SubmitAppraisalStatus', ITEM_STATUS_KEY_MAP[item.status]);
 
   // fill with happy path
-  if (path.length > 0) {
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const last = path[path.length - 1];
-      const step = statusFlowWithAdminActions[last];
-      const happyNext = 'next' in step && step.next?.[0];
-      if (!happyNext) break;
-      path.push(happyNext);
-    }
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const last = path[path.length - 1];
+    const step = statusFlowWithAdminActions[last];
+    const happyNext = 'next' in step && step.next?.[0];
+    if (!happyNext) break;
+    path.push(happyNext);
   }
 
   return path.map((status) => {
