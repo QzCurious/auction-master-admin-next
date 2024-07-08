@@ -259,7 +259,7 @@ function StatusFlowUI({ item }: { item: Item }) {
     path.push(happyNext);
   }
 
-  return path.map((status) => {
+  const result = path.map((status) => {
     const step = statusFlowWithAdminActions[status];
     const active = ITEM_STATUS_MAP[step.status] === item.status;
     return (
@@ -268,6 +268,17 @@ function StatusFlowUI({ item }: { item: Item }) {
       </StatusStep>
     );
   });
+
+  // inject fake step --------------
+  const i = result.findIndex(({ key }) => key === 'ConsignmentApprovedStatus');
+  if (i !== -1) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const active = result[i + 2].props.active;
+    result.splice(i + 1, 0, <StatusStep key="fake" text="已到貨" active={active} />);
+  }
+  // -------------------------------
+
+  return result;
 }
 
 function StatusStep({ text, children, active }: { text: string; children?: React.ReactNode; active: boolean }) {
