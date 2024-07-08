@@ -11,6 +11,7 @@ import {
 import { type Item } from '@/api/backend/items/getItem';
 import { itemArrival } from '@/api/backend/items/itemArrival';
 import { itemCompleteDetails } from '@/api/backend/items/itemCompleteDetails';
+import { itemReturning } from '@/api/backend/items/itemReturning';
 import { itemReturnPending } from '@/api/backend/items/itemReturnPending';
 import { reviewItem } from '@/api/backend/items/reviewItem';
 import { updateItem } from '@/api/backend/items/updateItem';
@@ -27,7 +28,7 @@ import { useFormContext } from 'react-hook-form';
 
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
-import { FormSchemaType } from './ItemForm';
+import { type FormSchemaType } from './ItemForm';
 
 export default function StatusFlowSection({ item }: { item: Item }) {
   const [status, setStatus] = useState(item.status);
@@ -96,6 +97,7 @@ export default function StatusFlowSection({ item }: { item: Item }) {
               setShowMore(false);
               popupState.close();
             }}
+            onCancel={popupState.close}
           />
         </Stack>
       )}
@@ -155,10 +157,10 @@ function StatusFlowUI({ item }: { item: Item }) {
     ConsignmentApprovedStatus: (
       <>
         <RejectBtn
-          text="退貨"
-          popoverTitle="標記為退貨"
+          text="準備退貨"
+          popoverTitle="標記為準備退貨"
           onConfirm={async () => {
-            const res = await itemArrival(item.id, { action: 'reject' });
+            const res = await itemReturnPending(item.id);
             if (res.error) {
               enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
               return;
@@ -170,7 +172,7 @@ function StatusFlowUI({ item }: { item: Item }) {
           text="到貨"
           popoverTitle="標記為到貨"
           onConfirm={async () => {
-            const res = await itemArrival(item.id, { action: 'approve' });
+            const res = await itemArrival(item.id);
             if (res.error) {
               enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
               return;
@@ -180,7 +182,20 @@ function StatusFlowUI({ item }: { item: Item }) {
         />
       </>
     ),
-    WarehouseReturnPendingStatus: <NotImplemented />,
+    WarehouseReturnPendingStatus: (
+      <ApproveBtn
+        text="退貨中"
+        popoverTitle="標記為退貨中"
+        onConfirm={async () => {
+          const res = await itemReturning(item.id);
+          if (res.error) {
+            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+            return;
+          }
+          enqueueSnackbar('已將物品標記為退貨中', { variant: 'success' });
+        }}
+      />
+    ),
     WarehouseReturningStatus: <NotImplemented />,
     WarehouseArrivalStatus: (
       <>
@@ -347,7 +362,12 @@ function RejectBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTit
       >
         {text}
       </Button>
-      <DoubleCheckPopover {...bindPopover(popupState)} title={popoverTitle} onConfirm={onConfirm} />
+      <DoubleCheckPopover
+        {...bindPopover(popupState)}
+        title={popoverTitle}
+        onConfirm={onConfirm}
+        onCancel={popupState.close}
+      />
     </>
   );
 }
@@ -365,7 +385,12 @@ function ApproveBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTi
       <Button {...bindTrigger(popupState)} type="submit" size="small" variant="contained" disabled={isDirty}>
         {text}
       </Button>
-      <DoubleCheckPopover {...bindPopover(popupState)} title={popoverTitle} onConfirm={onConfirm} />
+      <DoubleCheckPopover
+        {...bindPopover(popupState)}
+        title={popoverTitle}
+        onConfirm={onConfirm}
+        onCancel={popupState.close}
+      />
     </>
   );
 }
