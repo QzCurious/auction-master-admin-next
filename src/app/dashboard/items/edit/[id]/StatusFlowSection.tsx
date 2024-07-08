@@ -70,7 +70,7 @@ export default function StatusFlowSection({ item }: { item: Item }) {
               onChange={(e) => setStatus(e.target.value as typeof status)}
             >
               {ITEM_STATUS_DATA.map((type) => (
-                <MenuItem key={type.value} value={type.value}>
+                <MenuItem key={type.value} value={type.value} title={`${type.key} ${type.value}`}>
                   {type.message}
                 </MenuItem>
               ))}
