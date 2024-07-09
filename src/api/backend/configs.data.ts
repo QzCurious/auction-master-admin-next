@@ -5,6 +5,25 @@ export const CONFIGS_DATA = {
   commissionRate: 0.2,
   commissionBonusRate: 0.05,
   lineURL: 'https://lin.ee/YgTRcyc',
+  shippingInfo: {
+    company: {
+      address: '台北市信義區市府路45號',
+      recipientName: '台灣王',
+      phone: '0900000000',
+    },
+    sevenEleven: {
+      storeNumber: '123',
+      storeName: '台灣7-11',
+      recipientName: '7-11王',
+      phone: '0987654321',
+    },
+    family: {
+      storeNumber: '1234',
+      storeName: '台灣全家',
+      recipientName: '全家王',
+      phone: '0912345678',
+    },
+  },
   itemType: [
     {
       key: 'AppraisableAuctionItemType',
@@ -49,22 +68,27 @@ export const CONFIGS_DATA = {
       value: 12,
     },
     {
+      key: 'ConsignorShippedItem',
+      message: '已寄出',
+      value: 13,
+    },
+    {
+      key: 'WarehouseArrivalStatus',
+      message: '已到貨',
+      value: 21,
+    },
+    {
       key: 'WarehouseReturnPendingStatus',
       message: '準備退回',
-      value: 21,
+      value: 22,
     },
     {
       key: 'WarehouseReturningStatus',
       message: '退貨準備中',
-      value: 22,
-    },
-    {
-      key: 'WarehouseArrivalStatus',
-      message: '倉管已確認',
       value: 23,
     },
     {
-      key: 'DetailsFullyCompletedStatus',
+      key: 'CustomerServiceConfirmedStatus',
       message: '客服已確認',
       value: 24,
     },
@@ -170,7 +194,6 @@ export const CONFIGS_DATA = {
       value: 13,
     },
   ],
-  shippingInfo: '',
   workerType: [
     {
       key: 'SellerType',

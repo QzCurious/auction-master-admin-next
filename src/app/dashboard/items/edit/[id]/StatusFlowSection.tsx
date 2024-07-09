@@ -11,6 +11,7 @@ import {
 import { type Item } from '@/api/backend/items/getItem';
 import { itemArrival } from '@/api/backend/items/itemArrival';
 import { itemCompleteDetails } from '@/api/backend/items/itemCompleteDetails';
+import { itemReturn } from '@/api/backend/items/itemReturn';
 import { itemReturning } from '@/api/backend/items/itemReturning';
 import { itemReturnPending } from '@/api/backend/items/itemReturnPending';
 import { reviewItem } from '@/api/backend/items/reviewItem';
@@ -29,6 +30,7 @@ import { useFormContext } from 'react-hook-form';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
 import { type FormSchemaType } from './ItemForm';
+import { itemBidding } from '@/api/backend/items/itemBidding';
 
 export default function StatusFlowSection({ item }: { item: Item }) {
   const [status, setStatus] = useState(item.status);
@@ -154,33 +156,19 @@ function StatusFlowUI({ item }: { item: Item }) {
         />
       </>
     ),
-    ConsignmentApprovedStatus: (
-      <>
-        <RejectBtn
-          text="準備退貨"
-          popoverTitle="標記為準備退貨"
-          onConfirm={async () => {
-            const res = await itemReturnPending(item.id);
-            if (res.error) {
-              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-              return;
-            }
-            enqueueSnackbar('已將物品標記為退貨', { variant: 'success' });
-          }}
-        />
-        <ApproveBtn
-          text="到貨"
-          popoverTitle="標記為到貨"
-          onConfirm={async () => {
-            const res = await itemArrival(item.id);
-            if (res.error) {
-              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-              return;
-            }
-            enqueueSnackbar('已將物品標記為到貨', { variant: 'success' });
-          }}
-        />
-      </>
+    ConsignorShippedItem: (
+      <ApproveBtn
+        text="到貨"
+        popoverTitle="標記為到貨"
+        onConfirm={async () => {
+          const res = await itemArrival(item.id);
+          if (res.error) {
+            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+            return;
+          }
+          enqueueSnackbar('已將物品標記為到貨', { variant: 'success' });
+        }}
+      />
     ),
     WarehouseReturnPendingStatus: (
       <ApproveBtn
@@ -196,7 +184,20 @@ function StatusFlowUI({ item }: { item: Item }) {
         }}
       />
     ),
-    WarehouseReturningStatus: <NotImplemented />,
+    WarehouseReturningStatus: (
+      <ApproveBtn
+        text="已退回"
+        popoverTitle="標記為已退回"
+        onConfirm={async () => {
+          const res = await itemReturn(item.id);
+          if (res.error) {
+            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+            return;
+          }
+          enqueueSnackbar('已將物品標記為已退回', { variant: 'success' });
+        }}
+      />
+    ),
     WarehouseArrivalStatus: (
       <>
         <RejectBtn
@@ -226,7 +227,20 @@ function StatusFlowUI({ item }: { item: Item }) {
         />
       </>
     ),
-    ReadyStatus: <NotImplemented />,
+    ReadyStatus: (
+      <ApproveBtn
+        text="上架"
+        popoverTitle="標記為上架"
+        onConfirm={async () => {
+          const res = await itemBidding(item.id);
+          if (res.error) {
+            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+            return;
+          }
+          enqueueSnackbar('已將物品標記為上架', { variant: 'success' });
+        }}
+      />
+    ),
     BiddingStatus: <NotImplemented />,
   });
 
@@ -270,12 +284,12 @@ function StatusFlowUI({ item }: { item: Item }) {
   });
 
   // inject fake step --------------
-  const i = result.findIndex(({ key }) => key === 'ConsignmentApprovedStatus');
-  if (i !== -1) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const active = result[i + 2].props.active;
-    result.splice(i + 1, 0, <StatusStep key="fake" text="已到貨" active={active} />);
-  }
+  // const i = result.findIndex(({ key }) => key === 'ConsignmentApprovedStatus');
+  // if (i !== -1) {
+  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  //   const active = result[i + 2].props.active;
+  //   result.splice(i + 1, 0, <StatusStep key="fake" text="已到貨" active={active} />);
+  // }
   // -------------------------------
 
   return result;

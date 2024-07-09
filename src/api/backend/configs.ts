@@ -8,6 +8,25 @@ export interface Configs {
   commissionRate: number;
   commissionBonusRate: number;
   lineURL: string;
+  shippingInfo: {
+    company: {
+      address: string
+      recipientName: string
+      phone: string
+    };
+    sevenEleven: {
+      storeNumber: string
+      storeName: string
+      recipientName: string
+      phone: string
+    };
+    family: {
+      storeNumber: string
+      storeName: string
+      recipientName: string
+      phone: string
+    };
+  };
   itemType: Array<{
     key: (typeof CONFIGS_DATA)['itemType'][number]['key'];
     message: string;
@@ -33,7 +52,6 @@ export interface Configs {
     message: string;
     value: number;
   }>;
-  shippingInfo: string;
   workerType: Array<{
     key: (typeof CONFIGS_DATA)['workerType'][number]['key'];
     message: string;
