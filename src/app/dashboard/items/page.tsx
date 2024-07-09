@@ -13,6 +13,7 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 
 import AutoRefreshPage from './AutoRefreshPage';
 import { ConsignorFilter } from './ConsignorFilter';
+import DirectIdInput from './DirectIdInput';
 import { ItemTable } from './ItemTable';
 import RemoveSearchBtn from './RemoveSearchBtn';
 import { StatusFilter } from './StatusFilter';
@@ -40,8 +41,12 @@ export default async function Page(pageProps: PageProps) {
   return (
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
-        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">物品列表</Typography>
+        <Stack spacing={2} direction="row" justifyContent="space-between" sx={{ flex: '1 1 auto' }}>
+          <Typography variant="h4" sx={{ flexShrink: 0 }}>
+            物品列表
+          </Typography>
+
+          <DirectIdInput />
         </Stack>
       </Stack>
 
@@ -73,7 +78,7 @@ async function Content({ searchParams }: PageProps) {
 
   return (
     <AutoRefreshPage ms={10_000}>
-      <Stack direction="row" columnGap={2}>
+      <Stack direction="row" flexWrap="wrap" gap={2}>
         <ConsignorFilter />
         <StatusFilter selected={filters.status} statusCount={itemsRes.data.statusCounts} />
         <RemoveSearchBtn fields={['consignor', 'status']} />
