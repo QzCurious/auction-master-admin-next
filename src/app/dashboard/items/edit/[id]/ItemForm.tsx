@@ -2,11 +2,11 @@
 
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { ITEM_TYPE_DATA, ITEM_TYPE_MAP } from '@/api/backend/configs.data';
+import { ITEM_STATUS_MAP, ITEM_TYPE_DATA, ITEM_TYPE_MAP } from '@/api/backend/configs.data';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
+import { StatusFlow } from '@/StatusFlow';
 import { zodResolver } from '@hookform/resolvers/zod';
 import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
 import { Button, Grid, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
@@ -23,9 +23,8 @@ import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-fo
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import { useHandleNoPermissions } from '@/contexts/UserContext';
-
-import QuillTextEditor from '../../../../../components/QuillTextEditor/QuillTextEditor';
+import { useHandleNoPermissions, useHavePermissions } from '@/contexts/UserContext';
+import QuillTextEditor from '@/components/QuillTextEditor/QuillTextEditor';
 
 interface ItemFromProps {
   item: Item;
@@ -113,10 +112,17 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
     reset,
   } = useFormContext<z.output<typeof FormSchema>>();
   const { enqueueSnackbar } = useSnackbar();
-  const handleNoPermissions = useHandleNoPermissions();
-  const readOnly = false;
+  const havePermissions = useHavePermissions();
+  const canUpdate =
+    havePermissions(['AdminUpdateItem']) &&
+    item.status !== ITEM_STATUS_MAP.BiddingStatus &&
+    // 判斷是否為最後一個狀態
+    !Object.values(StatusFlow.flow)
+      .filter((f) => f.next.length === 0)
+      .map((f) => ITEM_STATUS_MAP[f.status])
+      .includes(item.status);
+
   const quillRef = useRef<Quill>(null);
-  const router = useRouter();
 
   const handleReset = useCallback(() => {
     reset();
@@ -159,13 +165,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
             重設
           </Button>
         )}
-        {!readOnly && (
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={isSubmitting}
-            onClick={handleNoPermissions(['AdminUpdateItem'])}
-          >
+        {canUpdate && (
+          <Button type="submit" variant="contained" disabled={isSubmitting}>
             送出
           </Button>
         )}
@@ -200,7 +201,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
             name="name"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="名稱" type="text" fullWidth InputProps={{ readOnly }} />
+                <TextField {...field} label="名稱" type="text" fullWidth InputProps={{ readOnly: !canUpdate }} />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -214,7 +215,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
                 <InputLabel>類型</InputLabel>
-                <Select {...field} label="類型" fullWidth readOnly={readOnly}>
+                <Select {...field} label="類型" fullWidth readOnly={!canUpdate}>
                   {item.type === 0 && <MenuItem value={0}>(待定)</MenuItem>}
                   {ITEM_TYPE_DATA.map((type) => (
                     <MenuItem key={type.value} value={type.value}>
@@ -242,7 +243,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   onChange={(e) => {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
-                  InputProps={{ readOnly }}
+                  InputProps={{ readOnly: !canUpdate }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
@@ -264,7 +265,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   onChange={(e) => {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
-                  InputProps={{ readOnly }}
+                  InputProps={{ readOnly: !canUpdate }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
@@ -288,7 +289,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                       onChange={(e) => {
                         field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                       }}
-                      InputProps={{ readOnly }}
+                      InputProps={{ readOnly: !canUpdate }}
                     />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                   </FormControl>
@@ -310,7 +311,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                       onChange={(e) => {
                         field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                       }}
-                      InputProps={{ readOnly }}
+                      InputProps={{ readOnly: !canUpdate }}
                     />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                   </FormControl>
@@ -337,7 +338,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
               <FormControl fullWidth error={!!fieldState.error}>
                 <QuillTextEditor
                   ref={quillRef}
-                  readOnly={readOnly}
+                  readOnly={!canUpdate}
                   defaultValue={new Delta({ ops: JSON.parse(field.value) })}
                   onTextChange={(delta, oldDelta) => field.onChange(JSON.stringify(oldDelta.compose(delta).ops))}
                 />
