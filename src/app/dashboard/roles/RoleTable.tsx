@@ -3,8 +3,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { deleteRole } from '@/api/backend/rbac/deleteRole';
-import { type Role } from '@/api/backend/rbac/roles';
+import { DeleteRole } from '@/api/backend/rbac/DeleteRole';
+import { type Role } from '@/api/backend/rbac/GetRoles';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -106,7 +106,7 @@ function DeleteBtn({ row }: { row: Role }) {
         title="刪除角色"
         description={`您確定要刪除 ${row.role} 嗎?`}
         onConfirm={async () => {
-          const res = await deleteRole(row.role);
+          const res = await DeleteRole(row.role);
           if (res.error) {
             enqueueSnackbar(`Failed to delete ${row.role}: ${res.error}`, { variant: 'error' });
             return;

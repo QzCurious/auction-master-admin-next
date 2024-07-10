@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { roles } from '@/api/backend/rbac/roles';
+import { GetRoles } from '@/api/backend/rbac/GetRoles';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -43,7 +43,7 @@ export default async function Page() {
 }
 
 async function Table() {
-  const res = await roles();
+  const res = await GetRoles();
   if (res.error === '1001') {
     return <WithoutPermissionsError permissions={['GetRoles']} />;
   }

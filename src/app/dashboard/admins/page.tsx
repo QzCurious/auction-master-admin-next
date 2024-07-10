@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { admins } from '@/api/backend/admins/admins';
+import { GetAdmins } from '@/api/backend/admins/GetAdmins';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
-import { Box, Button, Stack } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
@@ -49,7 +49,7 @@ export default async function Page(pageProps: PageProps) {
 async function Table({ searchParams }: PageProps) {
   const pagination = PaginationSchema.parse(searchParams);
   const [adminRes] = await Promise.all([
-    admins({
+    GetAdmins({
       limit: pagination[ROWS_PER_PAGE],
       offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
     }),

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { consignors } from '@/api/backend/consignor/consignors';
+import { AdminGetConsignors } from '@/api/backend/consignor/AdminGetConsignors';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -35,7 +35,7 @@ export default async function Page(pageProps: PageProps) {
 async function Table({ searchParams }: PageProps) {
   const pagination = PaginationSchema.parse(searchParams);
   const [consignorsRes] = await Promise.all([
-    consignors({
+    AdminGetConsignors({
       // sort: 'status',
       limit: pagination[ROWS_PER_PAGE],
       offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],

@@ -1,6 +1,6 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
-import { permissions } from '@/api/backend/rbac/permissions';
+import { GetPermissions } from '@/api/backend/rbac/GetPermissions';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
@@ -33,7 +33,7 @@ async function Page() {
 export default Page;
 
 async function Form() {
-  const [permissionsRes] = await Promise.all([permissions()]);
+  const [permissionsRes] = await Promise.all([GetPermissions()]);
   if (permissionsRes.error === '1003') {
     return <RedirectAuthError />;
   }

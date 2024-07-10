@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ITEM_STATUS_DATA, ITEM_STATUS_MAP } from '@/api/backend/configs.data';
-import { type StatusCount } from '@/api/backend/items/items';
+import { type StatusCount } from '@/api/backend/items/GetItemsAndDetails';
 import { PAGE } from '@/static';
 import { StatusFlow } from '@/StatusFlow';
 import { Badge, Box, Chip, colors, MenuItem, Select, Typography } from '@mui/material';

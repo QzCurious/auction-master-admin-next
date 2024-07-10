@@ -2,13 +2,13 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createAdmin } from '@/api/backend/admins/createAdmin';
-import { type Admin } from '@/api/backend/admins/getAdmin';
-import { updateAdmin } from '@/api/backend/admins/updateAdmin';
+import { AddRoleForAdmin } from '@/api/backend/admins/AddRoleForAdmin';
+import { CreateAdmin } from '@/api/backend/admins/CreateAdmin';
+import { DeleteRoleForAdmin } from '@/api/backend/admins/DeleteRoleForAdmin';
+import { type Admin } from '@/api/backend/admins/GetAdmin';
+import { UpdateAdmin } from '@/api/backend/admins/UpdateAdmin';
 import { ADMIN_STATUS_DATA } from '@/api/backend/configs.data';
-import { addRolesForAdmin } from '@/api/backend/rbac/addRolesForAdmin';
-import { deleteRolesForAdmin } from '@/api/backend/rbac/deleteRolesForAdmin';
-import { type Role } from '@/api/backend/rbac/roles';
+import { Role } from '@/api/backend/rbac/GetRoles';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -97,18 +97,18 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
               const deletedPermissions = admin.roles.filter((role) => !data.roles.includes(role));
               const res = await Promise.all([
                 havePermissions(['UpdateAdmin']) &&
-                  updateAdmin(admin.id, {
+                  UpdateAdmin(admin.id, {
                     status: data.status ?? admin.status,
-                    password: data.password
+                    password: data.password,
                   }),
                 havePermissions(['AddRoleForAdmin']) &&
                   addPermissions.length &&
-                  addRolesForAdmin(admin.account, {
+                  AddRoleForAdmin(admin.account, {
                     roles: addPermissions,
                   }),
                 havePermissions(['DeleteRoleForAdmin']) &&
                   deletedPermissions.length &&
-                  deleteRolesForAdmin(admin.account, {
+                  DeleteRoleForAdmin(admin.account, {
                     roles: deletedPermissions,
                   }),
               ]);
@@ -122,7 +122,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
               enqueueSnackbar('管理員資訊已更新', { variant: 'success' });
             }
           : async (data) => {
-              const createAdminRes = await createAdmin({
+              const createAdminRes = await CreateAdmin({
                 account: data.account,
                 password: data.password,
               });
@@ -131,7 +131,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                 return;
               }
               if (havePermissions(['AddRoleForAdmin']) && data.roles.length) {
-                const addRolesToAdminRes = await addRolesForAdmin(data.account, { roles: data.roles });
+                const addRolesToAdminRes = await AddRoleForAdmin(data.account, { roles: data.roles });
                 if (addRolesToAdminRes.error) {
                   enqueueSnackbar(addRolesToAdminRes.error, { variant: 'error' });
                   return;
@@ -284,12 +284,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
               />
             </Grid>
 
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              display={!admin && !havePermissions(['AddRoleForAdmin']) ? 'none' : undefined}
-            >
+            <Grid item xs={12} sm={6} display={!admin && !havePermissions(['AddRoleForAdmin']) ? 'none' : undefined}>
               <Controller
                 control={control}
                 name="roles"

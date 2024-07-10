@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { CONSIGNOR_VERIFICATION_STATUS_MAP } from '@/api/backend/configs.data';
-import { consignorVerifications } from '@/api/backend/consignor/consignorVerifications';
+import { AdminGetConsignorVerifications } from '@/api/backend/consignor/AdminGetConsignorVerifications';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -36,7 +36,7 @@ export default async function Page(pageProps: PageProps) {
 async function Table({ searchParams }: PageProps) {
   const pagination = PaginationSchema.parse(searchParams);
   const [consignorVerificationsRes] = await Promise.all([
-    consignorVerifications({
+    AdminGetConsignorVerifications({
       status: CONSIGNOR_VERIFICATION_STATUS_MAP.AwaitingVerificationCompletionStatus,
       limit: pagination[ROWS_PER_PAGE],
       offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],

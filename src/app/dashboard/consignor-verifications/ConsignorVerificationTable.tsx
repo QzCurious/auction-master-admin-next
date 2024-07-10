@@ -3,9 +3,8 @@
 import * as React from 'react';
 import { useState, useTransition } from 'react';
 import { CONSIGNOR_VERIFICATION_STATUS_DATA } from '@/api/backend/configs.data';
-import { acceptConsignorVerification } from '@/api/backend/consignor/acceptConsignorVerification';
-import { type ConsignorVerification } from '@/api/backend/consignor/consignorVerifications';
-import { rejectConsignorVerification } from '@/api/backend/consignor/rejectConsignorVerification';
+import { ConsignorVerification } from '@/api/backend/consignor/AdminGetConsignorVerifications';
+import { HandleConsignorVerification } from '@/api/backend/consignor/HandleConsignorVerification';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import {
@@ -213,7 +212,7 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
             color="error"
             onClick={() => {
               startTransition(async () => {
-                const res = await rejectConsignorVerification(consignorVerification.id);
+                const res = await HandleConsignorVerification(consignorVerification.id, 'reject');
                 if (res.error) {
                   enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
                   return;
@@ -232,7 +231,7 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
             color="primary"
             onClick={handleSubmit((data) => {
               startTransition(async () => {
-                const res = await acceptConsignorVerification(consignorVerification.id, data);
+                const res = await HandleConsignorVerification(consignorVerification.id, 'approve', data);
                 if (res.error === '1005') {
                   setError('name', { message: '姓名與寄售人輸入資料不一致' });
                   return;

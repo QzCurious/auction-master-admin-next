@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { CONSIGNOR_STATUS_DATA } from '@/api/backend/configs.data';
-import { type Consignor } from '@/api/backend/consignor/consignors';
+import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import EditIcon from '@mui/icons-material/Edit';
 import { Chip, TableContainer } from '@mui/material';
 import Box from '@mui/material/Box';

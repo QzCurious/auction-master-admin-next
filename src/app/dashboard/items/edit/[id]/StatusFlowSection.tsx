@@ -8,15 +8,15 @@ import {
   ITEM_STATUS_MAP,
   ITEM_STATUS_MESSAGE_MAP,
 } from '@/api/backend/configs.data';
-import { type Item } from '@/api/backend/items/getItem';
-import { itemArrival } from '@/api/backend/items/itemArrival';
-import { itemBidding } from '@/api/backend/items/itemBidding';
-import { itemCompleteDetails } from '@/api/backend/items/itemCompleteDetails';
-import { itemReturned } from '@/api/backend/items/itemReturn';
-import { itemReturning } from '@/api/backend/items/itemReturning';
-import { itemReturnPending } from '@/api/backend/items/itemReturnPending';
-import { reviewItem } from '@/api/backend/items/reviewItem';
-import { updateItem } from '@/api/backend/items/updateItem';
+import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
+import { type Item } from '@/api/backend/items/GetItemAndDetails';
+import { ItemAppraisalReview } from '@/api/backend/items/ItemAppraisalReview';
+import { ItemArrival } from '@/api/backend/items/ItemArrival';
+import { ItemBidding } from '@/api/backend/items/ItemBidding';
+import { ItemCompleteDetails } from '@/api/backend/items/ItemCompleteDetails';
+import { ItemReturned } from '@/api/backend/items/ItemReturned';
+import { ItemReturning } from '@/api/backend/items/ItemReturning';
+import { ItemReturnPending } from '@/api/backend/items/ItemReturnPending';
 import { bfs, StatusFlow } from '@/StatusFlow';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Button, Chip, colors, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
@@ -89,7 +89,7 @@ export default function StatusFlowSection({ item }: { item: Item }) {
             title="更新物品狀態"
             description="此欄位修改需再確認"
             onConfirm={async () => {
-              const res = await updateItem(item.id, { status });
+              const res = await AdminUpdateItem(item.id, { status });
               if (res.error) {
                 enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
                 setShowMore(false);
@@ -130,7 +130,7 @@ function StatusFlowUI({ item }: { item: Item }) {
           text="審核失敗"
           popoverTitle="標記為審核失敗"
           onConfirm={async () => {
-            const res = await reviewItem(item.id, { action: 'reject' });
+            const res = await ItemAppraisalReview(item.id, { action: 'reject' });
             if (res.error) {
               enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
               return;
@@ -146,7 +146,7 @@ function StatusFlowUI({ item }: { item: Item }) {
               setError('type', { message: '請選擇物品類型' });
               return;
             }
-            const res = await reviewItem(item.id, { action: 'approve' });
+            const res = await ItemAppraisalReview(item.id, { action: 'approve' });
             if (res.error) {
               enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
               return;
@@ -161,7 +161,7 @@ function StatusFlowUI({ item }: { item: Item }) {
         text="到貨"
         popoverTitle="標記為到貨"
         onConfirm={async () => {
-          const res = await itemArrival(item.id);
+          const res = await ItemArrival(item.id);
           if (res.error) {
             enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
             return;
@@ -175,7 +175,7 @@ function StatusFlowUI({ item }: { item: Item }) {
         text="退貨中"
         popoverTitle="標記為退貨中"
         onConfirm={async () => {
-          const res = await itemReturning(item.id);
+          const res = await ItemReturning(item.id);
           if (res.error) {
             enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
             return;
@@ -189,7 +189,7 @@ function StatusFlowUI({ item }: { item: Item }) {
         text="已退回"
         popoverTitle="標記為已退回"
         onConfirm={async () => {
-          const res = await itemReturned(item.id);
+          const res = await ItemReturned(item.id);
           if (res.error) {
             enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
             return;
@@ -204,7 +204,7 @@ function StatusFlowUI({ item }: { item: Item }) {
           text="準備退貨"
           popoverTitle="標記為準備退貨"
           onConfirm={async () => {
-            const res = await itemReturnPending(item.id);
+            const res = await ItemReturnPending(item.id);
             if (res.error) {
               enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
               return;
@@ -217,7 +217,7 @@ function StatusFlowUI({ item }: { item: Item }) {
           text="檢查完成"
           popoverTitle="標記為檢查完成"
           onConfirm={async () => {
-            const res = await itemCompleteDetails(item.id);
+            const res = await ItemCompleteDetails(item.id);
             if (res.error) {
               enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
               return;
@@ -236,7 +236,7 @@ function StatusFlowUI({ item }: { item: Item }) {
           onConfirm={async () => {
             const actionID = (document.getElementById('auctionId') as HTMLInputElement).value;
             if (!actionID) return;
-            const res = await itemBidding(item.id, { actionID });
+            const res = await ItemBidding(item.id, { actionID });
             if (res.error) {
               enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
               return;
@@ -246,7 +246,7 @@ function StatusFlowUI({ item }: { item: Item }) {
         />
       </Stack>
     ),
-    BiddingStatus: null
+    BiddingStatus: null,
   });
 
   if (process.env.NODE_ENV === 'development') {

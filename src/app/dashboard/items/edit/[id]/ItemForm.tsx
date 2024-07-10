@@ -4,9 +4,9 @@ import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ITEM_TYPE_DATA, ITEM_TYPE_MAP } from '@/api/backend/configs.data';
-import { type Consignor } from '@/api/backend/consignor/getConsignor';
-import { type Item } from '@/api/backend/items/getItem';
-import { updateItem } from '@/api/backend/items/updateItem';
+import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
+import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
+import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { zodResolver } from '@hookform/resolvers/zod';
 import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
 import { Button, Grid, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
@@ -133,7 +133,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
       sx={{ py: 2, px: 3 }}
       component="form"
       onSubmit={handleSubmit(async (data) => {
-        const res = await updateItem(
+        const res = await AdminUpdateItem(
           item.id,
           data.type === ITEM_TYPE_MAP['FixedPriceItemType'] ||
             data.type === ITEM_TYPE_MAP['NonAppraisableAuctionItemType']

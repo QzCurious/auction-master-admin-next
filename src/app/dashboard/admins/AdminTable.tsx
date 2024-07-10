@@ -4,8 +4,8 @@ import * as React from 'react';
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { type Admin } from '@/api/backend/admins/admins';
-import { deleteAdmin } from '@/api/backend/admins/deleteAdmin';
+import { DeleteAdmin } from '@/api/backend/admins/DeleteAdmin';
+import { type Admin } from '@/api/backend/admins/GetAdmins';
 import { ADMIN_STATUS_DATA } from '@/api/backend/configs.data';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -144,7 +144,7 @@ function DeleteBtn({ row }: { row: Admin }) {
         title="刪除管理員"
         description={`您確定要刪除 ${row.account} 嗎?`}
         onConfirm={async () => {
-          await deleteAdmin(row.id);
+          await DeleteAdmin(row.id);
           enqueueSnackbar(`${row.account} 已刪除`, { variant: 'success' });
           popupState.close();
         }}

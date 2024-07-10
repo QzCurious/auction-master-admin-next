@@ -1,7 +1,7 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
-import { getConsignor } from '@/api/backend/consignor/getConsignor';
+import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
@@ -39,7 +39,7 @@ async function Page(pageProps: PageProps) {
 export default Page;
 
 async function Form({ params }: PageProps) {
-  const [consignorRes] = await Promise.all([getConsignor(parseInt(params.id))]);
+  const [consignorRes] = await Promise.all([AdminGetConsignor(parseInt(params.id))]);
 
   if (consignorRes.error === '1001') {
     return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;

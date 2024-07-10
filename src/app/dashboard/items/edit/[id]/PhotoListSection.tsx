@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { AdminDeleteItemPhoto } from '@/api/backend/items/AdminDeleteItemPhoto';
-import { AdminReorderItemPhoto } from '@/api/backend/items/adminReorderItemPhoto';
-import { AdminUpsertItemPhoto } from '@/api/backend/items/adminUpsertItemPhoto';
-import { type Item } from '@/api/backend/items/getItem';
+import { AdminReorderItemPhoto } from '@/api/backend/items/AdminReorderItemPhoto';
+import { AdminUpsertItemPhoto } from '@/api/backend/items/AdminUpsertItemPhoto';
+import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { useObjectURL } from '@/helper/useObjectURL';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ClearIcon from '@mui/icons-material/Clear';

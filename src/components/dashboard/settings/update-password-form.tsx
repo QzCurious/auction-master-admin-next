@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useContext, useState } from 'react';
-import { changePassword } from '@/api/backend/admins/changePassword';
+import { UpdateAdminPassword } from '@/api/backend/admins/UpdateAdminPassword';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -39,8 +39,7 @@ export function UpdatePasswordForm(): React.JSX.Element {
     control,
     handleSubmit,
     setError,
-    formState: { isSubmitting, errors },
-    getValues,
+    formState: { isSubmitting },
     reset,
   } = useForm<z.input<typeof FormSchema>>({
     defaultValues: { oldPassword: '', password: '', confirmPassword: '' },
@@ -53,7 +52,7 @@ export function UpdatePasswordForm(): React.JSX.Element {
     <form
       onSubmit={handleSubmit(async (data) => {
         if (!user?.id) return;
-        const res = await changePassword(user.id, {
+        const res = await UpdateAdminPassword(user.id, {
           oldPassword: data.oldPassword,
           password: data.password,
         });

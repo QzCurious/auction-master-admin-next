@@ -2,11 +2,11 @@
 
 import React, { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { addPermissionsForRole } from '@/api/backend/rbac/addPermissionsForRole';
-import { createRole } from '@/api/backend/rbac/createRole';
-import { deletePermissionForRole } from '@/api/backend/rbac/deletePermissionForRole';
-import { type permissions } from '@/api/backend/rbac/permissions';
-import { type RolePermissions } from '@/api/backend/rbac/rolesPermissions';
+import { AddPermissionForRole } from '@/api/backend/rbac/AddPermissionForRole';
+import { CreateRole } from '@/api/backend/rbac/CreateRole';
+import { DeletePermissionForRole } from '@/api/backend/rbac/DeletePermissionForRole';
+import { type GetPermissions } from '@/api/backend/rbac/GetPermissions';
+import { type RolePermissions } from '@/api/backend/rbac/GetRolesPermission';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Grid, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -29,7 +29,7 @@ import { useHavePermissions } from '@/contexts/UserContext';
 interface RoleFromProps {
   // edit
   role?: RolePermissions;
-  permissions: Awaited<ReturnType<typeof permissions>>['data'];
+  permissions: Awaited<ReturnType<typeof GetPermissions>>['data'];
 }
 
 const FormSchema = z.object({
@@ -79,8 +79,8 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                 .filter((p) => !data.permissionKey.includes(p.key))
                 .map((p) => p.key);
               const res = await Promise.all([
-                addPermissionsForRole({ role: data.role, permissionKey: addPermissions }),
-                deletePermissionForRole({ role: data.role, permissionKey: removePermissions }),
+                AddPermissionForRole({ role: data.role, permissionKey: addPermissions }),
+                DeletePermissionForRole({ role: data.role, permissionKey: removePermissions }),
               ]);
               const errors = res.filter((x) => !!x && !!x.error).map((res) => res.error);
               if (errors.length) {
@@ -96,7 +96,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               }
             }
           : async (data) => {
-              const createRoleRes = await createRole({
+              const createRoleRes = await CreateRole({
                 role: data.role,
                 description: data.description,
               });
@@ -110,7 +110,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               }
 
               if (havePermissions(['AddPermissionForRole'])) {
-                const addPermissionsForRoleRes = await addPermissionsForRole({
+                const addPermissionsForRoleRes = await AddPermissionForRole({
                   role: data.role,
                   permissionKey: data.permissionKey,
                 });

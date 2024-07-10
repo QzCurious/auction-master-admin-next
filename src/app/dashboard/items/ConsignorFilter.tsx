@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { consignors } from '@/api/backend/consignor/consignors';
-import { getConsignor } from '@/api/backend/consignor/getConsignor';
+import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
+import { AdminGetConsignors } from '@/api/backend/consignor/AdminGetConsignors';
 import { PAGE } from '@/static';
 import { Autocomplete, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -21,14 +21,14 @@ export function ConsignorFilter() {
   const havePermissions = useHavePermissions();
   const [inputValue, setInputValue] = useState('');
   const { data, error, isFetching } = useQuery({
-    queryFn: () => consignors({ fuzzyNickname: inputValue, limit: 20, offset: 0 }),
+    queryFn: () => AdminGetConsignors({ fuzzyNickname: inputValue, limit: 20, offset: 0 }),
     queryKey: ['consignors', inputValue],
     placeholderData: keepPreviousData,
     enabled: !!inputValue,
   });
   const value = searchParams.get(FIELD);
   const consignorQuery = useQuery({
-    queryFn: () => getConsignor(Number(value)),
+    queryFn: () => AdminGetConsignor(Number(value)),
     queryKey: ['consignor', value],
     enabled: !!Number(value),
   });

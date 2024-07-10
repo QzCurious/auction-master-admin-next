@@ -1,6 +1,6 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
-import { roles } from '@/api/backend/rbac/roles';
+import { GetRoles } from '@/api/backend/rbac/GetRoles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
@@ -34,7 +34,7 @@ async function Page() {
 export default Page;
 
 async function Form() {
-  const [rolesRes] = await Promise.all([roles()]);
+  const [rolesRes] = await Promise.all([GetRoles()]);
 
   if (rolesRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetRoles']} />;

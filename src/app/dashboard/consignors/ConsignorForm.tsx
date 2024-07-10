@@ -3,8 +3,8 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CONSIGNOR_STATUS_DATA, CONSIGNOR_STATUS_MAP } from '@/api/backend/configs.data';
-import { type Consignor } from '@/api/backend/consignor/getConsignor';
-import { updateConsignor } from '@/api/backend/consignor/updateConsignor';
+import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
+import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -61,7 +61,7 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
   return (
     <form
       onSubmit={handleSubmit(async (data) => {
-        const res = await updateConsignor(consignor.id, { ...data });
+        const res = await AdminUpdateConsignor(consignor.id, { ...data });
         if (res.error) {
           enqueueSnackbar(res.error, { variant: 'error' });
           return;

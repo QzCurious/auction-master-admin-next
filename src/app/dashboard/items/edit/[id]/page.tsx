@@ -1,16 +1,16 @@
-import { getConsignor } from '@/api/backend/consignor/getConsignor';
-import { getItem } from '@/api/backend/items/getItem';
+import { type Metadata } from 'next';
+import RouterLink from 'next/link';
+import { notFound } from 'next/navigation';
+import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
+import { GetItemAndDetails } from '@/api/backend/items/GetItemAndDetails';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Box, Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Stack } from '@mui/system';
-import { type Metadata } from 'next';
-import RouterLink from 'next/link';
-import { notFound } from 'next/navigation';
 
+import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
-import { config } from '@/config';
 
 import { ItemForm, ItemFormProvider } from './ItemForm';
 import PhotoListSection from './PhotoListSection';
@@ -44,7 +44,7 @@ async function Page(pageProps: PageProps) {
 export default Page;
 
 async function Content({ params }: PageProps) {
-  const itemRes = await getItem(parseInt(params.id));
+  const itemRes = await GetItemAndDetails(parseInt(params.id));
 
   if (itemRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetItemAndDetails']} />;
@@ -58,7 +58,7 @@ async function Content({ params }: PageProps) {
     notFound();
   }
 
-  const consignorRes = await getConsignor(itemRes.data.consignorID);
+  const consignorRes = await AdminGetConsignor(itemRes.data.consignorID);
 
   if (consignorRes.error === '1001') {
     return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;

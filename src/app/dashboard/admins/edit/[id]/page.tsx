@@ -1,8 +1,8 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
-import { getAdmin } from '@/api/backend/admins/getAdmin';
-import { roles } from '@/api/backend/rbac/roles';
+import { GetAdmin } from '@/api/backend/admins/GetAdmin';
+import { GetRoles } from '@/api/backend/rbac/GetRoles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
@@ -40,7 +40,7 @@ async function Page(pageProps: PageProps) {
 export default Page;
 
 async function Form({ params }: PageProps) {
-  const [adminRes, rolesRes] = await Promise.all([getAdmin(parseInt(params.id)), roles()]);
+  const [adminRes, rolesRes] = await Promise.all([GetAdmin(parseInt(params.id)), GetRoles()]);
 
   if (adminRes.error === '1001' || rolesRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetAdmin', 'GetRoles']} />;

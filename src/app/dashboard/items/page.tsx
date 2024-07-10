@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ITEM_STATUS_MAP } from '@/api/backend/configs.data';
-import { items } from '@/api/backend/items/items';
+import { GetItemsAndDetails } from '@/api/backend/items/GetItemsAndDetails';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import { Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
@@ -61,7 +61,7 @@ async function Content({ searchParams }: PageProps) {
   const pagination = PaginationSchema.parse(searchParams);
   const filters = filterSchema.parse(searchParams);
 
-  const itemsRes = await items({
+  const itemsRes = await GetItemsAndDetails({
     status: filters.status,
     limit: pagination[ROWS_PER_PAGE],
     offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
