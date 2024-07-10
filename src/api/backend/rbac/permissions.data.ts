@@ -25,7 +25,7 @@ export const PERMISSIONS_DATA = [
         key: 'GetRolesPermission',
         method: 'GET',
         url: '/auction-master/backend/roles/permissions',
-        description: '取得所有權限',
+        description: '取得所有角色的權限',
       },
       {
         key: 'CreateRole',
@@ -43,7 +43,7 @@ export const PERMISSIONS_DATA = [
         key: 'GetPermissions',
         method: 'GET',
         url: '/auction-master/backend/permissions',
-        description: '取得所有角色的權限',
+        description: '取得所有權限',
       },
       {
         key: 'AddPermissionForRole',
@@ -61,19 +61,7 @@ export const PERMISSIONS_DATA = [
         key: 'GetUsersForRole',
         method: 'GET',
         url: '/auction-master/backend/roles/:role',
-        description: '取得角色使用者列表',
-      },
-      {
-        key: 'AddRoleForUser',
-        method: 'POST',
-        url: '/auction-master/backend/roles/account/:account',
-        description: '新增使用者的角色',
-      },
-      {
-        key: 'DeleteRoleForUser',
-        method: 'DELETE',
-        url: '/auction-master/backend/roles/account/:account',
-        description: '刪除使用者的角色',
+        description: '取得角色管理者列表',
       },
     ],
   },
@@ -97,6 +85,18 @@ export const PERMISSIONS_DATA = [
         method: 'POST',
         url: '/auction-master/backend/admins',
         description: '建立後台帳號',
+      },
+      {
+        key: 'AddRoleForAdmin',
+        method: 'POST',
+        url: '/auction-master/backend/admins/account/:account/roles',
+        description: '新增管理者的角色',
+      },
+      {
+        key: 'DeleteRoleForAdmin',
+        method: 'DELETE',
+        url: '/auction-master/backend/admins/account/:account/roles',
+        description: '刪除管理者的角色',
       },
       {
         key: 'UpdateAdmin',

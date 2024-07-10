@@ -1,3 +1,5 @@
+'use server';
+
 import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';

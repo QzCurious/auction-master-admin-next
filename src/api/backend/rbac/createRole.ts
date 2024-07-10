@@ -1,3 +1,5 @@
+'use server';
+
 import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
@@ -16,7 +18,9 @@ export interface Role {
 
 type Data = 'Success';
 
-type ErrorCode = never;
+type ErrorCode =
+  // duplicate Role
+  '1000';
 
 export async function createRole(payload: z.input<typeof ReqSchema>) {
   throwIfInvalid(payload, ReqSchema);

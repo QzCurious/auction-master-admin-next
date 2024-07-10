@@ -1,7 +1,9 @@
+'use server';
+
+import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
-import { revalidateTag } from 'next/cache';
 import { z } from 'zod';
 
 const ReqSchema = z.object({

@@ -1,9 +1,9 @@
-'use server'
+'use server';
 
+import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
-import { revalidateTag } from 'next/cache';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -22,7 +22,7 @@ export async function addRolesForAdmin(account: string, payload: z.input<typeof 
     formData.append('role', role);
   }
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/roles/account/${account}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/account/${account}/roles`, {
     method: 'POST',
     body: formData,
   });

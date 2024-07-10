@@ -101,12 +101,12 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                     status: data.status ?? admin.status,
                     password: data.password
                   }),
-                havePermissions(['AddRoleForUser']) &&
+                havePermissions(['AddRoleForAdmin']) &&
                   addPermissions.length &&
                   addRolesForAdmin(admin.account, {
                     roles: addPermissions,
                   }),
-                havePermissions(['DeleteRoleForUser']) &&
+                havePermissions(['DeleteRoleForAdmin']) &&
                   deletedPermissions.length &&
                   deleteRolesForAdmin(admin.account, {
                     roles: deletedPermissions,
@@ -130,7 +130,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                 enqueueSnackbar(createAdminRes.error, { variant: 'error' });
                 return;
               }
-              if (havePermissions(['AddRoleForUser']) && data.roles.length) {
+              if (havePermissions(['AddRoleForAdmin']) && data.roles.length) {
                 const addRolesToAdminRes = await addRolesForAdmin(data.account, { roles: data.roles });
                 if (addRolesToAdminRes.error) {
                   enqueueSnackbar(addRolesToAdminRes.error, { variant: 'error' });
@@ -152,7 +152,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
             )}
             {(!admin ||
               (admin && havePermissions(['UpdateAdmin'])) ||
-              (admin && havePermissions(['AddRoleForUser', 'DeleteRoleForUser']))) && (
+              (admin && havePermissions(['AddRoleForAdmin', 'DeleteRoleForAdmin']))) && (
               <Button type="submit" variant="contained" disabled={isSubmitting}>
                 送出
               </Button>
@@ -288,7 +288,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
               item
               xs={12}
               sm={6}
-              display={!admin && !havePermissions(['AddRoleForUser']) ? 'none' : undefined}
+              display={!admin && !havePermissions(['AddRoleForAdmin']) ? 'none' : undefined}
             >
               <Controller
                 control={control}
@@ -298,7 +298,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                     <InputLabel>角色</InputLabel>
                     <Select
                       {...field}
-                      readOnly={admin && !havePermissions(['AddRoleForUser', 'DeleteRoleForUser'])}
+                      readOnly={admin && !havePermissions(['AddRoleForAdmin', 'DeleteRoleForAdmin'])}
                       multiple
                       input={<OutlinedInput label="角色" />}
                       renderValue={(selected) => (

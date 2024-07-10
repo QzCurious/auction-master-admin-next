@@ -2,6 +2,9 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { addPermissionsForRole } from '@/api/backend/rbac/addPermissionsForRole';
+import { createRole } from '@/api/backend/rbac/createRole';
+import { deletePermissionForRole } from '@/api/backend/rbac/deletePermissionForRole';
 import { type permissions } from '@/api/backend/rbac/permissions';
 import { type RolePermissions } from '@/api/backend/rbac/rolesPermissions';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,14 +24,12 @@ import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useHandleNoPermissions } from '@/contexts/UserContext';
-
-import { createRoleAction, updatePermissionsToRoleAction } from './actions';
+import { useHavePermissions } from '@/contexts/UserContext';
 
 interface RoleFromProps {
   // edit
   role?: RolePermissions;
-  permissions: NonNullable<Awaited<ReturnType<typeof permissions>>['data']>;
+  permissions: Awaited<ReturnType<typeof permissions>>['data'];
 }
 
 const FormSchema = z.object({
@@ -55,22 +56,25 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
     resolver: zodResolver(FormSchema),
   });
   const { enqueueSnackbar } = useSnackbar();
-  const handleNoPermissions = useHandleNoPermissions();
+  const havePermissions = useHavePermissions();
 
   return (
     <form
       onSubmit={handleSubmit(
         role
           ? async (data) => {
-              const errors = await updatePermissionsToRoleAction({
-                role: data.role,
-                addPermissions: data.permissionKey.filter(
-                  (key) => !role.permission.map((p) => p.key).includes(key as never)
-                ),
-                removePermissions: role.permission.filter((p) => !data.permissionKey.includes(p.key)).map((p) => p.key),
-              });
-
-              if (errors) {
+              const addPermissions = data.permissionKey.filter(
+                (key) => !role.permission.map((p) => p.key).includes(key as never)
+              );
+              const removePermissions = role.permission
+                .filter((p) => !data.permissionKey.includes(p.key))
+                .map((p) => p.key);
+              const res = await Promise.all([
+                addPermissionsForRole({ role: data.role, permissionKey: addPermissions }),
+                deletePermissionForRole({ role: data.role, permissionKey: removePermissions }),
+              ]);
+              const errors = res.filter((x) => !!x && !!x.error).map((res) => res.error);
+              if (errors.length) {
                 for (const error of errors) {
                   enqueueSnackbar(error, { variant: 'error' });
                 }
@@ -80,7 +84,30 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               enqueueSnackbar('角色已更新', { variant: 'success' });
             }
           : async (data) => {
-              await createRoleAction(data);
+              const createRoleRes = await createRole({
+                role: data.role,
+                description: data.description,
+              });
+              if (createRoleRes.error === '1000') {
+                setError('role', { message: '角色名稱已存在' });
+                return;
+              }
+              if (createRoleRes.error) {
+                enqueueSnackbar(createRoleRes.error, { variant: 'error' });
+                return;
+              }
+
+              if (havePermissions(['AddPermissionForRole'])) {
+                const addPermissionsForRoleRes = await addPermissionsForRole({
+                  role: data.role,
+                  permissionKey: data.permissionKey,
+                });
+                if (addPermissionsForRoleRes.error) {
+                  enqueueSnackbar(addPermissionsForRoleRes.error, { variant: 'error' });
+                  return;
+                }
+              }
+
               enqueueSnackbar('角色已建立', { variant: 'success' });
               router.push('/dashboard/roles');
             }
@@ -125,90 +152,103 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
         </CardContent>
         <Divider />
 
-        <CardHeader title="權限設定" subheader="角色的權限授權範圍" />
-        <Divider />
-        <CardContent>
-          <Controller
-            control={control}
-            name="permissionKey"
-            render={({ field }) => (
-              <Grid container spacing={4}>
-                {permissions.map((group) => (
-                  <Grid item key={group.message}>
-                    <Stack direction="row" alignItems="center">
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            size="small"
-                            checked={group.permissions.every((p) => field.value.includes(p.key))}
-                            indeterminate={
-                              group.permissions.some((p) => field.value.includes(p.key)) &&
-                              !group.permissions.every((p) => field.value.includes(p.key))
-                            }
-                            onChange={(event) => {
-                              if (event.target.checked) {
-                                field.onChange([...new Set([...field.value, ...group.permissions.map((p) => p.key)])]);
-                              } else {
-                                field.onChange(
-                                  field.value.filter((key) => !group.permissions.some((p) => p.key === key))
-                                );
-                              }
-                            }}
-                          />
-                        }
-                        label={group.message}
-                        componentsProps={{ typography: { variant: 'body1', fontWeight: 'bold' } }}
-                      />
-                      <Divider sx={{ flexGrow: 1 }} />
-                    </Stack>
-
-                    <Stack direction="column" flexWrap="wrap" columnGap={1} maxHeight={300} sx={{ overflow: 'auto' }}>
-                      {group.permissions.map((permission) => (
-                        <React.Fragment key={permission.key}>
+        {(role || (!role && havePermissions(['AddPermissionForRole']))) && permissions && (
+          <>
+            <CardHeader title="權限設定" subheader="角色的權限授權範圍" />
+            <Divider />
+            <CardContent>
+              <Controller
+                control={control}
+                name="permissionKey"
+                render={({ field }) => (
+                  <Grid container spacing={4}>
+                    {permissions.map((group) => (
+                      <Grid item key={group.message}>
+                        <Stack direction="row" alignItems="center">
                           <FormControlLabel
                             control={
                               <Checkbox
                                 size="small"
-                                checked={field.value.includes(permission.key)}
+                                checked={group.permissions.every((p) => field.value.includes(p.key))}
+                                indeterminate={
+                                  group.permissions.some((p) => field.value.includes(p.key)) &&
+                                  !group.permissions.every((p) => field.value.includes(p.key))
+                                }
                                 onChange={(event) => {
+                                  if (!havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])) {
+                                    return;
+                                  }
+
                                   if (event.target.checked) {
-                                    field.onChange([...field.value, permission.key]);
+                                    field.onChange([
+                                      ...new Set([...field.value, ...group.permissions.map((p) => p.key)]),
+                                    ]);
                                   } else {
-                                    field.onChange(field.value.filter((key) => key !== permission.key));
+                                    field.onChange(
+                                      field.value.filter((key) => !group.permissions.some((p) => p.key === key))
+                                    );
                                   }
                                 }}
                               />
                             }
-                            label={permission.description}
-                            componentsProps={{ typography: { variant: 'body2' } }}
+                            label={group.message}
+                            componentsProps={{ typography: { variant: 'body1', fontWeight: 'bold' } }}
                           />
-                        </React.Fragment>
-                      ))}
-                    </Stack>
-                  </Grid>
-                ))}
-              </Grid>
-            )}
-          />
-        </CardContent>
-        <Divider />
+                          <Divider sx={{ flexGrow: 1 }} />
+                        </Stack>
 
+                        <Stack
+                          direction="column"
+                          flexWrap="wrap"
+                          columnGap={1}
+                          maxHeight={300}
+                          sx={{ overflow: 'auto' }}
+                        >
+                          {group.permissions.map((permission) => (
+                            <React.Fragment key={permission.key}>
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    size="small"
+                                    checked={field.value.includes(permission.key)}
+                                    onChange={(event) => {
+                                      if (!havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])) {
+                                        return;
+                                      }
+
+                                      if (event.target.checked) {
+                                        field.onChange([...field.value, permission.key]);
+                                      } else {
+                                        field.onChange(field.value.filter((key) => key !== permission.key));
+                                      }
+                                    }}
+                                  />
+                                }
+                                label={permission.description}
+                                componentsProps={{ typography: { variant: 'body2' } }}
+                              />
+                            </React.Fragment>
+                          ))}
+                        </Stack>
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
+              />
+            </CardContent>
+            <Divider />
+          </>
+        )}
         <CardActions sx={{ justifyContent: 'flex-end' }}>
           {process.env.NODE_ENV === 'development' && (
             <Button onClick={() => console.log(getValues())}>Get form values</Button>
           )}
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={isSubmitting}
-            onClick={
-              role
-                ? handleNoPermissions(['AddPermissionForRole', 'DeletePermissionForRole'])
-                : handleNoPermissions(['CreateRole'])
-            }
-          >
-            送出
-          </Button>
+
+          {(!role || (role && havePermissions(['AddPermissionForRole', 'DeletePermissionForRole']))) && (
+            <Button type="submit" variant="contained" disabled={isSubmitting}>
+              送出
+            </Button>
+          )}
         </CardActions>
       </Card>
     </form>
