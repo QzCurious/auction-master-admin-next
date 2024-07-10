@@ -8,7 +8,7 @@ type Data = 'Success'
 
 type ErrorCode = never
 
-export async function deleteItemPhoto(id: number, sorted: number) {
+export async function AdminDeleteItemPhoto(id: number, sorted: number) {
   const res = await withAuth(apiClient)<Data, ErrorCode>(
     `/items/${id}/photos/${sorted}`,
     {

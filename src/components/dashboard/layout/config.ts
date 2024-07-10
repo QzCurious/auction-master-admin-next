@@ -45,7 +45,7 @@ export const navItems = [
     title: '物品列表',
     href: '/dashboard/items',
     PhosphorIcon: StackSimple,
-    permissions: ['GetRoles'],
+    permissions: ['GetItemsAndDetails'],
     matcher: { type: 'startsWith', href: '/dashboard/items' },
   },
 

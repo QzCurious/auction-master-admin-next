@@ -80,13 +80,15 @@ async function Content({ searchParams }: PageProps) {
 
   return (
     <AutoRefreshPage ms={10_000}>
-      <Stack direction="row" flexWrap="wrap" gap={2}>
-        <ConsignorFilter />
-        <StatusFilter selected={filters.status} statusCount={itemsRes.data.statusCounts} />
-        <RemoveSearchBtn fields={['consignor', 'status']} />
-      </Stack>
+      <Stack spacing={3}>
+        <Stack direction="row" flexWrap="wrap" gap={2}>
+          <ConsignorFilter />
+          <StatusFilter selected={filters.status} statusCount={itemsRes.data.statusCounts} />
+          <RemoveSearchBtn fields={['consignor', 'status']} />
+        </Stack>
 
-      <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} />
+        <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} />
+      </Stack>
     </AutoRefreshPage>
   );
 }

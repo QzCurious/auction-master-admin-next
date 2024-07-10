@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ITEM_STATUS_DATA } from '@/api/backend/configs.data';
 import { type Item } from '@/api/backend/items/items';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
@@ -7,8 +8,6 @@ import Card from '@mui/material/Card';
 import { grey } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Link from 'next/link';
-import * as React from 'react';
 
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
@@ -17,7 +16,7 @@ interface ItemTableProps {
   count: number;
 }
 
-export function ItemTable({ rows, count }: ItemTableProps): React.JSX.Element {
+export function ItemTable({ rows, count }: ItemTableProps) {
   return (
     <>
       <Grid container spacing={2}>

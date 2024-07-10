@@ -8,7 +8,7 @@ type Data = 'Success'
 
 type ErrorCode = never
 
-export async function uploadItemPhotos(id: number, formData: FormData) {
+export async function AdminUpsertItemPhoto(id: number, formData: FormData) {
   if (formData.getAll('photo').length === 0) {
     throw new Error('photo is required and should be an array of files')
   }

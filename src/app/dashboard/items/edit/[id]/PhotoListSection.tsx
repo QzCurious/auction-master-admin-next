@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { changeItemPhotoSort } from '@/api/backend/items/changeItemPhotoSort';
-import { deleteItemPhoto } from '@/api/backend/items/deleteItemPhoto';
+import { AdminDeleteItemPhoto } from '@/api/backend/items/AdminDeleteItemPhoto';
+import { AdminReorderItemPhoto } from '@/api/backend/items/adminReorderItemPhoto';
+import { AdminUpsertItemPhoto } from '@/api/backend/items/adminUpsertItemPhoto';
 import { type Item } from '@/api/backend/items/getItem';
-import { uploadItemPhotos } from '@/api/backend/items/uploadItemPhotos';
 import { useObjectURL } from '@/helper/useObjectURL';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -19,6 +19,8 @@ import { useGesture } from '@use-gesture/react';
 import { useMotionValue } from 'framer-motion';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import { HavePermissionsOnly } from '@/contexts/UserContext';
 
 const PhotoListSchema = z.object({
   photos: z
@@ -84,7 +86,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
         if (side === 'right' && ontoI + 1 === i) return;
 
         startTransition(async () => {
-          await changeItemPhotoSort(item.id, {
+          await AdminReorderItemPhoto(item.id, {
             originalSorted: i + 1,
             newSorted: ontoI + 1,
           });
@@ -116,9 +118,12 @@ export default function PhotoListSection({ item }: { item: Item }) {
           </Typography>
         </Typography>
 
-        <Button type="button" variant="contained" onClick={() => document.getElementById('file-upload')?.click()}>
-          新增
-        </Button>
+        <HavePermissionsOnly permissionKeys={['AdminUpsertItemPhoto']}>
+          <Button type="button" variant="contained" onClick={() => document.getElementById('file-upload')?.click()}>
+            新增
+          </Button>
+        </HavePermissionsOnly>
+
         <input
           id="file-upload"
           name="file-upload"
@@ -134,7 +139,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
               formData.append('sorted', `${i + item.photos.length + 1}`);
             }
             startTransition(async () => {
-              await uploadItemPhotos(item.id, formData);
+              await AdminUpsertItemPhoto(item.id, formData);
               for (const f of Array.from(files)) {
                 append(f);
               }
@@ -190,39 +195,43 @@ export default function PhotoListSection({ item }: { item: Item }) {
                         spacing={1}
                         sx={{ position: 'absolute', top: 0, right: 0, height: 'fit-content', pr: 1, pt: 1 }}
                       >
-                        <IconButton
-                          type="button"
-                          sx={{
-                            backgroundColor: '#fff',
-                            opacity: 0.8,
-                            ':hover': { backgroundColor: '#fff', opacity: 1 },
-                          }}
-                          size="small"
-                          onClick={() => {
-                            startTransition(async () => {
-                              field.value instanceof File && revokeUrl(field.value);
-                              await deleteItemPhoto(item.id, i + 1);
-                              remove(i);
-                            });
-                          }}
-                        >
-                          <Box sx={visuallyHidden}>刪除</Box>
-                          <ClearIcon />
-                        </IconButton>
+                        <HavePermissionsOnly permissionKeys={['AdminDeleteItemPhoto']}>
+                          <IconButton
+                            type="button"
+                            sx={{
+                              backgroundColor: '#fff',
+                              opacity: 0.8,
+                              ':hover': { backgroundColor: '#fff', opacity: 1 },
+                            }}
+                            size="small"
+                            onClick={() => {
+                              startTransition(async () => {
+                                field.value instanceof File && revokeUrl(field.value);
+                                await AdminDeleteItemPhoto(item.id, i + 1);
+                                remove(i);
+                              });
+                            }}
+                          >
+                            <Box sx={visuallyHidden}>刪除</Box>
+                            <ClearIcon />
+                          </IconButton>
+                        </HavePermissionsOnly>
 
-                        <IconButton
-                          type="button"
-                          size="small"
-                          sx={{
-                            touchAction: 'none',
-                            backgroundColor: '#fff',
-                            opacity: 0.8,
-                            ':hover': { backgroundColor: '#fff', opacity: 1 },
-                          }}
-                          {...bind(i)}
-                        >
-                          <DragHandleOutlinedIcon sx={{ transform: 'rotate(90deg)' }} />
-                        </IconButton>
+                        <HavePermissionsOnly permissionKeys={['AdminReorderItemPhoto']}>
+                          <IconButton
+                            type="button"
+                            size="small"
+                            sx={{
+                              touchAction: 'none',
+                              backgroundColor: '#fff',
+                              opacity: 0.8,
+                              ':hover': { backgroundColor: '#fff', opacity: 1 },
+                            }}
+                            {...bind(i)}
+                          >
+                            <DragHandleOutlinedIcon sx={{ transform: 'rotate(90deg)' }} />
+                          </IconButton>
+                        </HavePermissionsOnly>
                       </Stack>
                     </Box>
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
