@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { addPermissionsForRole } from '@/api/backend/rbac/addPermissionsForRole';
 import { createRole } from '@/api/backend/rbac/createRole';
@@ -39,6 +39,15 @@ const FormSchema = z.object({
 });
 
 export default function RoleForm({ role, permissions }: RoleFromProps) {
+  const defaultValues = useMemo(
+    () => ({
+      role: '',
+      description: '',
+      ...role,
+      permissionKey: role?.permission.map((p) => p.key) ?? [],
+    }),
+    [role]
+  );
   const router = useRouter();
   const {
     control,
@@ -46,17 +55,17 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
     setError,
     formState: { isSubmitting, errors },
     getValues,
+    reset,
   } = useForm<z.input<typeof FormSchema>>({
-    defaultValues: {
-      role: '',
-      description: '',
-      ...role,
-      permissionKey: role?.permission.map((p) => p.key) ?? [],
-    },
+    defaultValues,
     resolver: zodResolver(FormSchema),
   });
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
 
   return (
     <form
@@ -82,6 +91,9 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               }
 
               enqueueSnackbar('角色已更新', { variant: 'success' });
+              if (process.env.NODE_ENV !== 'development') {
+                router.push('/dashboard/roles');
+              }
             }
           : async (data) => {
               const createRoleRes = await createRole({
@@ -175,7 +187,10 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                                   !group.permissions.every((p) => field.value.includes(p.key))
                                 }
                                 onChange={(event) => {
-                                  if (!havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])) {
+                                  if (!role && !havePermissions(['AddPermissionForRole'])) {
+                                    return;
+                                  }
+                                  if (role && !havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])) {
                                     return;
                                   }
 
@@ -212,7 +227,13 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                                     size="small"
                                     checked={field.value.includes(permission.key)}
                                     onChange={(event) => {
-                                      if (!havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])) {
+                                      if (!role && !havePermissions(['AddPermissionForRole'])) {
+                                        return;
+                                      }
+                                      if (
+                                        role &&
+                                        !havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])
+                                      ) {
                                         return;
                                       }
 
