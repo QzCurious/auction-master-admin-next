@@ -8,12 +8,14 @@ import { type Consignor } from '@/api/backend/consignor/getConsignor';
 import { type Item } from '@/api/backend/items/getItem';
 import { updateItem } from '@/api/backend/items/updateItem';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
+import { Button, Grid, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
+import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import type Quill from 'quill/core';
 import { Delta } from 'quill/core';
@@ -319,9 +321,14 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
         )}
 
         <Grid item xs={12} sm={12}>
-          <Typography variant="h6" mb={1}>
-            描述
-          </Typography>
+          <Stack mb={1} direction="row" spacing={0.5} alignItems="center">
+            <Typography variant="h6">描述</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', height: 0, mb: -0.5 }}>
+              <IconButton size="small" type="button" onClick={() => copy(quillRef.current?.getSemanticHTML() ?? '')}>
+                <IntegrationInstructionsOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          </Stack>
 
           <Controller
             name="description"
