@@ -9,8 +9,8 @@ type Data = 'Success';
 
 type ErrorCode = never;
 
-export async function itemReturn(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/return`, {
+export async function itemReturned(id: number) {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/returned`, {
     method: 'POST',
   });
 

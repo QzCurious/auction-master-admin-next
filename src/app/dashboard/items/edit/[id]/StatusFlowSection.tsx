@@ -10,15 +10,16 @@ import {
 } from '@/api/backend/configs.data';
 import { type Item } from '@/api/backend/items/getItem';
 import { itemArrival } from '@/api/backend/items/itemArrival';
+import { itemBidding } from '@/api/backend/items/itemBidding';
 import { itemCompleteDetails } from '@/api/backend/items/itemCompleteDetails';
-import { itemReturn } from '@/api/backend/items/itemReturn';
+import { itemReturned } from '@/api/backend/items/itemReturn';
 import { itemReturning } from '@/api/backend/items/itemReturning';
 import { itemReturnPending } from '@/api/backend/items/itemReturnPending';
 import { reviewItem } from '@/api/backend/items/reviewItem';
 import { updateItem } from '@/api/backend/items/updateItem';
 import { bfs, StatusFlow } from '@/StatusFlow';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Button, Chip, colors, IconButton, InputLabel, MenuItem, Select } from '@mui/material';
+import { Button, Chip, colors, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import Typography from '@mui/material/Typography/Typography';
@@ -30,7 +31,6 @@ import { useFormContext } from 'react-hook-form';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
 import { type FormSchemaType } from './ItemForm';
-import { itemBidding } from '@/api/backend/items/itemBidding';
 
 export default function StatusFlowSection({ item }: { item: Item }) {
   const [status, setStatus] = useState(item.status);
@@ -189,7 +189,7 @@ function StatusFlowUI({ item }: { item: Item }) {
         text="已退回"
         popoverTitle="標記為已退回"
         onConfirm={async () => {
-          const res = await itemReturn(item.id);
+          const res = await itemReturned(item.id);
           if (res.error) {
             enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
             return;
@@ -228,18 +228,23 @@ function StatusFlowUI({ item }: { item: Item }) {
       </>
     ),
     ReadyStatus: (
-      <ApproveBtn
-        text="上架"
-        popoverTitle="標記為上架"
-        onConfirm={async () => {
-          const res = await itemBidding(item.id);
-          if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-            return;
-          }
-          enqueueSnackbar('已將物品標記為上架', { variant: 'success' });
-        }}
-      />
+      <Stack spacing={1} mt={0.5}>
+        <TextField id="auctionId" size="small" label="日拍物品代碼" />
+        <ApproveBtn
+          text="上架"
+          popoverTitle="標記為上架"
+          onConfirm={async () => {
+            const actionID = (document.getElementById('auctionId') as HTMLInputElement).value;
+            if (!actionID) return;
+            const res = await itemBidding(item.id, { actionID });
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為上架', { variant: 'success' });
+          }}
+        />
+      </Stack>
     ),
     BiddingStatus: <NotImplemented />,
   });
