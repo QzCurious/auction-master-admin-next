@@ -1,16 +1,19 @@
 import { apiClient } from '@/api/apiClient';
 import { withAuth } from '@/api/withAuth';
 
-import { type PERMISSIONS_DATA } from './permissions.data';
+import { type PermissionKey } from './permissions.data';
 
 export interface Permission {
-  key: (typeof PERMISSIONS_DATA)[number]['key'];
+  key: PermissionKey;
   method: string;
   url: string;
   description: string;
 }
 
-type Data = Array<Permission>;
+type Data = Array<{
+  message: string;
+  permissions: Array<Permission>;
+}>;
 
 type ErrorCode = never;
 

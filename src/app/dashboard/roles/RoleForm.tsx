@@ -1,15 +1,22 @@
 'use client';
 
+import React from 'react';
 import { useRouter } from 'next/navigation';
-import { type Permission } from '@/api/backend/rbac/permissions';
+import { type permissions } from '@/api/backend/rbac/permissions';
 import { type RolePermissions } from '@/api/backend/rbac/rolesPermissions';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, TextField } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
-import Typography from '@mui/material/Typography/Typography';
-import { Box, Stack } from '@mui/system';
+import Stack from '@mui/material/Stack';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -21,7 +28,7 @@ import { createRoleAction, updatePermissionsToRoleAction } from './actions';
 interface RoleFromProps {
   // edit
   role?: RolePermissions;
-  permissions: Permission[];
+  permissions: NonNullable<Awaited<ReturnType<typeof permissions>>['data']>;
 }
 
 const FormSchema = z.object({
@@ -70,39 +77,21 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                 return;
               }
 
-              enqueueSnackbar('Role updated', { variant: 'success' });
+              enqueueSnackbar('角色已更新', { variant: 'success' });
               router.push('/dashboard/roles');
             }
           : async (data) => {
               await createRoleAction(data);
-              enqueueSnackbar('Role created', { variant: 'success' });
+              enqueueSnackbar('角色已建立', { variant: 'success' });
               router.push('/dashboard/roles');
             }
       )}
     >
-      <Stack rowGap={3} sx={{ mt: 4 }}>
-        <Card sx={{ py: 2, px: 3 }}>
-          <Stack direction="column" rowGap={2}>
-            <Stack direction="row" columnGap={2}>
-              <Typography variant="h6">帳號資訊</Typography>
-              <Box sx={{ ml: 'auto' }} />
-              {process.env.NODE_ENV === 'development' && (
-                <Button onClick={() => console.log(getValues())}>Get form values</Button>
-              )}
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={isSubmitting}
-                onClick={
-                  role
-                    ? handleNoPermissions(['AddPermissionForRole', 'DeletePermissionForRole'])
-                    : handleNoPermissions(['CreateRole'])
-                }
-              >
-                送出
-              </Button>
-            </Stack>
-
+      <Card sx={{ mt: 4 }}>
+        <CardHeader title="角色資訊" subheader="管理角色名稱及該角色的簡介描述" />
+        <Divider />
+        <CardContent>
+          <Stack spacing={2}>
             <Controller
               control={control}
               name="role"
@@ -134,76 +123,95 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               )}
             />
           </Stack>
-        </Card>
+        </CardContent>
+        <Divider />
 
-        <Card>
-          <Stack direction="column" rowGap={2}>
-            <Typography variant="h6" sx={{ pt: 2, px: 3 }}>
-              權限
-            </Typography>
-
-            <Box sx={{ overflowX: 'auto' }}>
-              <Table sx={{ minWidth: '800px' }}>
-                <TableHead>
-                  <TableRow sx={{ '& th': { fontWeight: 700 } }}>
-                    <TableCell sx={{ p: 0, pl: 1 }}>
-                      <Controller
-                        control={control}
-                        name="permissionKey"
-                        render={({ field }) => (
+        <CardHeader title="權限設定" subheader="角色的權限授權範圍" />
+        <Divider />
+        <CardContent>
+          <Controller
+            control={control}
+            name="permissionKey"
+            render={({ field }) => (
+              <Grid container spacing={4}>
+                {permissions.map((group) => (
+                  <Grid item key={group.message}>
+                    <Stack direction="row" alignItems="center">
+                      <FormControlLabel
+                        control={
                           <Checkbox
-                            {...field}
-                            checked={field.value.length === permissions.length}
-                            indeterminate={field.value.length > 0 && field.value.length < permissions.length}
+                            size="small"
+                            checked={group.permissions.every((p) => field.value.includes(p.key))}
+                            indeterminate={
+                              group.permissions.some((p) => field.value.includes(p.key)) &&
+                              !group.permissions.every((p) => field.value.includes(p.key))
+                            }
                             onChange={(event) => {
                               if (event.target.checked) {
-                                field.onChange(permissions.map((p) => p.key));
+                                field.onChange([...new Set([...field.value, ...group.permissions.map((p) => p.key)])]);
                               } else {
-                                field.onChange([]);
+                                field.onChange(
+                                  field.value.filter((key) => !group.permissions.some((p) => p.key === key))
+                                );
                               }
                             }}
                           />
-                        )}
+                        }
+                        label={group.message}
+                        componentsProps={{ typography: { variant: 'body1', fontWeight: 'bold' } }}
                       />
-                    </TableCell>
-                    <TableCell title="key">權限</TableCell>
-                    <TableCell>描述</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {permissions.map((row) => {
-                    return (
-                      <TableRow hover key={row.key}>
-                        <TableCell sx={{ p: 0, pl: 1 }}>
-                          <Controller
-                            control={control}
-                            name="permissionKey"
-                            render={({ field }) => (
+                      <Divider sx={{ flexGrow: 1 }} />
+                    </Stack>
+
+                    <Stack direction="column" flexWrap="wrap" columnGap={1} maxHeight={300} sx={{ overflow: 'auto' }}>
+                      {group.permissions.map((permission) => (
+                        <React.Fragment key={permission.key}>
+                          <FormControlLabel
+                            control={
                               <Checkbox
-                                {...field}
-                                checked={field.value.includes(row.key)}
+                                size="small"
+                                checked={field.value.includes(permission.key)}
                                 onChange={(event) => {
                                   if (event.target.checked) {
-                                    field.onChange([...field.value, row.key]);
+                                    field.onChange([...field.value, permission.key]);
                                   } else {
-                                    field.onChange(field.value.filter((p) => p !== row.key));
+                                    field.onChange(field.value.filter((key) => key !== permission.key));
                                   }
                                 }}
                               />
-                            )}
+                            }
+                            label={permission.description}
+                            componentsProps={{ typography: { variant: 'body2' } }}
                           />
-                        </TableCell>
-                        <TableCell>{row.key}</TableCell>
-                        <TableCell>{row.description}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </Box>
-          </Stack>
-        </Card>
-      </Stack>
+                        </React.Fragment>
+                      ))}
+                    </Stack>
+                  </Grid>
+                ))}
+              </Grid>
+            )}
+          />
+        </CardContent>
+        <Divider />
+
+        <CardActions sx={{ justifyContent: 'flex-end' }}>
+          {process.env.NODE_ENV === 'development' && (
+            <Button onClick={() => console.log(getValues())}>Get form values</Button>
+          )}
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={isSubmitting}
+            onClick={
+              role
+                ? handleNoPermissions(['AddPermissionForRole', 'DeletePermissionForRole'])
+                : handleNoPermissions(['CreateRole'])
+            }
+          >
+            送出
+          </Button>
+        </CardActions>
+      </Card>
     </form>
   );
 }
