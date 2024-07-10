@@ -26,7 +26,9 @@ export default async function Page(pageProps: PageProps) {
         </Stack>
       </Stack>
 
-      <Table {...pageProps} />
+      <section>
+        <Table {...pageProps} />
+      </section>
     </Stack>
   );
 }

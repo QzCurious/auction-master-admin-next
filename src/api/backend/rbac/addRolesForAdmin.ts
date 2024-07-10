@@ -14,7 +14,7 @@ type Data = 'Success';
 
 type ErrorCode = never;
 
-export async function addRolesToAdmin(account: string, payload: z.input<typeof ReqSchema>) {
+export async function addRolesForAdmin(account: string, payload: z.input<typeof ReqSchema>) {
   throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();

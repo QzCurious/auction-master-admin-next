@@ -1,4 +1,4 @@
-import { type PermissionKey } from '@/api/backend/rbac/permissions.data';
+import { PERMISSION_MAP, type PermissionKey } from '@/api/backend/rbac/permissions.data';
 import { Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 
@@ -14,9 +14,11 @@ export default function WithoutPermissionsError({ permissions }: WithPermissions
     <Stack alignItems="center" spacing={1} sx={{ p: 3 }}>
       <Typography variant="body1">你需要以下權限才能繼續</Typography>
       <Stack alignItems="center" direction="row" spacing={1}>
-        {permissions.map((permission) => (
-          <PermissionChip key={permission} label={permission} />
-        ))}
+        {permissions
+          .map((key) => PERMISSION_MAP[key].description)
+          .map((permission) => (
+            <PermissionChip key={permission} label={permission} />
+          ))}
       </Stack>
 
       <RetryButton />

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { consignorVerifications } from '@/api/backend/consignor/consignorVerifications';
+import { consignors } from '@/api/backend/consignor/consignors';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -9,7 +9,6 @@ import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ConsignorTable } from './ConsignorTable';
-import { consignors } from '@/api/backend/consignor/consignors';
 
 export const metadata = { title: `寄售人列表 | ${config.site.name}` } satisfies Metadata;
 
@@ -26,7 +25,9 @@ export default async function Page(pageProps: PageProps) {
         </Stack>
       </Stack>
 
-      <Table {...pageProps} />
+      <section>
+        <Table {...pageProps} />
+      </section>
     </Stack>
   );
 }
@@ -49,10 +50,5 @@ async function Table({ searchParams }: PageProps) {
     return <RedirectAuthError />;
   }
 
-  return (
-    <ConsignorTable
-      rows={consignorsRes.data.consignors}
-      count={consignorsRes.data.count}
-    />
-  );
+  return <ConsignorTable rows={consignorsRes.data.consignors} count={consignorsRes.data.count} />;
 }

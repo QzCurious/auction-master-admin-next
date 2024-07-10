@@ -1,6 +1,8 @@
+import { mapToObj } from 'remeda';
+
 export const PERMISSIONS_DATA = [
   {
-    message: '角色相關',
+    message: '系統相關',
     permissions: [
       {
         key: 'GetBackendConfigs',
@@ -8,6 +10,11 @@ export const PERMISSIONS_DATA = [
         url: '/auction-master/backend/configs',
         description: '取得系統設定擋',
       },
+    ],
+  },
+  {
+    message: '角色相關',
+    permissions: [
       {
         key: 'GetRoles',
         method: 'GET',
@@ -329,6 +336,7 @@ export const PERMISSIONS_DATA = [
       },
     ],
   },
-] as const satisfies any[];
+] as const;
 
-export type PermissionKey = (typeof PERMISSIONS_DATA)[number] ['permissions'][number]['key'];
+export type PermissionKey = (typeof PERMISSIONS_DATA)[number]['permissions'][number]['key'];
+export const PERMISSION_MAP = mapToObj(PERMISSIONS_DATA.map((x) => x.permissions).flat(), (x) => [x.key, x] as const);

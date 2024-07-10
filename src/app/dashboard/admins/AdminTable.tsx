@@ -104,7 +104,7 @@ export function AdminTable({ rows, count }: AdminTableProps): React.JSX.Element 
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        <HavePermissionsOnly permissionKeys={['UpdateAdmin']}>
+                        <HavePermissionsOnly permissionKeys={['GetAdmin', 'GetBackendConfigs', 'GetRoles']}>
                           <IconButton LinkComponent={Link} href={`/dashboard/admins/edit/${row.id}`}>
                             <EditIcon />
                           </IconButton>
@@ -145,7 +145,7 @@ function DeleteBtn({ row }: { row: Admin }) {
         description={`您確定要刪除 ${row.account} 嗎?`}
         onConfirm={async () => {
           await deleteAdmin(row.id);
-          enqueueSnackbar(`${row.account} deleted`, { variant: 'success' });
+          enqueueSnackbar(`${row.account} 已刪除`, { variant: 'success' });
           popupState.close();
         }}
         onCancel={popupState.close}

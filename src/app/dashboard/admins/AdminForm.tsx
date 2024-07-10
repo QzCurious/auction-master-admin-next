@@ -1,9 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { createAdmin } from '@/api/backend/admins/createAdmin';
 import { type Admin } from '@/api/backend/admins/getAdmin';
+import { updateAdmin } from '@/api/backend/admins/updateAdmin';
 import { ADMIN_STATUS_DATA } from '@/api/backend/configs.data';
+import { addRolesForAdmin } from '@/api/backend/rbac/addRolesForAdmin';
+import { deleteRolesForAdmin } from '@/api/backend/rbac/deleteRolesForAdmin';
 import { type Role } from '@/api/backend/rbac/roles';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
@@ -18,10 +22,9 @@ import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useHandleNoPermissions, useHavePermissions } from '@/contexts/UserContext';
+import { useHavePermissions } from '@/contexts/UserContext';
 
 import { statusColor } from '../consignors/statusColor';
-import { createAdminAction, updateAdminAction } from './actions';
 
 interface AdminFromProps {
   // edit
@@ -34,7 +37,7 @@ const CreateFormSchema = z
     account: z.string().min(1, '必填'),
     password: z.string().min(1, '必填'),
     confirmPassword: z.string().min(1, '必填'),
-    status: z.number(),
+    status: z.number({ message: '必填' }),
     roles: z.string().array(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -57,54 +60,82 @@ const EditFormSchema = z
 export default function AdminForm({ admin, roles }: AdminFromProps) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>();
-  const {
-    control,
-    handleSubmit,
-    setError,
-    formState: { isSubmitting, errors },
-    getValues,
-  } = useForm({
-    defaultValues: {
+  const defaultValues = useMemo(
+    () => ({
       account: '',
       roles: [],
       status: null,
       ...admin,
       password: '',
       confirmPassword: '',
-    },
+    }),
+    [admin]
+  );
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+    getValues,
+    reset,
+  } = useForm({
+    defaultValues,
     resolver: zodResolver(admin ? EditFormSchema : CreateFormSchema),
   });
   const { enqueueSnackbar } = useSnackbar();
-  const handleNoPermissions = useHandleNoPermissions();
   const havePermissions = useHavePermissions();
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
 
   return (
     <form
       onSubmit={handleSubmit(
         admin
           ? async (data) => {
-              const errors = await updateAdminAction({
-                id: admin.id,
-                account: admin.account,
-                status: data.status ?? admin.status,
-                password: data.password ?? undefined,
-                addRoles: data.roles.filter((role) => !admin.roles.includes(role)),
-                removeRoles: admin.roles.filter((role) => !data.roles.includes(role)),
-              });
-              if (errors) {
+              const addPermissions = data.roles.filter((role) => !admin.roles.includes(role));
+              const deletedPermissions = admin.roles.filter((role) => !data.roles.includes(role));
+              const res = await Promise.all([
+                havePermissions(['UpdateAdmin']) &&
+                  updateAdmin(admin.id, {
+                    status: data.status ?? admin.status,
+                    password: data.password
+                  }),
+                havePermissions(['AddRoleForUser']) &&
+                  addPermissions.length &&
+                  addRolesForAdmin(admin.account, {
+                    roles: addPermissions,
+                  }),
+                havePermissions(['DeleteRoleForUser']) &&
+                  deletedPermissions.length &&
+                  deleteRolesForAdmin(admin.account, {
+                    roles: deletedPermissions,
+                  }),
+              ]);
+              const errors = res.filter((x) => !!x && !!x.error).map((res) => res.error);
+              if (errors.length) {
                 for (const error of errors) {
                   enqueueSnackbar(error, { variant: 'error' });
                 }
                 return;
               }
               enqueueSnackbar('管理員資訊已更新', { variant: 'success' });
-              router.push('/dashboard/admins');
             }
           : async (data) => {
-              const error = await createAdminAction(data);
-              if (error) {
-                enqueueSnackbar(error, { variant: 'error' });
+              const createAdminRes = await createAdmin({
+                account: data.account,
+                password: data.password,
+              });
+              if (createAdminRes.error) {
+                enqueueSnackbar(createAdminRes.error, { variant: 'error' });
                 return;
+              }
+              if (havePermissions(['AddRoleForUser']) && data.roles.length) {
+                const addRolesToAdminRes = await addRolesForAdmin(data.account, { roles: data.roles });
+                if (addRolesToAdminRes.error) {
+                  enqueueSnackbar(addRolesToAdminRes.error, { variant: 'error' });
+                  return;
+                }
               }
               enqueueSnackbar('已建立新的管理員', { variant: 'success' });
               router.push('/dashboard/admins');
@@ -119,14 +150,13 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
             {process.env.NODE_ENV === 'development' && (
               <Button onClick={() => console.log(getValues())}>Get form values</Button>
             )}
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={isSubmitting}
-              onClick={admin ? handleNoPermissions(['UpdateAdmin']) : handleNoPermissions(['CreateAdmin'])}
-            >
-              送出
-            </Button>
+            {(!admin ||
+              (admin && havePermissions(['UpdateAdmin'])) ||
+              (admin && havePermissions(['AddRoleForUser', 'DeleteRoleForUser']))) && (
+              <Button type="submit" variant="contained" disabled={isSubmitting}>
+                送出
+              </Button>
+            )}
           </Stack>
 
           <Grid container spacing={3} sx={{ mt: 0 }}>
@@ -155,6 +185,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                       label="Status"
                       value={field.value ?? ('' as const)}
                       fullWidth
+                      readOnly={admin && !havePermissions(['UpdateAdmin'])}
                       renderValue={(selected) => (
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                           <Chip
@@ -189,6 +220,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                       label="密碼"
                       type={showPassword ? 'text' : 'password'}
                       InputProps={{
+                        readOnly: admin && !havePermissions(['UpdateAdmin']),
                         endAdornment: showPassword ? (
                           <EyeIcon
                             cursor="pointer"
@@ -226,6 +258,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                       label="確認密碼"
                       type={showPassword ? 'text' : 'password'}
                       InputProps={{
+                        readOnly: admin && !havePermissions(['UpdateAdmin']),
                         endAdornment: showPassword ? (
                           <EyeIcon
                             cursor="pointer"
@@ -251,7 +284,12 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              display={!admin && !havePermissions(['AddRoleForUser']) ? 'none' : undefined}
+            >
               <Controller
                 control={control}
                 name="roles"
@@ -260,9 +298,9 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                     <InputLabel>角色</InputLabel>
                     <Select
                       {...field}
-                      readOnly={!havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])}
+                      readOnly={admin && !havePermissions(['AddRoleForUser', 'DeleteRoleForUser'])}
                       multiple
-                      input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                      input={<OutlinedInput label="角色" />}
                       renderValue={(selected) => (
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                           {selected.map((value) => (

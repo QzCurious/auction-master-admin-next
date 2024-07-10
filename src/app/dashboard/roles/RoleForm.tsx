@@ -32,8 +32,8 @@ interface RoleFromProps {
 }
 
 const FormSchema = z.object({
-  role: z.string().min(1, 'Role is required'),
-  description: z.string().min(1, 'Description is required'),
+  role: z.string().min(1, '必填'),
+  description: z.string().min(1, '必填'),
   permissionKey: z.string().array(),
 });
 
@@ -78,7 +78,6 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               }
 
               enqueueSnackbar('角色已更新', { variant: 'success' });
-              router.push('/dashboard/roles');
             }
           : async (data) => {
               await createRoleAction(data);

@@ -30,12 +30,14 @@ export default async function Page() {
             startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
             variant="contained"
           >
-          新增
+            新增
           </Button>
         </HavePermissionsOnly>
       </Stack>
 
-      <Table />
+      <section>
+        <Table />
+      </section>
     </Stack>
   );
 }

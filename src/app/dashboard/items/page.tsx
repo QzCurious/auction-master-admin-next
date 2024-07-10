@@ -50,7 +50,9 @@ export default async function Page(pageProps: PageProps) {
         </Stack>
       </Stack>
 
-      <Content {...pageProps} />
+      <section>
+        <Content {...pageProps} />
+      </section>
     </Stack>
   );
 }

@@ -40,39 +40,6 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
 
   return (
     <Card>
-      {/* <Tabs
-        sx={{ px: 3 }}
-        value={tab}
-        onChange={(_, value) => {
-          const newSearchParams = new URLSearchParams(searchParams);
-          if (value === 'All') newSearchParams.delete('tab');
-          else newSearchParams.set('tab', value as string);
-          router.replace(`${pathname}?${newSearchParams.toString()}`);
-        }}
-      >
-        <Tab value="All" label="All" />
-        <Tab value="Active" label="Active" />
-        <Tab value="Inactive" label="Inactive" />
-      </Tabs> */}
-
-      {/* <Divider /> */}
-
-      {/* <Stack direction="row" columnGap={2} sx={{ px: 2, py: 1 }}>
-        <FilterButton label="Role" search="role" />
-
-        {searchParams.size > 0 && (
-          <Button
-            variant="text"
-            size="small"
-            onClick={() => {
-              router.replace(pathname);
-            }}
-          >
-            Clear Filters
-          </Button>
-        )}
-      </Stack> */}
-
       <Box sx={{ overflowX: 'auto' }}>
         <TableContainer>
           <Table sx={{ minWidth: '800px' }}>

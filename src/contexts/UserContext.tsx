@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { createContext, useCallback, useContext } from 'react';
-import { type PermissionKey } from '@/api/backend/rbac/permissions.data';
+import { PERMISSION_MAP, type PermissionKey } from '@/api/backend/rbac/permissions.data';
 import { type JwtPayload } from '@/api/JwtPayload';
 import { Chip, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
@@ -51,11 +51,19 @@ export function HavePermissionsOnly({
   return children;
 }
 
-export function useHandleNoPermissions() {
+export function useHandleNoPermissions(): (
+  permissions: Array<PermissionKey>,
+  opts?: { message?: string }
+) => (e?: React.MouseEvent) => boolean;
+export function useHandleNoPermissions(
+  permissions: Array<PermissionKey>,
+  opts?: { message?: string }
+): (e?: React.MouseEvent) => boolean;
+export function useHandleNoPermissions(permissions?: Array<PermissionKey>, opts?: { message?: string }) {
   const havePermissions = useHavePermissions();
   const { enqueueSnackbar } = useSnackbar();
 
-  return useCallback(
+  const handler = useCallback(
     (permissions: Array<PermissionKey>, opts?: { message?: string }) => (e?: React.MouseEvent) => {
       if (havePermissions(permissions)) {
         return false;
@@ -63,18 +71,30 @@ export function useHandleNoPermissions() {
 
       e?.preventDefault();
       enqueueSnackbar(
-        <Stack alignItems="center" spacing={1} sx={{ p: 3 }}>
+        <Stack spacing={1}>
           <Typography variant="body1">{opts?.message ?? <>你需要以下權限才能繼續</>}</Typography>
-          <Stack alignItems="center" direction="row" spacing={1}>
-            {permissions.map((permission) => (
-              <Chip key={permission} label={permission} variant="outlined" onClick={() => copy(permission)} />
-            ))}
+          <Stack direction="row" spacing={1}>
+            {permissions
+              .map((key) => PERMISSION_MAP[key].description)
+              .map((permission) => (
+                <Chip
+                  key={permission}
+                  label={permission}
+                  variant="outlined"
+                  sx={{ color: 'white' }}
+                  onClick={() => copy(permission)}
+                />
+              ))}
           </Stack>
         </Stack>,
-        { variant: 'error', persist: true }
+        { variant: 'default', persist: true }
       );
       return true;
     },
     [enqueueSnackbar, havePermissions]
   );
+
+  const r = permissions ? handler(permissions) : handler;
+
+  return r;
 }

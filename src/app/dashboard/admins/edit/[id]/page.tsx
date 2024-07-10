@@ -43,7 +43,7 @@ async function Form({ params }: PageProps) {
   const [adminRes, rolesRes] = await Promise.all([getAdmin(parseInt(params.id)), roles()]);
 
   if (adminRes.error === '1001' || rolesRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAdmin', 'GetBackendConfigs', 'GetRoles']} />;
+    return <WithoutPermissionsError permissions={['GetAdmin', 'GetRoles']} />;
   }
 
   if (adminRes.error === '1003' || rolesRes.error === '1003') {

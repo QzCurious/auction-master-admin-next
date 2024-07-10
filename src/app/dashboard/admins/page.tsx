@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { admins } from '@/api/backend/admins/admins';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
+import { Box, Button, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
@@ -40,7 +39,9 @@ export default async function Page(pageProps: PageProps) {
         </HavePermissionsOnly>
       </Stack>
 
-      <Table {...pageProps} />
+      <section>
+        <Table {...pageProps} />
+      </section>
     </Stack>
   );
 }
@@ -62,7 +63,5 @@ async function Table({ searchParams }: PageProps) {
     return <RedirectAuthError />;
   }
 
-  return (
-    <AdminTable rows={adminRes.data.admins} count={adminRes.data.count}  />
-  );
+  return <AdminTable rows={adminRes.data.admins} count={adminRes.data.count} />;
 }
