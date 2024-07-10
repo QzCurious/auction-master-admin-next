@@ -246,7 +246,7 @@ function StatusFlowUI({ item }: { item: Item }) {
         />
       </Stack>
     ),
-    BiddingStatus: <NotImplemented />,
+    BiddingStatus: null
   });
 
   if (process.env.NODE_ENV === 'development') {
