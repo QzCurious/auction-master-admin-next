@@ -19,7 +19,17 @@ import { ItemReturning } from '@/api/backend/items/ItemReturning';
 import { ItemReturnPending } from '@/api/backend/items/ItemReturnPending';
 import { bfs, StatusFlow } from '@/StatusFlow';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Button, Chip, colors, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import {
+  Button,
+  Chip,
+  colors,
+  FormHelperText,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import Typography from '@mui/material/Typography/Typography';
@@ -239,27 +249,7 @@ function StatusFlowUI({ item }: { item: Item }) {
         </HavePermissionsOnly>
       </>
     ),
-    ReadyStatus: (
-      <HavePermissionsOnly permissionKeys={['ItemBidding']}>
-        <Stack spacing={1} mt={0.5}>
-          <TextField id="auctionId" size="small" label="日拍物品代碼" />
-          <ApproveBtn
-            text="上架"
-            popoverTitle="標記為上架"
-            onConfirm={async () => {
-              const actionID = (document.getElementById('auctionId') as HTMLInputElement).value;
-              if (!actionID) return;
-              const res = await ItemBidding(item.id, { actionID });
-              if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-                return;
-              }
-              enqueueSnackbar('已將物品標記為上架', { variant: 'success' });
-            }}
-          />
-        </Stack>
-      </HavePermissionsOnly>
-    ),
+    ReadyStatus: <ReadyStatusHandleButtons item={item} />,
     BiddingStatus: null,
   });
 
@@ -404,7 +394,15 @@ function RejectBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTit
   );
 }
 
-function ApproveBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTitle: string; onConfirm: () => void }) {
+function ApproveBtn({
+  text,
+  popoverTitle,
+  onConfirm,
+}: {
+  text: string;
+  popoverTitle: string;
+  onConfirm: () => void | Promise<void>;
+}) {
   const {
     formState: { isDirty },
   } = useFormContext();
@@ -420,9 +418,52 @@ function ApproveBtn({ text, popoverTitle, onConfirm }: { text: string; popoverTi
       <DoubleCheckPopover
         {...bindPopover(popupState)}
         title={popoverTitle}
-        onConfirm={onConfirm}
+        onConfirm={async () => {
+          await onConfirm();
+          popupState.close();
+        }}
         onCancel={popupState.close}
       />
     </>
+  );
+}
+
+function ReadyStatusHandleButtons({ item }: { item: Item }) {
+  const { enqueueSnackbar } = useSnackbar();
+  const [auctionID, setAuctionID] = useState('');
+  const [error, setError] = useState('');
+
+  return (
+    <HavePermissionsOnly permissionKeys={['ItemBidding']}>
+      <Stack spacing={1} mt={0.5}>
+        <FormControl error={!!error}>
+          <TextField
+            size="small"
+            label="日拍物品代碼"
+            value={auctionID}
+            onChange={(e) => setAuctionID(e.target.value)}
+          />
+          {error && <FormHelperText>{error}</FormHelperText>}
+        </FormControl>
+        <ApproveBtn
+          text="上架"
+          popoverTitle="標記為上架"
+          onConfirm={async () => {
+            setError('');
+            if (!auctionID) return;
+            const res = await ItemBidding(item.id, { auctionID });
+            if (res.error === '1025') {
+              setError('日拍ID不能重複');
+              return;
+            }
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為上架', { variant: 'success' });
+          }}
+        />
+      </Stack>
+    </HavePermissionsOnly>
   );
 }
