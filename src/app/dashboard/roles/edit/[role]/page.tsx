@@ -49,7 +49,7 @@ async function Form({ params }: PageProps) {
     return <RedirectAuthError />;
   }
 
-  const role = rolesPermissionsRes.data.find((role) => params.role === role.role);
+  const role = rolesPermissionsRes.data.find((role) => decodeURI(params.role) === role.role);
 
   if (!role) {
     notFound();
