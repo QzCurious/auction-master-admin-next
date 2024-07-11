@@ -28,6 +28,7 @@ import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state
 import { useSnackbar } from 'notistack';
 import { useFormContext } from 'react-hook-form';
 
+import { HavePermissionsOnly } from '@/contexts/UserContext';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
 import { type FormSchemaType } from './ItemForm';
@@ -56,54 +57,55 @@ export default function StatusFlowSection({ item }: { item: Item }) {
     >
       <Typography variant="h6">狀態流程</Typography>
 
-      <IconButton sx={{ position: 'absolute', top: 6, right: 6 }} onClick={() => setShowMore(!showMore)}>
-        <MoreVertIcon />
-      </IconButton>
+      <HavePermissionsOnly permissionKeys={['AdminUpdateItem']}>
+        <IconButton sx={{ position: 'absolute', top: 6, right: 6 }} onClick={() => setShowMore(!showMore)}>
+          <MoreVertIcon />
+        </IconButton>
 
-      {showMore && (
-        <Stack mt={2.5} mb={5} mx={-1} spacing={1}>
-          <FormControl fullWidth>
-            <InputLabel>狀態</InputLabel>
-            <Select
-              label="狀態"
-              size="small"
-              renderValue={(v) => <Chip label={ITEM_STATUS_DATA.find(({ value }) => value === v)?.message} />}
-              value={status}
-              onChange={(e) => setStatus(e.target.value as typeof status)}
-            >
-              {ITEM_STATUS_DATA.map((type) => (
-                <MenuItem key={type.value} value={type.value} title={`${type.key} ${type.value}`}>
-                  {type.message}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+        {showMore && (
+          <Stack mt={2.5} mb={5} mx={-1} spacing={1}>
+            <FormControl fullWidth>
+              <InputLabel>狀態</InputLabel>
+              <Select
+                label="狀態"
+                size="small"
+                renderValue={(v) => <Chip label={ITEM_STATUS_DATA.find(({ value }) => value === v)?.message} />}
+                value={status}
+                onChange={(e) => setStatus(e.target.value as typeof status)}
+              >
+                {ITEM_STATUS_DATA.map((type) => (
+                  <MenuItem key={type.value} value={type.value} title={`${type.key} ${type.value}`}>
+                    {type.message}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <Button size="small" variant="contained" color="error" {...bindTrigger(popupState)}>
-            更新
-          </Button>
-          <DoubleCheckPopover
-            {...bindPopover(popupState)}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-            title="更新物品狀態"
-            description="此欄位修改需再確認"
-            onConfirm={async () => {
-              const res = await AdminUpdateItem(item.id, { status });
-              if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+            <Button size="small" variant="contained" color="error" {...bindTrigger(popupState)}>
+              更新
+            </Button>
+            <DoubleCheckPopover
+              {...bindPopover(popupState)}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+              title="更新物品狀態"
+              description="此欄位修改需再確認"
+              onConfirm={async () => {
+                const res = await AdminUpdateItem(item.id, { status });
+                if (res.error) {
+                  enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                  setShowMore(false);
+                  return;
+                }
+                enqueueSnackbar('已更新物品狀態', { variant: 'success' });
                 setShowMore(false);
-                return;
-              }
-              enqueueSnackbar('已更新物品狀態', { variant: 'success' });
-              setShowMore(false);
-              popupState.close();
-            }}
-            onCancel={popupState.close}
-          />
-        </Stack>
-      )}
-
+                popupState.close();
+              }}
+              onCancel={popupState.close}
+            />
+          </Stack>
+        )}
+      </HavePermissionsOnly>
       <Box mt={2}>
         <StatusFlowUI item={item} />
       </Box>
@@ -125,7 +127,7 @@ function StatusFlowUI({ item }: { item: Item }) {
 
   const statusFlowWithAdminActions = StatusFlow.withActions('admin', {
     SubmitAppraisalStatus: (
-      <>
+      <HavePermissionsOnly permissionKeys={['ItemAppraisalReview']}>
         <RejectBtn
           text="審核失敗"
           popoverTitle="標記為審核失敗"
@@ -154,97 +156,109 @@ function StatusFlowUI({ item }: { item: Item }) {
             enqueueSnackbar('已將物品標記為審核成功', { variant: 'success' });
           }}
         />
-      </>
+      </HavePermissionsOnly>
     ),
     ConsignorShippedItem: (
-      <ApproveBtn
-        text="到貨"
-        popoverTitle="標記為到貨"
-        onConfirm={async () => {
-          const res = await ItemArrival(item.id);
-          if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-            return;
-          }
-          enqueueSnackbar('已將物品標記為到貨', { variant: 'success' });
-        }}
-      />
+      <HavePermissionsOnly permissionKeys={['ItemArrival']}>
+        <ApproveBtn
+          text="到貨"
+          popoverTitle="標記為到貨"
+          onConfirm={async () => {
+            const res = await ItemArrival(item.id);
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為到貨', { variant: 'success' });
+          }}
+        />
+      </HavePermissionsOnly>
     ),
     WarehouseReturnPendingStatus: (
-      <ApproveBtn
-        text="退貨中"
-        popoverTitle="標記為退貨中"
-        onConfirm={async () => {
-          const res = await ItemReturning(item.id);
-          if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-            return;
-          }
-          enqueueSnackbar('已將物品標記為退貨中', { variant: 'success' });
-        }}
-      />
+      <HavePermissionsOnly permissionKeys={['ItemReturning']}>
+        <ApproveBtn
+          text="退貨中"
+          popoverTitle="標記為退貨中"
+          onConfirm={async () => {
+            const res = await ItemReturning(item.id);
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為退貨中', { variant: 'success' });
+          }}
+        />
+      </HavePermissionsOnly>
     ),
     WarehouseReturningStatus: (
-      <ApproveBtn
-        text="已退回"
-        popoverTitle="標記為已退回"
-        onConfirm={async () => {
-          const res = await ItemReturned(item.id);
-          if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-            return;
-          }
-          enqueueSnackbar('已將物品標記為已退回', { variant: 'success' });
-        }}
-      />
+      <HavePermissionsOnly permissionKeys={['ItemReturned']}>
+        <ApproveBtn
+          text="已退回"
+          popoverTitle="標記為已退回"
+          onConfirm={async () => {
+            const res = await ItemReturned(item.id);
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為已退回', { variant: 'success' });
+          }}
+        />
+      </HavePermissionsOnly>
     ),
     WarehouseArrivalStatus: (
       <>
-        <RejectBtn
-          text="準備退貨"
-          popoverTitle="標記為準備退貨"
-          onConfirm={async () => {
-            const res = await ItemReturnPending(item.id);
-            if (res.error) {
-              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-              return;
-            }
-            enqueueSnackbar('已將物品標記為準備退貨', { variant: 'success' });
-          }}
-        />
+        <HavePermissionsOnly permissionKeys={['ItemReturnPending']}>
+          <RejectBtn
+            text="準備退貨"
+            popoverTitle="標記為準備退貨"
+            onConfirm={async () => {
+              const res = await ItemReturnPending(item.id);
+              if (res.error) {
+                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                return;
+              }
+              enqueueSnackbar('已將物品標記為準備退貨', { variant: 'success' });
+            }}
+          />
+        </HavePermissionsOnly>
 
-        <ApproveBtn
-          text="檢查完成"
-          popoverTitle="標記為檢查完成"
-          onConfirm={async () => {
-            const res = await ItemCompleteDetails(item.id);
-            if (res.error) {
-              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-              return;
-            }
-            enqueueSnackbar('已將物品標記為檢查完成', { variant: 'success' });
-          }}
-        />
+        <HavePermissionsOnly permissionKeys={['ItemCompleteDetails']}>
+          <ApproveBtn
+            text="檢查完成"
+            popoverTitle="標記為檢查完成"
+            onConfirm={async () => {
+              const res = await ItemCompleteDetails(item.id);
+              if (res.error) {
+                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                return;
+              }
+              enqueueSnackbar('已將物品標記為檢查完成', { variant: 'success' });
+            }}
+          />
+        </HavePermissionsOnly>
       </>
     ),
     ReadyStatus: (
-      <Stack spacing={1} mt={0.5}>
-        <TextField id="auctionId" size="small" label="日拍物品代碼" />
-        <ApproveBtn
-          text="上架"
-          popoverTitle="標記為上架"
-          onConfirm={async () => {
-            const actionID = (document.getElementById('auctionId') as HTMLInputElement).value;
-            if (!actionID) return;
-            const res = await ItemBidding(item.id, { actionID });
-            if (res.error) {
-              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-              return;
-            }
-            enqueueSnackbar('已將物品標記為上架', { variant: 'success' });
-          }}
-        />
-      </Stack>
+      <HavePermissionsOnly permissionKeys={['ItemBidding']}>
+        <Stack spacing={1} mt={0.5}>
+          <TextField id="auctionId" size="small" label="日拍物品代碼" />
+          <ApproveBtn
+            text="上架"
+            popoverTitle="標記為上架"
+            onConfirm={async () => {
+              const actionID = (document.getElementById('auctionId') as HTMLInputElement).value;
+              if (!actionID) return;
+              const res = await ItemBidding(item.id, { actionID });
+              if (res.error) {
+                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                return;
+              }
+              enqueueSnackbar('已將物品標記為上架', { variant: 'success' });
+            }}
+          />
+        </Stack>
+      </HavePermissionsOnly>
     ),
     BiddingStatus: null,
   });
