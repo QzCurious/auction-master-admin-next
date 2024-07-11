@@ -55,21 +55,24 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps) {
           </ListItemIcon>
           Profile
         </MenuItem> */}
-        <MenuItem
-          onClick={async () => {
-            const error = await refreshTokenAction();
-            if (error) {
-              enqueueSnackbar(error, { variant: 'error' });
-              return;
-            }
-            enqueueSnackbar('Token refreshed', { variant: 'success' });
-          }}
-        >
-          <ListItemIcon>
-            <SignOutIcon fontSize="var(--icon-fontSize-md)" />
-          </ListItemIcon>
-          刷新 Token
-        </MenuItem>
+        {process.env.NODE_ENV === 'development' && (
+          <MenuItem
+            onClick={async () => {
+              const error = await refreshTokenAction();
+              if (error) {
+                enqueueSnackbar(error, { variant: 'error' });
+                return;
+              }
+              enqueueSnackbar('Token refreshed', { variant: 'success' });
+            }}
+          >
+            <ListItemIcon>
+              <SignOutIcon fontSize="var(--icon-fontSize-md)" />
+            </ListItemIcon>
+            刷新 Token
+          </MenuItem>
+        )}
+
         <MenuItem onClick={() => logout()}>
           <ListItemIcon>
             <SignOutIcon fontSize="var(--icon-fontSize-md)" />
