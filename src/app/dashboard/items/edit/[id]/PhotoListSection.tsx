@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
+import Link from 'next/link';
 import { AdminDeleteItemPhoto } from '@/api/backend/items/AdminDeleteItemPhoto';
 import { AdminReorderItemPhoto } from '@/api/backend/items/AdminReorderItemPhoto';
 import { AdminUpsertItemPhoto } from '@/api/backend/items/AdminUpsertItemPhoto';
@@ -133,7 +134,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
             >
               下載全部
             </Button>
-            <iframe title='download' name='download_iframe' style={{ display: 'none' }} />
+            <iframe title="download" name="download_iframe" style={{ display: 'none' }} />
           </>
         )}
         <HavePermissionsOnly permissionKeys={['AdminUpsertItemPhoto']}>
@@ -196,6 +197,11 @@ export default function PhotoListSection({ item }: { item: Item }) {
                     }}
                   >
                     <Box component="article" sx={{ backgroundColor: colors.grey[100], position: 'relative' }}>
+                      <Link
+                        style={{ position: 'absolute', inset: 0 }}
+                        href={field.value instanceof File ? createUrl(field.value) : field.value.photo}
+                        target="_blank"
+                      />
                       <Box
                         component="img"
                         sx={{
@@ -213,24 +219,6 @@ export default function PhotoListSection({ item }: { item: Item }) {
                         spacing={1}
                         sx={{ position: 'absolute', top: 0, right: 0, height: 'fit-content', pr: 1, pt: 1 }}
                       >
-                        <IconButton
-                          type="button"
-                          size="small"
-                          sx={{
-                            backgroundColor: '#fff',
-                            opacity: 0.8,
-                            ':hover': { backgroundColor: '#fff', opacity: 1 },
-                          }}
-                          onClick={() => {
-                            window.open(
-                              field.value instanceof File ? createUrl(field.value) : field.value.photo,
-                              '_blank'
-                            );
-                          }}
-                        >
-                          <OpenInNewOutlinedIcon />
-                        </IconButton>
-
                         <HavePermissionsOnly permissionKeys={['AdminDeleteItemPhoto']}>
                           <IconButton
                             type="button"
