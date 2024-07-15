@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ITEM_STATUS_MAP } from '@/api/backend/configs.data';
 import { GetItemsAndDetails } from '@/api/backend/items/GetItemsAndDetails';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
-import { Stack } from '@mui/material';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import * as R from 'remeda';
 import { z } from 'zod';
@@ -46,7 +46,18 @@ export default async function Page(pageProps: PageProps) {
             物品列表
           </Typography>
 
-          <DirectIdInput />
+          <Stack direction="row" spacing={1}>
+            <DirectIdInput />
+
+            {/* <Button
+              LinkComponent={Link}
+              href="/dashboard/items/create"
+              startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
+              variant="contained"
+            >
+              新增
+            </Button> */}
+          </Stack>
         </Stack>
       </Stack>
 
