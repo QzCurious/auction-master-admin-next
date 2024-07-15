@@ -122,16 +122,19 @@ export default function PhotoListSection({ item }: { item: Item }) {
         <Box mx="auto" />
 
         {item.photos.length > 0 && (
-          <Button
-            type="button"
-            variant="outlined"
-            color="secondary"
-            LinkComponent="a"
-            href={`/dashboard/items/edit/${item.id}/download-photos`}
-            target="_blank"
-          >
-            下載全部
-          </Button>
+          <>
+            <Button
+              type="button"
+              variant="outlined"
+              color="secondary"
+              LinkComponent="a"
+              href={`/dashboard/items/edit/${item.id}/download-photos`}
+              target="download_iframe"
+            >
+              下載全部
+            </Button>
+            <iframe title='download' name='download_iframe' style={{ display: 'none' }} />
+          </>
         )}
         <HavePermissionsOnly permissionKeys={['AdminUpsertItemPhoto']}>
           <Button type="button" variant="contained" onClick={() => document.getElementById('file-upload')?.click()}>

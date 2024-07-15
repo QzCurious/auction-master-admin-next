@@ -12,15 +12,27 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   if (res.error) throw new Error(res.error);
 
   const zip = new AdmZip();
-  await Promise.all(
-    res.data.photos.map(async (photo) => {
-      const res = await fetch(photo.photo);
-      const extension = res.headers.has('content-type') ? res.headers.get('content-type')?.split('/').pop() : '';
-      zip.addFile(basename(`${photo.photo}.${extension}`), Buffer.from(await res.arrayBuffer()));
-    })
-  );
 
-  return new Response(new Blob([zip.toBuffer()]).stream(), {
+  const stream = new ReadableStream({
+    async start(controller) {
+      // start the stream immediately
+      controller.enqueue('');
+
+      await Promise.all(
+        res.data.photos.map(async (photo) => {
+          const res = await fetch(photo.photo);
+          const extension = res.headers.has('content-type') ? res.headers.get('content-type')?.split('/').pop() : '';
+          zip.addFile(basename(`${photo.photo}.${extension}`), Buffer.from(await res.arrayBuffer()));
+        })
+      );
+
+      const zipBuffer = zip.toBuffer();
+      controller.enqueue(zipBuffer);
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
     headers: {
       'Content-Type': 'application/zip',
       'Content-Disposition': `attachment; filename="${res.data.name}.zip"`,
