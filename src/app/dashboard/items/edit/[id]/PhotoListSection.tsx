@@ -9,6 +9,7 @@ import { useObjectURL } from '@/helper/useObjectURL';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ClearIcon from '@mui/icons-material/Clear';
 import DragHandleOutlinedIcon from '@mui/icons-material/DragHandleOutlined';
+import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import { Button, colors, IconButton, useTheme } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -110,7 +111,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
         />
       )}
 
-      <Stack direction="row" columnGap={2} justifyContent="space-between">
+      <Stack direction="row" columnGap={2}>
         <Typography variant="h6">
           物品照片{' '}
           <Typography component="span" variant="body2" color="GrayText">
@@ -118,6 +119,20 @@ export default function PhotoListSection({ item }: { item: Item }) {
           </Typography>
         </Typography>
 
+        <Box mx="auto" />
+
+        {item.photos.length > 0 && (
+          <Button
+            type="button"
+            variant="outlined"
+            color="secondary"
+            LinkComponent="a"
+            href={`/dashboard/items/edit/${item.id}/download-photos`}
+            target="_blank"
+          >
+            下載全部
+          </Button>
+        )}
         <HavePermissionsOnly permissionKeys={['AdminUpsertItemPhoto']}>
           <Button type="button" variant="contained" onClick={() => document.getElementById('file-upload')?.click()}>
             新增
@@ -195,6 +210,24 @@ export default function PhotoListSection({ item }: { item: Item }) {
                         spacing={1}
                         sx={{ position: 'absolute', top: 0, right: 0, height: 'fit-content', pr: 1, pt: 1 }}
                       >
+                        <IconButton
+                          type="button"
+                          size="small"
+                          sx={{
+                            backgroundColor: '#fff',
+                            opacity: 0.8,
+                            ':hover': { backgroundColor: '#fff', opacity: 1 },
+                          }}
+                          onClick={() => {
+                            window.open(
+                              field.value instanceof File ? createUrl(field.value) : field.value.photo,
+                              '_blank'
+                            );
+                          }}
+                        >
+                          <OpenInNewOutlinedIcon />
+                        </IconButton>
+
                         <HavePermissionsOnly permissionKeys={['AdminDeleteItemPhoto']}>
                           <IconButton
                             type="button"

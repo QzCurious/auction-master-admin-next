@@ -32,6 +32,7 @@
     "@redux-devtools/extension": "^3.3.0",
     "@tanstack/react-query": "^5.50.1",
     "@use-gesture/react": "^10.3.1",
+    "adm-zip": "^0.5.14",
     "apexcharts": "3.50.0",
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
@@ -56,6 +57,7 @@
     "@ianvs/prettier-plugin-sort-imports": "4.3.0",
     "@testing-library/jest-dom": "6.4.6",
     "@testing-library/react": "16.0.0",
+    "@types/adm-zip": "^0.5.5",
     "@types/jest": "29.5.12",
     "@types/mapbox-gl": "3.1.0",
     "@types/node": "20.14.10",
@@ -70,5 +72,8 @@
     "jest-environment-jsdom": "29.7.0",
     "prettier": "3.3.2",
     "typescript": "5.5.3"
-  }
+  },
+  "browser": {
+    "original-fs": false
+}
 }
