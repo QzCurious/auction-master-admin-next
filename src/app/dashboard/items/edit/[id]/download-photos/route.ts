@@ -35,7 +35,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   return new Response(stream, {
     headers: {
       'Content-Type': 'application/zip',
-      'Content-Disposition': `attachment; filename="${res.data.name}.zip"`,
+      'Content-Disposition': `attachment; filename="${encodeURI(res.data.name)}.zip"`,
     },
   });
 }
