@@ -9,14 +9,30 @@ import { Badge, Box, Chip, colors, MenuItem, Select, Typography } from '@mui/mat
 
 import { FilterPopover } from '@/components/FilterPopover';
 
+const side = 'admin';
+
+const filters = [
+  {
+    field: 'status',
+    label: '狀態',
+    options: ITEM_STATUS_DATA.map((x) => {
+      const step = StatusFlow.flow[x.key];
+      return {
+        ...x,
+        sort: 'adjudicator' in step && step.adjudicator === side ? 0 : 1,
+      };
+    }).sort((a, b) => a.sort - b.sort),
+  },
+];
+
+const showCountStatus = Object.values(StatusFlow.flow)
+  .filter((v) => 'adjudicator' in v && v.adjudicator === side)
+  .map((v) => ITEM_STATUS_MAP[v.status]);
+
 interface StatusFilterProps {
   selected: Array<(typeof ITEM_STATUS_DATA)[number]['value']>;
   statusCount: StatusCount;
 }
-
-const statusForAdmin = Object.values(StatusFlow.flow)
-  .filter((v) => 'adjudicator' in v && v.adjudicator === 'admin')
-  .map((v) => ITEM_STATUS_MAP[v.status]);
 
 export function StatusFilter({ selected, statusCount }: StatusFilterProps) {
   const router = useRouter();
@@ -27,7 +43,7 @@ export function StatusFilter({ selected, statusCount }: StatusFilterProps) {
       color="primary"
       variant="dot"
       sx={{ '& .MuiBadge-dot': { mt: '2px', mr: '4px' } }}
-      invisible={statusForAdmin.map((v) => statusCount[v]).every((v) => !v)}
+      invisible={showCountStatus.map((v) => statusCount[v]).every((v) => !v)}
     >
       <FilterPopover
         label="狀態"
@@ -70,15 +86,15 @@ export function StatusFilter({ selected, statusCount }: StatusFilterProps) {
             }}
             onClose={close}
           >
-            {ITEM_STATUS_DATA.map(({ key, value, message }) => (
+            {filters[0].options.map(({ value, message }) => (
               <MenuItem
                 key={value}
                 value={value}
-                sx={{ columnGap: 1, color: !statusForAdmin.includes(value) ? colors.grey[600] : undefined }}
-                title={`${key} ${value}`}
+                sx={{ columnGap: 1, color: !showCountStatus.includes(value) ? colors.grey[600] : undefined }}
+                title={`${message} ${value}`}
               >
                 {message}
-                {statusForAdmin.includes(value) && (
+                {showCountStatus.includes(value) && (
                   <Typography component="span" color={colors.grey[600]}>
                     ({statusCount[value] ?? 0})
                   </Typography>
