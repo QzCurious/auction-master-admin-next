@@ -15,13 +15,32 @@ const filters = [
   {
     field: 'status',
     label: '狀態',
-    options: ITEM_STATUS_DATA.map((x) => {
-      const step = StatusFlow.flow[x.key];
-      return {
-        ...x,
-        sort: 'adjudicator' in step && step.adjudicator === side ? 0 : 1,
-      };
-    }).sort((a, b) => a.sort - b.sort),
+    options: [
+      ITEM_STATUS_DATA[0],
+      ITEM_STATUS_DATA[2],
+      ITEM_STATUS_DATA[3],
+      ITEM_STATUS_DATA[5],
+      ITEM_STATUS_DATA[6],
+      ITEM_STATUS_DATA[9],
+      ITEM_STATUS_DATA[10],
+      ITEM_STATUS_DATA[11],
+      ITEM_STATUS_DATA[12],
+
+      ITEM_STATUS_DATA[1],
+      ITEM_STATUS_DATA[4],
+      ITEM_STATUS_DATA[7],
+      ITEM_STATUS_DATA[8],
+      ITEM_STATUS_DATA[13],
+      ITEM_STATUS_DATA[14],
+      ITEM_STATUS_DATA[15],
+    ] as const,
+    // options: ITEM_STATUS_DATA.map((x) => {
+    //   const step = StatusFlow.flow[x.key];
+    //   return {
+    //     ...x,
+    //     sort: 'adjudicator' in step && step.adjudicator === side ? 0 : 1,
+    //   };
+    // }).sort((a, b) => a.sort - b.sort),
   },
 ];
 
