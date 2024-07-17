@@ -3,8 +3,9 @@
 import * as React from 'react';
 import { useState, useTransition } from 'react';
 import { CONSIGNOR_VERIFICATION_STATUS_DATA } from '@/api/backend/configs.data';
-import { ConsignorVerification } from '@/api/backend/consignor/AdminGetConsignorVerifications';
+import { type ConsignorVerification } from '@/api/backend/consignor/AdminGetConsignorVerifications';
 import { HandleConsignorVerification } from '@/api/backend/consignor/HandleConsignorVerification';
+import { DATE_FORMAT } from '@/static';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import {
@@ -28,6 +29,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { format } from 'date-fns';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -52,7 +54,6 @@ export function ConsignorVerificationTable({ rows, count }: ConsignorVerificatio
                 {process.env.NODE_ENV === 'development' && <TableCell>id</TableCell>}
                 <TableCell>暱稱</TableCell>
                 <TableCell>手機</TableCell>
-                <TableCell>銀行代碼</TableCell>
                 <TableCell>銀行帳號</TableCell>
                 <TableCell>狀態</TableCell>
                 <TableCell>操作</TableCell>
@@ -76,12 +77,7 @@ export function ConsignorVerificationTable({ rows, count }: ConsignorVerificatio
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        {row.bankCode}
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        {row.bankAccount}
+                        ({row.bankCode}){row.bankAccount}
                       </Stack>
                     </TableCell>
                     <TableCell>
@@ -151,6 +147,26 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
 
             <FormControl fullWidth>
               <TextField
+                label="性別"
+                type="text"
+                InputProps={{ readOnly: true }}
+                value={consignorVerification.gender === 1 ? '男' : '女'}
+                fullWidth
+              />
+            </FormControl>
+
+            <FormControl fullWidth>
+              <TextField
+                label="生日"
+                type="text"
+                InputProps={{ readOnly: true }}
+                value={format(consignorVerification.birthday, DATE_FORMAT)}
+                fullWidth
+              />
+            </FormControl>
+
+            <FormControl fullWidth>
+              <TextField
                 label="手機"
                 type="text"
                 InputProps={{ readOnly: true }}
@@ -161,20 +177,20 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
 
             <FormControl fullWidth>
               <TextField
-                label="銀行代碼"
+                label="銀行帳號"
                 type="text"
                 InputProps={{ readOnly: true }}
-                value={consignorVerification.bankCode}
+                value={`(${consignorVerification.bankCode}) ${consignorVerification.bankAccount}`}
                 fullWidth
               />
             </FormControl>
 
             <FormControl fullWidth>
               <TextField
-                label="銀行戶號"
+                label="地址"
                 type="text"
                 InputProps={{ readOnly: true }}
-                value={consignorVerification.bankAccount}
+                value={`${consignorVerification.city} ${consignorVerification.district} ${consignorVerification.streetAddress}`}
                 fullWidth
               />
             </FormControl>
@@ -186,8 +202,13 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
               name="name"
               render={({ field, fieldState }) => (
                 <FormControl fullWidth error={!!fieldState.error}>
-                  <TextField {...field} label="姓名" type="text" fullWidth />
-                  {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  <TextField
+                    label="姓名"
+                    type="text"
+                    InputProps={{ readOnly: true }}
+                    value={consignorVerification.name}
+                    fullWidth
+                  />
                 </FormControl>
               )}
             />
@@ -197,8 +218,13 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
               name="identification"
               render={({ field, fieldState }) => (
                 <FormControl fullWidth error={!!fieldState.error}>
-                  <TextField {...field} label="身分證字號" type="text" fullWidth />
-                  {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  <TextField
+                    label="身分證字號"
+                    type="text"
+                    InputProps={{ readOnly: true }}
+                    value={consignorVerification.identification}
+                    fullWidth
+                  />
                 </FormControl>
               )}
             />

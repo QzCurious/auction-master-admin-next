@@ -31,10 +31,7 @@ export const PaginationSchema = z.object({
   [ROWS_PER_PAGE]: z.coerce.number().min(1).default(10).catch(10),
   [PAGE]: z.coerce.number().min(0).default(0).catch(0),
 });
-export interface PaginationSearchParams {
-  [ROWS_PER_PAGE]: string;
-  [PAGE]: string;
-}
+export type PaginationSearchParams = z.output<typeof PaginationSchema>;
 export const defaultPagination = PaginationSchema.parse({});
 
 export const toPercent = (num: number) => {
