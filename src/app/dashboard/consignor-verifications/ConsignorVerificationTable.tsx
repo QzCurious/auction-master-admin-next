@@ -6,7 +6,6 @@ import { CONSIGNOR_VERIFICATION_STATUS_DATA } from '@/api/backend/configs.data';
 import { type ConsignorVerification } from '@/api/backend/consignor/AdminGetConsignorVerifications';
 import { HandleConsignorVerification } from '@/api/backend/consignor/HandleConsignorVerification';
 import { DATE_FORMAT } from '@/static';
-import { zodResolver } from '@hookform/resolvers/zod';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import {
   Button,
@@ -15,7 +14,6 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  FormHelperText,
   TableContainer,
   TextField,
 } from '@mui/material';
@@ -31,8 +29,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { format } from 'date-fns';
 import { useSnackbar } from 'notistack';
-import { Controller, useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
@@ -105,24 +101,8 @@ export function ConsignorVerificationTable({ rows, count }: ConsignorVerificatio
   );
 }
 
-const AuditSchema = z.object({
-  name: z.string().min(1, '必填'),
-  identification: z.string().min(1, '必填'),
-});
 function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorVerification }) {
   const [open, setOpen] = useState(false);
-  const {
-    control,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<z.input<typeof AuditSchema>>({
-    defaultValues: {
-      name: '',
-      identification: '',
-    },
-    resolver: zodResolver(AuditSchema),
-  });
   const [isPending, startTransition] = useTransition();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -197,37 +177,25 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
 
             <img src={consignorVerification.photo} alt="" />
 
-            <Controller
-              control={control}
-              name="name"
-              render={({ field, fieldState }) => (
-                <FormControl fullWidth error={!!fieldState.error}>
-                  <TextField
-                    label="姓名"
-                    type="text"
-                    InputProps={{ readOnly: true }}
-                    value={consignorVerification.name}
-                    fullWidth
-                  />
-                </FormControl>
-              )}
-            />
+            <FormControl fullWidth>
+              <TextField
+                label="姓名"
+                type="text"
+                InputProps={{ readOnly: true }}
+                value={consignorVerification.name}
+                fullWidth
+              />
+            </FormControl>
 
-            <Controller
-              control={control}
-              name="identification"
-              render={({ field, fieldState }) => (
-                <FormControl fullWidth error={!!fieldState.error}>
-                  <TextField
-                    label="身分證字號"
-                    type="text"
-                    InputProps={{ readOnly: true }}
-                    value={consignorVerification.identification}
-                    fullWidth
-                  />
-                </FormControl>
-              )}
-            />
+            <FormControl fullWidth>
+              <TextField
+                label="身分證字號"
+                type="text"
+                InputProps={{ readOnly: true }}
+                value={consignorVerification.identification}
+                fullWidth
+              />
+            </FormControl>
           </Stack>
         </DialogContent>
         <DialogActions>
@@ -255,17 +223,9 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
             disabled={isPending}
             variant="contained"
             color="primary"
-            onClick={handleSubmit((data) => {
+            onClick={() => {
               startTransition(async () => {
-                const res = await HandleConsignorVerification(consignorVerification.id, 'approve', data);
-                if (res.error === '1005') {
-                  setError('name', { message: '姓名與寄售人輸入資料不一致' });
-                  return;
-                }
-                if (res.error === '1006') {
-                  setError('identification', { message: '身分證字號與寄售人輸入資料不一致' });
-                  return;
-                }
+                const res = await HandleConsignorVerification(consignorVerification.id, 'approve');
                 if (res.error === '1604') {
                   enqueueSnackbar(`此身份驗證申請不存在: ${res.error}`, { variant: 'error' });
                   return;
@@ -277,9 +237,9 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
                 setOpen(false);
                 enqueueSnackbar('已通過', { variant: 'success' });
               });
-            })}
+            }}
           >
-            送出
+            通過
           </Button>
         </DialogActions>
       </Dialog>
