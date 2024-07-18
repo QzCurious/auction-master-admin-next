@@ -1,21 +1,21 @@
 import type React from 'react';
 
-import { ITEM_STATUS_DATA, ITEM_STATUS_KEY_MAP, ITEM_STATUS_MAP, ITEM_TYPE_MAP } from './api/backend/configs.data';
+import { type ITEM_STATUS_MAP, type ITEM_TYPE_MAP } from './api/backend/configs.data';
 
 type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & unknown;
 
 type Adjudicator = 'admin' | 'consignor';
 
 type Step = {
-  type?: Array<keyof typeof ITEM_TYPE_MAP>;
+  allowTypes?: Array<keyof typeof ITEM_TYPE_MAP>;
   status: keyof typeof ITEM_STATUS_MAP;
 } & (
   | {
-      next: [];
+      nexts: [];
       adjudicator?: never;
     }
   | {
-      next: [keyof typeof ITEM_STATUS_MAP, ...Array<keyof typeof ITEM_STATUS_MAP>];
+      nexts: [keyof typeof ITEM_STATUS_MAP, ...Array<keyof typeof ITEM_STATUS_MAP>];
       adjudicator: Adjudicator;
     }
 );
@@ -23,181 +23,164 @@ type Step = {
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class StatusFlow {
   // 要從 flowchart 的 root 依序排到 leaf; happy path 要排在 next 的最前面
+  // https://github.com/win30221/auction-master/blob/v2/service/usecase/status_tree.go#L61-L286
   static flow = {
     SubmitAppraisalStatus: {
-      type: [
+      allowTypes: [
         'AppraisableAuctionItemType',
         'NonAppraisableAuctionItemType',
         'FixedPriceItemType',
         'CompanyDirectPurchaseType',
       ],
       status: 'SubmitAppraisalStatus',
-      next: ['AppraisedStatus', 'AppraisalFailureStatus'],
+      nexts: ['AppraisedStatus', 'AppraisalFailureStatus'],
       adjudicator: 'admin',
     },
-
     AppraisalFailureStatus: {
-      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'AppraisalFailureStatus',
-      next: [],
+      nexts: [],
     },
-
     AppraisedStatus: {
-      type: [
+      allowTypes: [
         'AppraisableAuctionItemType',
         'NonAppraisableAuctionItemType',
         'FixedPriceItemType',
         'CompanyDirectPurchaseType',
       ],
       status: 'AppraisedStatus',
-      next: ['ConsignmentApprovedStatus', 'ConsignorChoosesCompanyDirectPurchaseStatus', 'ConsignmentCanceledStatus'],
+      nexts: ['ConsignmentApprovedStatus', 'ConsignorChoosesCompanyDirectPurchaseStatus', 'ConsignmentCanceledStatus'],
       adjudicator: 'consignor',
     },
-
     ConsignmentApprovedStatus: {
-      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'ConsignmentApprovedStatus',
-      next: ['ConsignorShippedItem'],
+      nexts: ['ConsignorShippedItem'],
       adjudicator: 'consignor',
     },
-
     ConsignmentCanceledStatus: {
-      type: [
+      allowTypes: [
         'AppraisableAuctionItemType',
         'NonAppraisableAuctionItemType',
         'FixedPriceItemType',
         'CompanyDirectPurchaseType',
       ],
       status: 'ConsignmentCanceledStatus',
-      next: [],
+      nexts: [],
     },
-
     ConsignorChoosesCompanyDirectPurchaseStatus: {
-      type: [
+      allowTypes: [
         'AppraisableAuctionItemType',
         'NonAppraisableAuctionItemType',
         'FixedPriceItemType',
         'CompanyDirectPurchaseType',
       ],
       status: 'ConsignorChoosesCompanyDirectPurchaseStatus',
-      next: ['ConsignorShippedItem'],
+      nexts: ['ConsignorShippedItem'],
       adjudicator: 'admin',
     },
-
     ConsignorShippedItem: {
-      type: [
+      allowTypes: [
         'AppraisableAuctionItemType',
         'NonAppraisableAuctionItemType',
         'FixedPriceItemType',
         'CompanyDirectPurchaseType',
       ],
       status: 'ConsignorShippedItem',
-      next: ['WarehouseArrivalStatus'],
+      nexts: ['WarehouseArrivalStatus'],
       adjudicator: 'admin',
     },
-
     WarehouseArrivalStatus: {
-      type: [
+      allowTypes: [
         'AppraisableAuctionItemType',
         'NonAppraisableAuctionItemType',
         'FixedPriceItemType',
         'CompanyDirectPurchaseType',
       ],
       status: 'WarehouseArrivalStatus',
-      next: ['WarehousePersonnelConfirmedStatus', 'WarehouseReturnPendingStatus'],
+      nexts: ['WarehousePersonnelConfirmedStatus', 'WarehouseReturnPendingStatus'],
       adjudicator: 'admin',
     },
-
     WarehouseReturnPendingStatus: {
-      type: [
+      allowTypes: [
         'AppraisableAuctionItemType',
         'NonAppraisableAuctionItemType',
         'FixedPriceItemType',
         'CompanyDirectPurchaseType',
       ],
       status: 'WarehouseReturnPendingStatus',
-      next: ['WarehouseReturningStatus'],
+      nexts: ['WarehouseReturningStatus'],
       adjudicator: 'admin',
     },
-
     WarehouseReturningStatus: {
-      type: [
+      allowTypes: [
         'AppraisableAuctionItemType',
         'NonAppraisableAuctionItemType',
         'FixedPriceItemType',
         'CompanyDirectPurchaseType',
       ],
       status: 'WarehouseReturningStatus',
-      next: ['ReturnedStatus'],
+      nexts: ['ReturnedStatus'],
       adjudicator: 'admin',
     },
-
     WarehousePersonnelConfirmedStatus: {
-      type: [
+      allowTypes: [
         'AppraisableAuctionItemType',
         'NonAppraisableAuctionItemType',
         'FixedPriceItemType',
         'CompanyDirectPurchaseType',
       ],
       status: 'WarehousePersonnelConfirmedStatus',
-      next: ['AppraiserConfirmedStatus', 'CompanyDirectPurchaseStatus'],
+      nexts: ['AppraiserConfirmedStatus', 'CompanyDirectPurchaseStatus'],
       adjudicator: 'admin',
     },
-
     AppraiserConfirmedStatus: {
-      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'AppraiserConfirmedStatus',
-      next: ['ConsignorConfirmedStatus', 'WarehouseReturnPendingStatus'],
+      nexts: ['ConsignorConfirmedStatus', 'WarehouseReturnPendingStatus'],
       adjudicator: 'consignor',
     },
-
     ConsignorConfirmedStatus: {
-      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'ConsignorConfirmedStatus',
-      next: ['BiddingStatus', 'CompanyReclaimedStatus'],
+      nexts: ['BiddingStatus', 'CompanyReclaimedStatus'],
       adjudicator: 'admin',
     },
-
     BiddingStatus: {
-      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'BiddingStatus',
-      next: ['SoldStatus', 'CompanyRepurchasedStatus', 'ConsignorConfirmedStatus'],
+      nexts: ['SoldStatus', 'CompanyRepurchasedStatus', 'ConsignorConfirmedStatus'],
       adjudicator: 'admin',
     },
-
     SoldStatus: {
-      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'SoldStatus',
-      next: [],
+      nexts: [],
     },
-
     CompanyDirectPurchaseStatus: {
-      type: ['CompanyDirectPurchaseType'],
+      allowTypes: ['CompanyDirectPurchaseType'],
       status: 'CompanyDirectPurchaseStatus',
-      next: [],
+      nexts: [],
     },
-
     ReturnedStatus: {
-      type: [
+      allowTypes: [
         'AppraisableAuctionItemType',
         'NonAppraisableAuctionItemType',
         'FixedPriceItemType',
         'CompanyDirectPurchaseType',
       ],
       status: 'ReturnedStatus',
-      next: [],
+      nexts: [],
     },
-
     CompanyRepurchasedStatus: {
-      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'CompanyRepurchasedStatus',
-      next: [],
+      nexts: [],
     },
-
     CompanyReclaimedStatus: {
-      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'CompanyReclaimedStatus',
-      next: [],
+      nexts: [],
     },
   } satisfies Record<keyof typeof ITEM_STATUS_MAP, Step>;
 
@@ -238,7 +221,7 @@ export class StatusFlow {
 
 interface TreeNode<T> {
   value: T;
-  next: T[];
+  nexts: T[];
 }
 
 export function dfs<T>(nodes: TreeNode<T>[], from: T, to: T): T[] | null {
@@ -256,7 +239,7 @@ export function dfs<T>(nodes: TreeNode<T>[], from: T, to: T): T[] | null {
       return true;
     }
 
-    for (const nextValue of node.next) {
+    for (const nextValue of node.nexts) {
       if (!visited.has(nextValue)) {
         const nextNode = nodes.find((n) => n.value === nextValue);
         if (nextNode && dfsRecursive(nextNode)) {
@@ -293,7 +276,7 @@ export function bfs<T>(
 
     visited.add(currentNode.value);
 
-    for (const nextValue of currentNode.next) {
+    for (const nextValue of currentNode.nexts) {
       if (!visited.has(nextValue)) {
         const nextNode = nodes.find((n) => n.value === nextValue);
         if (nextNode) {
@@ -305,6 +288,3 @@ export function bfs<T>(
 
   return null;
 }
-
-([1, 3, 13, 14, 21, 24, 32] as const).map((x) => ITEM_STATUS_DATA.find(({ value }) => value === x)?.message); // ?
-['已提交估價', '已估價', '寄售人選擇公司直購', '已寄出', '已到貨', '倉管已確認', '公司直購'];

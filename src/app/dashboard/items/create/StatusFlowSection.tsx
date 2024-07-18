@@ -265,7 +265,7 @@ function StatusFlowUI({ item }: { item: Item }) {
   }
 
   const path = bfs(
-    Object.values(statusFlowWithAdminActions).map((v) => ({ value: v.status, next: v.next })),
+    Object.values(statusFlowWithAdminActions).map((v) => ({ value: v.status, nexts: v.nexts })),
     'SubmitAppraisalStatus',
     ITEM_STATUS_KEY_MAP[item.status]
   );
@@ -279,7 +279,7 @@ function StatusFlowUI({ item }: { item: Item }) {
   while (true) {
     const last = path[path.length - 1];
     const step = statusFlowWithAdminActions[last];
-    const happyNext = 'next' in step && step.next?.[0];
+    const happyNext = 'next' in step && step.nexts?.[0];
     if (!happyNext) break;
     path.push(happyNext);
   }

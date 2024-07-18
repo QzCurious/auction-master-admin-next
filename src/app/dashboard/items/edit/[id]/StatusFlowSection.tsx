@@ -268,10 +268,10 @@ function StatusFlowUI({ item }: { item: Item }) {
   }
 
   const path = bfs(
-    Object.values(statusFlowWithAdminActions).map((v) => ({ value: v.status, next: v.next })),
+    Object.values(statusFlowWithAdminActions).map((v) => ({ value: v.status, nexts: v.nexts })),
     'SubmitAppraisalStatus',
     ITEM_STATUS_KEY_MAP[item.status],
-    (step) => StatusFlow.flow[step.value].type.some((t) => ITEM_TYPE_MAP[t] === item.type)
+    (step) => StatusFlow.flow[step.value].allowTypes.some((t) => ITEM_TYPE_MAP[t] === item.type)
   ) ?? ['SubmitAppraisalStatus'];
 
   // fill reset path
@@ -281,8 +281,8 @@ function StatusFlowUI({ item }: { item: Item }) {
     const step = statusFlowWithAdminActions[last];
     const happyNext =
       item.type === 0
-        ? step.next[0]
-        : step.next.find((s) => StatusFlow.flow[s].type.some((t) => ITEM_TYPE_MAP[t] === item.type));
+        ? step.nexts[0]
+        : step.nexts.find((s) => StatusFlow.flow[s].allowTypes.some((t) => ITEM_TYPE_MAP[t] === item.type));
     if (!happyNext) break;
     path.push(happyNext);
   }

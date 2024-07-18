@@ -130,7 +130,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
     item.status !== ITEM_STATUS_MAP.BiddingStatus &&
     // 判斷是否為最後一個狀態
     !Object.values(StatusFlow.flow)
-      .filter((f) => f.next.length === 0)
+      .filter((f) => f.nexts.length === 0)
       .map((f) => ITEM_STATUS_MAP[f.status])
       .includes(item.status as never);
 
