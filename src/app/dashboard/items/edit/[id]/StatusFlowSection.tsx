@@ -7,6 +7,7 @@ import {
   ITEM_STATUS_KEY_MAP,
   ITEM_STATUS_MAP,
   ITEM_STATUS_MESSAGE_MAP,
+  ITEM_TYPE_MAP,
 } from '@/api/backend/configs.data';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
@@ -249,8 +250,10 @@ function StatusFlowUI({ item }: { item: Item }) {
         </HavePermissionsOnly>
       </>
     ),
-    ReadyStatus: <ReadyStatusHandleButtons item={item} />,
-    BiddingStatus: null,
+    ConsignorChoosesCompanyDirectPurchaseStatus: <NotImplemented />,
+    WarehousePersonnelConfirmedStatus: <NotImplemented />,
+    ConsignorConfirmedStatus: <ReadyStatusHandleButtons item={item} />,
+    BiddingStatus: <NotImplemented />,
   });
 
   if (process.env.NODE_ENV === 'development') {
@@ -265,19 +268,20 @@ function StatusFlowUI({ item }: { item: Item }) {
   const path = bfs(
     Object.values(statusFlowWithAdminActions).map((v) => ({ value: v.status, next: v.next })),
     'SubmitAppraisalStatus',
-    ITEM_STATUS_KEY_MAP[item.status]
+    ITEM_STATUS_KEY_MAP[item.status],
+    (step) => StatusFlow.flow[step.value].type.some((t) => ITEM_TYPE_MAP[t] === item.type)
   );
 
   if (!path) {
     return null;
   }
 
-  // fill with happy path
+  // fill reset path
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const last = path[path.length - 1];
     const step = statusFlowWithAdminActions[last];
-    const happyNext = 'next' in step && step.next?.[0];
+    const happyNext = step.next.find((s) => StatusFlow.flow[s].type.some((t) => ITEM_TYPE_MAP[t] === item.type));
     if (!happyNext) break;
     path.push(happyNext);
   }

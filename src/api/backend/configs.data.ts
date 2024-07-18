@@ -40,6 +40,11 @@ export const CONFIGS_DATA = {
       message: '定價物品',
       value: 3,
     },
+    {
+      key: 'CompanyDirectPurchaseType',
+      message: '公司直購物品',
+      value: 4,
+    },
   ],
   itemStatus: [
     {
@@ -68,9 +73,14 @@ export const CONFIGS_DATA = {
       value: 12,
     },
     {
+      key: 'ConsignorChoosesCompanyDirectPurchaseStatus',
+      message: '寄售人選擇公司直購',
+      value: 13,
+    },
+    {
       key: 'ConsignorShippedItem',
       message: '已寄出',
-      value: 13,
+      value: 14,
     },
     {
       key: 'WarehouseArrivalStatus',
@@ -84,23 +94,28 @@ export const CONFIGS_DATA = {
     },
     {
       key: 'WarehouseReturningStatus',
-      message: '退貨準備中',
+      message: '退貨作業中',
       value: 23,
     },
     {
-      key: 'CustomerServiceConfirmedStatus',
-      message: '客服已確認',
+      key: 'WarehousePersonnelConfirmedStatus',
+      message: '倉管已確認',
       value: 24,
     },
     {
-      key: 'ReadyStatus',
-      message: '準備上架',
+      key: 'AppraiserConfirmedStatus',
+      message: '鑑價師已確認',
       value: 25,
+    },
+    {
+      key: 'ConsignorConfirmedStatus',
+      message: '準備上架',
+      value: 26,
     },
     {
       key: 'BiddingStatus',
       message: '競標中',
-      value: 26,
+      value: 27,
     },
     {
       key: 'SoldStatus',
@@ -108,19 +123,24 @@ export const CONFIGS_DATA = {
       value: 31,
     },
     {
+      key: 'CompanyDirectPurchaseStatus',
+      message: '公司直購',
+      value: 32,
+    },
+    {
       key: 'ReturnedStatus',
       message: '退回',
-      value: 32,
+      value: 33,
     },
     {
       key: 'CompanyRepurchasedStatus',
       message: '被公司買回',
-      value: 33,
+      value: 34,
     },
     {
       key: 'CompanyReclaimedStatus',
       message: '被公司收回',
-      value: 34,
+      value: 35,
     },
   ],
   auctionItemStatus: [
@@ -222,6 +242,7 @@ export const CONFIGS_DATA = {
 
 export const ITEM_TYPE_DATA = CONFIGS_DATA.itemType;
 export const ITEM_TYPE_MAP = mapToObj(ITEM_TYPE_DATA, ({ key, value }) => [key, value]);
+export const ITEM_TYPE_KEY_MAP = mapToObj(ITEM_TYPE_DATA, ({ key, value }) => [value, key]);
 
 export const ITEM_STATUS_DATA = CONFIGS_DATA.itemStatus;
 export const ITEM_STATUS_MAP = mapToObj(ITEM_STATUS_DATA, ({ key, value }) => [key, value]);

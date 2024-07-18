@@ -1,99 +1,202 @@
 import type React from 'react';
 
-import { type ITEM_STATUS_MAP } from './api/backend/configs.data';
+import { ITEM_STATUS_DATA, ITEM_STATUS_KEY_MAP, ITEM_STATUS_MAP, ITEM_TYPE_MAP } from './api/backend/configs.data';
 
 type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & unknown;
 
 type Adjudicator = 'admin' | 'consignor';
 
-type Step =
+type Step = {
+  type?: Array<keyof typeof ITEM_TYPE_MAP>;
+  status: keyof typeof ITEM_STATUS_MAP;
+} & (
   | {
-      status: keyof typeof ITEM_STATUS_MAP;
       next: [];
       adjudicator?: never;
     }
   | {
-      status: keyof typeof ITEM_STATUS_MAP;
       next: [keyof typeof ITEM_STATUS_MAP, ...Array<keyof typeof ITEM_STATUS_MAP>];
       adjudicator: Adjudicator;
-    };
+    }
+);
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class StatusFlow {
   // 要從 flowchart 的 root 依序排到 leaf; happy path 要排在 next 的最前面
   static flow = {
     SubmitAppraisalStatus: {
+      type: [
+        'AppraisableAuctionItemType',
+        'NonAppraisableAuctionItemType',
+        'FixedPriceItemType',
+        'CompanyDirectPurchaseType',
+      ],
       status: 'SubmitAppraisalStatus',
       next: ['AppraisedStatus', 'AppraisalFailureStatus'],
       adjudicator: 'admin',
     },
+
     AppraisalFailureStatus: {
+      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'AppraisalFailureStatus',
       next: [],
     },
+
     AppraisedStatus: {
+      type: [
+        'AppraisableAuctionItemType',
+        'NonAppraisableAuctionItemType',
+        'FixedPriceItemType',
+        'CompanyDirectPurchaseType',
+      ],
       status: 'AppraisedStatus',
-      next: ['ConsignmentApprovedStatus', 'ConsignmentCanceledStatus'],
+      next: ['ConsignmentApprovedStatus', 'ConsignorChoosesCompanyDirectPurchaseStatus', 'ConsignmentCanceledStatus'],
       adjudicator: 'consignor',
     },
-    ConsignmentCanceledStatus: {
-      status: 'ConsignmentCanceledStatus',
-      next: [],
-    },
+
     ConsignmentApprovedStatus: {
+      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'ConsignmentApprovedStatus',
       next: ['ConsignorShippedItem'],
       adjudicator: 'consignor',
     },
+
+    ConsignmentCanceledStatus: {
+      type: [
+        'AppraisableAuctionItemType',
+        'NonAppraisableAuctionItemType',
+        'FixedPriceItemType',
+        'CompanyDirectPurchaseType',
+      ],
+      status: 'ConsignmentCanceledStatus',
+      next: [],
+    },
+
+    ConsignorChoosesCompanyDirectPurchaseStatus: {
+      type: [
+        'AppraisableAuctionItemType',
+        'NonAppraisableAuctionItemType',
+        'FixedPriceItemType',
+        'CompanyDirectPurchaseType',
+      ],
+      status: 'ConsignorChoosesCompanyDirectPurchaseStatus',
+      next: ['ConsignorShippedItem'],
+      adjudicator: 'admin',
+    },
+
     ConsignorShippedItem: {
+      type: [
+        'AppraisableAuctionItemType',
+        'NonAppraisableAuctionItemType',
+        'FixedPriceItemType',
+        'CompanyDirectPurchaseType',
+      ],
       status: 'ConsignorShippedItem',
       next: ['WarehouseArrivalStatus'],
       adjudicator: 'admin',
     },
+
     WarehouseArrivalStatus: {
+      type: [
+        'AppraisableAuctionItemType',
+        'NonAppraisableAuctionItemType',
+        'FixedPriceItemType',
+        'CompanyDirectPurchaseType',
+      ],
       status: 'WarehouseArrivalStatus',
-      next: ['CustomerServiceConfirmedStatus', 'WarehouseReturnPendingStatus'],
+      next: ['WarehousePersonnelConfirmedStatus', 'WarehouseReturnPendingStatus'],
       adjudicator: 'admin',
     },
+
     WarehouseReturnPendingStatus: {
+      type: [
+        'AppraisableAuctionItemType',
+        'NonAppraisableAuctionItemType',
+        'FixedPriceItemType',
+        'CompanyDirectPurchaseType',
+      ],
       status: 'WarehouseReturnPendingStatus',
       next: ['WarehouseReturningStatus'],
       adjudicator: 'admin',
     },
+
     WarehouseReturningStatus: {
+      type: [
+        'AppraisableAuctionItemType',
+        'NonAppraisableAuctionItemType',
+        'FixedPriceItemType',
+        'CompanyDirectPurchaseType',
+      ],
       status: 'WarehouseReturningStatus',
       next: ['ReturnedStatus'],
       adjudicator: 'admin',
     },
-    ReturnedStatus: {
-      status: 'ReturnedStatus',
-      next: [],
+
+    WarehousePersonnelConfirmedStatus: {
+      type: [
+        'AppraisableAuctionItemType',
+        'NonAppraisableAuctionItemType',
+        'FixedPriceItemType',
+        'CompanyDirectPurchaseType',
+      ],
+      status: 'WarehousePersonnelConfirmedStatus',
+      next: ['AppraiserConfirmedStatus', 'CompanyDirectPurchaseStatus'],
+      adjudicator: 'admin',
     },
-    CustomerServiceConfirmedStatus: {
-      status: 'CustomerServiceConfirmedStatus',
-      next: ['ReadyStatus', 'WarehouseReturnPendingStatus'],
+
+    AppraiserConfirmedStatus: {
+      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      status: 'AppraiserConfirmedStatus',
+      next: ['ConsignorConfirmedStatus', 'WarehouseReturnPendingStatus'],
       adjudicator: 'consignor',
     },
-    ReadyStatus: {
-      status: 'ReadyStatus',
+
+    ConsignorConfirmedStatus: {
+      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      status: 'ConsignorConfirmedStatus',
       next: ['BiddingStatus', 'CompanyReclaimedStatus'],
       adjudicator: 'admin',
     },
-    CompanyReclaimedStatus: {
-      status: 'CompanyReclaimedStatus',
-      next: [],
-    },
+
     BiddingStatus: {
+      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'BiddingStatus',
-      next: ['SoldStatus', 'ReadyStatus', 'CompanyRepurchasedStatus'],
+      next: ['SoldStatus', 'CompanyRepurchasedStatus', 'ConsignorConfirmedStatus'],
       adjudicator: 'admin',
     },
+
+    SoldStatus: {
+      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      status: 'SoldStatus',
+      next: [],
+    },
+
+    CompanyDirectPurchaseStatus: {
+      type: ['CompanyDirectPurchaseType'],
+      status: 'CompanyDirectPurchaseStatus',
+      next: [],
+    },
+
+    ReturnedStatus: {
+      type: [
+        'AppraisableAuctionItemType',
+        'NonAppraisableAuctionItemType',
+        'FixedPriceItemType',
+        'CompanyDirectPurchaseType',
+      ],
+      status: 'ReturnedStatus',
+      next: [],
+    },
+
     CompanyRepurchasedStatus: {
+      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'CompanyRepurchasedStatus',
       next: [],
     },
-    SoldStatus: {
-      status: 'SoldStatus',
+
+    CompanyReclaimedStatus: {
+      type: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      status: 'CompanyReclaimedStatus',
       next: [],
     },
   } satisfies Record<keyof typeof ITEM_STATUS_MAP, Step>;
@@ -133,31 +236,6 @@ export class StatusFlow {
   }
 }
 
-const s = StatusFlow.withActions('consignor', {
-  AppraisedStatus: 'dd',
-  CustomerServiceConfirmedStatus: 'bb',
-  ConsignmentApprovedStatus: 'cc',
-});
-s.SubmitAppraisalStatus;
-s.AppraisedStatus;
-s.CompanyRepurchasedStatus;
-
-const key: keyof typeof StatusFlow.flow = 'SubmitAppraisalStatus' as keyof typeof StatusFlow.flow;
-const dd = s[key];
-'next' in s[key] && s[key].next;
-'next' in dd && dd.next;
-
-const bbb = dfs(
-  Object.values(StatusFlow.flow).map((v) => ({ value: v.status, next: v.next })),
-  'SubmitAppraisalStatus',
-  'ReturnedStatus'
-); //?
-const aaa = bfs(
-  Object.values(StatusFlow.flow).map((v) => ({ value: v.status, next: v.next })),
-  'SubmitAppraisalStatus',
-  'ReturnedStatus'
-); //?
-
 interface TreeNode<T> {
   value: T;
   next: T[];
@@ -194,7 +272,12 @@ export function dfs<T>(nodes: TreeNode<T>[], from: T, to: T): T[] | null {
   return dfsRecursive(startNode) ? path : null;
 }
 
-export function bfs<T>(nodes: TreeNode<T>[], from: T, to: T): T[] | null {
+export function bfs<T>(
+  nodes: TreeNode<T>[],
+  from: T,
+  to: T,
+  additionalCondition?: (node: TreeNode<T>) => boolean
+): T[] | null {
   const startNode = nodes.find((node) => node.value === from);
   if (!startNode) return null;
 
@@ -204,7 +287,7 @@ export function bfs<T>(nodes: TreeNode<T>[], from: T, to: T): T[] | null {
   while (queue.length > 0) {
     const [currentNode, path] = queue.shift()!;
 
-    if (currentNode.value === to) {
+    if (currentNode.value === to && additionalCondition?.(currentNode)) {
       return [...path, currentNode.value];
     }
 
@@ -222,3 +305,6 @@ export function bfs<T>(nodes: TreeNode<T>[], from: T, to: T): T[] | null {
 
   return null;
 }
+
+([1, 3, 13, 14, 21, 24, 32] as const).map((x) => ITEM_STATUS_DATA.find(({ value }) => value === x)?.message); // ?
+['已提交估價', '已估價', '寄售人選擇公司直購', '已寄出', '已到貨', '倉管已確認', '公司直購'];

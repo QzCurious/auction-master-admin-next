@@ -249,7 +249,9 @@ function StatusFlowUI({ item }: { item: Item }) {
         </HavePermissionsOnly>
       </>
     ),
-    ReadyStatus: <ReadyStatusHandleButtons item={item} />,
+    ConsignorChoosesCompanyDirectPurchaseStatus: <NotImplemented />,
+    ConsignorConfirmedStatus: <NotImplemented />,
+    WarehousePersonnelConfirmedStatus: <NotImplemented />,
     BiddingStatus: null,
   });
 
