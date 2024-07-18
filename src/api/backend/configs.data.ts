@@ -74,7 +74,7 @@ export const CONFIGS_DATA = {
     },
     {
       key: 'ConsignorChoosesCompanyDirectPurchaseStatus',
-      message: '寄售人選擇公司直購',
+      message: '選擇公司直購',
       value: 13,
     },
     {
