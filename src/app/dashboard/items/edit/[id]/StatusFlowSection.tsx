@@ -272,18 +272,17 @@ function StatusFlowUI({ item }: { item: Item }) {
     'SubmitAppraisalStatus',
     ITEM_STATUS_KEY_MAP[item.status],
     (step) => StatusFlow.flow[step.value].type.some((t) => ITEM_TYPE_MAP[t] === item.type)
-  );
-
-  if (!path) {
-    return null;
-  }
+  ) ?? ['SubmitAppraisalStatus'];
 
   // fill reset path
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const last = path[path.length - 1];
     const step = statusFlowWithAdminActions[last];
-    const happyNext = step.next.find((s) => StatusFlow.flow[s].type.some((t) => ITEM_TYPE_MAP[t] === item.type));
+    const happyNext =
+      item.type === 0
+        ? step.next[0]
+        : step.next.find((s) => StatusFlow.flow[s].type.some((t) => ITEM_TYPE_MAP[t] === item.type));
     if (!happyNext) break;
     path.push(happyNext);
   }

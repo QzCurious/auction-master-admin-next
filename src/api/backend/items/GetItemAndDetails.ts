@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { type ITEM_STATUS_KEY_MAP } from '../configs.data';
+import { type ITEM_STATUS_KEY_MAP, type ITEM_TYPE_KEY_MAP } from '../configs.data';
 
 export const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),
@@ -17,7 +17,7 @@ export interface Item {
   id: number;
   consignorID: number;
   nickname: string;
-  type: number;
+  type: 0 | keyof typeof ITEM_TYPE_KEY_MAP;
   name: string;
   description: string;
   photos: Array<{
