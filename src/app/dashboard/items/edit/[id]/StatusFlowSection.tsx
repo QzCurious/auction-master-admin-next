@@ -343,6 +343,9 @@ function StatusStep({
           '--tail-color': 'var(--mui-palette-grey-400)',
         },
         '&:last-of-type': { '[data-tail]': { display: 'none' } },
+        '&[data-active]~[data-status-step] [data-time]': {
+          display: 'none',
+        },
       }}
       data-status-step
       data-active={active ? true : undefined}
@@ -381,6 +384,7 @@ function StatusStep({
             component="p"
             variant="caption"
             sx={{ color: active ? 'var(--mui-palette-text-primary)' : 'var(--mui-palette-grey-600)', mt: -1.5 }}
+            data-time
           >
             {time}
           </Typography>
