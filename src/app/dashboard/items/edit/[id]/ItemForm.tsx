@@ -9,7 +9,7 @@ import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { StatusFlow } from '@/StatusFlow';
 import { zodResolver } from '@hookform/resolvers/zod';
 import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
-import { Button, Grid, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Button, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -255,7 +255,10 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   onChange={(e) => {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
-                  InputProps={{ readOnly: !canUpdate }}
+                  InputProps={{
+                    readOnly: !canUpdate,
+                    startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                  }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
@@ -277,7 +280,10 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   onChange={(e) => {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
-                  InputProps={{ readOnly: !canUpdate }}
+                  InputProps={{
+                    readOnly: !canUpdate,
+                    startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                  }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
@@ -301,7 +307,10 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                       onChange={(e) => {
                         field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                       }}
-                      InputProps={{ readOnly: !canUpdate }}
+                      InputProps={{
+                        readOnly: !canUpdate,
+                        startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                      }}
                     />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                   </FormControl>
@@ -323,7 +332,10 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                       onChange={(e) => {
                         field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                       }}
-                      InputProps={{ readOnly: !canUpdate }}
+                      InputProps={{
+                        readOnly: !canUpdate,
+                        startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                      }}
                     />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                   </FormControl>
