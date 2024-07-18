@@ -26,7 +26,7 @@ export interface Item {
     createdAt: string;
     updatedAt: string;
   }>;
-  pastStatuses: { [k in keyof typeof ITEM_STATUS_KEY_MAP]: string };
+  pastStatuses: { [k in keyof typeof ITEM_STATUS_KEY_MAP]?: string };
   directPurchasePrice: number;
   minEstimatedPrice: number;
   maxEstimatedPrice: number;

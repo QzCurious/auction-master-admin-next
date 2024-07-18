@@ -18,6 +18,7 @@ import { ItemCompleteDetails } from '@/api/backend/items/ItemCompleteDetails';
 import { ItemReturned } from '@/api/backend/items/ItemReturned';
 import { ItemReturning } from '@/api/backend/items/ItemReturning';
 import { ItemReturnPending } from '@/api/backend/items/ItemReturnPending';
+import { DATE_TIME_FORMAT } from '@/static';
 import { bfs, StatusFlow } from '@/StatusFlow';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
@@ -35,6 +36,7 @@ import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
+import { format } from 'date-fns';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 import { useFormContext } from 'react-hook-form';
@@ -289,8 +291,15 @@ function StatusFlowUI({ item }: { item: Item }) {
   const result = path.map((status) => {
     const step = statusFlowWithAdminActions[status];
     const active = ITEM_STATUS_MAP[step.status] === item.status;
+    const time = item.pastStatuses[ITEM_STATUS_MAP[step.status]];
+
     return (
-      <StatusStep key={step.status} text={ITEM_STATUS_MESSAGE_MAP[step.status]} active={active}>
+      <StatusStep
+        key={step.status}
+        text={ITEM_STATUS_MESSAGE_MAP[step.status]}
+        time={time ? format(time, DATE_TIME_FORMAT) : undefined}
+        active={active}
+      >
         {active && 'actions' in step && step.actions}
       </StatusStep>
     );
@@ -308,7 +317,17 @@ function StatusFlowUI({ item }: { item: Item }) {
   return result;
 }
 
-function StatusStep({ text, children, active }: { text: string; children?: React.ReactNode; active: boolean }) {
+function StatusStep({
+  text,
+  time,
+  children,
+  active,
+}: {
+  text: string;
+  time?: string;
+  children?: React.ReactNode;
+  active: boolean;
+}) {
   return (
     <Stack
       direction="row"
@@ -357,6 +376,15 @@ function StatusStep({ text, children, active }: { text: string; children?: React
         >
           {text}
         </Typography>
+        {time && (
+          <Typography
+            component="p"
+            variant="caption"
+            sx={{ color: active ? 'var(--mui-palette-text-primary)' : 'var(--mui-palette-grey-600)', mt: -1.5 }}
+          >
+            {time}
+          </Typography>
+        )}
 
         {children && (
           <Stack direction="row" spacing={2} justifyContent="end">
