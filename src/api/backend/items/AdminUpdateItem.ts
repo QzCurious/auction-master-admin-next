@@ -16,12 +16,15 @@ const ReqSchema = z.object({
     .optional(),
   name: z.string().min(1).optional(),
   description: z.string().nullable().optional(),
-  space: z.number().min(1).optional(),
+  directPurchasePrice: z.number().optional(),
   minEstimatedPrice: z.number().optional(),
   maxEstimatedPrice: z.number().optional(),
-  sellerID: z.number().optional(),
   reservePrice: z.number().min(1).optional(),
   expireAt: z.date().nullable().optional(),
+  warehouseID: z.string().optional(),
+  space: z.number().min(1).optional(),
+  grossWeight: z.number().optional(),
+  volumetricWeight: z.number().optional(),
   status: z.number().optional(),
 });
 
@@ -37,12 +40,15 @@ export async function AdminUpdateItem(id: number, payload: z.input<typeof ReqSch
   data.type != null && formData.append('type', data.type.toString());
   data.name != null && formData.append('name', data.name);
   data.description != null && formData.append('description', data.description);
-  data.space != null && formData.append('space', data.space.toString());
+  data.directPurchasePrice != null && formData.append('directPurchasePrice', data.directPurchasePrice.toString());
   data.minEstimatedPrice != null && formData.append('minEstimatedPrice', data.minEstimatedPrice.toString());
   data.maxEstimatedPrice != null && formData.append('maxEstimatedPrice', data.maxEstimatedPrice.toString());
-  data.sellerID != null && formData.append('sellerID', data.sellerID.toString());
   data.reservePrice != null && formData.append('reservePrice', data.reservePrice.toString());
   data.expireAt != null && formData.append('expireAt', data.expireAt.toISOString());
+  data.warehouseID != null && formData.append('warehouseID', data.warehouseID);
+  data.space != null && formData.append('space', data.space.toString());
+  data.grossWeight != null && formData.append('grossWeight', data.grossWeight.toString());
+  data.volumetricWeight != null && formData.append('volumetricWeight', data.volumetricWeight.toString());
   data.status != null && formData.append('status', data.status.toString());
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}`, {

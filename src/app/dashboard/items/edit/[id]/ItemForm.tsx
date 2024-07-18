@@ -23,7 +23,7 @@ import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-fo
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import { useHandleNoPermissions, useHavePermissions } from '@/contexts/UserContext';
+import { useHavePermissions } from '@/contexts/UserContext';
 import QuillTextEditor from '@/components/QuillTextEditor/QuillTextEditor';
 
 interface ItemFromProps {
@@ -34,15 +34,19 @@ interface ItemFromProps {
 export type FormSchemaType = z.output<typeof FormSchema>;
 const FormSchema = z
   .object({
-    status: z.number(),
     consignorID: z.number(),
-    type: z.number().optional(),
+    type: z.number().refine((v) => v === 0 || ITEM_TYPE_DATA.find((item) => item.value === v)),
     name: z.string().min(1, '必填'),
     description: z.string().default(''),
-    space: z.number().min(1, '必填'),
+    directPurchasePrice: z.number(),
     minEstimatedPrice: z.coerce.number().optional(),
     maxEstimatedPrice: z.coerce.number().optional(),
     reservePrice: z.number().min(1, '必填'),
+    warehouseID: z.string(),
+    space: z.number().min(1, '必填'),
+    grossWeight: z.number(),
+    volumetricWeight: z.number(),
+    status: z.number(),
   })
   .superRefine((data, ctx) => {
     if (data.type !== ITEM_TYPE_MAP['AppraisableAuctionItemType']) {
@@ -66,19 +70,25 @@ const FormSchema = z
 export function ItemFormProvider({ item, children }: { item: Item; children: React.ReactNode }) {
   const defaultValues = useMemo(
     () => ({
-      status: item.status,
       consignorID: item.consignorID,
       type: item.type,
       name: item.name,
-      space: item.space,
+      description: item.description ? item.description : JSON.stringify(new Delta().insert('\n').ops),
+      directPurchasePrice: item.directPurchasePrice,
       minEstimatedPrice: item.minEstimatedPrice,
       maxEstimatedPrice: item.maxEstimatedPrice,
       reservePrice: item.reservePrice,
-      description: item.description ? item.description : JSON.stringify(new Delta().insert('\n').ops),
+      warehouseID: item.warehouseID,
+      space: item.space,
+      grossWeight: item.grossWeight,
+      volumetricWeight: item.volumetricWeight,
+      status: item.status,
     }),
     [
       item.consignorID,
       item.description,
+      item.directPurchasePrice,
+      item.grossWeight,
       item.maxEstimatedPrice,
       item.minEstimatedPrice,
       item.name,
@@ -86,6 +96,8 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
       item.space,
       item.status,
       item.type,
+      item.volumetricWeight,
+      item.warehouseID,
     ]
   );
   const form = useForm<z.input<typeof FormSchema>>({
@@ -120,7 +132,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
     !Object.values(StatusFlow.flow)
       .filter((f) => f.next.length === 0)
       .map((f) => ITEM_STATUS_MAP[f.status])
-      .includes(item.status);
+      .includes(item.status as never);
 
   const quillRef = useRef<Quill>(null);
 
@@ -231,13 +243,13 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
 
         <Grid item xs={12} sm={6}>
           <Controller
-            name="space"
+            name="directPurchasePrice"
             control={control}
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
                 <TextField
                   {...field}
-                  label="空間"
+                  label="直購金額"
                   type="number"
                   fullWidth
                   onChange={(e) => {
@@ -320,6 +332,85 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
             </Grid>
           </>
         )}
+
+        <Grid item xs={12} sm={6}>
+          <Controller
+            control={control}
+            name="warehouseID"
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <TextField {...field} label="倉庫編號" type="text" fullWidth InputProps={{ readOnly: !canUpdate }} />
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="space"
+            control={control}
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <TextField
+                  {...field}
+                  label="物品占用空間"
+                  type="number"
+                  fullWidth
+                  onChange={(e) => {
+                    field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                  }}
+                  InputProps={{ readOnly: !canUpdate }}
+                />
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="grossWeight"
+            control={control}
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <TextField
+                  {...field}
+                  label="實際重量"
+                  type="number"
+                  fullWidth
+                  onChange={(e) => {
+                    field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                  }}
+                  InputProps={{ readOnly: !canUpdate }}
+                />
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="volumetricWeight"
+            control={control}
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <TextField
+                  {...field}
+                  label="體積重量"
+                  type="number"
+                  fullWidth
+                  onChange={(e) => {
+                    field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                  }}
+                  InputProps={{ readOnly: !canUpdate }}
+                />
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
+        </Grid>
 
         <Grid item xs={12} sm={12}>
           <Stack mb={1} direction="row" spacing={0.5} alignItems="center">

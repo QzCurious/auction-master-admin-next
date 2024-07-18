@@ -29,7 +29,7 @@ export interface Item {
   maxEstimatedPrice: number;
   reservePrice: number;
   expireAt: string;
-  status: number;
+  status: keyof typeof ITEM_STATUS_KEY_MAP;
   createdAt: string;
   updatedAt: string;
 }

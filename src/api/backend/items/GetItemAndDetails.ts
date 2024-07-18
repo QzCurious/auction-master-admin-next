@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { type ITEM_STATUS_KEY_MAP, type ITEM_TYPE_KEY_MAP } from '../configs.data';
+import { type ITEM_STATUS_KEY_MAP } from '../configs.data';
 
 export const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),
@@ -16,22 +16,26 @@ export const ReqSchema = z.object({
 export interface Item {
   id: number;
   consignorID: number;
-  type: 0 | keyof typeof ITEM_TYPE_KEY_MAP;
+  nickname: string;
+  type: number;
   name: string;
-  description: string | null;
+  description: string;
   photos: Array<{
-    itemID: number;
     sorted: number;
     photo: string;
     createdAt: string;
     updatedAt: string;
   }>;
-  space: number;
+  pastStatuses: { [k in keyof typeof ITEM_STATUS_KEY_MAP]: string };
+  directPurchasePrice: number;
   minEstimatedPrice: number;
   maxEstimatedPrice: number;
-  sellerID: number;
   reservePrice: number;
-  expireAt: string | null;
+  expireAt: string;
+  warehouseID: string;
+  space: number;
+  grossWeight: number;
+  volumetricWeight: number;
   status: keyof typeof ITEM_STATUS_KEY_MAP;
   createdAt: string;
   updatedAt: string;
