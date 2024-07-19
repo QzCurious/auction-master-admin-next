@@ -182,7 +182,7 @@ export function ItemForm() {
               <FormControl fullWidth error={!!fieldState.error}>
                 <TextField
                   {...field}
-                  label="空間"
+                  label="佔用空間"
                   type="number"
                   fullWidth
                   onChange={(e) => {
