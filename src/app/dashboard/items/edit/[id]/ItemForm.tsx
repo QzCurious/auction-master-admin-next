@@ -43,7 +43,7 @@ const FormSchema = z
     maxEstimatedPrice: z.coerce.number().optional(),
     reservePrice: z.number().min(1, '必填'),
     warehouseID: z.string(),
-    space: z.number().min(1, '必填'),
+    space: z.number(),
     grossWeight: z.number(),
     volumetricWeight: z.number(),
     status: z.number(),

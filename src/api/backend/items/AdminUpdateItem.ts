@@ -22,7 +22,7 @@ const ReqSchema = z.object({
   reservePrice: z.number().min(1).optional(),
   expireAt: z.date().nullable().optional(),
   warehouseID: z.string().optional(),
-  space: z.number().min(1).optional(),
+  space: z.number().optional(),
   grossWeight: z.number().optional(),
   volumetricWeight: z.number().optional(),
   status: z.number().optional(),
