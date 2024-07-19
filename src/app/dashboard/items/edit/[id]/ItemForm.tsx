@@ -249,7 +249,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
               <FormControl fullWidth error={!!fieldState.error}>
                 <TextField
                   {...field}
-                  label="直購金額"
+                  label="現金收購金額"
                   type="number"
                   fullWidth
                   onChange={(e) => {
