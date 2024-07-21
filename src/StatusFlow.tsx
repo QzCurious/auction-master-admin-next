@@ -129,13 +129,18 @@ export class StatusFlow {
         'CompanyDirectPurchaseType',
       ],
       status: 'WarehousePersonnelConfirmedStatus',
-      nexts: ['AppraiserConfirmedStatus', 'CompanyDirectPurchaseStatus'],
+      nexts: ['AppraiserConfirmedStatus'],
       adjudicator: 'admin',
     },
     AppraiserConfirmedStatus: {
-      allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
+      allowTypes: [
+        'AppraisableAuctionItemType',
+        'NonAppraisableAuctionItemType',
+        'FixedPriceItemType',
+        'CompanyDirectPurchaseType',
+      ],
       status: 'AppraiserConfirmedStatus',
-      nexts: ['ConsignorConfirmedStatus', 'WarehouseReturnPendingStatus'],
+      nexts: ['ConsignorConfirmedStatus', 'CompanyDirectPurchaseStatus', 'WarehouseReturnPendingStatus'],
       adjudicator: 'consignor',
     },
     ConsignorConfirmedStatus: {
