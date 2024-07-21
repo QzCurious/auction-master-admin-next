@@ -5,6 +5,12 @@ export const PERMISSIONS_DATA = [
     message: '系統相關',
     permissions: [
       {
+        key: 'StartBackendWs',
+        method: 'GET',
+        url: '/auction-master/backend/ws',
+        description: '使用通訊功能',
+      },
+      {
         key: 'GetBackendConfigs',
         method: 'GET',
         url: '/auction-master/backend/configs',
@@ -242,6 +248,23 @@ export const PERMISSIONS_DATA = [
     ],
   },
   {
+    message: '紀錄相關',
+    permissions: [
+      {
+        key: 'AdminGetWalletLogs',
+        method: 'GET',
+        url: '/auction-master/backend/wallets/logs',
+        description: '取得錢包紀錄',
+      },
+      {
+        key: 'AdminGetBonusLogs',
+        method: 'GET',
+        url: '/auction-master/backend/bonuses/logs',
+        description: '取得紅利紀錄',
+      },
+    ],
+  },
+  {
     message: '物品相關',
     permissions: [
       {
@@ -293,6 +316,12 @@ export const PERMISSIONS_DATA = [
         description: '審核寄售人物品',
       },
       {
+        key: 'ItemArrival',
+        method: 'POST',
+        url: '/auction-master/backend/items/:id/arrival',
+        description: '物品到貨',
+      },
+      {
         key: 'ItemReturnPending',
         method: 'POST',
         url: '/auction-master/backend/items/:id/return-pending',
@@ -311,16 +340,16 @@ export const PERMISSIONS_DATA = [
         description: '已退回物品',
       },
       {
-        key: 'ItemArrival',
+        key: 'ItemWarehousePersonnelConfirmed',
         method: 'POST',
-        url: '/auction-master/backend/items/:id/arrival',
-        description: '物品到貨',
+        url: '/auction-master/backend/items/:id/warehouse-personnel-confirmed',
+        description: '倉管已確認',
       },
       {
-        key: 'ItemCompleteDetails',
+        key: 'ItemAppraiserConfirmed',
         method: 'POST',
-        url: '/auction-master/backend/items/:id/complete-details',
-        description: '客服已確認',
+        url: '/auction-master/backend/items/:id/appraiser-confirmed',
+        description: '鑑價師已確認',
       },
       {
         key: 'ItemBidding',

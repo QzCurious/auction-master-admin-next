@@ -9,8 +9,8 @@ type Data = 'Success';
 
 type ErrorCode = never;
 
-export async function ItemCompleteDetails(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/complete-details`, {
+export async function ItemWarehousePersonnelConfirmed(id: number) {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/warehouse-personnel-confirmed`, {
     method: 'POST',
   });
 

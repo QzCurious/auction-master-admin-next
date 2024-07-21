@@ -12,12 +12,13 @@ import {
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { ItemAppraisalReview } from '@/api/backend/items/ItemAppraisalReview';
+import { ItemAppraiserConfirmed } from '@/api/backend/items/ItemAppraiserConfirmed';
 import { ItemArrival } from '@/api/backend/items/ItemArrival';
 import { ItemBidding } from '@/api/backend/items/ItemBidding';
-import { ItemCompleteDetails } from '@/api/backend/items/ItemCompleteDetails';
 import { ItemReturned } from '@/api/backend/items/ItemReturned';
 import { ItemReturning } from '@/api/backend/items/ItemReturning';
 import { ItemReturnPending } from '@/api/backend/items/ItemReturnPending';
+import { ItemWarehousePersonnelConfirmed } from '@/api/backend/items/ItemWarehousePersonnelConfirmed';
 import { DATE_TIME_FORMAT } from '@/static';
 import { StatusFlow } from '@/StatusFlow';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -36,6 +37,7 @@ import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
+import copy from 'copy-to-clipboard';
 import { format } from 'date-fns';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
@@ -142,20 +144,20 @@ function StatusFlowUI({ item }: { item: Item }) {
     SubmitAppraisalStatus: (
       <HavePermissionsOnly permissionKeys={['ItemAppraisalReview']}>
         <RejectBtn
-          text="審核失敗"
-          popoverTitle="標記為審核失敗"
+          text="估價失敗"
+          popoverTitle="標記為估價失敗"
           onConfirm={async () => {
             const res = await ItemAppraisalReview(item.id, { action: 'reject' });
             if (res.error) {
               enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
               return;
             }
-            enqueueSnackbar('已將物品標記為審核失敗', { variant: 'success' });
+            enqueueSnackbar('已將物品標記為估價失敗', { variant: 'success' });
           }}
         />
         <ApproveBtn
-          text="審核通過"
-          popoverTitle="標記為審核通過"
+          text="估價完成"
+          popoverTitle="標記為已估價"
           onConfirm={async () => {
             if (item.type === 0) {
               setError('type', { message: '請選擇物品類型' });
@@ -166,7 +168,7 @@ function StatusFlowUI({ item }: { item: Item }) {
               enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
               return;
             }
-            enqueueSnackbar('已將物品標記為審核成功', { variant: 'success' });
+            enqueueSnackbar('已將物品標記為已估價', { variant: 'success' });
           }}
         />
       </HavePermissionsOnly>
@@ -235,25 +237,38 @@ function StatusFlowUI({ item }: { item: Item }) {
             }}
           />
         </HavePermissionsOnly>
-
-        <HavePermissionsOnly permissionKeys={['ItemCompleteDetails']}>
+        <HavePermissionsOnly permissionKeys={['ItemWarehousePersonnelConfirmed']}>
           <ApproveBtn
-            text="檢查完成"
-            popoverTitle="標記為檢查完成"
+            text="倉管確認"
+            popoverTitle="標記為倉管已確認"
             onConfirm={async () => {
-              const res = await ItemCompleteDetails(item.id);
+              const res = await ItemWarehousePersonnelConfirmed(item.id);
               if (res.error) {
                 enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
                 return;
               }
-              enqueueSnackbar('已將物品標記為檢查完成', { variant: 'success' });
+              enqueueSnackbar('已將物品標記為倉管已確認', { variant: 'success' });
             }}
           />
         </HavePermissionsOnly>
       </>
     ),
-    ConsignorChoosesCompanyDirectPurchaseStatus: <NotImplemented />,
-    WarehousePersonnelConfirmedStatus: <NotImplemented />,
+    WarehousePersonnelConfirmedStatus: (
+      <HavePermissionsOnly permissionKeys={['ItemAppraiserConfirmed']}>
+        <ApproveBtn
+          text="鑑價師確認"
+          popoverTitle="標記為鑑價師已確認"
+          onConfirm={async () => {
+            const res = await ItemAppraiserConfirmed(item.id);
+            if (res.error) {
+              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              return;
+            }
+            enqueueSnackbar('已將物品標記為鑑價師已確認', { variant: 'success' });
+          }}
+        />
+      </HavePermissionsOnly>
+    ),
     ConsignorConfirmedStatus: <ReadyStatusHandleButtons item={item} />,
     BiddingStatus: <NotImplemented />,
   });
@@ -269,6 +284,7 @@ function StatusFlowUI({ item }: { item: Item }) {
     return (
       <StatusStep
         key={step.status}
+        _statusKey={status}
         text={ITEM_STATUS_MESSAGE_MAP[step.status]}
         time={time ? format(time, DATE_TIME_FORMAT) : undefined}
         active={active}
@@ -282,11 +298,13 @@ function StatusFlowUI({ item }: { item: Item }) {
 }
 
 function StatusStep({
+  _statusKey,
   text,
   time,
   children,
   active,
 }: {
+  _statusKey: string;
   text: string;
   time?: string;
   children?: React.ReactNode;
@@ -340,6 +358,8 @@ function StatusStep({
         <Typography
           variant="body2"
           sx={{ color: active ? 'var(--mui-palette-text-primary)' : 'var(--mui-palette-grey-600)' }}
+          title={_statusKey}
+          onClick={() => process.env.NODE_ENV !== 'production' && copy(_statusKey)}
         >
           {text}
         </Typography>
@@ -355,7 +375,7 @@ function StatusStep({
         )}
 
         {children && (
-          <Stack direction="row" spacing={2} justifyContent="end">
+          <Stack direction="row" spacing={2}>
             {children}
           </Stack>
         )}

@@ -75,7 +75,7 @@ export class StatusFlow {
       ],
       status: 'ConsignorChoosesCompanyDirectPurchaseStatus',
       nexts: ['ConsignorShippedItem'],
-      adjudicator: 'admin',
+      adjudicator: 'consignor',
     },
     ConsignorShippedItem: {
       allowTypes: [
