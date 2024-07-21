@@ -20,6 +20,7 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Stack from '@mui/material/Stack';
+import { Box } from '@mui/system';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -175,7 +176,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                 render={({ field }) => (
                   <Grid container spacing={4}>
                     {permissions.map((group) => (
-                      <Grid item key={group.message}>
+                      <Grid item key={group.message} xs={12} sm={6} md={4}>
                         <Stack direction="row" alignItems="center">
                           <FormControlLabel
                             control={
@@ -209,16 +210,9 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                             label={group.message}
                             componentsProps={{ typography: { variant: 'body1', fontWeight: 'bold' } }}
                           />
-                          <Divider sx={{ flexGrow: 1 }} />
                         </Stack>
 
-                        <Stack
-                          direction="column"
-                          flexWrap="wrap"
-                          columnGap={1}
-                          maxHeight={300}
-                          sx={{ overflow: 'auto' }}
-                        >
+                        <Stack direction="column" flexWrap="wrap" columnGap={1} sx={{ overflow: 'auto' }}>
                           {group.permissions.map((permission) => (
                             <React.Fragment key={permission.key}>
                               <FormControlLabel
@@ -245,7 +239,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                                     }}
                                   />
                                 }
-                                label={permission.description}
+                                label={<Box sx={{ color: '#667085' }}>{permission.description}</Box>}
                                 componentsProps={{ typography: { variant: 'body2' } }}
                               />
                             </React.Fragment>
