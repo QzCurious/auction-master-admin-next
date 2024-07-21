@@ -228,6 +228,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
               <FormControl fullWidth error={!!fieldState.error}>
                 <InputLabel>類型</InputLabel>
                 <Select {...field} label="類型" fullWidth readOnly={!canUpdate}>
+                  {/* <MenuItem value={0}>(待定)</MenuItem> */}
                   {item.type === 0 && <MenuItem value={0}>(待定)</MenuItem>}
                   {ITEM_TYPE_DATA.map((type) => (
                     <MenuItem key={type.value} value={type.value}>

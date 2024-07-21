@@ -7,7 +7,7 @@ import {
   ITEM_STATUS_KEY_MAP,
   ITEM_STATUS_MAP,
   ITEM_STATUS_MESSAGE_MAP,
-  ITEM_TYPE_MAP,
+  ITEM_TYPE_KEY_MAP,
 } from '@/api/backend/configs.data';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
@@ -19,7 +19,7 @@ import { ItemReturned } from '@/api/backend/items/ItemReturned';
 import { ItemReturning } from '@/api/backend/items/ItemReturning';
 import { ItemReturnPending } from '@/api/backend/items/ItemReturnPending';
 import { DATE_TIME_FORMAT } from '@/static';
-import { bfs, StatusFlow } from '@/StatusFlow';
+import { StatusFlow } from '@/StatusFlow';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   Button,
@@ -138,7 +138,7 @@ function StatusFlowUI({ item }: { item: Item }) {
   const { enqueueSnackbar } = useSnackbar();
   const { setError } = useFormContext<FormSchemaType>();
 
-  const statusFlowWithAdminActions = StatusFlow.withActions('admin', {
+  const actionMap = StatusFlow.makeActionMap('admin', {
     SubmitAppraisalStatus: (
       <HavePermissionsOnly permissionKeys={['ItemAppraisalReview']}>
         <RejectBtn
@@ -258,41 +258,13 @@ function StatusFlowUI({ item }: { item: Item }) {
     BiddingStatus: <NotImplemented />,
   });
 
-  if (process.env.NODE_ENV === 'development') {
-    if (Object.keys(statusFlowWithAdminActions).length !== ITEM_STATUS_DATA.length) {
-      const missing = ITEM_STATUS_DATA.map((s) => s.key).filter(
-        (s) => !Object.keys(statusFlowWithAdminActions).includes(s)
-      );
-      console.error(`Steps length mismatch, missing: ${missing.join(', ')}`);
-    }
-  }
-
-  const path = bfs(
-    Object.values(statusFlowWithAdminActions).map((v) => ({
-      value: v.status,
-      nexts: v.nexts,
-    })),
-    'SubmitAppraisalStatus',
-    ITEM_STATUS_KEY_MAP[item.status],
-    (step) => item.type === 0 || StatusFlow.flow[step.value].allowTypes.some((t) => ITEM_TYPE_MAP[t] === item.type)
-  ) ?? ['SubmitAppraisalStatus'];
-
-  // fill reset path
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const last = path[path.length - 1];
-    const step = statusFlowWithAdminActions[last];
-    const happyNext = step.nexts.find(
-      (s) => item.type === 0 || StatusFlow.flow[s].allowTypes.some((t) => ITEM_TYPE_MAP[t] === item.type)
-    );
-    if (!happyNext) break;
-    path.push(happyNext);
-  }
+  const path = StatusFlow.flowPath(ITEM_STATUS_KEY_MAP[item.status], item.type ? ITEM_TYPE_KEY_MAP[item.type] : null);
 
   const result = path.map((status) => {
-    const step = statusFlowWithAdminActions[status];
+    const step = StatusFlow.flow[status];
     const active = ITEM_STATUS_MAP[step.status] === item.status;
     const time = item.pastStatuses[ITEM_STATUS_MAP[step.status]];
+    const action = status in actionMap ? actionMap[status as keyof typeof actionMap] : null;
 
     return (
       <StatusStep
@@ -301,19 +273,10 @@ function StatusFlowUI({ item }: { item: Item }) {
         time={time ? format(time, DATE_TIME_FORMAT) : undefined}
         active={active}
       >
-        {active && 'actions' in step && step.actions}
+        {active && action}
       </StatusStep>
     );
   });
-
-  // inject fake step --------------
-  // const i = result.findIndex(({ key }) => key === 'ConsignmentApprovedStatus');
-  // if (i !== -1) {
-  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  //   const active = result[i + 2].props.active;
-  //   result.splice(i + 1, 0, <StatusStep key="fake" text="已到貨" active={active} />);
-  // }
-  // -------------------------------
 
   return result;
 }

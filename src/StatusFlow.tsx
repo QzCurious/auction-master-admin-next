@@ -2,8 +2,6 @@ import type React from 'react';
 
 import { type ITEM_STATUS_MAP, type ITEM_TYPE_MAP } from './api/backend/configs.data';
 
-type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & unknown;
-
 type Adjudicator = 'admin' | 'consignor';
 
 type Step = {
@@ -184,38 +182,42 @@ export class StatusFlow {
     },
   } satisfies Record<keyof typeof ITEM_STATUS_MAP, Step>;
 
-  static withActions<T extends Adjudicator>(
+  static makeActionMap<T extends Adjudicator>(
     adjudicator: T,
-    actions: {
-      [k in keyof typeof StatusFlow.flow as (typeof StatusFlow.flow)[k] extends {
+    actionMap: {
+      [k in keyof typeof this.flow as (typeof this.flow)[k] extends {
         adjudicator: T;
       }
         ? k
         : never]: React.ReactNode;
     }
-  ): {
-    [k in keyof typeof StatusFlow.flow]: Simplify<
-      (typeof StatusFlow.flow)[k] extends { adjudicator: T }
-        ? Omit<(typeof StatusFlow.flow)[k], 'adjudicator'> & {
-            actions: React.ReactNode;
-          }
-        : Omit<(typeof StatusFlow.flow)[k], 'adjudicator'>
-    >;
-  } {
-    const newFlow = structuredClone(StatusFlow.flow);
-    // const newFlow = (StatusFlow.flow);
-    for (const [key, value] of Object.entries(actions)) {
-      const step = newFlow[key as keyof typeof actions];
-      if (step.adjudicator !== adjudicator) throw new Error('adjudicator mismatch');
-      // @ts-expect-error transforming by js
-      step.actions = value;
-    }
-    for (const step of Object.values(newFlow)) {
-      // @ts-expect-error transforming by js
-      if ('adjudicator' in step) delete step.adjudicator;
+  ) {
+    return actionMap;
+  }
+
+  static flowPath(to: keyof typeof ITEM_STATUS_MAP, type: null | keyof typeof ITEM_TYPE_MAP) {
+    const from = 'SubmitAppraisalStatus';
+    const path = bfs(
+      Object.values(this.flow).map((v) => ({
+        value: v.status,
+        nexts: v.nexts,
+      })),
+      from,
+      to,
+      (step) => type === null || this.flow[step.value].allowTypes.some((t) => t === type)
+    ) ?? ['SubmitAppraisalStatus'];
+
+    // fill reset path
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const last = path[path.length - 1];
+      const step = this.flow[last];
+      const happyNext = step.nexts.find((s) => type === null || this.flow[s].allowTypes.some((t) => t === type));
+      if (!happyNext) break;
+      path.push(happyNext);
     }
 
-    return newFlow as any;
+    return path;
   }
 }
 
@@ -269,20 +271,20 @@ export function bfs<T>(
 
   while (queue.length > 0) {
     const [currentNode, path] = queue.shift()!;
-
     if (currentNode.value === to && additionalCondition?.(currentNode)) {
       return [...path, currentNode.value];
     }
 
-    visited.add(currentNode.value);
+    for (const next of currentNode.nexts) {
+      if (visited.has(next)) continue;
+      visited.add(next);
 
-    for (const nextValue of currentNode.nexts) {
-      if (!visited.has(nextValue)) {
-        const nextNode = nodes.find((n) => n.value === nextValue);
-        if (nextNode) {
-          queue.push([nextNode, [...path, currentNode.value]]);
-        }
-      }
+      const nextNode = nodes.find((n) => n.value === next);
+      if (!nextNode) continue;
+
+      if (additionalCondition && !additionalCondition(nextNode)) continue;
+
+      queue.push([nextNode, [...path, currentNode.value]]);
     }
   }
 
