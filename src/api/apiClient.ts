@@ -27,7 +27,7 @@ export async function apiClient<Data, ErrorCode extends string = never>(
     const j = await res.json();
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    return { ...j, error: !j.data ? j.status.code : null };
+    return { ...j, error: j.status.code !== '0' ? j.status.code : null };
   } catch (e) {
     console.log(e);
     throw new Error('Failed to parse response as JSON');
