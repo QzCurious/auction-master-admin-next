@@ -47,6 +47,7 @@ import { HavePermissionsOnly } from '@/contexts/UserContext';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
 import { type FormSchemaType } from './ItemForm';
+import TriggerToFlowFigure from './TriggerToFlowFigure';
 
 export default function StatusFlowSection({ item }: { item: Item }) {
   const [status, setStatus] = useState(item.status);
@@ -70,7 +71,9 @@ export default function StatusFlowSection({ item }: { item: Item }) {
         alignSelf: 'flex-start',
       }}
     >
-      <Typography variant="h6">狀態流程</Typography>
+      <Typography variant="h6">
+        狀態流程 <TriggerToFlowFigure />
+      </Typography>
 
       <HavePermissionsOnly permissionKeys={['AdminUpdateItem']}>
         <IconButton sx={{ position: 'absolute', top: 6, right: 6 }} onClick={() => setShowMore(!showMore)}>

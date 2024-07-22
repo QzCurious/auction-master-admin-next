@@ -1,6 +1,5 @@
 import type React from 'react';
-
-import { type ITEM_STATUS_MAP, type ITEM_TYPE_MAP } from './api/backend/configs.data';
+import { type ITEM_STATUS_MAP, type ITEM_TYPE_MAP } from '@/api/backend/configs.data';
 
 type Adjudicator = 'admin' | 'consignor';
 
