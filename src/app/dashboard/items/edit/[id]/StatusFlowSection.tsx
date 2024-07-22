@@ -254,20 +254,36 @@ function StatusFlowUI({ item }: { item: Item }) {
       </>
     ),
     WarehousePersonnelConfirmedStatus: (
-      <HavePermissionsOnly permissionKeys={['ItemAppraiserConfirmed']}>
-        <ApproveBtn
-          text="鑑價師確認"
-          popoverTitle="標記為鑑價師已確認"
-          onConfirm={async () => {
-            const res = await ItemAppraiserConfirmed(item.id);
-            if (res.error) {
-              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-              return;
-            }
-            enqueueSnackbar('已將物品標記為鑑價師已確認', { variant: 'success' });
-          }}
-        />
-      </HavePermissionsOnly>
+      <>
+        <HavePermissionsOnly permissionKeys={['ItemReturnPending']}>
+          <RejectBtn
+            text="準備退貨"
+            popoverTitle="標記為準備退貨"
+            onConfirm={async () => {
+              const res = await ItemReturnPending(item.id);
+              if (res.error) {
+                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                return;
+              }
+              enqueueSnackbar('已將物品標記為準備退貨', { variant: 'success' });
+            }}
+          />
+        </HavePermissionsOnly>
+        <HavePermissionsOnly permissionKeys={['ItemAppraiserConfirmed']}>
+          <ApproveBtn
+            text="鑑價師確認"
+            popoverTitle="標記為鑑價師已確認"
+            onConfirm={async () => {
+              const res = await ItemAppraiserConfirmed(item.id);
+              if (res.error) {
+                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                return;
+              }
+              enqueueSnackbar('已將物品標記為鑑價師已確認', { variant: 'success' });
+            }}
+          />
+        </HavePermissionsOnly>
+      </>
     ),
     ConsignorConfirmedStatus: <ReadyStatusHandleButtons item={item} />,
     BiddingStatus: <NotImplemented />,

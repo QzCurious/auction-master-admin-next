@@ -129,7 +129,7 @@ export class StatusFlow {
         'CompanyDirectPurchaseType',
       ],
       status: 'WarehousePersonnelConfirmedStatus',
-      nexts: ['AppraiserConfirmedStatus'],
+      nexts: ['AppraiserConfirmedStatus', 'WarehouseReturnPendingStatus'],
       adjudicator: 'admin',
     },
     AppraiserConfirmedStatus: {
