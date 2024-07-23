@@ -1,3 +1,4 @@
+import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { Handshake } from '@phosphor-icons/react/dist/ssr/Handshake';
 import { ShieldStar } from '@phosphor-icons/react/dist/ssr/ShieldStar';
@@ -47,6 +48,14 @@ export const navItems = [
     PhosphorIcon: StackSimple,
     permissions: ['GetItemsAndDetails'],
     matcher: { type: 'startsWith', href: '/dashboard/items' },
+  },
+  {
+    key: 'auction-items',
+    title: '日拍競標商品列表',
+    href: '/dashboard/auction-items',
+    PhosphorIcon: Gavel,
+    permissions: ['GetAuctionItems'],
+    matcher: { type: 'startsWith', href: '/dashboard/auction-items' },
   },
 
   {

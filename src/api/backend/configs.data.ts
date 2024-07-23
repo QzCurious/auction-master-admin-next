@@ -251,6 +251,8 @@ export const ITEM_STATUS_KEY_MAP = mapToObj(ITEM_STATUS_DATA, ({ key, value }) =
 
 export const AUCTION_ITEM_STATUS_DATA = CONFIGS_DATA.auctionItemStatus;
 export const AUCTION_ITEM_STATUS_MAP = mapToObj(AUCTION_ITEM_STATUS_DATA, ({ key, value }) => [key, value]);
+export const AUCTION_ITEM_MESSAGE_MAP = mapToObj(AUCTION_ITEM_STATUS_DATA, ({ key, message }) => [key, message]);
+export const AUCTION_ITEM_STATUS_KEY_MAP = mapToObj(AUCTION_ITEM_STATUS_DATA, ({ key, value }) => [value, key]);
 
 export const CONSIGNOR_STATUS_DATA = CONFIGS_DATA.consignorStatus;
 export const CONSIGNOR_STATUS_MAP = mapToObj(CONSIGNOR_STATUS_DATA, ({ key, value }) => [key, value]);
