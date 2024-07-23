@@ -1,35 +1,27 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AUCTION_ITEM_STATUS_DATA } from '@/api/backend/configs.data';
+import { WORKER_TYPE_DATA } from '@/api/backend/configs.data';
 import { PAGE } from '@/static';
 import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
-const field = 'status';
+const field = 'type';
 
-const options = [
-  AUCTION_ITEM_STATUS_DATA[0],
-  AUCTION_ITEM_STATUS_DATA[1],
-  AUCTION_ITEM_STATUS_DATA[2],
-  AUCTION_ITEM_STATUS_DATA[3],
-  AUCTION_ITEM_STATUS_DATA[4],
-  AUCTION_ITEM_STATUS_DATA[5],
-  AUCTION_ITEM_STATUS_DATA[6],
-] as const;
+const options = [WORKER_TYPE_DATA[0], WORKER_TYPE_DATA[1]] as const;
 
-interface StatusFilterProps {
+interface TypeFilterProps {
   selected: Array<(typeof options)[number]['value']>;
 }
 
-export function StatusFilter({ selected }: StatusFilterProps) {
+export function TypeFilter({ selected }: TypeFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   return (
     <FilterPopover
-      label="狀態"
+      label="類型"
       field={field}
       transform={() => selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
       onRemove={() => {

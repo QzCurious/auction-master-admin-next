@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { WORKER_TYPE_DATA } from '@/api/backend/configs.data';
+import { CreateWorker } from '@/api/backend/workers/CreateWorker';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -10,6 +12,9 @@ import {
   DialogTitle,
   FormControl,
   FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
 } from '@mui/material';
 import Stack from '@mui/material/Stack';
@@ -19,11 +24,11 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const Schema = z.object({
-  itemID: z.string().min(1, '必填'),
-  auctionID: z.string().min(1, '必填'),
+  type: z.string().min(1, '必填'),
+  url: z.string().min(1, '必填'),
 });
 
-export default function CreateAuctionItemDialog() {
+export default function CreateDialog() {
   const [open, setOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -33,8 +38,8 @@ export default function CreateAuctionItemDialog() {
     formState: { isSubmitting },
   } = useForm<z.output<typeof Schema>>({
     defaultValues: {
-      itemID: '',
-      auctionID: '',
+      type: '' as any,
+      url: '',
     },
     resolver: zodResolver(Schema),
   });
@@ -48,26 +53,35 @@ export default function CreateAuctionItemDialog() {
       >
         新增
       </Button>
+
       <Dialog open={open} onClose={() => setOpen(false)} closeAfterTransition>
         <form
           onSubmit={handleSubmit(async (data) => {
-            // const res = await CreateAuctionItem({ itemID: data.itemID, auctionID: data.auctionID });
-            // if (res.error) {
-            //   enqueueSnackbar(res.error, { variant: 'error' });
-            //   return;
-            // }
-            // enqueueSnackbar('更新成功', { variant: 'success' });
+            const res = await CreateWorker({ ...data });
+            if (res.error) {
+              enqueueSnackbar(res.error, { variant: 'error' });
+              return;
+            }
+            enqueueSnackbar('新增成功', { variant: 'success' });
+            setOpen(false);
           })}
         >
-          <DialogTitle>新增日拍競標商品</DialogTitle>
+          <DialogTitle>新增 Worker</DialogTitle>
           <DialogContent>
             <Stack spacing={3} mt={2}>
               <Controller
                 control={control}
-                name="itemID"
+                name="type"
                 render={({ field, fieldState }) => (
                   <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField label="物品ID" type="text" {...field} />
+                    <InputLabel>類型</InputLabel>
+                    <Select {...field} label="類型" fullWidth>
+                      {WORKER_TYPE_DATA.map((type) => (
+                        <MenuItem key={type.value} value={type.value}>
+                          {type.message}
+                        </MenuItem>
+                      ))}
+                    </Select>
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                   </FormControl>
                 )}
@@ -75,10 +89,10 @@ export default function CreateAuctionItemDialog() {
 
               <Controller
                 control={control}
-                name="auctionID"
+                name="url"
                 render={({ field, fieldState }) => (
                   <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField label="日拍ID" type="text" {...field} />
+                    <TextField label="IP" type="text" {...field} />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                   </FormControl>
                 )}

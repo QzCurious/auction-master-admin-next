@@ -226,6 +226,23 @@ export const CONFIGS_DATA = {
       value: 'Watcher',
     },
   ],
+  workerStatus: [
+    {
+      key: 'ActiveStatus',
+      message: '啟用中',
+      value: 1,
+    },
+    {
+      key: 'AwaitingSetupCompletionStatus',
+      message: '等待建立完畢',
+      value: 2,
+    },
+    {
+      key: 'InvalidatedStatus',
+      message: '已失效',
+      value: 99,
+    },
+  ],
   adminStatus: [
     {
       key: 'EnabledStatus',
@@ -265,6 +282,10 @@ export const CONSIGNOR_VERIFICATION_STATUS_MAP = mapToObj(CONSIGNOR_VERIFICATION
 
 export const WORKER_TYPE_DATA = CONFIGS_DATA.workerType;
 export const WORKER_TYPE_MAP = mapToObj(WORKER_TYPE_DATA, ({ key, value }) => [key, value]);
+export const WORKER_STATUS_DATA = CONFIGS_DATA.workerStatus;
+export const WORKER_STATUS_MAP = mapToObj(WORKER_STATUS_DATA, ({ key, value }) => [key, value]);
+export const WORKER_STATUS_KEY_MAP = mapToObj(WORKER_STATUS_DATA, ({ key, value }) => [value, key]);
+export const WORKER_STATUS_MESSAGE_MAP = mapToObj(WORKER_STATUS_DATA, ({ key, message }) => [key, message]);
 
 export const ADMIN_STATUS_DATA = CONFIGS_DATA.adminStatus;
 export const ADMIN_STATUS_MAP = mapToObj(ADMIN_STATUS_DATA, ({ key, value }) => [key, value]);

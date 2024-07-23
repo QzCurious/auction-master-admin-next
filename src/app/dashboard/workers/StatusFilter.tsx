@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AUCTION_ITEM_STATUS_DATA } from '@/api/backend/configs.data';
+import { WORKER_STATUS_DATA } from '@/api/backend/configs.data';
 import { PAGE } from '@/static';
 import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
 
@@ -9,15 +9,7 @@ import { FilterPopover } from '@/components/FilterPopover';
 
 const field = 'status';
 
-const options = [
-  AUCTION_ITEM_STATUS_DATA[0],
-  AUCTION_ITEM_STATUS_DATA[1],
-  AUCTION_ITEM_STATUS_DATA[2],
-  AUCTION_ITEM_STATUS_DATA[3],
-  AUCTION_ITEM_STATUS_DATA[4],
-  AUCTION_ITEM_STATUS_DATA[5],
-  AUCTION_ITEM_STATUS_DATA[6],
-] as const;
+const options = [WORKER_STATUS_DATA[0], WORKER_STATUS_DATA[1], WORKER_STATUS_DATA[2]] as const;
 
 interface StatusFilterProps {
   selected: Array<(typeof options)[number]['value']>;

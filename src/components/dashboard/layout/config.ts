@@ -1,6 +1,7 @@
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { Handshake } from '@phosphor-icons/react/dist/ssr/Handshake';
+import { Boot } from '@phosphor-icons/react/dist/ssr/Boot';
 import { ShieldStar } from '@phosphor-icons/react/dist/ssr/ShieldStar';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { UserCircleGear } from '@phosphor-icons/react/dist/ssr/UserCircleGear';
@@ -56,6 +57,14 @@ export const navItems = [
     PhosphorIcon: Gavel,
     permissions: ['GetAuctionItems'],
     matcher: { type: 'startsWith', href: '/dashboard/auction-items' },
+  },
+  {
+    key: 'workers',
+    title: 'Worker 列表',
+    href: '/dashboard/workers',
+    PhosphorIcon: Boot,
+    permissions: ['GetWorkers'],
+    matcher: { type: 'startsWith', href: '/dashboard/workers' },
   },
 
   {

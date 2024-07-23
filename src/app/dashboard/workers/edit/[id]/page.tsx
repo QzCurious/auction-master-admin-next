@@ -1,9 +1,7 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
-import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
-import { AdminGetConsignors } from '@/api/backend/consignor/AdminGetConsignors';
-import { GetItemAndDetails } from '@/api/backend/items/GetItemAndDetails';
+import { GetWorker } from '@/api/backend/workers/GetWorker';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Box, Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
@@ -13,9 +11,7 @@ import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
-import { ItemForm, ItemFormProvider } from './AuctionItemForm';
-import PhotoListSection from './PhotoListSection';
-import StatusFlowSection from './StatusFlowSection';
+import { WorkerForm } from './WorkerForm';
 
 export const metadata = { title: `編輯物品 | ${config.site.name}` } satisfies Metadata;
 
@@ -27,14 +23,14 @@ async function Page(pageProps: PageProps) {
   return (
     <>
       <Stack alignItems="start">
-        <Link component={RouterLink} href="/dashboard/items">
+        <Link component={RouterLink} href="/dashboard/workers">
           <Stack direction="row" alignItems="center" columnGap={1}>
-            <ArrowBackIcon /> 回到物品列表
+            <ArrowBackIcon /> 回到 Worker 列表
           </Stack>
         </Link>
       </Stack>
       <Typography variant="h4" sx={{ mt: 3 }}>
-        新增物品
+        編輯 Worker
       </Typography>
 
       <Content {...pageProps} />
@@ -45,30 +41,25 @@ async function Page(pageProps: PageProps) {
 export default Page;
 
 async function Content({ params }: PageProps) {
-  // 測有沒有權限
-  const consignorRes = await AdminGetConsignors({ limit: 1, offset: 0 });
+  const workerRes = await GetWorker(parseInt(params.id));
 
-  if (consignorRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
+  if (workerRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['GetItemAndDetails']} />;
   }
 
-  if (consignorRes.error === '1003') {
+  if (workerRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
-  return (
-    <>
-      <Box mt={2}>
-        <PhotoListSection photos={[]} />
-      </Box>
+  if (!workerRes.data) {
+    notFound();
+  }
 
-      <Box mt={4}>
-        <ItemFormProvider >
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
-            <ItemForm />
-          </Stack>
-        </ItemFormProvider>
-      </Box>
-    </>
+  return (
+    <Box mt={4}>
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
+        <WorkerForm worker={workerRes.data} />
+      </Stack>
+    </Box>
   );
 }

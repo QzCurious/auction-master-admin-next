@@ -23,7 +23,13 @@ export interface AuctionItem {
   auctionID: string;
   name: string;
   photo: string;
-  bidders: any;
+  bidders: Array<{
+    account: string;
+    rating: number;
+    bidAmount: number;
+    quantity: number;
+    lastBidAt: string;
+  }>;
   reservePrice: number;
   currentPrice: number;
   highestPrice: number;
@@ -57,10 +63,6 @@ export async function GetAuctionItems(payload: z.input<typeof ReqSchema>) {
     method: 'GET',
     next: { tags: ['auction-items'] },
   });
-
-  if (!res.error && res.data.auctionItems === null) {
-    res.data.auctionItems = [];
-  }
 
   return res;
 }

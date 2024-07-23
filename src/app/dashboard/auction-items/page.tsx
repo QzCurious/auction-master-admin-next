@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
+import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
 import { AUCTION_ITEM_STATUS_MAP } from '@/api/backend/configs.data';
-import { GetAuctionItems } from '@/api/backend/items/GetAuctionItems';
+import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -58,18 +59,21 @@ async function Content({ searchParams }: PageProps) {
   const pagination = PaginationSchema.parse(searchParams);
   const filters = filterSchema.parse(searchParams);
 
-  const auctionItemsRes = await GetAuctionItems({
-    consignorID: filters.consignor,
-    status: filters.status,
-    limit: pagination[ROWS_PER_PAGE],
-    offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
-  });
+  const [auctionItemsRes, activeWorkersRes] = await Promise.all([
+    GetAuctionItems({
+      consignorID: filters.consignor,
+      status: filters.status,
+      limit: pagination[ROWS_PER_PAGE],
+      offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
+    }),
+    GetActivationWorkers(),
+  ]);
 
-  if (auctionItemsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAuctionItems']} />;
+  if (auctionItemsRes.error === '1001' || activeWorkersRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['GetAuctionItems', 'GetActivationWorkers']} />;
   }
 
-  if (auctionItemsRes.error === '1003') {
+  if (auctionItemsRes.error === '1003' || activeWorkersRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
@@ -77,12 +81,16 @@ async function Content({ searchParams }: PageProps) {
     <AutoRefreshPage ms={10_000}>
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
-          {/* <ConsignorFilter /> */}
+          <ConsignorFilter />
           <StatusFilter selected={filters.status} />
           <RemoveSearchBtn fields={['consignor', 'status']} />
         </Stack>
 
-        <AuctionItemTable rows={auctionItemsRes.data.auctionItems} count={auctionItemsRes.data.count} />
+        <AuctionItemTable
+          rows={auctionItemsRes.data.auctionItems}
+          count={auctionItemsRes.data.count}
+          activationWorkers={activeWorkersRes.data}
+        />
       </Stack>
     </AutoRefreshPage>
   );

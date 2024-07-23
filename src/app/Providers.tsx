@@ -26,7 +26,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={zhTW}>
+    <LocalizationProvider
+      dateAdapter={AdapterDateFns}
+      adapterLocale={zhTW}
+      dateFormats={{
+        normalDate: 'yyyy/MM/dd',
+      }}
+    >
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
           <SnackbarProvider
