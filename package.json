@@ -42,6 +42,7 @@
     "dayjs": "1.11.11",
     "embla-carousel-react": "^8.1.6",
     "framer-motion": "^11.2.13",
+    "jotai": "^2.9.1",
     "jwt-decode": "^4.0.0",
     "material-ui-popup-state": "^5.1.2",
     "next": "14.1.3",

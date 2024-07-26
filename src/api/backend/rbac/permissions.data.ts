@@ -140,6 +140,12 @@ export const PERMISSIONS_DATA = [
         description: '取得啟用中的 Worker 列表',
       },
       {
+        key: 'GetWorker',
+        method: 'GET',
+        url: '/auction-master/backend/workers/:id',
+        description: '取得 Worker',
+      },
+      {
         key: 'CreateWorker',
         method: 'POST',
         url: '/auction-master/backend/workers',
@@ -179,6 +185,12 @@ export const PERMISSIONS_DATA = [
         method: 'GET',
         url: '/auction-master/backend/auction-items',
         description: '取得日拍競標商品列表',
+      },
+      {
+        key: 'GetAuctionItem',
+        method: 'GET',
+        url: '/auction-master/backend/auction-items/:id',
+        description: '取得日拍競標商品',
       },
       {
         key: 'CreateAuctionItem',

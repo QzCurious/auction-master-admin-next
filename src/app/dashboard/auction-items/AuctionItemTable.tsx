@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useReducer } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { Worker } from '@/api/backend/workers/GetActivationWorkers';
+import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
+import { Checkbox } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import { grey } from '@mui/material/colors';
@@ -15,12 +17,14 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { differenceInDays, differenceInHours, intervalToDuration } from 'date-fns';
+import { useAtom } from 'jotai';
 
 import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
 import EditDialog from './EditDialog';
+import { pickedItemIdsAtom } from './PickForShipping';
 
 interface AuctionItemTableProps {
   rows: AuctionItem[];
@@ -30,13 +34,17 @@ interface AuctionItemTableProps {
 }
 
 export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItemTableProps) {
+  const [pickedItems, setPickedItems] = useAtom(pickedItemIdsAtom);
+  const isPickingItems = useSearchParams().get('pick-for-shipping') === 'picking';
+
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: '800px' }}>
           <TableHead>
             <TableRow sx={{ whiteSpace: 'nowrap' }}>
-              <TableCell>商品名稱</TableCell>
+              {isPickingItems && <TableCell>出貨</TableCell>}
+              <TableCell sx={{ minWidth: '200px' }}>商品名稱</TableCell>
               <TableCell>商品圖片</TableCell>
               <TableCell>出品帳號</TableCell>
               <TableCell>盯標帳號</TableCell>
@@ -45,13 +53,26 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
               <TableCell>期望金額</TableCell>
               <TableCell>系統出價</TableCell>
               <TableCell>結標倒數</TableCell>
-              <TableCell>操作</TableCell>
+              {!isPickingItems && <TableCell>操作</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.length === 0 && <EmptyTableRow />}
             {rows.map((row) => (
               <TableRow hover key={row.id}>
+                {isPickingItems && (
+                  <TableCell>
+                    <Checkbox
+                      checked={pickedItems.includes(row.id)}
+                      onChange={() =>
+                        setPickedItems((prev) =>
+                          prev.includes(row.id) ? prev.filter((id) => id !== row.id) : [...prev, row.id]
+                        )
+                      }
+                    />
+                  </TableCell>
+                )}
+
                 <TableCell>{row.name}</TableCell>
                 <TableCell sx={{ maxWidth: '200px' }}>
                   {row.photo ? (
@@ -127,13 +148,15 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
                   <CountdownTime until={new Date(row.closeAt)} />
                 </TableCell>
-                <TableCell>
-                  <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                    <HavePermissionsOnly permissionKeys={['UpdateAuctionItem']}>
-                      <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
-                    </HavePermissionsOnly>
-                  </Stack>
-                </TableCell>
+                {!isPickingItems && (
+                  <TableCell>
+                    <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+                      <HavePermissionsOnly permissionKeys={['UpdateAuctionItem']}>
+                        <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
+                      </HavePermissionsOnly>
+                    </Stack>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

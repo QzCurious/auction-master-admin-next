@@ -1,3 +1,5 @@
+'use server';
+
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
@@ -5,7 +7,7 @@ import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
 import { type AUCTION_ITEM_STATUS_DATA } from '../configs.data';
 
-export const ReqSchema = z.object({
+const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),
   status: z.coerce.number().array().optional(),
   limit: z.coerce.number().default(10),
@@ -14,22 +16,13 @@ export const ReqSchema = z.object({
 
 export interface AuctionItem {
   id: number;
+  consignorID: number;
   itemID: number;
   sellerID: number;
-  sellerName: string;
   watcherID: number;
-  watcherName: string;
-  consignorNickname: string;
   auctionID: string;
   name: string;
   photo: string;
-  bidders: Array<{
-    account: string;
-    rating: number;
-    bidAmount: number;
-    quantity: number;
-    lastBidAt: string;
-  }>;
   reservePrice: number;
   currentPrice: number;
   highestPrice: number;
@@ -38,6 +31,16 @@ export interface AuctionItem {
   status: (typeof AUCTION_ITEM_STATUS_DATA)[number]['value'];
   createdAt: string;
   updatedAt: string;
+  consignorNickname: string;
+  sellerName: string;
+  watcherName: string;
+  bidders: Array<{
+    account: string;
+    rating: number;
+    bidAmount: number;
+    quantity: number;
+    lastBidAt: string;
+  }>;
 }
 
 interface Data {
@@ -48,7 +51,6 @@ interface Data {
 type ErrorCode = never;
 
 export async function GetAuctionItems(payload: z.input<typeof ReqSchema>) {
-  'use server';
   const parsed = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();

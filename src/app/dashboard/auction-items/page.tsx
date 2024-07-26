@@ -3,6 +3,7 @@ import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
 import { AUCTION_ITEM_STATUS_MAP } from '@/api/backend/configs.data';
 import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
+import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import * as R from 'remeda';
@@ -15,6 +16,7 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 import { AuctionItemTable } from './AuctionItemTable';
 import AutoRefreshPage from './AutoRefreshPage';
 import { ConsignorFilter } from './ConsignorFilter';
+import { PickForShipping, PickForShippingButtons } from './PickForShipping';
 import RemoveSearchBtn from './RemoveSearchBtn';
 import { StatusFilter } from './StatusFilter';
 
@@ -34,7 +36,12 @@ const filterSchema = z.object({
 });
 
 interface PageProps {
-  searchParams: { consignor?: string; status?: string | string[] } & PaginationSearchParams;
+  searchParams: {
+    consignor?: string;
+    status?: string | string[];
+
+    'pick-for-shipping': 'picking' | 'checking';
+  } & PaginationSearchParams;
 }
 
 export default async function Page(pageProps: PageProps) {
@@ -82,8 +89,15 @@ async function Content({ searchParams }: PageProps) {
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
           <ConsignorFilter />
-          <StatusFilter selected={filters.status} />
-          <RemoveSearchBtn fields={['consignor', 'status']} />
+          {!searchParams['pick-for-shipping'] && (
+            <>
+              <StatusFilter selected={filters.status} />
+              <RemoveSearchBtn fields={['consignor', 'status']} />
+            </>
+          )}
+
+          <Box mx="auto" />
+          <PickForShippingButtons />
         </Stack>
 
         <AuctionItemTable
@@ -92,6 +106,8 @@ async function Content({ searchParams }: PageProps) {
           activationWorkers={activeWorkersRes.data}
         />
       </Stack>
+
+      <PickForShipping />
     </AutoRefreshPage>
   );
 }
