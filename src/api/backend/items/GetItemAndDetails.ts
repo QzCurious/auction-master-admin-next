@@ -16,17 +16,10 @@ export const ReqSchema = z.object({
 export interface Item {
   id: number;
   consignorID: number;
-  nickname: string;
   type: 0 | keyof typeof ITEM_TYPE_KEY_MAP;
+  isNew: boolean;
   name: string;
   description: string;
-  photos: Array<{
-    sorted: number;
-    photo: string;
-    createdAt: string;
-    updatedAt: string;
-  }>;
-  pastStatuses: { [k in keyof typeof ITEM_STATUS_KEY_MAP]?: string };
   directPurchasePrice: number;
   minEstimatedPrice: number;
   maxEstimatedPrice: number;
@@ -39,6 +32,14 @@ export interface Item {
   status: keyof typeof ITEM_STATUS_KEY_MAP;
   createdAt: string;
   updatedAt: string;
+  nickname: string;
+  photos: Array<{
+    sorted: number;
+    photo: string;
+    createdAt: string;
+    updatedAt: string;
+  }>;
+  pastStatuses: { [k in keyof typeof ITEM_STATUS_KEY_MAP]?: string };
 }
 
 interface Data extends Item {}

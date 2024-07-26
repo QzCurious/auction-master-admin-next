@@ -23,7 +23,21 @@ export function ItemTable({ rows, count }: ItemTableProps) {
         {rows.length === 0 && <Grid item>沒有資料</Grid>}
         {rows.map((row) => (
           <Grid item key={row.id} lg={4} md={6} xs={12}>
-            <Card>
+            <Card sx={{ position: 'relative' }}>
+              {row.isNew && (
+                <Chip
+                  label="新品"
+                  size="small"
+                  color="primary"
+                  sx={{
+                    pointerEvents: 'none',
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                  }}
+                />
+              )}
+
               <Link href={`/dashboard/items/edit/${row.id}`}>
                 {row.photos.length === 0 ? (
                   <PhotoSizeSelectActualOutlinedIcon
