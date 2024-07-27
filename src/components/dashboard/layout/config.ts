@@ -2,6 +2,10 @@ import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { Handshake } from '@phosphor-icons/react/dist/ssr/Handshake';
 import { Boot } from '@phosphor-icons/react/dist/ssr/Boot';
+import { TerminalWindow } from '@phosphor-icons/react/dist/ssr/TerminalWindow';
+import { Robot } from '@phosphor-icons/react/dist/ssr/Robot';
+import { Package } from '@phosphor-icons/react/dist/ssr/Package';
+import { HardHat } from '@phosphor-icons/react/dist/ssr/HardHat';
 import { ShieldStar } from '@phosphor-icons/react/dist/ssr/ShieldStar';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { UserCircleGear } from '@phosphor-icons/react/dist/ssr/UserCircleGear';
@@ -59,10 +63,18 @@ export const navItems = [
     matcher: { type: 'startsWith', href: '/dashboard/auction-items' },
   },
   {
+    key: 'aaa',
+    title: '出貨列表',
+    href: '/dashboard/aaa',
+    PhosphorIcon: Package,
+    // permissions: ['GetAuctionItems'],
+    // matcher: { type: 'startsWith', href: '/dashboard/auction-items' },
+  },
+  {
     key: 'workers',
     title: 'Worker 列表',
     href: '/dashboard/workers',
-    PhosphorIcon: Boot,
+    PhosphorIcon: TerminalWindow,
     permissions: ['GetWorkers'],
     matcher: { type: 'startsWith', href: '/dashboard/workers' },
   },
