@@ -18,6 +18,7 @@ RUN \
 
 # Rebuild the source code only when needed
 FROM base AS builder
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN)
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
