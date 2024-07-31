@@ -3,6 +3,7 @@
 import { useEffect, useReducer } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
+import { AUCTION_ITEM_STATUS_MAP } from '@/api/backend/configs.data';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Checkbox, Link } from '@mui/material';
@@ -23,6 +24,7 @@ import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
+import BidPopover from './BidPopover';
 import EditDialog from './EditDialog';
 import { pickedItemIdsAtom } from './PickForShipping';
 
@@ -159,10 +161,19 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                 </TableCell>
                 {!isPickingItems && (
                   <TableCell>
-                    <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+                    <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
                       <HavePermissionsOnly permissionKeys={['UpdateAuctionItem']}>
                         <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
                       </HavePermissionsOnly>
+                      {[
+                        AUCTION_ITEM_STATUS_MAP.InitStatus,
+                        AUCTION_ITEM_STATUS_MAP.HighestBiddedStatus,
+                        AUCTION_ITEM_STATUS_MAP.NotHighestBiddedStatus,
+                      ].includes(row.status) && (
+                        <HavePermissionsOnly permissionKeys={['BidAuctionItem']}>
+                          <BidPopover auctionItem={row} />
+                        </HavePermissionsOnly>
+                      )}
                     </Stack>
                   </TableCell>
                 )}

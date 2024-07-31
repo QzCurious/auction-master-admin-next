@@ -199,6 +199,12 @@ export const PERMISSIONS_DATA = [
         description: '建立日拍競標商品',
       },
       {
+        key: 'BidAuctionItem',
+        method: 'POST',
+        url: '/auction-master/backend/auction-items/:id/bid',
+        description: '下標日拍競標商品',
+      },
+      {
         key: 'UpdateAuctionItem',
         method: 'PATCH',
         url: '/auction-master/backend/auction-items/:id',
