@@ -100,7 +100,7 @@ export default function EditDialog({
                       )}
                       {sellerWorker.map((worker) => (
                         <MenuItem key={worker.id} value={worker.id}>
-                          {worker.account}
+                          {worker.name}
                         </MenuItem>
                       ))}
                     </Select>
@@ -123,7 +123,7 @@ export default function EditDialog({
                       )}
                       {watcherWorker.map((worker) => (
                         <MenuItem key={worker.id} value={worker.id}>
-                          {worker.account}
+                          {worker.name}
                         </MenuItem>
                       ))}
                     </Select>
