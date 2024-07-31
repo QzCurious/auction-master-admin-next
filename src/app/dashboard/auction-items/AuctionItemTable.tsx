@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
-import { Checkbox } from '@mui/material';
+import { Checkbox, Link } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import { grey } from '@mui/material/colors';
@@ -73,7 +73,16 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                   </TableCell>
                 )}
 
-                <TableCell>{row.name}</TableCell>
+                <TableCell>
+                  <Link
+                    href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${row.auctionID}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    sx={{ color: 'inherit' }}
+                  >
+                    {row.name}
+                  </Link>
+                </TableCell>
                 <TableCell sx={{ maxWidth: '200px' }}>
                   {row.photo ? (
                     <Box
