@@ -45,17 +45,21 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
         <Table sx={{ minWidth: '800px' }}>
           <TableHead>
             <TableRow sx={{ whiteSpace: 'nowrap' }}>
-              {isPickingItems && <TableCell>出貨</TableCell>}
+              {isPickingItems && <TableCell sx={{ width: 0 }}>出貨</TableCell>}
+              <TableCell sx={{ width: 0 }}>商品圖片</TableCell>
               <TableCell sx={{ minWidth: '200px' }}>商品名稱</TableCell>
-              <TableCell>商品圖片</TableCell>
-              <TableCell>出品帳號</TableCell>
-              <TableCell>盯標帳號</TableCell>
-              <TableCell>出價資訊</TableCell>
-              <TableCell>現在金額</TableCell>
-              <TableCell>期望金額</TableCell>
-              <TableCell>系統出價</TableCell>
-              <TableCell>結標倒數</TableCell>
-              {!isPickingItems && <TableCell>操作</TableCell>}
+              {!isPickingItems && (
+                <>
+                  <TableCell>出品帳號</TableCell>
+                  <TableCell>盯標帳號</TableCell>
+                  <TableCell>出價資訊</TableCell>
+                  <TableCell>現在金額</TableCell>
+                  <TableCell>期望金額</TableCell>
+                  <TableCell>系統出價</TableCell>
+                  <TableCell>結標倒數</TableCell>
+                  <TableCell>操作</TableCell>
+                </>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -74,17 +78,6 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     />
                   </TableCell>
                 )}
-
-                <TableCell>
-                  <Link
-                    href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${row.auctionID}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    sx={{ color: 'inherit' }}
-                  >
-                    {row.name}
-                  </Link>
-                </TableCell>
                 <TableCell sx={{ maxWidth: '200px' }}>
                   {row.photo ? (
                     <Box
@@ -92,7 +85,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                       src={row.photo}
                       sx={{
                         aspectRatio: '16/10',
-                        width: '100%',
+                        width: 128,
                         backgroundColor: grey['100'],
                         objectFit: 'contain',
                         objectPosition: 'center',
@@ -106,76 +99,90 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                         height: 'auto',
                         fill: grey['300'],
                         aspectRatio: '16/10',
-                        width: '100%',
+                        width: 128,
                       }}
                     />
                   )}
                 </TableCell>
-                <TableCell>{row.sellerName}</TableCell>
                 <TableCell>
-                  <Box
-                    sx={{
-                      fontWeight: row.bidders.some((bidder) => bidder.account === row.watcherName) ? 'bold' : undefined,
-                    }}
-                  >
-                    {row.watcherName}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <a
-                    style={{ textDecoration: 'none', color: 'inherit' }}
-                    href={`https://www.letao.com.tw/yahoojp/auctions/bid_history.php?aID=${row.auctionID}`}
+                  <Link
+                    href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${row.auctionID}`}
                     target="_blank"
                     rel="noreferrer"
+                    sx={{ color: 'inherit' }}
                   >
-                    {row.bidders.map((bidder) => (
-                      <Stack
-                        key={`${bidder.account}-${bidder.lastBidAt}`}
-                        direction="row"
-                        spacing={1}
-                        sx={{ whiteSpace: 'nowrap' }}
-                      >
-                        <span>
-                          <Box
-                            component="span"
-                            sx={{ fontWeight: bidder.account === row.watcherName ? 'bold' : undefined }}
-                          >
-                            {bidder.account}
-                          </Box>{' '}
-                          / 評價: {bidder.rating}{' '}
-                        </span>
-                        <span style={{ marginLeft: 'auto' }}>¥ {bidder.bidAmount.toLocaleString()}</span>
-                      </Stack>
-                    ))}
-                  </a>
-                </TableCell>
-                <TableCell sx={{ textAlign: 'right' }}>
-                  <Box color={row.currentPrice >= row.reservePrice ? 'success.main' : 'error.main'}>
-                    {row.currentPrice.toLocaleString()}
-                  </Box>
-                </TableCell>
-                <TableCell sx={{ textAlign: 'right' }}>{row.reservePrice.toLocaleString()}</TableCell>
-                <TableCell sx={{ textAlign: 'right' }}>{row.highestPrice.toLocaleString()}</TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                  <CountdownTime until={new Date(row.closeAt)} />
+                    {row.name}
+                  </Link>
                 </TableCell>
                 {!isPickingItems && (
-                  <TableCell>
-                    <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
-                      <HavePermissionsOnly permissionKeys={['UpdateAuctionItem']}>
-                        <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
-                      </HavePermissionsOnly>
-                      {[
-                        AUCTION_ITEM_STATUS_MAP.InitStatus,
-                        AUCTION_ITEM_STATUS_MAP.HighestBiddedStatus,
-                        AUCTION_ITEM_STATUS_MAP.NotHighestBiddedStatus,
-                      ].includes(row.status) && (
-                        <HavePermissionsOnly permissionKeys={['BidAuctionItem']}>
-                          <BidPopover auctionItem={row} />
+                  <>
+                    <TableCell>{row.sellerName}</TableCell>
+                    <TableCell>
+                      <Box
+                        sx={{
+                          fontWeight: row.bidders.some((bidder) => bidder.account === row.watcherName)
+                            ? 'bold'
+                            : undefined,
+                        }}
+                      >
+                        {row.watcherName}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <a
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                        href={`https://www.letao.com.tw/yahoojp/auctions/bid_history.php?aID=${row.auctionID}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {row.bidders.map((bidder) => (
+                          <Stack
+                            key={`${bidder.account}-${bidder.lastBidAt}`}
+                            direction="row"
+                            spacing={1}
+                            sx={{ whiteSpace: 'nowrap' }}
+                          >
+                            <span>
+                              <Box
+                                component="span"
+                                sx={{ fontWeight: bidder.account === row.watcherName ? 'bold' : undefined }}
+                              >
+                                {bidder.account}
+                              </Box>{' '}
+                              / 評價: {bidder.rating}{' '}
+                            </span>
+                            <span style={{ marginLeft: 'auto' }}>¥ {bidder.bidAmount.toLocaleString()}</span>
+                          </Stack>
+                        ))}
+                      </a>
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'right' }}>
+                      <Box color={row.currentPrice >= row.reservePrice ? 'success.main' : 'error.main'}>
+                        {row.currentPrice.toLocaleString()}
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'right' }}>{row.reservePrice.toLocaleString()}</TableCell>
+                    <TableCell sx={{ textAlign: 'right' }}>{row.highestPrice.toLocaleString()}</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                      <CountdownTime until={new Date(row.closeAt)} />
+                    </TableCell>
+                    <TableCell>
+                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
+                        <HavePermissionsOnly permissionKeys={['UpdateAuctionItem']}>
+                          <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
                         </HavePermissionsOnly>
-                      )}
-                    </Stack>
-                  </TableCell>
+                        {[
+                          AUCTION_ITEM_STATUS_MAP.InitStatus,
+                          AUCTION_ITEM_STATUS_MAP.HighestBiddedStatus,
+                          AUCTION_ITEM_STATUS_MAP.NotHighestBiddedStatus,
+                        ].includes(row.status) && (
+                          <HavePermissionsOnly permissionKeys={['BidAuctionItem']}>
+                            <BidPopover auctionItem={row} />
+                          </HavePermissionsOnly>
+                        )}
+                      </Stack>
+                    </TableCell>
+                  </>
                 )}
               </TableRow>
             ))}
