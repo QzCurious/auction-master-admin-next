@@ -228,6 +228,12 @@ export const PERMISSIONS_DATA = [
         url: '/auction-master/backend/auction-items/:id/deal',
         description: '日拍競標商品成交',
       },
+      {
+        key: 'ShippingAuctionItem',
+        method: 'POST',
+        url: '/auction-master/backend/auction-items/shipping',
+        description: '日拍競標商品出貨',
+      },
     ],
   },
   {
@@ -380,6 +386,29 @@ export const PERMISSIONS_DATA = [
         method: 'POST',
         url: '/auction-master/backend/items/:id/reclaimed',
         description: '物品收回',
+      },
+    ],
+  },
+  {
+    message: '出貨相關',
+    permissions: [
+      {
+        key: 'GetShippings',
+        method: 'GET',
+        url: '/auction-master/backend/shippings',
+        description: '取得出貨列表',
+      },
+      {
+        key: 'ProcessingShipping',
+        method: 'POST',
+        url: '/auction-master/backend/shippings/:id/processing',
+        description: '理貨中',
+      },
+      {
+        key: 'Shipped',
+        method: 'POST',
+        url: '/auction-master/backend/shippings/:id/shipped',
+        description: '已寄出',
       },
     ],
   },

@@ -255,6 +255,40 @@ export const CONFIGS_DATA = {
       value: 99,
     },
   ],
+  shippingType: [
+    {
+      key: 'AddressType',
+      message: '地址寄出',
+      value: 1,
+    },
+    {
+      key: 'SevenElevenType',
+      message: '7-11寄出',
+      value: 2,
+    },
+    {
+      key: 'FamilyType',
+      message: '全家寄出',
+      value: 3,
+    },
+  ],
+  shippingStatus: [
+    {
+      key: 'SubmitAppraisalStatus',
+      message: '已提交出貨',
+      value: 1,
+    },
+    {
+      key: 'ProcessingStatus',
+      message: '理貨中',
+      value: 2,
+    },
+    {
+      key: 'ShippedStatus',
+      message: '已寄出',
+      value: 3,
+    },
+  ],
 } as const;
 
 export const ITEM_TYPE_DATA = CONFIGS_DATA.itemType;
