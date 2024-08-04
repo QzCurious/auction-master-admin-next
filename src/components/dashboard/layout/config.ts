@@ -1,13 +1,10 @@
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { Handshake } from '@phosphor-icons/react/dist/ssr/Handshake';
-import { Boot } from '@phosphor-icons/react/dist/ssr/Boot';
-import { TerminalWindow } from '@phosphor-icons/react/dist/ssr/TerminalWindow';
-import { Robot } from '@phosphor-icons/react/dist/ssr/Robot';
 import { Package } from '@phosphor-icons/react/dist/ssr/Package';
-import { HardHat } from '@phosphor-icons/react/dist/ssr/HardHat';
 import { ShieldStar } from '@phosphor-icons/react/dist/ssr/ShieldStar';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
+import { TerminalWindow } from '@phosphor-icons/react/dist/ssr/TerminalWindow';
 import { UserCircleGear } from '@phosphor-icons/react/dist/ssr/UserCircleGear';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 
@@ -63,12 +60,12 @@ export const navItems = [
     matcher: { type: 'startsWith', href: '/dashboard/auction-items' },
   },
   {
-    key: 'aaa',
+    key: 'shippings',
     title: '出貨列表',
-    href: '/dashboard/aaa',
+    href: '/dashboard/shippings',
     PhosphorIcon: Package,
-    // permissions: ['GetAuctionItems'],
-    // matcher: { type: 'startsWith', href: '/dashboard/auction-items' },
+    permissions: ['GetShippings'],
+    matcher: { type: 'startsWith', href: '/dashboard/shippings' },
   },
   {
     key: 'workers',
