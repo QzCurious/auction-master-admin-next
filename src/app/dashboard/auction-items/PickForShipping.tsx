@@ -3,22 +3,30 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItem, type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
-import { AUCTION_ITEM_STATUS_MAP } from '@/api/backend/configs.data';
+import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
+import { AUCTION_ITEM_STATUS_MAP, SHIPPING_TYPE_MAP } from '@/api/backend/configs.data';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Avatar,
   Button,
   Divider,
   Drawer,
+  FormControl,
+  FormHelperText,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Skeleton,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
 import { atom, useAtomValue } from 'jotai';
+import { useSnackbar } from 'notistack';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
@@ -87,6 +95,7 @@ export function PickForShipping() {
 
   return (
     <Drawer
+      PaperProps={{ sx: { width: 360 } }}
       anchor="right"
       open={searchParams.get('pick-for-shipping') === 'checking' && pickedItemIds.length > 0}
       onClose={() => {
@@ -120,8 +129,8 @@ function PickingList() {
   const queries = auctionItemQueries.filter((q) => !q.isError);
 
   return (
-    <Stack sx={{ width: '100%', maxWidth: 360, height: '100%', bgcolor: 'background.paper' }}>
-      <List sx={{ flex: 1 }}>
+    <Stack sx={{ width: '100%', height: '100%', bgcolor: 'background.paper' }}>
+      <List sx={{ flex: 1, overflow: 'auto' }}>
         {queries.map((item, i) => (
           <React.Fragment key={pickedItems[i]}>
             {item.isPending ? <ListItemSkeleton /> : !!item.data.data && <PickedListItem item={item.data.data} />}
@@ -130,20 +139,7 @@ function PickingList() {
         ))}
       </List>
 
-      <Stack p={2} direction="row" justifyContent="space-between">
-        <span>
-          共 {queries.length} 筆, 總計 ¥{' '}
-          {queries.some((r) => r.isPending) ? (
-            <Skeleton animation="wave" height={10} />
-          ) : (
-            queries.map((q) => q.data!.data!).reduce((acc, item) => acc + item.closedPrice, 0)
-          )}
-        </span>
-
-        <Button type="button" size="small" variant="contained">
-          出貨
-        </Button>
-      </Stack>
+      {queries.every((r) => !r.isPending) && <ShippingForm auctionItems={queries.map((q) => q.data.data!)} />}
     </Stack>
   );
 }
@@ -187,7 +183,7 @@ function PickedListItem({ item }: { item: AuctionItem }) {
               <Typography color="GrayText" component="span">
                 日拍 ID:
               </Typography>{' '}
-              <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+              <Typography sx={{ display: 'inline' }} component="span" color="text.primary">
                 {item.auctionID}
               </Typography>
             </li>
@@ -195,13 +191,107 @@ function PickedListItem({ item }: { item: AuctionItem }) {
               <Typography color="GrayText" component="span">
                 結標金額:
               </Typography>{' '}
-              <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
-                ¥ {item.closedPrice}
+              <Typography sx={{ display: 'inline' }} component="span" color="text.primary">
+                ¥ {item.closedPrice.toLocaleString()}
               </Typography>
             </li>
           </ul>
         }
       />
     </ListItem>
+  );
+}
+
+const Schema = z.object({
+  address: z.string().min(1, { message: '必填' }),
+  recipientName: z.string().min(1, { message: '必填' }),
+  phone: z.string().min(1, { message: '必填' }),
+});
+function ShippingForm({ auctionItems }: { auctionItems: Array<AuctionItem> }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { enqueueSnackbar } = useSnackbar();
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<z.output<typeof Schema>>({
+    defaultValues: {
+      address: '',
+      recipientName: '',
+      phone: '',
+    },
+    resolver: zodResolver(Schema),
+  });
+
+  return (
+    <Stack
+      component="form"
+      p={2}
+      spacing={2}
+      onSubmit={handleSubmit(async (data) => {
+        const res = await ShippingAuctionItem({
+          ...data,
+          type: SHIPPING_TYPE_MAP.AddressType,
+          auctionItemIDs: auctionItems.map((item) => item.id),
+        });
+
+        if (res.error) {
+          enqueueSnackbar(res.error, { variant: 'error' });
+          return;
+        }
+
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('pick-for-shipping', 'picking');
+        router.replace(`?${newSearchParams}`);
+        enqueueSnackbar('已出貨', { variant: 'success' });
+      })}
+    >
+      <Stack spacing={3} mt={2}>
+        <Controller
+          control={control}
+          name="address"
+          render={({ field, fieldState }) => (
+            <FormControl fullWidth error={!!fieldState.error}>
+              <TextField {...field} label="收貨地址" fullWidth />
+              {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+            </FormControl>
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="recipientName"
+          render={({ field, fieldState }) => (
+            <FormControl fullWidth error={!!fieldState.error}>
+              <TextField {...field} label="收貨人姓名" fullWidth />
+              {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+            </FormControl>
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="phone"
+          render={({ field, fieldState }) => (
+            <FormControl fullWidth error={!!fieldState.error}>
+              <TextField {...field} label="收貨人電話" fullWidth />
+              {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+            </FormControl>
+          )}
+        />
+      </Stack>
+
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="body1">
+          共 {auctionItems.length} 筆, 總計 ¥{' '}
+          {auctionItems.reduce((acc, item) => acc + item.closedPrice, 0).toLocaleString()}
+        </Typography>
+
+        <Button type="submit" variant="contained" disabled={isSubmitting}>
+          出貨
+        </Button>
+      </Stack>
+    </Stack>
   );
 }

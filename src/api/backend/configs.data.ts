@@ -323,3 +323,6 @@ export const WORKER_STATUS_MESSAGE_MAP = mapToObj(WORKER_STATUS_DATA, ({ key, me
 
 export const ADMIN_STATUS_DATA = CONFIGS_DATA.adminStatus;
 export const ADMIN_STATUS_MAP = mapToObj(ADMIN_STATUS_DATA, ({ key, value }) => [key, value]);
+
+export const SHIPPING_TYPE_DATA = CONFIGS_DATA.shippingType;
+export const SHIPPING_TYPE_MAP = mapToObj(SHIPPING_TYPE_DATA, ({ key, value }) => [key, value]);
