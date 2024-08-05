@@ -13,12 +13,12 @@ import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
-import { AuctionItemTable } from './AuctionItemTable';
 import AutoRefreshPage from './AutoRefreshPage';
 import { ConsignorFilter } from './ConsignorFilter';
 import { PickForShipping, PickForShippingButtons } from './PickForShipping';
 import RemoveSearchBtn from './RemoveSearchBtn';
 import { StatusFilter } from './StatusFilter';
+import { AuctionItemTable } from './AuctionItemTable';
 
 export const metadata = { title: `物品列表 | ${config.site.name}` } satisfies Metadata;
 

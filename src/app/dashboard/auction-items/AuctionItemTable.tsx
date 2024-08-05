@@ -24,9 +24,9 @@ import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
-import BidPopover from './BidPopover';
 import EditDialog from './EditDialog';
 import { pickedItemIdsAtom } from './PickForShipping';
+import BidPopover from './BidPopover';
 
 interface AuctionItemTableProps {
   rows: AuctionItem[];

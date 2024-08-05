@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { Gavel } from '@phosphor-icons/react';
+import { Gavel } from '@phosphor-icons/react/dist/csr/Gavel';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
