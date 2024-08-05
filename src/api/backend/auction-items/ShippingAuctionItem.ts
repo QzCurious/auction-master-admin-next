@@ -17,7 +17,15 @@ const ReqSchema = z.discriminatedUnion('type', [
     phone: z.string(),
   }),
   z.object({
-    type: z.union([z.literal(SHIPPING_TYPE_MAP.SevenElevenType), z.literal(SHIPPING_TYPE_MAP.FamilyType)]),
+    type: z.literal(SHIPPING_TYPE_MAP.SevenElevenType),
+    auctionItemIDs: z.array(z.number()),
+    storeNumber: z.string(),
+    storeName: z.string(),
+    recipientName: z.string(),
+    phone: z.string(),
+  }),
+  z.object({
+    type: z.literal(SHIPPING_TYPE_MAP.FamilyType),
     auctionItemIDs: z.array(z.number()),
     storeNumber: z.string(),
     storeName: z.string(),
