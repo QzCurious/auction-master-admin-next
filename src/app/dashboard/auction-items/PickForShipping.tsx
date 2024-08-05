@@ -23,7 +23,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
-import { atom, useAtomValue } from 'jotai';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -210,6 +210,7 @@ const Schema = z.object({
 function ShippingForm({ auctionItems }: { auctionItems: Array<AuctionItem> }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const setPickedItems = useSetAtom(pickedItemIdsAtom);
   const { enqueueSnackbar } = useSnackbar();
   const {
     control,
@@ -242,7 +243,9 @@ function ShippingForm({ auctionItems }: { auctionItems: Array<AuctionItem> }) {
         }
 
         const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.set('pick-for-shipping', 'picking');
+        setPickedItems([]);
+        newSearchParams.delete('pick-for-shipping');
+        newSearchParams.delete('status');
         router.replace(`?${newSearchParams}`);
         enqueueSnackbar('已出貨', { variant: 'success' });
       })}
