@@ -1,0 +1,21 @@
+'use server';
+
+import { revalidateTag } from 'next/cache';
+import { apiClient } from '@/api/apiClient';
+import { withAuth } from '@/api/withAuth';
+
+import { type Shipping } from './GetShippings';
+
+type Data = 'Success';
+
+type ErrorCode = never;
+
+export async function ProcessingShipping(id: Shipping['id']) {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/shippings/${id}/processing`, {
+    method: 'POST',
+  });
+
+  revalidateTag('shippings');
+
+  return res;
+}

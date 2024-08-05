@@ -30,7 +30,7 @@ export default function DoubleCheckPopover({
       }}
       {...props}
     >
-      <Box sx={{ p: '16px 20px ' }}>
+      <Box sx={{ p: '16px 20px' }}>
         <Typography variant="subtitle1">{title}</Typography>
         <Typography color="text.secondary" variant="body2">
           {description}

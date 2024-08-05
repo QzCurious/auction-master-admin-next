@@ -28,7 +28,7 @@ import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
-import { statusColor } from '../consignors/statusColor';
+import { statusColor } from './statusColor';
 
 interface AdminTableProps {
   rows: Admin[];

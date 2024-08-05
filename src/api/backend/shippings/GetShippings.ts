@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
+import { type SHIPPING_STATUS_DATA } from '../configs.data';
 
 const ReqSchema = z.object({
   status: z.coerce.number().array().optional(),
@@ -21,7 +22,7 @@ export interface Shipping {
   recipientName: string;
   phone: string;
   shipmentTrackingNumber: any;
-  status: number;
+  status: (typeof SHIPPING_STATUS_DATA)[number]['value'];
   createdAt: string;
   updatedAt: string;
   items: Array<Item>;

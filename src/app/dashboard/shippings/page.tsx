@@ -12,12 +12,11 @@ import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
-import { PickForShippingButtons } from './PickForShipping';
 import RemoveSearchBtn from './RemoveSearchBtn';
 import { ShippingsTable } from './ShippingsTable';
 import { StatusFilter } from './StatusFilter';
 
-export const metadata = { title: `物品列表 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `出貨列表 | ${config.site.name}` } satisfies Metadata;
 
 const filterSchema = z.object({
   status: z
@@ -89,7 +88,6 @@ async function Content({ searchParams }: PageProps) {
         )}
 
         <Box mx="auto" />
-        <PickForShippingButtons />
       </Stack>
 
       <ShippingsTable rows={ShippingsRes.data.shippings} count={ShippingsRes.data.count} />
