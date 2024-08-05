@@ -4,23 +4,23 @@ import { z } from 'zod';
 export const cookieConfigs = {
   token: {
     name: 'admin-token',
-    opts: {
+    opts: () => ({
       expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
       httpOnly: true,
       sameSite: 'strict',
       // secure: process.env.NODE_ENV === 'production',
-    },
+    }),
   },
   refreshToken: {
     name: 'admin-refresh-token',
-    opts: {
+    opts: () => ({
       expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
       httpOnly: true,
       sameSite: 'strict',
       // secure: process.env.NODE_ENV === 'production',
-    },
+    }),
   },
-} satisfies Record<string, { name: string; opts: Partial<ResponseCookie> }>;
+} satisfies Record<string, { name: string; opts: () => Partial<ResponseCookie> }>;
 
 export const DATE_FORMAT = 'yyyy-MM-dd';
 export const DATE_TIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';

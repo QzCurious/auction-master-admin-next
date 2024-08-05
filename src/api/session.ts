@@ -1,8 +1,8 @@
 'use server';
 
-import { cookieConfigs } from '@/static';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { cookieConfigs } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from './apiClient';
@@ -26,7 +26,7 @@ type ErrorCode =
   // PasswordIncorrect
   | '1004'
   // AdminNotExist
-  | '1502'
+  | '1502';
 
 export async function session(payload: z.input<typeof ReqSchema>) {
   throwIfInvalid(payload, ReqSchema);
@@ -44,8 +44,8 @@ export async function session(payload: z.input<typeof ReqSchema>) {
     return res;
   }
 
-  cookies().set(cookieConfigs.token.name, res.data.token, cookieConfigs.token.opts);
-  cookies().set(cookieConfigs.refreshToken.name, res.data.refreshToken, cookieConfigs.refreshToken.opts);
+  cookies().set(cookieConfigs.token.name, res.data.token, cookieConfigs.token.opts());
+  cookies().set(cookieConfigs.refreshToken.name, res.data.refreshToken, cookieConfigs.refreshToken.opts());
 
   revalidatePath('/', 'layout');
 
