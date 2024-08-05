@@ -40,7 +40,7 @@ interface PageProps {
     consignor?: string;
     status?: string | string[];
 
-    'pick-for-shipping': 'picking' | 'checking';
+    'pick-for-shipping'?: 'picking' | 'checking';
   } & PaginationSearchParams;
 }
 
@@ -69,7 +69,7 @@ async function Content({ searchParams }: PageProps) {
   const [auctionItemsRes, activeWorkersRes] = await Promise.all([
     GetAuctionItems({
       consignorID: filters.consignor,
-      status: filters.status,
+      status: searchParams['pick-for-shipping'] ? [AUCTION_ITEM_STATUS_MAP.ClosedStatus] : filters.status,
       limit: pagination[ROWS_PER_PAGE],
       offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
     }),

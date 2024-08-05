@@ -48,7 +48,6 @@ export function PickForShippingButtons() {
           onClick={() => {
             const newSearchParams = new URLSearchParams(searchParams);
             newSearchParams.set('pick-for-shipping', 'picking');
-            newSearchParams.set('status', AUCTION_ITEM_STATUS_MAP.ClosedStatus.toString());
             router.replace(`?${newSearchParams}`);
           }}
         >
@@ -63,7 +62,6 @@ export function PickForShippingButtons() {
           onClick={() => {
             const newSearchParams = new URLSearchParams(searchParams);
             newSearchParams.delete('pick-for-shipping');
-            newSearchParams.delete('status');
             router.replace(`?${newSearchParams}`);
           }}
         >
@@ -245,7 +243,6 @@ function ShippingForm({ auctionItems }: { auctionItems: Array<AuctionItem> }) {
         const newSearchParams = new URLSearchParams(searchParams);
         setPickedItems([]);
         newSearchParams.delete('pick-for-shipping');
-        newSearchParams.delete('status');
         router.replace(`?${newSearchParams}`);
         enqueueSnackbar('已出貨', { variant: 'success' });
       })}
