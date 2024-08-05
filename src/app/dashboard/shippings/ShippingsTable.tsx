@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { SHIPPING_STATUS_DATA, SHIPPING_TYPE_DATA } from '@/api/backend/configs.data';
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { DATE_TIME_FORMAT } from '@/static';
-import { Checkbox } from '@mui/material';
+import { Checkbox, Link, Paper, Popover, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Divider from '@mui/material/Divider';
@@ -14,8 +14,10 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { ArrowSquareOut, MapPin, Phone, Tag } from '@phosphor-icons/react';
 import { differenceInDays, differenceInHours, format, intervalToDuration } from 'date-fns';
 import { useAtom } from 'jotai';
+import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
@@ -41,9 +43,8 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
               {!isPickingItems && (
                 <>
                   <TableCell>寄件類別</TableCell>
-                  <TableCell>收貨人姓名</TableCell>
-                  <TableCell>收貨人電話</TableCell>
-                  <TableCell>收貨人地址</TableCell>
+                  <TableCell>物品</TableCell>
+                  <TableCell>收貨人</TableCell>
                   <TableCell>狀態</TableCell>
                   <TableCell>建立時間</TableCell>
                   <TableCell>操作</TableCell>
@@ -71,9 +72,75 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                 <TableCell>{SHIPPING_TYPE_DATA.find((data) => data.value === row.type)?.message}</TableCell>
                 {!isPickingItems && (
                   <>
-                    <TableCell>{row.recipientName}</TableCell>
-                    <TableCell>{row.phone}</TableCell>
-                    <TableCell>{row.address}</TableCell>
+                    <TableCell>
+                      <Stack>
+                        {row.items.map((item) => (
+                          <PopupState key={item.id} variant="popper">
+                            {(popupState) => (
+                              <>
+                                <Stack direction="row" spacing={0.5} alignItems="center">
+                                  <Tag weight="fill" color="#666" />
+                                  <Link
+                                    {...bindTrigger(popupState)}
+                                    sx={{
+                                      cursor: 'pointer',
+                                      textDecoration: popupState.isOpen ? 'underline' : undefined,
+                                    }}
+                                  >
+                                    {item.warehouseID || '無倉庫編號'}
+                                  </Link>
+                                </Stack>
+
+                                <Popover
+                                  {...bindPopover(popupState)}
+                                  anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                >
+                                  <Paper sx={{ p: 1, position: 'relative', maxWidth: '300px' }} elevation={8}>
+                                    <Link
+                                      sx={{
+                                        position: 'absolute',
+                                        borderRadius: 1,
+                                        top: 0,
+                                        right: 0,
+                                        p: 1,
+                                        pb: 0,
+                                        display: 'block',
+                                        bgcolor: 'white',
+                                      }}
+                                      href={item.photos[0].photo}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                    >
+                                      <ArrowSquareOut size={20} />
+                                    </Link>
+                                    <img
+                                      src={item.photos[0].photo}
+                                      style={{ display: 'block', maxWidth: '100%' }}
+                                      alt=""
+                                    />
+                                  </Paper>
+                                </Popover>
+                              </>
+                            )}
+                          </PopupState>
+                        ))}
+                      </Stack>
+                    </TableCell>
+
+                    <TableCell>
+                      {row.recipientName}
+
+                      <Stack direction="row" spacing={0.5} alignItems="center">
+                        <Phone weight="fill" color="#666" />
+                        {row.phone}
+                      </Stack>
+
+                      <Stack direction="row" spacing={0.5} alignItems="center">
+                        <MapPin weight="fill" color="#c00" />
+                        {row.address}
+                      </Stack>
+                    </TableCell>
+
                     <TableCell>{SHIPPING_STATUS_DATA.find((data) => data.value === row.status)?.message}</TableCell>
 
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>{format(row.createdAt, DATE_TIME_FORMAT)}</TableCell>
