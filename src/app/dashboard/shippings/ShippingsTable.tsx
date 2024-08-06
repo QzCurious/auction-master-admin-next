@@ -5,11 +5,15 @@ import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
 import { DATE_TIME_FORMAT } from '@/static';
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
+import CropFreeOutlinedIcon from '@mui/icons-material/CropFreeOutlined';
+import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import {
   Button,
   Chip,
   FormControl,
   FormHelperText,
+  IconButton,
   Link,
   Paper,
   Popover,
@@ -25,10 +29,10 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { ArrowSquareOut } from '@phosphor-icons/react/dist/csr/ArrowSquareOut';
 import { MapPin } from '@phosphor-icons/react/dist/csr/MapPin';
 import { Phone } from '@phosphor-icons/react/dist/csr/Phone';
 import { Tag } from '@phosphor-icons/react/dist/csr/Tag';
+import copy from 'copy-to-clipboard';
 import { format } from 'date-fns';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { enqueueSnackbar } from 'notistack';
@@ -58,7 +62,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
               <TableCell>收貨人</TableCell>
               <TableCell>狀態</TableCell>
               <TableCell>建立時間</TableCell>
-              <TableCell>操作</TableCell>
+              <TableCell>操作 / 出貨單號</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -89,8 +93,13 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                               {...bindPopover(popupState)}
                               anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >
-                              <Paper sx={{ p: 1, position: 'relative', maxWidth: '300px' }} elevation={8}>
-                                <Link
+                              <Paper
+                                sx={{ p: 1, position: 'relative', maxWidth: '300px', border: '1px solid #eee' }}
+                                elevation={8}
+                              >
+                                <Stack
+                                  direction="row"
+                                  spacing={1}
                                   sx={{
                                     position: 'absolute',
                                     borderRadius: 1,
@@ -98,16 +107,20 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                                     right: 0,
                                     p: 1,
                                     pb: 0,
-                                    display: 'block',
                                     bgcolor: 'white',
                                   }}
-                                  href={item.photos[0].photo}
-                                  target="_blank"
-                                  rel="noreferrer"
                                 >
-                                  <ArrowSquareOut size={20} />
-                                </Link>
+                                  <Link href={item.photos[0].photo} target="_blank" rel="noreferrer">
+                                    <CropFreeOutlinedIcon />
+                                  </Link>
+                                  <HavePermissionsOnly permissionKeys={['GetItemAndDetails', 'AdminGetConsignor']}>
+                                    <Link href={`/dashboard/items/edit/${item.id}`} target="_blank" rel="noreferrer">
+                                      <OpenInNewOutlinedIcon />
+                                    </Link>
+                                  </HavePermissionsOnly>
+                                </Stack>
                                 <img src={item.photos[0].photo} style={{ display: 'block', maxWidth: '100%' }} alt="" />
+                                <Typography>{item.name}</Typography>
                               </Paper>
                             </Popover>
                           </>
@@ -174,6 +187,20 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                       <HavePermissionsOnly permissionKeys={['Shipped']}>
                         <ShippedPopover row={row} />
                       </HavePermissionsOnly>
+                    )}
+
+                    {row.status === SHIPPING_STATUS_MAP.ShippedStatus && (
+                      <div>
+                        <Typography variant="body2" color="GrayText">
+                          出貨單號
+                        </Typography>
+                        <Typography variant="body2">
+                          {row.shipmentTrackingNumber}
+                          <IconButton size="small" type="button" onClick={() => copy(row.shipmentTrackingNumber)}>
+                            <ContentCopyOutlinedIcon sx={{ fontSize: 'var(--icon-fontSize-sm)' }} />
+                          </IconButton>
+                        </Typography>
+                      </div>
                     )}
                   </Stack>
                 </TableCell>

@@ -21,7 +21,7 @@ export interface Shipping {
   address: string;
   recipientName: string;
   phone: string;
-  shipmentTrackingNumber: any;
+  shipmentTrackingNumber: string;
   status: (typeof SHIPPING_STATUS_DATA)[number]['value'];
   createdAt: string;
   updatedAt: string;

@@ -63,7 +63,9 @@ async function Content({ searchParams }: PageProps) {
 
   const [ShippingsRes] = await Promise.all([
     GetShippings({
-      status: filters.status,
+      status: filters.status.length
+        ? filters.status
+        : [SHIPPING_STATUS_MAP.SubmitAppraisalStatus, SHIPPING_STATUS_MAP.ProcessingStatus],
       limit: pagination[ROWS_PER_PAGE],
       offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
     }),
