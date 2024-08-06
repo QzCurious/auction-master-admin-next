@@ -49,7 +49,7 @@ export function StatusFilter({ selected }: StatusFilterProps) {
           renderValue={(selected) =>
             selected.length === 0 ? (
               <Typography color="text.secondary" fontStyle="italic">
-                全部
+                預設
               </Typography>
             ) : (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>

@@ -13,12 +13,12 @@ import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
+import { AuctionItemTable } from './AuctionItemTable';
 import AutoRefreshPage from './AutoRefreshPage';
 import { ConsignorFilter } from './ConsignorFilter';
 import { PickForShipping, PickForShippingButtons } from './PickForShipping';
 import RemoveSearchBtn from './RemoveSearchBtn';
 import { StatusFilter } from './StatusFilter';
-import { AuctionItemTable } from './AuctionItemTable';
 
 export const metadata = { title: `物品列表 | ${config.site.name}` } satisfies Metadata;
 
@@ -69,7 +69,17 @@ async function Content({ searchParams }: PageProps) {
   const [auctionItemsRes, activeWorkersRes] = await Promise.all([
     GetAuctionItems({
       consignorID: filters.consignor,
-      status: searchParams['pick-for-shipping'] ? [AUCTION_ITEM_STATUS_MAP.ClosedStatus] : filters.status,
+      status: searchParams['pick-for-shipping']
+        ? [AUCTION_ITEM_STATUS_MAP.ClosedStatus]
+        : filters.status.length
+          ? filters.status
+          : [
+              AUCTION_ITEM_STATUS_MAP.InitStatus,
+              AUCTION_ITEM_STATUS_MAP.StopBiddingStatus,
+              AUCTION_ITEM_STATUS_MAP.HighestBiddedStatus,
+              AUCTION_ITEM_STATUS_MAP.NotHighestBiddedStatus,
+              AUCTION_ITEM_STATUS_MAP.ClosedStatus,
+            ],
       limit: pagination[ROWS_PER_PAGE],
       offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
     }),
