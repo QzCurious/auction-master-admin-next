@@ -46,7 +46,6 @@ const FormSchema = z
     space: z.number(),
     grossWeight: z.number(),
     volumetricWeight: z.number(),
-    status: z.number(),
   })
   .superRefine((data, ctx) => {
     if (data.type !== ITEM_TYPE_MAP['AppraisableAuctionItemType']) {
@@ -82,7 +81,6 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
       space: item.space,
       grossWeight: item.grossWeight,
       volumetricWeight: item.volumetricWeight,
-      status: item.status,
     }),
     [
       item.consignorID,
@@ -94,7 +92,6 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
       item.name,
       item.reservePrice,
       item.space,
-      item.status,
       item.type,
       item.volumetricWeight,
       item.warehouseID,
