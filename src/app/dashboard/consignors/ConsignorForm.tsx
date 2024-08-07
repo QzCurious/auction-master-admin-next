@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { CONSIGNOR_STATUS_DATA, CONSIGNOR_STATUS_MAP } from '@/api/backend/configs.data';
+import { CONSIGNOR_STATUS } from '@/api/backend/configs.data';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,6 +16,7 @@ import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
+import * as R from 'remeda';
 import { z } from 'zod';
 
 import { useHandleNoPermissions } from '@/contexts/UserContext';
@@ -29,7 +30,7 @@ interface ConsignorFromProps {
 const FormSchema = z
   .object({
     nickname: z.string().min(1, '必填'),
-    status: z.number(),
+    status: z.number().refine(R.isIncludedIn(CONSIGNOR_STATUS.data.map((item) => item.value)), { message: '必填' }),
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
   })
@@ -51,7 +52,7 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
     setError,
     formState: { isSubmitting, errors },
     getValues,
-  } = useForm<z.input<typeof FormSchema>>({
+  } = useForm<z.output<typeof FormSchema>>({
     defaultValues,
     resolver: zodResolver(FormSchema),
   });
@@ -114,18 +115,18 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
                       {...field}
                       renderValue={(selected) => (
                         <Chip
-                          label={CONSIGNOR_STATUS_DATA.find(({ value }) => value === selected)?.message}
+                          label={CONSIGNOR_STATUS.get('value', selected).message}
                           color={statusColor(selected as never)}
                         />
                       )}
                       fullWidth
                     >
-                      {CONSIGNOR_STATUS_DATA.map(({ value, message }) => (
+                      {CONSIGNOR_STATUS.data.map(({ value, message }) => (
                         <MenuItem
                           key={value}
                           value={value}
                           disabled={
-                            value === CONSIGNOR_STATUS_MAP.EnabledStatus &&
+                            value === CONSIGNOR_STATUS.enum('EnabledStatus') &&
                             (!consignor.name || !consignor.identification)
                           }
                         >

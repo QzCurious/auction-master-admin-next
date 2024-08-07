@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { WORKER_STATUS_MAP, WORKER_TYPE_MAP } from '@/api/backend/configs.data';
+import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/configs.data';
 import { GetWorkers } from '@/api/backend/workers/GetWorkers';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Stack from '@mui/material/Stack';
@@ -26,7 +26,7 @@ const filterSchema = z.object({
       (v) => (typeof v === 'string' ? [v] : v),
       z
         .string()
-        .refine((v) => R.isIncludedIn(v, Object.values(WORKER_TYPE_MAP)))
+        .refine(R.isIncludedIn(WORKER_TYPE.data.map((item) => item.value)))
         .array()
     )
     .default([]),
@@ -35,7 +35,7 @@ const filterSchema = z.object({
       (v) => (typeof v === 'string' ? [v] : v),
       z.coerce
         .number()
-        .refine((v) => R.isIncludedIn(v, Object.values(WORKER_STATUS_MAP)))
+        .refine(R.isIncludedIn(WORKER_STATUS.data.map((item) => item.value)))
         .array()
     )
     .default([]),

@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItem, type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
-import { AUCTION_ITEM_STATUS_MAP, SHIPPING_TYPE_MAP } from '@/api/backend/configs.data';
+import { SHIPPING_TYPE } from '@/api/backend/configs.data';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Avatar,
@@ -231,7 +231,7 @@ function ShippingForm({ auctionItems }: { auctionItems: Array<AuctionItem> }) {
       onSubmit={handleSubmit(async (data) => {
         const res = await ShippingAuctionItem({
           ...data,
-          type: SHIPPING_TYPE_MAP.AddressType,
+          type: SHIPPING_TYPE.enum('AddressType'),
           auctionItemIDs: auctionItems.map((item) => item.id),
         });
 

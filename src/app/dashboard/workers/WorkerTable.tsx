@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react';
 import Link from 'next/link';
-import { WORKER_STATUS_DATA, WORKER_STATUS_MAP, WORKER_TYPE_DATA } from '@/api/backend/configs.data';
+import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/configs.data';
 import { type Worker } from '@/api/backend/workers/GetWorkers';
 import { ToggleActivateWorker } from '@/api/backend/workers/ToggleActivateWorker';
 import EditIcon from '@mui/icons-material/Edit';
@@ -50,21 +50,17 @@ export function WorkerTable({ rows, count }: WorkerTableProps) {
               {rows.map((row) => (
                 <TableRow hover key={row.id}>
                   <TableCell>{row.loggedIn ? '已登入' : '未登入'}</TableCell>
-                  <TableCell>{WORKER_TYPE_DATA.find((data) => data.value === row.type)?.message}</TableCell>
+                  <TableCell>{WORKER_TYPE.get('value', row.type).message}</TableCell>
                   <TableCell>{row.url}</TableCell>
                   <TableCell>{row.account}</TableCell>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>
-                    {row.status !== WORKER_STATUS_MAP.InvalidatedStatus ? (
+                    {row.status !== WORKER_STATUS.enum('InvalidatedStatus') ? (
                       <HavePermissionsOnly permissionKeys={['ToggleActivateWorker']}>
                         <StatusSwitch row={row} />
                       </HavePermissionsOnly>
                     ) : (
-                      <Chip
-                        label={WORKER_STATUS_DATA.find((data) => data.value === row.status)?.message}
-                        variant="outlined"
-                        color="error"
-                      />
+                      <Chip label={WORKER_STATUS.get('value', row.status).message} variant="outlined" color="error" />
                     )}
                   </TableCell>
                   <TableCell>
@@ -95,12 +91,14 @@ function StatusSwitch({ row }: { row: Worker }) {
   const [isPending, startTransition] = useTransition();
   return (
     <Switch
-      checked={row.status === WORKER_STATUS_MAP.ActiveStatus}
+      checked={row.status === WORKER_STATUS.enum('ActiveStatus')}
       size="small"
       onChange={(e) => {
         startTransition(async () => {
           await ToggleActivateWorker(row.id, {
-            status: e.target.checked ? WORKER_STATUS_MAP.ActiveStatus : WORKER_STATUS_MAP.AwaitingSetupCompletionStatus,
+            status: e.target.checked
+              ? WORKER_STATUS.enum('ActiveStatus')
+              : WORKER_STATUS.enum('AwaitingSetupCompletionStatus'),
           });
         });
       }}
@@ -122,9 +120,9 @@ function StatusSelect({ row }: { row: Worker }) {
           });
         });
       }}
-      disabled={isPending || row.status === WORKER_STATUS_MAP.InvalidatedStatus}
+      disabled={isPending || row.status === WORKER_STATUS.enum('InvalidatedStatus')}
     >
-      {WORKER_STATUS_DATA.map(({ value, message }) => (
+      {WORKER_STATUS.data.map(({ value, message }) => (
         <MenuItem key={value} value={value}>
           {message}
         </MenuItem>

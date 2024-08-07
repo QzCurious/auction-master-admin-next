@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { type ITEM_STATUS_KEY_MAP, type ITEM_TYPE_KEY_MAP } from '../configs.data';
+import { type ITEM_STATUS, type ITEM_TYPE } from '../configs.data';
 
 export const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),
@@ -16,7 +16,7 @@ export const ReqSchema = z.object({
 export interface Item {
   id: number;
   consignorID: number;
-  type: 0 | keyof typeof ITEM_TYPE_KEY_MAP;
+  type: 0 | ITEM_TYPE['value'];
   isNew: boolean;
   name: string;
   description: string;
@@ -29,7 +29,7 @@ export interface Item {
   space: number;
   grossWeight: number;
   volumetricWeight: number;
-  status: keyof typeof ITEM_STATUS_KEY_MAP;
+  status: ITEM_STATUS['value'];
   createdAt: string;
   updatedAt: string;
   nickname: string;
@@ -39,7 +39,7 @@ export interface Item {
     createdAt: string;
     updatedAt: string;
   }>;
-  pastStatuses: { [k in keyof typeof ITEM_STATUS_KEY_MAP]?: string };
+  pastStatuses: { [k in ITEM_STATUS['value']]?: string };
 }
 
 interface Data extends Item {}

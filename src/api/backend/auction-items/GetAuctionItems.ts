@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type AUCTION_ITEM_STATUS_DATA } from '../configs.data';
+import { type AUCTION_ITEM_STATUS } from '../configs.data';
 
 const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),
@@ -28,7 +28,7 @@ export interface AuctionItem {
   highestPrice: number;
   closeAt: string;
   closedPrice: number;
-  status: (typeof AUCTION_ITEM_STATUS_DATA)[number]['value'];
+  status: AUCTION_ITEM_STATUS['value'];
   createdAt: string;
   updatedAt: string;
   consignorNickname: string;

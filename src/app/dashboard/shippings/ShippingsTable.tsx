@@ -1,6 +1,6 @@
 'use client';
 
-import { SHIPPING_STATUS_DATA, SHIPPING_STATUS_MAP, SHIPPING_TYPE_DATA } from '@/api/backend/configs.data';
+import { SHIPPING_STATUS, SHIPPING_TYPE } from '@/api/backend/configs.data';
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
@@ -69,7 +69,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
             {rows.length === 0 && <EmptyTableRow />}
             {rows.map((row) => (
               <TableRow hover key={row.id}>
-                <TableCell>{SHIPPING_TYPE_DATA.find((data) => data.value === row.type)?.message}</TableCell>
+                <TableCell>{SHIPPING_TYPE.get('value', row.type).message}</TableCell>
                 <TableCell>
                   <Stack>
                     {row.items.map((item) => (
@@ -146,7 +146,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
 
                 <TableCell>
                   <Chip
-                    label={SHIPPING_STATUS_DATA.find((data) => data.value === row.status)?.message}
+                    label={SHIPPING_STATUS.get('value', row.status).message}
                     variant="outlined"
                     color={statusColor(row.status)}
                   />
@@ -155,7 +155,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                 <TableCell sx={{ whiteSpace: 'nowrap' }}>{format(row.createdAt, DATE_TIME_FORMAT)}</TableCell>
                 <TableCell>
                   <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                    {row.status === SHIPPING_STATUS_MAP.SubmitAppraisalStatus && (
+                    {row.status === SHIPPING_STATUS.enum('SubmitAppraisalStatus') && (
                       <HavePermissionsOnly permissionKeys={['ProcessingShipping']}>
                         <PopupState variant="popover">
                           {(popupState) => (
@@ -183,13 +183,13 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                       </HavePermissionsOnly>
                     )}
 
-                    {row.status === SHIPPING_STATUS_MAP.ProcessingStatus && (
+                    {row.status === SHIPPING_STATUS.enum('ProcessingStatus') && (
                       <HavePermissionsOnly permissionKeys={['Shipped']}>
                         <ShippedPopover row={row} />
                       </HavePermissionsOnly>
                     )}
 
-                    {row.status === SHIPPING_STATUS_MAP.ShippedStatus && (
+                    {row.status === SHIPPING_STATUS.enum('ShippedStatus') && (
                       <div>
                         <Typography variant="body2" color="GrayText">
                           出貨單號

@@ -62,7 +62,8 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'off',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-shadow': 'off',
-    'eqeqeq': 'off',
+    eqeqeq: 'off',
+    '@typescript-eslint/naming-convention': 'off',
 
     '@next/next/no-img-element': 'off', // Temporary disabled
   },

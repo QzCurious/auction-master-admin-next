@@ -1,12 +1,12 @@
-import { CONSIGNOR_STATUS_MAP, type CONSIGNOR_STATUS_DATA } from '@/api/backend/configs.data';
+import { CONSIGNOR_STATUS } from '@/api/backend/configs.data';
 
-export const statusColor = (status: (typeof CONSIGNOR_STATUS_DATA)[number]['value']) => {
+export const statusColor = (status: CONSIGNOR_STATUS['value']) => {
   switch (status) {
-    case CONSIGNOR_STATUS_MAP.EnabledStatus:
+    case CONSIGNOR_STATUS.enum('EnabledStatus'):
       return 'success';
-    case CONSIGNOR_STATUS_MAP.DisabledStatus:
+    case CONSIGNOR_STATUS.enum('DisabledStatus'):
       return 'error';
-    case CONSIGNOR_STATUS_MAP.AwaitingVerificationCompletionStatus:
+    case CONSIGNOR_STATUS.enum('AwaitingVerificationCompletionStatus'):
       return 'warning';
     default:
       return 'default';

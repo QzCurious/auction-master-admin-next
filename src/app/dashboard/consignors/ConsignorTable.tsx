@@ -1,8 +1,6 @@
 'use client';
 
-import * as React from 'react';
-import Link from 'next/link';
-import { CONSIGNOR_STATUS_DATA } from '@/api/backend/configs.data';
+import { CONSIGNOR_STATUS } from '@/api/backend/configs.data';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import EditIcon from '@mui/icons-material/Edit';
 import { Chip, TableContainer } from '@mui/material';
@@ -16,10 +14,12 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Link from 'next/link';
+import * as React from 'react';
 
-import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
+import { HavePermissionsOnly } from '@/contexts/UserContext';
 
 import { statusColor } from './statusColor';
 
@@ -78,7 +78,7 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
                         <Chip
-                          label={CONSIGNOR_STATUS_DATA.find(({ value }) => value === row.status)?.message}
+                          label={CONSIGNOR_STATUS.get('value', row.status).message}
                           color={statusColor(row.status)}
                         />
                       </Stack>

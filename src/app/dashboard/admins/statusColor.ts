@@ -1,10 +1,10 @@
-import { ADMIN_STATUS_MAP, type ADMIN_STATUS_DATA } from '@/api/backend/configs.data';
+import { ADMIN_STATUS } from '@/api/backend/configs.data';
 
-export const statusColor = (status: (typeof ADMIN_STATUS_DATA)[number]['value']) => {
+export const statusColor = (status: ADMIN_STATUS['value']) => {
   switch (status) {
-    case ADMIN_STATUS_MAP.EnabledStatus:
+    case ADMIN_STATUS.enum('EnabledStatus'):
       return 'success';
-    case ADMIN_STATUS_MAP.DisabledStatus:
+    case ADMIN_STATUS.enum('DisabledStatus'):
       return 'error';
     default:
       return 'default';

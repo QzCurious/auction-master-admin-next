@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { ITEM_STATUS_MAP, ITEM_TYPE_DATA, ITEM_TYPE_MAP } from '@/api/backend/configs.data';
+import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/configs.data';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
@@ -35,7 +35,7 @@ export type FormSchemaType = z.output<typeof FormSchema>;
 const FormSchema = z
   .object({
     consignorID: z.number(),
-    type: z.number().refine((v) => v === 0 || ITEM_TYPE_DATA.find((item) => item.value === v)),
+    type: z.number().refine(R.isIncludedIn([0, ...ITEM_TYPE.data.map((item) => item.value)])),
     name: z.string().min(1, '必填'),
     description: z.string().default(''),
     directPurchasePrice: z.number(),
@@ -48,7 +48,7 @@ const FormSchema = z
     volumetricWeight: z.number(),
   })
   .superRefine((data, ctx) => {
-    if (data.type !== ITEM_TYPE_MAP['AppraisableAuctionItemType']) {
+    if (data.type !== ITEM_TYPE.enum('AppraisableAuctionItemType')) {
       return;
     }
     if (!data.minEstimatedPrice) {
@@ -124,11 +124,11 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
   const havePermissions = useHavePermissions();
   const canUpdate =
     havePermissions(['AdminUpdateItem']) &&
-    item.status !== ITEM_STATUS_MAP.BiddingStatus &&
+    item.status !== ITEM_STATUS.enum('BiddingStatus') &&
     // 判斷是否為最後一個狀態
     !Object.values(StatusFlow.flow)
       .filter((f) => f.nexts.length === 0)
-      .map((f) => ITEM_STATUS_MAP[f.status])
+      .map((f) => ITEM_STATUS.enum(f.status))
       .includes(item.status as never);
 
   const quillRef = useRef<Quill>(null);
@@ -150,8 +150,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
       onSubmit={handleSubmit(async (data) => {
         const res = await AdminUpdateItem(
           item.id,
-          data.type === ITEM_TYPE_MAP['FixedPriceItemType'] ||
-            data.type === ITEM_TYPE_MAP['NonAppraisableAuctionItemType']
+          data.type === ITEM_TYPE.enum('FixedPriceItemType') ||
+            data.type === ITEM_TYPE.enum('NonAppraisableAuctionItemType')
             ? R.omit(data, ['minEstimatedPrice', 'maxEstimatedPrice'])
             : data
         );
@@ -227,7 +227,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                 <Select {...field} label="類型" fullWidth readOnly={!canUpdate}>
                   {/* <MenuItem value={0}>(待定)</MenuItem> */}
                   {item.type === 0 && <MenuItem value={0}>(待定)</MenuItem>}
-                  {ITEM_TYPE_DATA.map((type) => (
+                  {ITEM_TYPE.data.map((type) => (
                     <MenuItem key={type.value} value={type.value}>
                       {type.message}
                     </MenuItem>
@@ -289,7 +289,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
           />
         </Grid>
 
-        {watch('type') === ITEM_TYPE_MAP['AppraisableAuctionItemType'] && (
+        {watch('type') === ITEM_TYPE.enum('AppraisableAuctionItemType') && (
           <>
             <Grid item xs={12} sm={6}>
               <Controller

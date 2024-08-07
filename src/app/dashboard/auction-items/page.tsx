@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
-import { AUCTION_ITEM_STATUS_MAP } from '@/api/backend/configs.data';
+import { AUCTION_ITEM_STATUS } from '@/api/backend/configs.data';
 import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import { Box } from '@mui/material';
@@ -29,7 +29,7 @@ const filterSchema = z.object({
       (v) => (typeof v === 'string' ? [v] : v),
       z.coerce
         .number()
-        .refine((v) => R.isIncludedIn(v, Object.values(AUCTION_ITEM_STATUS_MAP)))
+        .refine(R.isIncludedIn(AUCTION_ITEM_STATUS.data.map((item) => item.value)))
         .array()
     )
     .default([]),
@@ -70,15 +70,15 @@ async function Content({ searchParams }: PageProps) {
     GetAuctionItems({
       consignorID: filters.consignor,
       status: searchParams['pick-for-shipping']
-        ? [AUCTION_ITEM_STATUS_MAP.ClosedStatus]
+        ? [AUCTION_ITEM_STATUS.enum('ClosedStatus')]
         : filters.status.length
           ? filters.status
           : [
-              AUCTION_ITEM_STATUS_MAP.InitStatus,
-              AUCTION_ITEM_STATUS_MAP.StopBiddingStatus,
-              AUCTION_ITEM_STATUS_MAP.HighestBiddedStatus,
-              AUCTION_ITEM_STATUS_MAP.NotHighestBiddedStatus,
-              AUCTION_ITEM_STATUS_MAP.ClosedStatus,
+              AUCTION_ITEM_STATUS.enum('InitStatus'),
+              AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
+              AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
+              AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
+              AUCTION_ITEM_STATUS.enum('ClosedStatus'),
             ],
       limit: pagination[ROWS_PER_PAGE],
       offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],

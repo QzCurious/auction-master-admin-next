@@ -3,7 +3,7 @@
 import { useEffect, useReducer } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { AUCTION_ITEM_STATUS_MAP } from '@/api/backend/configs.data';
+import { AUCTION_ITEM_STATUS } from '@/api/backend/configs.data';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Checkbox, Link } from '@mui/material';
@@ -19,14 +19,15 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { differenceInDays, differenceInHours, intervalToDuration } from 'date-fns';
 import { useAtom } from 'jotai';
+import * as R from 'remeda';
 
 import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
+import BidPopover from './BidPopover';
 import EditDialog from './EditDialog';
 import { pickedItemIdsAtom } from './PickForShipping';
-import BidPopover from './BidPopover';
 
 interface AuctionItemTableProps {
   rows: AuctionItem[];
@@ -171,11 +172,11 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                         <HavePermissionsOnly permissionKeys={['UpdateAuctionItem']}>
                           <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
                         </HavePermissionsOnly>
-                        {[
-                          AUCTION_ITEM_STATUS_MAP.InitStatus,
-                          AUCTION_ITEM_STATUS_MAP.HighestBiddedStatus,
-                          AUCTION_ITEM_STATUS_MAP.NotHighestBiddedStatus,
-                        ].includes(row.status) && (
+                        {R.isIncludedIn(row.status, [
+                          AUCTION_ITEM_STATUS.enum('InitStatus'),
+                          AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
+                          AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
+                        ]) && (
                           <HavePermissionsOnly permissionKeys={['BidAuctionItem']}>
                             <BidPopover auctionItem={row} />
                           </HavePermissionsOnly>

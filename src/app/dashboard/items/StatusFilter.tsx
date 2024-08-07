@@ -1,11 +1,12 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ITEM_STATUS_DATA, ITEM_STATUS_MAP } from '@/api/backend/configs.data';
+import { ITEM_STATUS } from '@/api/backend/configs.data';
 import { type StatusCount } from '@/api/backend/items/GetItemsAndDetails';
 import { PAGE } from '@/static';
 import { StatusFlow } from '@/StatusFlow';
 import { Badge, Box, Chip, colors, MenuItem, Select, Typography } from '@mui/material';
+import * as R from 'remeda';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
@@ -14,26 +15,26 @@ const field = 'status';
 const side = 'admin';
 
 const options = [
-  ITEM_STATUS_DATA[0],
-  ITEM_STATUS_DATA[2],
-  ITEM_STATUS_DATA[3],
-  ITEM_STATUS_DATA[5],
-  ITEM_STATUS_DATA[6],
-  ITEM_STATUS_DATA[9],
-  ITEM_STATUS_DATA[10],
-  ITEM_STATUS_DATA[11],
-  ITEM_STATUS_DATA[12],
+  ITEM_STATUS.data[0],
+  ITEM_STATUS.data[2],
+  ITEM_STATUS.data[3],
+  ITEM_STATUS.data[5],
+  ITEM_STATUS.data[6],
+  ITEM_STATUS.data[9],
+  ITEM_STATUS.data[10],
+  ITEM_STATUS.data[11],
+  ITEM_STATUS.data[12],
 
-  ITEM_STATUS_DATA[1],
-  ITEM_STATUS_DATA[4],
-  ITEM_STATUS_DATA[7],
-  ITEM_STATUS_DATA[8],
-  ITEM_STATUS_DATA[13],
-  ITEM_STATUS_DATA[14],
-  ITEM_STATUS_DATA[15],
-  ITEM_STATUS_DATA[16],
-  ITEM_STATUS_DATA[17],
-  ITEM_STATUS_DATA[18],
+  ITEM_STATUS.data[1],
+  ITEM_STATUS.data[4],
+  ITEM_STATUS.data[7],
+  ITEM_STATUS.data[8],
+  ITEM_STATUS.data[13],
+  ITEM_STATUS.data[14],
+  ITEM_STATUS.data[15],
+  ITEM_STATUS.data[16],
+  ITEM_STATUS.data[17],
+  ITEM_STATUS.data[18],
 ] as const;
 // options: ITEM_STATUS_DATA.map((x) => {
 //   const step = StatusFlow.flow[x.key];
@@ -45,7 +46,7 @@ const options = [
 
 const showCountStatus = Object.values(StatusFlow.flow)
   .filter((v) => 'adjudicator' in v && v.adjudicator === side)
-  .map((v) => ITEM_STATUS_MAP[v.status]);
+  .map((v) => ITEM_STATUS.enum(v.status));
 
 interface StatusFilterProps {
   selected: Array<(typeof options)[number]['value']>;
@@ -108,11 +109,11 @@ export function StatusFilter({ selected, statusCount }: StatusFilterProps) {
               <MenuItem
                 key={value}
                 value={value}
-                sx={{ columnGap: 1, color: !showCountStatus.includes(value) ? colors.grey[600] : undefined }}
+                sx={{ columnGap: 1, color: R.isIncludedIn(value, showCountStatus) ? colors.grey[600] : undefined }}
                 title={`${message} ${value}`}
               >
                 {message}
-                {showCountStatus.includes(value) && (
+                {R.isIncludedIn(value, showCountStatus) && (
                   <Typography component="span" color={colors.grey[600]}>
                     ({statusCount[value] ?? 0})
                   </Typography>

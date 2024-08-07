@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { WORKER_STATUS_DATA, WORKER_TYPE_DATA } from '@/api/backend/configs.data';
+import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/configs.data';
 import { type Worker } from '@/api/backend/workers/GetWorker';
 import { UpdateWorker } from '@/api/backend/workers/UpdateWorker';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -129,7 +129,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
               <FormControl fullWidth error={!!fieldState.error}>
                 <InputLabel>類型</InputLabel>
                 <Select {...field} label="類型" fullWidth readOnly={!canUpdate}>
-                  {WORKER_TYPE_DATA.map((type) => (
+                  {WORKER_TYPE.data.map((type) => (
                     <MenuItem key={type.value} value={type.value}>
                       {type.message}
                     </MenuItem>
@@ -266,7 +266,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
               <FormControl fullWidth error={!!fieldState.error}>
                 <InputLabel>狀態</InputLabel>
                 <Select {...field} label="狀態" fullWidth readOnly={!canUpdate}>
-                  {WORKER_STATUS_DATA.map((type) => (
+                  {WORKER_STATUS.data.map((type) => (
                     <MenuItem key={type.value} value={type.value}>
                       {type.message}
                     </MenuItem>

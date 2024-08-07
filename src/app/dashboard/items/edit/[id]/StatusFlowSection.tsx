@@ -2,13 +2,7 @@
 
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import {
-  ITEM_STATUS_DATA,
-  ITEM_STATUS_KEY_MAP,
-  ITEM_STATUS_MAP,
-  ITEM_STATUS_MESSAGE_MAP,
-  ITEM_TYPE_KEY_MAP,
-} from '@/api/backend/configs.data';
+import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/configs.data';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { ItemAppraisalReview } from '@/api/backend/items/ItemAppraisalReview';
@@ -87,11 +81,11 @@ export default function StatusFlowSection({ item }: { item: Item }) {
               <Select
                 label="狀態"
                 size="small"
-                renderValue={(v) => <Chip label={ITEM_STATUS_DATA.find(({ value }) => value === v)?.message} />}
+                renderValue={(v) => <Chip label={ITEM_STATUS.get('value', v).message} />}
                 value={status}
                 onChange={(e) => setStatus(e.target.value as typeof status)}
               >
-                {ITEM_STATUS_DATA.map((type) => (
+                {ITEM_STATUS.data.map((type) => (
                   <MenuItem key={type.value} value={type.value} title={`${type.key} ${type.value}`}>
                     {type.message}
                   </MenuItem>
@@ -292,19 +286,19 @@ function StatusFlowUI({ item }: { item: Item }) {
     BiddingStatus: <NotImplemented />,
   });
 
-  const path = StatusFlow.flowPath(ITEM_STATUS_KEY_MAP[item.status], item.type ? ITEM_TYPE_KEY_MAP[item.type] : null);
+  const path = StatusFlow.flowPath(ITEM_STATUS.enum(item.status), item.type ? ITEM_TYPE.enum(item.type) : null);
 
   const result = path.map((status) => {
     const step = StatusFlow.flow[status];
-    const active = ITEM_STATUS_MAP[step.status] === item.status;
-    const time = item.pastStatuses[ITEM_STATUS_MAP[step.status]];
+    const active = ITEM_STATUS.enum(step.status) === item.status;
+    const time = item.pastStatuses[ITEM_STATUS.enum(step.status)];
     const action = status in actionMap ? actionMap[status as keyof typeof actionMap] : null;
 
     return (
       <StatusStep
         key={step.status}
         _statusKey={status}
-        text={ITEM_STATUS_MESSAGE_MAP[step.status]}
+        text={ITEM_STATUS.get('key', step.status).message}
         time={time ? format(time, DATE_TIME_FORMAT) : undefined}
         active={active}
       >

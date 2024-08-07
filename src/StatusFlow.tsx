@@ -1,18 +1,18 @@
 import type React from 'react';
-import { type ITEM_STATUS_MAP, type ITEM_TYPE_MAP } from '@/api/backend/configs.data';
+import { ITEM_STATUS, type ITEM_TYPE } from '@/api/backend/configs.data';
 
 type Adjudicator = 'admin' | 'consignor';
 
 type Step = {
-  allowTypes?: Array<keyof typeof ITEM_TYPE_MAP>;
-  status: keyof typeof ITEM_STATUS_MAP;
+  allowTypes?: Array<ITEM_TYPE['key']>;
+  status: ITEM_STATUS['key'];
 } & (
   | {
       nexts: [];
       adjudicator?: never;
     }
   | {
-      nexts: [keyof typeof ITEM_STATUS_MAP, ...Array<keyof typeof ITEM_STATUS_MAP>];
+      nexts: [ITEM_STATUS['key'], ...Array<ITEM_STATUS['key']>];
       adjudicator: Adjudicator;
     }
 );
@@ -184,7 +184,7 @@ export class StatusFlow {
       status: 'CompanyReclaimedStatus',
       nexts: [],
     },
-  } satisfies Record<keyof typeof ITEM_STATUS_MAP, Step>;
+  } satisfies Record<ITEM_STATUS['key'], Step>;
 
   static makeActionMap<T extends Adjudicator>(
     adjudicator: T,
@@ -199,7 +199,7 @@ export class StatusFlow {
     return actionMap;
   }
 
-  static flowPath(to: keyof typeof ITEM_STATUS_MAP, type: null | keyof typeof ITEM_TYPE_MAP) {
+  static flowPath(to: ITEM_STATUS['key'], type: null | ITEM_TYPE['key']) {
     const from = 'SubmitAppraisalStatus';
     const path = bfs(
       Object.values(this.flow).map((v) => ({

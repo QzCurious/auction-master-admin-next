@@ -1,6 +1,6 @@
 'use client';
 
-import { ITEM_STATUS_MAP, ITEM_STATUS_MESSAGE_MAP } from '@/api/backend/configs.data';
+import { ITEM_STATUS } from '@/api/backend/configs.data';
 import { StatusFlow } from '@/StatusFlow';
 import {
   Background,
@@ -31,14 +31,14 @@ function generateGraph(): GraphData {
 
   const getNode = (id: string, depth: number): Node => {
     if (!nodeMap.has(id)) {
-      const statusKey = id as keyof typeof ITEM_STATUS_MAP;
+      const statusKey = id as ITEM_STATUS['key'];
       const node: Node = {
         id,
         data: {
           label: (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ fontWeight: 'bold' }}>
-                {ITEM_STATUS_MESSAGE_MAP[statusKey]} <span>({ITEM_STATUS_MAP[statusKey]})</span>
+                {ITEM_STATUS.get('key', statusKey).message} <span>({ITEM_STATUS.enum(statusKey)})</span>
               </div>
               {
                 // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions

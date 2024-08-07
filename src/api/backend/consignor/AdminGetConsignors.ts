@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type CONSIGNOR_STATUS_DATA } from '../configs.data';
+import { type CONSIGNOR_STATUS } from '../configs.data';
 
 const ReqSchema = z.object({
   fuzzyNickname: z.string().optional(),
@@ -26,7 +26,7 @@ export interface Consignor {
   phone: string;
   bankCode: string;
   bankAccount: string;
-  status: (typeof CONSIGNOR_STATUS_DATA)[number]['value'];
+  status: CONSIGNOR_STATUS['value'];
   createdAt: string;
   updatedAt: string;
 }

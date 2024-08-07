@@ -7,8 +7,8 @@ import { CreateAdmin } from '@/api/backend/admins/CreateAdmin';
 import { DeleteRoleForAdmin } from '@/api/backend/admins/DeleteRoleForAdmin';
 import { type Admin } from '@/api/backend/admins/GetAdmin';
 import { UpdateAdmin } from '@/api/backend/admins/UpdateAdmin';
-import { ADMIN_STATUS_DATA } from '@/api/backend/configs.data';
-import { Role } from '@/api/backend/rbac/GetRoles';
+import { ADMIN_STATUS } from '@/api/backend/configs.data';
+import { type Role } from '@/api/backend/rbac/GetRoles';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -190,13 +190,13 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                           <Chip
                             key={selected}
-                            label={ADMIN_STATUS_DATA.find(({ value }) => value === selected)?.message}
+                            label={ADMIN_STATUS.get('value', selected as ADMIN_STATUS['value']).message}
                             color={statusColor(selected as never)}
                           />
                         </Box>
                       )}
                     >
-                      {ADMIN_STATUS_DATA.map((status) => (
+                      {ADMIN_STATUS.data.map((status) => (
                         <MenuItem key={status.value} value={status.value}>
                           {status.message}
                         </MenuItem>

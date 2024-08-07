@@ -6,18 +6,18 @@ import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
-import { SHIPPING_TYPE_MAP } from '../configs.data';
+import { SHIPPING_TYPE } from '../configs.data';
 
 const ReqSchema = z.discriminatedUnion('type', [
   z.object({
-    type: z.literal(SHIPPING_TYPE_MAP.AddressType),
+    type: z.literal(SHIPPING_TYPE.enum('AddressType')),
     auctionItemIDs: z.array(z.number()),
     address: z.string(),
     recipientName: z.string(),
     phone: z.string(),
   }),
   z.object({
-    type: z.literal(SHIPPING_TYPE_MAP.SevenElevenType),
+    type: z.literal(SHIPPING_TYPE.enum('SevenElevenType')),
     auctionItemIDs: z.array(z.number()),
     storeNumber: z.string(),
     storeName: z.string(),
@@ -25,7 +25,7 @@ const ReqSchema = z.discriminatedUnion('type', [
     phone: z.string(),
   }),
   z.object({
-    type: z.literal(SHIPPING_TYPE_MAP.FamilyType),
+    type: z.literal(SHIPPING_TYPE.enum('FamilyType')),
     auctionItemIDs: z.array(z.number()),
     storeNumber: z.string(),
     storeName: z.string(),

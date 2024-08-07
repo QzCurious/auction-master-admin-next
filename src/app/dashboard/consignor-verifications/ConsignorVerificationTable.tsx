@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useState, useTransition } from 'react';
-import { CONSIGNOR_VERIFICATION_STATUS_DATA } from '@/api/backend/configs.data';
+import { CONSIGNOR_VERIFICATION_STATUS } from '@/api/backend/configs.data';
 import { type ConsignorVerification } from '@/api/backend/consignor/AdminGetConsignorVerifications';
 import { HandleConsignorVerification } from '@/api/backend/consignor/HandleConsignorVerification';
 import { DATE_FORMAT } from '@/static';
@@ -78,7 +78,7 @@ export function ConsignorVerificationTable({ rows, count }: ConsignorVerificatio
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
-                        <span>{CONSIGNOR_VERIFICATION_STATUS_DATA.find((x) => x.value === row.status)?.message}</span>
+                        <span>{CONSIGNOR_VERIFICATION_STATUS.get('value', row.status).message}</span>
                       </Stack>
                     </TableCell>
                     <TableCell>

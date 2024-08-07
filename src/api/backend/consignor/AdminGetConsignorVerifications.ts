@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
+import { type CONSIGNOR_VERIFICATION_STATUS } from '../configs.data';
 
 const ReqSchema = z.object({
   account: z.string().optional(),
@@ -29,7 +30,7 @@ export interface ConsignorVerification {
   phone: string;
   bankCode: string;
   bankAccount: string;
-  status: number;
+  status: CONSIGNOR_VERIFICATION_STATUS['value'];
   createdAt: string;
 }
 

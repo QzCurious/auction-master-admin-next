@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { DeleteAdmin } from '@/api/backend/admins/DeleteAdmin';
 import { type Admin } from '@/api/backend/admins/GetAdmins';
-import { ADMIN_STATUS_DATA } from '@/api/backend/configs.data';
+import { ADMIN_STATUS } from '@/api/backend/configs.data';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Chip, TableContainer } from '@mui/material';
@@ -97,10 +97,7 @@ export function AdminTable({ rows, count }: AdminTableProps): React.JSX.Element 
                       </Stack>
                     </TableCell>
                     <TableCell>
-                      <Chip
-                        label={ADMIN_STATUS_DATA.find((x) => x.value === row.status)?.message}
-                        color={statusColor(row.status)}
-                      />
+                      <Chip label={ADMIN_STATUS.get('value', row.status).message} color={statusColor(row.status)} />
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>

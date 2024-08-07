@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
+import { type WORKER_TYPE } from '../configs.data';
 
 export const ReqSchema = z.object({
   type: z.string().array().optional(),
@@ -15,7 +16,7 @@ export interface Worker {
   id: number;
   loggedIn: boolean;
   loggedInName: string;
-  type: string;
+  type: WORKER_TYPE['value'];
   url: string;
   account: string;
   name: string;

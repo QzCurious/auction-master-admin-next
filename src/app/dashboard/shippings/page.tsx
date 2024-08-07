@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { SHIPPING_STATUS_MAP } from '@/api/backend/configs.data';
+import { SHIPPING_STATUS } from '@/api/backend/configs.data';
 import { GetShippings } from '@/api/backend/shippings/GetShippings';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import { Box } from '@mui/material';
@@ -24,7 +24,7 @@ const filterSchema = z.object({
       (v) => (typeof v === 'string' ? [v] : v),
       z.coerce
         .number()
-        .refine((v) => R.isIncludedIn(v, Object.values(SHIPPING_STATUS_MAP)))
+        .refine(R.isIncludedIn(SHIPPING_STATUS.data.map((item) => item.value)))
         .array()
     )
     .default([]),
@@ -65,7 +65,7 @@ async function Content({ searchParams }: PageProps) {
     GetShippings({
       status: filters.status.length
         ? filters.status
-        : [SHIPPING_STATUS_MAP.SubmitAppraisalStatus, SHIPPING_STATUS_MAP.ProcessingStatus],
+        : [SHIPPING_STATUS.enum('SubmitAppraisalStatus'), SHIPPING_STATUS.enum('ProcessingStatus')],
       limit: pagination[ROWS_PER_PAGE],
       offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
     }),

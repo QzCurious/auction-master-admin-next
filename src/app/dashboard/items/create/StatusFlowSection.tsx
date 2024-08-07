@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ITEM_STATUS_DATA } from '@/api/backend/configs.data';
+import { ITEM_STATUS } from '@/api/backend/configs.data';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -52,11 +52,11 @@ export default function StatusFlowSection({ item }: { item: Item }) {
               <Select
                 label="狀態"
                 size="small"
-                renderValue={(v) => <Chip label={ITEM_STATUS_DATA.find(({ value }) => value === v)?.message} />}
+                renderValue={(v) => <Chip label={ITEM_STATUS.get('value', v).message} />}
                 value={status}
                 onChange={(e) => setStatus(e.target.value as typeof status)}
               >
-                {ITEM_STATUS_DATA.map((type) => (
+                {ITEM_STATUS.data.map((type) => (
                   <MenuItem key={type.value} value={type.value} title={`${type.key} ${type.value}`}>
                     {type.message}
                   </MenuItem>

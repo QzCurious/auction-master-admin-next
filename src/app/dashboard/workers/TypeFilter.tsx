@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { WORKER_TYPE_DATA } from '@/api/backend/configs.data';
+import { WORKER_TYPE } from '@/api/backend/configs.data';
 import { PAGE } from '@/static';
 import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
 
@@ -9,7 +9,7 @@ import { FilterPopover } from '@/components/FilterPopover';
 
 const field = 'type';
 
-const options = [WORKER_TYPE_DATA[0], WORKER_TYPE_DATA[1]] as const;
+const options = [WORKER_TYPE.data[0], WORKER_TYPE.data[1]] as const;
 
 interface TypeFilterProps {
   selected: Array<(typeof options)[number]['value']>;

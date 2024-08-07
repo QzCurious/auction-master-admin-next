@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { CONSIGNOR_VERIFICATION_STATUS_MAP } from '@/api/backend/configs.data';
+import { CONSIGNOR_VERIFICATION_STATUS } from '@/api/backend/configs.data';
 import { AdminGetConsignorVerifications } from '@/api/backend/consignor/AdminGetConsignorVerifications';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Stack from '@mui/material/Stack';
@@ -37,7 +37,7 @@ async function Table({ searchParams }: PageProps) {
   const pagination = PaginationSchema.parse(searchParams);
   const [consignorVerificationsRes] = await Promise.all([
     AdminGetConsignorVerifications({
-      status: CONSIGNOR_VERIFICATION_STATUS_MAP.AwaitingVerificationCompletionStatus,
+      status: CONSIGNOR_VERIFICATION_STATUS.enum('AwaitingVerificationCompletionStatus'),
       limit: pagination[ROWS_PER_PAGE],
       offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
     }),

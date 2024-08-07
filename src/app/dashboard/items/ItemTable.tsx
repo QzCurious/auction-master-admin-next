@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ITEM_STATUS_DATA } from '@/api/backend/configs.data';
+import { ITEM_STATUS } from '@/api/backend/configs.data';
 import { type Item } from '@/api/backend/items/GetItemsAndDetails';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Chip, Grid } from '@mui/material';
@@ -79,7 +79,7 @@ export function ItemTable({ rows, count }: ItemTableProps) {
                     {row.name}
                   </Typography>
 
-                  <Chip label={ITEM_STATUS_DATA.find(({ value }) => value === row.status)?.message} size="small" />
+                  <Chip label={ITEM_STATUS.get('value', row.status).message} size="small" />
                 </Stack>
               </Box>
             </Card>

@@ -1,18 +1,19 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
+import * as R from 'remeda';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { ITEM_TYPE_DATA } from '../configs.data';
+import { ITEM_TYPE } from '../configs.data';
 
 const ReqSchema = z.object({
   consignorID: z.number().optional(),
   type: z
     .number()
-    .refine((v) => v === 0 || ITEM_TYPE_DATA.find((item) => item.value === v))
+    .refine(R.isIncludedIn([0, ...ITEM_TYPE.data.map((item) => item.value)] as const))
     .optional(),
   name: z.string().min(1).optional(),
   description: z.string().nullable().optional(),

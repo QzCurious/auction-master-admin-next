@@ -1,10 +1,10 @@
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { type WORKER_STATUS_DATA, type WORKER_TYPE_DATA } from '../configs.data';
+import { type WORKER_STATUS, type WORKER_TYPE } from '../configs.data';
 
 export interface Worker {
   id: number;
-  type: (typeof WORKER_TYPE_DATA)[number]['value'];
+  type: WORKER_TYPE['value'];
   url: string;
   account: string;
   name: string;
@@ -15,7 +15,7 @@ export interface Worker {
   simCardNumber: string;
   activationAt: string;
   remark: string;
-  status: (typeof WORKER_STATUS_DATA)[number]['value'];
+  status: WORKER_STATUS['value'];
   createdAt: string;
   updatedAt: string;
 }

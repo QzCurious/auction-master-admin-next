@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { WORKER_TYPE_DATA } from '@/api/backend/configs.data';
+import { WORKER_TYPE } from '@/api/backend/configs.data';
 import { CreateWorker } from '@/api/backend/workers/CreateWorker';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -76,7 +76,7 @@ export default function CreateDialog() {
                   <FormControl fullWidth error={!!fieldState.error}>
                     <InputLabel>類型</InputLabel>
                     <Select {...field} label="類型" fullWidth>
-                      {WORKER_TYPE_DATA.map((type) => (
+                      {WORKER_TYPE.data.map((type) => (
                         <MenuItem key={type.value} value={type.value}>
                           {type.message}
                         </MenuItem>
