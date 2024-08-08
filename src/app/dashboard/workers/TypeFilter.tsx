@@ -10,6 +10,7 @@ import { FilterPopover } from '@/components/FilterPopover';
 const field = 'type';
 
 const options = [WORKER_TYPE.data[0], WORKER_TYPE.data[1]] as const;
+options.length satisfies typeof WORKER_TYPE.data.length;
 
 interface TypeFilterProps {
   selected: Array<(typeof options)[number]['value']>;

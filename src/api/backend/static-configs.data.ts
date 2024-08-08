@@ -311,7 +311,7 @@ function createMapFromTuple<T extends Record<PropertyKey, any>, By extends keyof
 }
 
 type MapperTupleField = 'key' | 'value' | 'message';
-function createMapper<T extends Record<MapperTupleField, any>>(data: readonly T[]) {
+function createMapper<T extends Readonly<Array<Record<MapperTupleField, any>>>>(data: T) {
   const indexByKey = createMapFromTuple(data, 'key');
   const indexByValue = createMapFromTuple(data, 'value');
   const indexByMessage = createMapFromTuple(data, 'message');
@@ -336,6 +336,7 @@ function createMapper<T extends Record<MapperTupleField, any>>(data: readonly T[
     return indexByMessage[value] as any;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents, @typescript-eslint/no-duplicate-type-constituents
   function getEnum<K extends keyof typeof indexByKey | keyof typeof indexByValue>(
     index: K
   ): K extends keyof typeof indexByKey ? (typeof indexByKey)[K]['value'] : (typeof indexByValue)[K]['key'] {

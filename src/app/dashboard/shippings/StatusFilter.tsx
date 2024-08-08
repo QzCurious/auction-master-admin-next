@@ -10,6 +10,7 @@ import { FilterPopover } from '@/components/FilterPopover';
 const field = 'status';
 
 const options = [SHIPPING_STATUS.data[0], SHIPPING_STATUS.data[1], SHIPPING_STATUS.data[2]] as const;
+options.length satisfies typeof SHIPPING_STATUS.data.length;
 
 interface StatusFilterProps {
   selected: Array<(typeof options)[number]['value']>;

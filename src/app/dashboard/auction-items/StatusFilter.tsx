@@ -18,6 +18,7 @@ const options = [
   AUCTION_ITEM_STATUS.data[5],
   AUCTION_ITEM_STATUS.data[6],
 ] as const;
+options.length satisfies typeof AUCTION_ITEM_STATUS.data.length;
 
 interface StatusFilterProps {
   selected: Array<(typeof options)[number]['value']>;

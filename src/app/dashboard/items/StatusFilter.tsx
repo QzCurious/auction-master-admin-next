@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { type StatusCount } from '@/api/backend/items/GetItemsAndDetails';
+import { ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { PAGE } from '@/static';
 import { StatusFlow } from '@/StatusFlow';
 import { Badge, Box, Chip, colors, MenuItem, Select, Typography } from '@mui/material';
@@ -36,6 +36,8 @@ const options = [
   ITEM_STATUS.data[17],
   ITEM_STATUS.data[18],
 ] as const;
+options.length satisfies typeof ITEM_STATUS.data.length;
+
 // options: ITEM_STATUS_DATA.map((x) => {
 //   const step = StatusFlow.flow[x.key];
 //   return {
