@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { GetBackendConfigs } from '@/api/backend/GetBackendConfigs';
+import { GetBackendConfigs } from '@/api/backend/GetConfigs';
 import { toPercent } from '@/static';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';

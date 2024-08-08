@@ -1,4 +1,4 @@
-import { CONSIGNOR_STATUS } from '@/api/backend/configs.data';
+import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
 
 export const statusColor = (status: CONSIGNOR_STATUS['value']) => {
   switch (status) {

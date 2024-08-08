@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { SHIPPING_STATUS } from '@/api/backend/configs.data';
+import { SHIPPING_STATUS } from '@/api/backend/static-configs.data';
 import { GetShippings } from '@/api/backend/shippings/GetShippings';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import { Box } from '@mui/material';

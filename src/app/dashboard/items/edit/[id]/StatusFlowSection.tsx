@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/configs.data';
+import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/static-configs.data';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { ItemAppraisalReview } from '@/api/backend/items/ItemAppraisalReview';

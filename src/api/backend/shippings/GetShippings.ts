@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type SHIPPING_STATUS, type SHIPPING_TYPE } from '../configs.data';
+import { type SHIPPING_STATUS, type SHIPPING_TYPE } from '../static-configs.data';
 
 const ReqSchema = z.object({
   status: z.coerce.number().array().optional(),

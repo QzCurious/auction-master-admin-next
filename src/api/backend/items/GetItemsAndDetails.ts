@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type ITEM_STATUS, type ITEM_TYPE } from '../configs.data';
+import { type ITEM_STATUS, type ITEM_TYPE } from '../static-configs.data';
 
 export const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),

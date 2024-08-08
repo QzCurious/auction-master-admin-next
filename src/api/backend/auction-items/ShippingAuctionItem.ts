@@ -6,7 +6,7 @@ import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
-import { SHIPPING_TYPE } from '../configs.data';
+import { SHIPPING_TYPE } from '../static-configs.data';
 
 const ReqSchema = z.discriminatedUnion('type', [
   z.object({

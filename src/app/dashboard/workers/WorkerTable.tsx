@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react';
 import Link from 'next/link';
-import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/configs.data';
+import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/static-configs.data';
 import { type Worker } from '@/api/backend/workers/GetWorkers';
 import { ToggleActivateWorker } from '@/api/backend/workers/ToggleActivateWorker';
 import EditIcon from '@mui/icons-material/Edit';

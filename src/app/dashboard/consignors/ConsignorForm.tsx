@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { CONSIGNOR_STATUS } from '@/api/backend/configs.data';
+import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
 import { zodResolver } from '@hookform/resolvers/zod';

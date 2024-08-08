@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type WORKER_TYPE } from '../configs.data';
+import { type WORKER_TYPE } from '../static-configs.data';
 
 export const ReqSchema = z.object({
   type: z.string().array().optional(),

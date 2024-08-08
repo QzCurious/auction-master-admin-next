@@ -1,6 +1,6 @@
 'use client';
 
-import { SHIPPING_STATUS, SHIPPING_TYPE } from '@/api/backend/configs.data';
+import { SHIPPING_STATUS, SHIPPING_TYPE } from '@/api/backend/static-configs.data';
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';

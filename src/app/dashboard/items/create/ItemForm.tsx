@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { useRef } from 'react';
-import { ITEM_TYPE } from '@/api/backend/configs.data';
+import { ITEM_TYPE } from '@/api/backend/static-configs.data';
 import { zodResolver } from '@hookform/resolvers/zod';
 import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
 import { Button, Grid, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';

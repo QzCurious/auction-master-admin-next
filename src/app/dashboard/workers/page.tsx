@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/configs.data';
+import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/static-configs.data';
 import { GetWorkers } from '@/api/backend/workers/GetWorkers';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Stack from '@mui/material/Stack';

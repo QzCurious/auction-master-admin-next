@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ITEM_STATUS } from '@/api/backend/configs.data';
+import { ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import MoreVertIcon from '@mui/icons-material/MoreVert';

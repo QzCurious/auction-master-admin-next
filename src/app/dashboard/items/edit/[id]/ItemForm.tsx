@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/configs.data';
+import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/static-configs.data';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';

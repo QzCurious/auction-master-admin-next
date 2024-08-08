@@ -2,7 +2,7 @@
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { type CONSIGNOR_STATUS } from '../configs.data';
+import { type CONSIGNOR_STATUS } from '../static-configs.data';
 
 export interface Consignor {
   id: number;

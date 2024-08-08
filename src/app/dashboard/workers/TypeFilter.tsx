@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { WORKER_TYPE } from '@/api/backend/configs.data';
+import { WORKER_TYPE } from '@/api/backend/static-configs.data';
 import { PAGE } from '@/static';
 import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
 

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { CONSIGNOR_VERIFICATION_STATUS } from '@/api/backend/configs.data';
+import { CONSIGNOR_VERIFICATION_STATUS } from '@/api/backend/static-configs.data';
 import { AdminGetConsignorVerifications } from '@/api/backend/consignor/AdminGetConsignorVerifications';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Stack from '@mui/material/Stack';

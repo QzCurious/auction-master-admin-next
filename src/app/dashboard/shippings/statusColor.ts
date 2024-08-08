@@ -1,4 +1,4 @@
-import { SHIPPING_STATUS } from '@/api/backend/configs.data';
+import { SHIPPING_STATUS } from '@/api/backend/static-configs.data';
 
 export const statusColor = (status: SHIPPING_STATUS['value']) => {
   switch (status) {

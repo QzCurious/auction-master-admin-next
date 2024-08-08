@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ITEM_STATUS } from '@/api/backend/configs.data';
+import { ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { type Item } from '@/api/backend/items/GetItemsAndDetails';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Chip, Grid } from '@mui/material';

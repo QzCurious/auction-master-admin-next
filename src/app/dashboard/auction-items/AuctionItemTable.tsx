@@ -3,7 +3,7 @@
 import { useEffect, useReducer } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { AUCTION_ITEM_STATUS } from '@/api/backend/configs.data';
+import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Checkbox, Link } from '@mui/material';

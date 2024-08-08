@@ -1,6 +1,6 @@
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { type WORKER_STATUS, type WORKER_TYPE } from '../configs.data';
+import { type WORKER_STATUS, type WORKER_TYPE } from '../static-configs.data';
 
 export interface Worker {
   id: number;

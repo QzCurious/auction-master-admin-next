@@ -7,7 +7,7 @@ import { CreateAdmin } from '@/api/backend/admins/CreateAdmin';
 import { DeleteRoleForAdmin } from '@/api/backend/admins/DeleteRoleForAdmin';
 import { type Admin } from '@/api/backend/admins/GetAdmin';
 import { UpdateAdmin } from '@/api/backend/admins/UpdateAdmin';
-import { ADMIN_STATUS } from '@/api/backend/configs.data';
+import { ADMIN_STATUS } from '@/api/backend/static-configs.data';
 import { type Role } from '@/api/backend/rbac/GetRoles';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';

@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type CONSIGNOR_VERIFICATION_STATUS } from '../configs.data';
+import { type CONSIGNOR_VERIFICATION_STATUS } from '../static-configs.data';
 
 const ReqSchema = z.object({
   account: z.string().optional(),

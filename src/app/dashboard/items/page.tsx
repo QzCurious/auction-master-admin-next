@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ITEM_STATUS } from '@/api/backend/configs.data';
+import { ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { GetItemsAndDetails } from '@/api/backend/items/GetItemsAndDetails';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Stack from '@mui/material/Stack';

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
-import { AUCTION_ITEM_STATUS } from '@/api/backend/configs.data';
+import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import { Box } from '@mui/material';

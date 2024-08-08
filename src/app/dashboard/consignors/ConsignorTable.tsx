@@ -1,6 +1,6 @@
 'use client';
 
-import { CONSIGNOR_STATUS } from '@/api/backend/configs.data';
+import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import EditIcon from '@mui/icons-material/Edit';
 import { Chip, TableContainer } from '@mui/material';

@@ -1,5 +1,5 @@
 import type React from 'react';
-import { type ITEM_STATUS, type ITEM_TYPE } from '@/api/backend/configs.data';
+import { type ITEM_STATUS, type ITEM_TYPE } from '@/api/backend/static-configs.data';
 
 type Adjudicator = 'admin' | 'consignor';
 

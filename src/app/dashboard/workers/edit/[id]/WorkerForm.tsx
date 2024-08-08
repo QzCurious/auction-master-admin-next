@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/configs.data';
+import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/static-configs.data';
 import { type Worker } from '@/api/backend/workers/GetWorker';
 import { UpdateWorker } from '@/api/backend/workers/UpdateWorker';
 import { zodResolver } from '@hookform/resolvers/zod';

@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItem, type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
-import { SHIPPING_TYPE } from '@/api/backend/configs.data';
+import { SHIPPING_TYPE } from '@/api/backend/static-configs.data';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Avatar,

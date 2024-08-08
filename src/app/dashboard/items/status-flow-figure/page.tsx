@@ -1,6 +1,6 @@
 'use client';
 
-import { ITEM_STATUS } from '@/api/backend/configs.data';
+import { ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { StatusFlow } from '@/StatusFlow';
 import {
   Background,
