@@ -299,13 +299,13 @@ type MapFromTuple<T extends readonly any[], K extends keyof T[number]> = {
   [k in T[number] extends { [t in K]: any } ? T[number][K] : never]: Extract<T[number], { [t in K]: k }>;
 };
 
-function createMapFromTuple<T extends Record<PropertyKey, any>, By extends keyof T>(
-  tuple: readonly T[],
+function createMapFromTuple<T extends Readonly<Array<Record<PropertyKey, any>>>, By extends keyof T[number]>(
+  tuple: T,
   by: By
-): MapFromTuple<T[], By> {
+): MapFromTuple<T, By> {
   return tuple.reduce<any>((acc, cur) => {
     const key = cur[by];
-    (acc as Record<T[By], T>)[key] = cur;
+    (acc as Record<By, T>)[key] = cur;
     return acc;
   }, {});
 }
@@ -336,7 +336,6 @@ function createMapper<T extends Readonly<Array<Record<MapperTupleField, any>>>>(
     return indexByMessage[value] as any;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents, @typescript-eslint/no-duplicate-type-constituents
   function getEnum<K extends keyof typeof indexByKey | keyof typeof indexByValue>(
     index: K
   ): K extends keyof typeof indexByKey ? (typeof indexByKey)[K]['value'] : (typeof indexByValue)[K]['key'] {
