@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useReducer } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
@@ -17,11 +16,11 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { differenceInDays, differenceInHours, intervalToDuration } from 'date-fns';
 import { useAtom } from 'jotai';
 import * as R from 'remeda';
 
 import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { CountdownTime } from '@/components/CountdownTime';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
@@ -54,7 +53,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                   <TableCell>出品帳號</TableCell>
                   <TableCell>盯標帳號</TableCell>
                   <TableCell>出價資訊</TableCell>
-                  <TableCell>現在金額</TableCell>
+                  <TableCell>當前金額</TableCell>
                   <TableCell>期望金額</TableCell>
                   <TableCell>系統出價</TableCell>
                   <TableCell>結標倒數</TableCell>
@@ -194,34 +193,4 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
       <SearchParamsPagination count={count} />
     </Card>
   );
-}
-
-function CountdownTime({ until }: { until: Date }) {
-  const now = new Date();
-  const shouldCountdown = until > now;
-  const forceRender = useReducer(() => ({}), {})[1];
-
-  useEffect(() => {
-    if (!shouldCountdown) return;
-    const interval = setInterval(() => {
-      forceRender();
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [forceRender, shouldCountdown]);
-
-  if (!shouldCountdown) {
-    return '已結束';
-  }
-
-  const remain = intervalToDuration({ start: now, end: until });
-
-  if (differenceInDays(until, now) > 0) {
-    return `${remain.days} 天 ${remain.hours ?? 0} 時`;
-  }
-
-  if (differenceInHours(until, now) > 0) {
-    return `${remain.hours} 時 ${remain.minutes ?? 0} 分`;
-  }
-
-  return `${remain.minutes} 分 ${remain.seconds ?? 0} 秒`;
 }
