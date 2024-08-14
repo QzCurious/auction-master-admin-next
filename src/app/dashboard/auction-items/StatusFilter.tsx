@@ -17,6 +17,9 @@ const options = [
   AUCTION_ITEM_STATUS.data[4],
   AUCTION_ITEM_STATUS.data[5],
   AUCTION_ITEM_STATUS.data[6],
+  AUCTION_ITEM_STATUS.data[7],
+  AUCTION_ITEM_STATUS.data[8],
+  AUCTION_ITEM_STATUS.data[9],
 ] as const;
 options.length satisfies typeof AUCTION_ITEM_STATUS.data.length;
 
