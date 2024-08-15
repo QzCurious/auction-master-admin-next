@@ -170,17 +170,19 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
-                        <HavePermissionsOnly permissionKeys={['UpdateAuctionItem']}>
-                          <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
-                        </HavePermissionsOnly>
                         {R.isIncludedIn(row.status, [
                           AUCTION_ITEM_STATUS.enum('InitStatus'),
                           AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
                           AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
                         ]) && (
-                          <HavePermissionsOnly permissionKeys={['BidAuctionItem']}>
-                            <BidPopover auctionItem={row} />
-                          </HavePermissionsOnly>
+                          <>
+                            <HavePermissionsOnly permissionKeys={['UpdateAuctionItem']}>
+                              <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
+                            </HavePermissionsOnly>
+                            <HavePermissionsOnly permissionKeys={['BidAuctionItem']}>
+                              <BidPopover auctionItem={row} />
+                            </HavePermissionsOnly>
+                          </>
                         )}
                       </Stack>
                     </TableCell>
