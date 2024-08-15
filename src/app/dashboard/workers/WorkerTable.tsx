@@ -4,9 +4,24 @@ import { useTransition } from 'react';
 import Link from 'next/link';
 import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/static-configs.data';
 import { type Worker } from '@/api/backend/workers/GetWorkers';
+import { SetWorkerCookie } from '@/api/backend/workers/SetWorkerCookie';
 import { ToggleActivateWorker } from '@/api/backend/workers/ToggleActivateWorker';
+import CookieOutlinedIcon from '@mui/icons-material/CookieOutlined';
 import EditIcon from '@mui/icons-material/Edit';
-import { Chip, Divider, MenuItem, Select, Switch, TableContainer } from '@mui/material';
+import {
+  Button,
+  Chip,
+  Divider,
+  FormControl,
+  FormHelperText,
+  MenuItem,
+  Popover,
+  Select,
+  Switch,
+  TableContainer,
+  TextField,
+  Typography,
+} from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
@@ -16,6 +31,9 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
+import { enqueueSnackbar } from 'notistack';
+import { Controller, useForm } from 'react-hook-form';
 
 import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
@@ -49,7 +67,43 @@ export function WorkerTable({ rows, count }: WorkerTableProps) {
               {rows.length === 0 && <EmptyTableRow />}
               {rows.map((row) => (
                 <TableRow hover key={row.id}>
-                  <TableCell>{row.loggedIn ? '已登入' : '未登入'}</TableCell>
+                  <TableCell>
+                    <Stack direction="row" alignItems="center">
+                      {row.loggedIn ? (
+                        <div>
+                          <Box
+                            sx={{
+                              display: 'inline-block',
+                              width: '10px',
+                              height: '10px',
+                              borderRadius: '50%',
+                              backgroundColor:
+                                row.loggedInName === row.name
+                                  ? 'var(--mui-palette-success-main)'
+                                  : 'var(--mui-palette-warning-main)',
+                              mr: 0.5,
+                            }}
+                          />
+                          已登入
+                        </div>
+                      ) : (
+                        <div>
+                          <Box
+                            sx={{
+                              display: 'inline-block',
+                              width: '10px',
+                              height: '10px',
+                              borderRadius: '50%',
+                              backgroundColor: 'var(--mui-palette-error-main)',
+                              mr: 0.5,
+                            }}
+                          />
+                          未登入
+                        </div>
+                      )}
+                      {row.type === 'Watcher' && <CookieInputPopover row={row} />}
+                    </Stack>
+                  </TableCell>
                   <TableCell>{WORKER_TYPE.get('value', row.type).message}</TableCell>
                   <TableCell>{row.url}</TableCell>
                   <TableCell>{row.account}</TableCell>
@@ -128,5 +182,91 @@ function StatusSelect({ row }: { row: Worker }) {
         </MenuItem>
       ))}
     </Select>
+  );
+}
+
+function CookieInputPopover({ row }: { row: Worker }) {
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+    reset,
+  } = useForm({
+    defaultValues: {
+      cookies: '',
+    },
+  });
+  const popupState = usePopupState({
+    variant: 'popover',
+  });
+
+  return (
+    <>
+      <IconButton {...bindTrigger(popupState)}>
+        <CookieOutlinedIcon />
+      </IconButton>
+      <Popover
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        {...bindPopover(popupState)}
+      >
+        <Box
+          component="form"
+          sx={{ p: '16px 20px' }}
+          onSubmit={handleSubmit(async (data) => {
+            const res = await SetWorkerCookie(row.id, data.cookies);
+            if (res.error === '1401') {
+              enqueueSnackbar('無效的 cookies', { variant: 'error' });
+              return;
+            }
+            if (res.error) {
+              enqueueSnackbar(res.error, { variant: 'error' });
+              return;
+            }
+            enqueueSnackbar('登入 cookies 已設定', { variant: 'success' });
+            popupState.close();
+          })}
+        >
+          <Typography variant="subtitle1">設定登入 cookies</Typography>
+          <FormControl sx={{ mt: 1 }}>
+            <Controller
+              name="cookies"
+              control={control}
+              rules={{ required: '請輸入 cookies' }}
+              render={({ field, fieldState }) => (
+                <FormControl fullWidth error={!!fieldState.error}>
+                  <TextField {...field} label="cookies" size="small" type="text" fullWidth multiline rows={3} />
+                  {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                </FormControl>
+              )}
+            />
+          </FormControl>
+
+          <Stack direction="row" gap={2} justifyContent="end" sx={{ mt: 1 }}>
+            <Button
+              type="button"
+              variant="outlined"
+              size="small"
+              color="error"
+              onClick={() => {
+                popupState.close();
+                reset();
+              }}
+            >
+              取消
+            </Button>
+            <Button type="submit" disabled={isSubmitting} variant="contained" size="small">
+              確定
+            </Button>
+          </Stack>
+        </Box>
+      </Popover>
+    </>
   );
 }
