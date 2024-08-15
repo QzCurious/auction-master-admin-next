@@ -81,6 +81,8 @@ async function Content({ searchParams }: PageProps) {
           AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
           AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
           AUCTION_ITEM_STATUS.enum('ClosedStatus'),
+          AUCTION_ITEM_STATUS.enum('AwaitingConsignorPayFeeStatus'),
+          AUCTION_ITEM_STATUS.enum('ConsignorRequestCancellationStatus'),
         ];
       })(),
       limit: pagination[ROWS_PER_PAGE],
