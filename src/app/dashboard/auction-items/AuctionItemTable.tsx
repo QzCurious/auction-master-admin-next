@@ -27,6 +27,7 @@ import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 import BidPopover from './BidPopover';
 import EditDialog from './EditDialog';
 import { pickedItemIdsReducerAtom } from './PickingList';
+import StopWatchButton from './StopWatchButton';
 
 interface AuctionItemTableProps {
   rows: AuctionItem[];
@@ -57,7 +58,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                   <TableCell>當前金額</TableCell>
                   <TableCell>期望金額</TableCell>
                   <TableCell>系統出價</TableCell>
-                  <TableCell>結標倒數</TableCell>
+                  <TableCell>狀態</TableCell>
                   <TableCell>操作</TableCell>
                 </>
               )}
@@ -166,7 +167,27 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     <TableCell sx={{ textAlign: 'right' }}>{row.reservePrice.toLocaleString()}</TableCell>
                     <TableCell sx={{ textAlign: 'right' }}>{row.highestPrice.toLocaleString()}</TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                      <CountdownTime until={new Date(row.closeAt)} />
+                      <Stack alignItems="center" spacing={1}>
+                        {R.isIncludedIn(row.status, [
+                          AUCTION_ITEM_STATUS.enum('InitStatus'),
+                          AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
+                          AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
+                          AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
+                        ]) && (
+                          <>
+                            <CountdownTime until={new Date(row.closeAt)} />
+                            <HavePermissionsOnly permissionKeys={['ToggleActivateAuctionItem']}>
+                              <StopWatchButton auctionItem={row} />
+                            </HavePermissionsOnly>
+                          </>
+                        )}
+                        {!R.isIncludedIn(row.status, [
+                          AUCTION_ITEM_STATUS.enum('InitStatus'),
+                          AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
+                          AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
+                          AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
+                        ]) && <div>{AUCTION_ITEM_STATUS.get('value', row.status).message}</div>}
+                      </Stack>
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
