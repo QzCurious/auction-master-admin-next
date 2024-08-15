@@ -174,13 +174,13 @@ export const CONFIGS_DATA = {
       value: 11,
     },
     {
-      key: 'ConsignorRequestCancellationStatus',
-      message: '寄售人申請取消',
+      key: 'AwaitingConsignorPayFeeStatus',
+      message: '等待寄售人付款',
       value: 12,
     },
     {
-      key: 'AwaitingConsignorPayFeeStatus',
-      message: '等待寄售人付款',
+      key: 'ConsignorRequestCancellationStatus',
+      message: '寄售人申請取消',
       value: 13,
     },
     {

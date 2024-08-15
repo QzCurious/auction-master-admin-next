@@ -1,81 +1,68 @@
 'use client';
 
-import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { GetAuctionItem, type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
+import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
 import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
 import { SHIPPING_TYPE } from '@/api/backend/static-configs.data';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Avatar,
-  Button,
-  Divider,
-  Drawer,
-  FormControl,
-  FormHelperText,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Skeleton,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Button, Drawer, FormControl, FormHelperText, Stack, TextField, Typography } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
-import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
-
-export const pickedItemIdsAtom = atom<Array<AuctionItem['id']>>([]);
+import { pickedItemIdsReducerAtom, PickingList } from './PickingList';
 
 export function PickForShippingButtons() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pickedItems = useAtomValue(pickedItemIdsAtom);
+  const picking = searchParams.get('picking');
+  const stage = searchParams.get('stage');
+  const [pickedItemIds, dispatch] = useAtom(pickedItemIdsReducerAtom);
 
   return (
     <Stack direction="row" spacing={1}>
-      {searchParams.get('pick-for-shipping') !== 'picking' ? (
+      {!stage && (
         <Button
           type="button"
           size="small"
           variant="outlined"
           onClick={() => {
             const newSearchParams = new URLSearchParams(searchParams);
-            newSearchParams.set('pick-for-shipping', 'picking');
+            newSearchParams.set('picking', 'shipping');
+            newSearchParams.set('stage', 'picking');
             router.replace(`?${newSearchParams}`);
           }}
         >
           選取出貨
         </Button>
-      ) : (
+      )}
+      {picking === 'shipping' && stage === 'picking' && (
         <Button
           type="button"
           size="small"
           variant="outlined"
           color="error"
           onClick={() => {
+            dispatch({ type: 'clear' });
             const newSearchParams = new URLSearchParams(searchParams);
-            newSearchParams.delete('pick-for-shipping');
+            newSearchParams.delete('picking');
+            newSearchParams.delete('stage');
             router.replace(`?${newSearchParams}`);
           }}
         >
           取消選取
         </Button>
       )}
-      {searchParams.get('pick-for-shipping') === 'picking' && pickedItems.length > 0 && (
+      {picking === 'shipping' && stage === 'picking' && pickedItemIds.length > 0 && (
         <Button
           type="button"
           size="small"
           variant="contained"
           onClick={() => {
             const newSearchParams = new URLSearchParams(searchParams);
-            newSearchParams.set('pick-for-shipping', 'checking');
+            newSearchParams.set('stage', 'checking');
             router.replace(`?${newSearchParams}`);
           }}
         >
@@ -89,114 +76,25 @@ export function PickForShippingButtons() {
 export function PickForShipping() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pickedItemIds = useAtomValue(pickedItemIdsAtom);
+  const picking = searchParams.get('picking');
+  const stage = searchParams.get('stage');
 
   return (
     <Drawer
       PaperProps={{ sx: { width: 360 } }}
       anchor="right"
-      open={searchParams.get('pick-for-shipping') === 'checking' && pickedItemIds.length > 0}
+      open={picking === 'shipping' && stage === 'checking'}
       onClose={() => {
         const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.set('pick-for-shipping', 'picking');
+        newSearchParams.set('stage', 'picking');
         router.replace(`?${newSearchParams}`);
       }}
     >
-      <PickingList />
+      <Stack sx={{ width: '100%', height: '100%', bgcolor: 'background.paper' }}>
+        <PickingList />
+        <ShippingForm />
+      </Stack>
     </Drawer>
-  );
-}
-
-function PickingList() {
-  const pickedItems = useAtomValue(pickedItemIdsAtom);
-  const auctionItemQueries = useQueries({
-    queries: pickedItems.map((id) => ({
-      queryKey: ['auction-items', id],
-      queryFn: () => GetAuctionItem(id),
-    })),
-  });
-
-  const error = auctionItemQueries.map((q) => q.data?.error);
-  if (error.some((err) => err === '1001')) {
-    return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
-  }
-  if (error.some((err) => err === '1003')) {
-    return <RedirectAuthError />;
-  }
-
-  const queries = auctionItemQueries.filter((q) => !q.isError);
-
-  return (
-    <Stack sx={{ width: '100%', height: '100%', bgcolor: 'background.paper' }}>
-      <List sx={{ flex: 1, overflow: 'auto' }}>
-        {queries.map((item, i) => (
-          <React.Fragment key={pickedItems[i]}>
-            {item.isPending ? <ListItemSkeleton /> : !!item.data.data && <PickedListItem item={item.data.data} />}
-            <Divider variant="inset" component="li" />
-          </React.Fragment>
-        ))}
-      </List>
-
-      {queries.every((r) => !r.isPending) && <ShippingForm auctionItems={queries.map((q) => q.data.data!)} />}
-    </Stack>
-  );
-}
-
-function ListItemSkeleton() {
-  return (
-    <ListItem alignItems="flex-start">
-      <ListItemAvatar>
-        <Skeleton variant="circular" animation="wave" width={40} height={40} />
-      </ListItemAvatar>
-      <ListItemText
-        disableTypography
-        primary={<Skeleton animation="wave" height={10} />}
-        secondary={
-          <ul>
-            <li>
-              <Skeleton animation="wave" height={10} />
-            </li>
-            <li>
-              <Skeleton animation="wave" height={10} />
-            </li>
-          </ul>
-        }
-      />
-    </ListItem>
-  );
-}
-
-function PickedListItem({ item }: { item: AuctionItem }) {
-  return (
-    <ListItem alignItems="flex-start">
-      <ListItemAvatar>
-        <Avatar alt={item.name} src={item.photo} />
-      </ListItemAvatar>
-      <ListItemText
-        disableTypography
-        primary={item.name}
-        secondary={
-          <ul>
-            <li>
-              <Typography color="GrayText" component="span">
-                日拍 ID:
-              </Typography>{' '}
-              <Typography sx={{ display: 'inline' }} component="span" color="text.primary">
-                {item.auctionID}
-              </Typography>
-            </li>
-            <li>
-              <Typography color="GrayText" component="span">
-                結標金額:
-              </Typography>{' '}
-              <Typography sx={{ display: 'inline' }} component="span" color="text.primary">
-                ¥ {item.closedPrice.toLocaleString()}
-              </Typography>
-            </li>
-          </ul>
-        }
-      />
-    </ListItem>
   );
 }
 
@@ -205,10 +103,26 @@ const Schema = z.object({
   recipientName: z.string().min(1, { message: '必填' }),
   phone: z.string().min(1, { message: '必填' }),
 });
-function ShippingForm({ auctionItems }: { auctionItems: Array<AuctionItem> }) {
+function ShippingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const setPickedItems = useSetAtom(pickedItemIdsAtom);
+  const pickedItemIds = useAtomValue(pickedItemIdsReducerAtom);
+  const auctionItemQueries = useQueries({
+    queries: pickedItemIds.map(GetAuctionItemQueryOptions),
+    combine: (queries) => {
+      if (queries.some((q) => q.isPending)) {
+        return { isPending: true } as const;
+      }
+      if (queries.some((q) => q.isError) || queries.some((q) => q.data?.error)) {
+        return { isError: true } as const;
+      }
+      return {
+        length: queries.length,
+        sum: queries.reduce((acc, item) => acc + item.data!.data!.closedPrice, 0).toLocaleString(),
+      } as const;
+    },
+  });
+
   const { enqueueSnackbar } = useSnackbar();
   const {
     control,
@@ -223,6 +137,8 @@ function ShippingForm({ auctionItems }: { auctionItems: Array<AuctionItem> }) {
     resolver: zodResolver(Schema),
   });
 
+  if (auctionItemQueries.isPending || auctionItemQueries.isError) return;
+
   return (
     <Stack
       component="form"
@@ -232,7 +148,7 @@ function ShippingForm({ auctionItems }: { auctionItems: Array<AuctionItem> }) {
         const res = await ShippingAuctionItem({
           ...data,
           type: SHIPPING_TYPE.enum('AddressType'),
-          auctionItemIDs: auctionItems.map((item) => item.id),
+          auctionItemIDs: pickedItemIds,
         });
 
         if (res.error) {
@@ -241,8 +157,8 @@ function ShippingForm({ auctionItems }: { auctionItems: Array<AuctionItem> }) {
         }
 
         const newSearchParams = new URLSearchParams(searchParams);
-        setPickedItems([]);
-        newSearchParams.delete('pick-for-shipping');
+        newSearchParams.delete('picking');
+        newSearchParams.delete('stage');
         router.replace(`?${newSearchParams}`);
         enqueueSnackbar('已出貨', { variant: 'success' });
       })}
@@ -284,8 +200,7 @@ function ShippingForm({ auctionItems }: { auctionItems: Array<AuctionItem> }) {
 
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="body1">
-          共 {auctionItems.length} 筆, 總計 ¥{' '}
-          {auctionItems.reduce((acc, item) => acc + item.closedPrice, 0).toLocaleString()}
+          共 {auctionItemQueries.length} 筆, 總計 ¥ {auctionItemQueries.sum}
         </Typography>
 
         <Button type="submit" variant="contained" disabled={isSubmitting}>

@@ -22,7 +22,6 @@ import { Controller, useForm } from 'react-hook-form';
 export default function BidPopover({ auctionItem }: { auctionItem: AuctionItem }) {
   const popupState = usePopupState({
     variant: 'popover',
-    popupId: 'demoPopover',
   });
 
   return (

@@ -1,17 +1,8 @@
 'use server';
 
-import { z } from 'zod';
-
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
 import { type AUCTION_ITEM_STATUS } from '../static-configs.data';
-
-const ReqSchema = z.object({
-  consignorID: z.coerce.number().optional(),
-  status: z.coerce.number().array().optional(),
-  limit: z.coerce.number().default(10),
-  offset: z.coerce.number().default(0),
-});
 
 export interface AuctionItem {
   id: number;

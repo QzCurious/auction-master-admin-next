@@ -26,7 +26,7 @@ import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
 import BidPopover from './BidPopover';
 import EditDialog from './EditDialog';
-import { pickedItemIdsAtom } from './PickForShipping';
+import { pickedItemIdsReducerAtom } from './PickingList';
 
 interface AuctionItemTableProps {
   rows: AuctionItem[];
@@ -36,8 +36,9 @@ interface AuctionItemTableProps {
 }
 
 export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItemTableProps) {
-  const [pickedItems, setPickedItems] = useAtom(pickedItemIdsAtom);
-  const isPickingItems = useSearchParams().get('pick-for-shipping') === 'picking';
+  const searchParams = useSearchParams();
+  const isPicking = searchParams.get('stage') === 'picking';
+  const [pickedItemIds, dispatch] = useAtom(pickedItemIdsReducerAtom);
 
   return (
     <Card>
@@ -45,10 +46,10 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
         <Table sx={{ minWidth: '800px' }}>
           <TableHead>
             <TableRow sx={{ whiteSpace: 'nowrap' }}>
-              {isPickingItems && <TableCell sx={{ width: 0 }}>出貨</TableCell>}
+              {isPicking && <TableCell sx={{ width: 0 }}>出貨</TableCell>}
               <TableCell sx={{ width: 0 }}>商品圖片</TableCell>
               <TableCell sx={{ minWidth: '200px' }}>商品名稱</TableCell>
-              {!isPickingItems && (
+              {!isPicking && (
                 <>
                   <TableCell>出品帳號</TableCell>
                   <TableCell>盯標帳號</TableCell>
@@ -66,14 +67,15 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
             {rows.length === 0 && <EmptyTableRow />}
             {rows.map((row) => (
               <TableRow hover key={row.id}>
-                {isPickingItems && (
+                {isPicking && (
                   <TableCell>
                     <Checkbox
-                      checked={pickedItems.includes(row.id)}
+                      checked={pickedItemIds.includes(row.id)}
                       onChange={() =>
-                        setPickedItems((prev) =>
-                          prev.includes(row.id) ? prev.filter((id) => id !== row.id) : [...prev, row.id]
-                        )
+                        dispatch({
+                          type: 'toggle',
+                          id: row.id,
+                        })
                       }
                     />
                   </TableCell>
@@ -114,7 +116,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     {row.name}
                   </Link>
                 </TableCell>
-                {!isPickingItems && (
+                {!isPicking && (
                   <>
                     <TableCell>{row.sellerName}</TableCell>
                     <TableCell>

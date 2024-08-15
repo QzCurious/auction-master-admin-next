@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
 import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers';
@@ -6,16 +6,18 @@ import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } fr
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { Provider } from 'jotai';
 import * as R from 'remeda';
 import { z } from 'zod';
 
 import { config } from '@/config';
+import AutoRefreshPage from '@/components/AutoRefreshPage';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import { AuctionItemTable } from './AuctionItemTable';
-import AutoRefreshPage from './AutoRefreshPage';
 import { ConsignorFilter } from './ConsignorFilter';
+import { PickForFeePaid, PickForFeePaidButtons } from './PickForFeePaid';
 import { PickForShipping, PickForShippingButtons } from './PickForShipping';
 import RemoveSearchBtn from './RemoveSearchBtn';
 import { StatusFilter } from './StatusFilter';
@@ -39,8 +41,8 @@ interface PageProps {
   searchParams: {
     consignor?: string;
     status?: string | string[];
-
-    'pick-for-shipping'?: 'picking' | 'checking';
+    stage?: 'picking' | 'checking';
+    picking?: 'shipping' | 'fee';
   } & PaginationSearchParams;
 }
 
@@ -69,17 +71,18 @@ async function Content({ searchParams }: PageProps) {
   const [auctionItemsRes, activeWorkersRes] = await Promise.all([
     GetAuctionItems({
       consignorID: filters.consignor,
-      status: searchParams['pick-for-shipping']
-        ? [AUCTION_ITEM_STATUS.enum('ClosedStatus')]
-        : filters.status.length
-          ? filters.status
-          : [
-              AUCTION_ITEM_STATUS.enum('InitStatus'),
-              AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
-              AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
-              AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
-              AUCTION_ITEM_STATUS.enum('ClosedStatus'),
-            ],
+      status: (() => {
+        if (searchParams['picking'] === 'shipping') return [AUCTION_ITEM_STATUS.enum('ClosedStatus')];
+        if (searchParams['picking'] === 'fee') return [AUCTION_ITEM_STATUS.enum('AwaitingConsignorPayFeeStatus')];
+        if (filters.status.length) return filters.status;
+        return [
+          AUCTION_ITEM_STATUS.enum('InitStatus'),
+          AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
+          AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
+          AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
+          AUCTION_ITEM_STATUS.enum('ClosedStatus'),
+        ];
+      })(),
       limit: pagination[ROWS_PER_PAGE],
       offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
     }),
@@ -95,29 +98,33 @@ async function Content({ searchParams }: PageProps) {
   }
 
   return (
-    <AutoRefreshPage ms={10_000}>
-      <Stack spacing={3}>
-        <Stack direction="row" flexWrap="wrap" gap={2}>
-          <ConsignorFilter />
-          {!searchParams['pick-for-shipping'] && (
-            <>
-              <StatusFilter selected={filters.status} />
-              <RemoveSearchBtn fields={['consignor', 'status']} />
-            </>
-          )}
+    <Provider>
+      <AutoRefreshPage ms={10_000}>
+        <Stack spacing={3}>
+          <Stack direction="row" flexWrap="wrap" gap={2}>
+            <ConsignorFilter />
+            {!searchParams['picking'] && (
+              <>
+                <StatusFilter selected={filters.status} />
+                <RemoveSearchBtn fields={['consignor', 'status']} />
+              </>
+            )}
 
-          <Box mx="auto" />
-          <PickForShippingButtons />
+            <Box mx="auto" />
+            <PickForShippingButtons />
+            <PickForFeePaidButtons />
+          </Stack>
+
+          <AuctionItemTable
+            rows={auctionItemsRes.data.auctionItems}
+            count={auctionItemsRes.data.count}
+            activationWorkers={activeWorkersRes.data}
+          />
         </Stack>
 
-        <AuctionItemTable
-          rows={auctionItemsRes.data.auctionItems}
-          count={auctionItemsRes.data.count}
-          activationWorkers={activeWorkersRes.data}
-        />
-      </Stack>
-
-      <PickForShipping />
-    </AutoRefreshPage>
+        <PickForShipping />
+        <PickForFeePaid />
+      </AutoRefreshPage>
+    </Provider>
   );
 }

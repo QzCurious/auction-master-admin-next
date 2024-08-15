@@ -101,7 +101,7 @@ export function AdminTable({ rows, count }: AdminTableProps): React.JSX.Element 
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        <HavePermissionsOnly permissionKeys={['GetAdmin', 'GetBackendConfigs', 'GetRoles']}>
+                        <HavePermissionsOnly permissionKeys={['GetAdmin', 'GetConfigs', 'GetRoles']}>
                           <IconButton LinkComponent={Link} href={`/dashboard/admins/edit/${row.id}`}>
                             <EditIcon />
                           </IconButton>

@@ -23,7 +23,7 @@ export default async function Page() {
   const configsRes = await GetBackendConfigs();
 
   if (configsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetBackendConfigs']} />;
+    return <WithoutPermissionsError permissions={['GetConfigs']} />;
   }
 
   if (configsRes.error === '1003') {

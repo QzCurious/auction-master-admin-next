@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { GetItemsAndDetails } from '@/api/backend/items/GetItemsAndDetails';
+import { ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -8,10 +8,10 @@ import * as R from 'remeda';
 import { z } from 'zod';
 
 import { config } from '@/config';
+import AutoRefreshPage from '@/components/AutoRefreshPage';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
-import AutoRefreshPage from './AutoRefreshPage';
 import { ConsignorFilter } from './ConsignorFilter';
 import DirectIdInput from './DirectIdInput';
 import { ItemTable } from './ItemTable';
