@@ -193,6 +193,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
                         {R.isIncludedIn(row.status, [
                           AUCTION_ITEM_STATUS.enum('InitStatus'),
+                          AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
                           AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
                           AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
                         ]) && (
