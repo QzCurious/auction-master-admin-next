@@ -283,7 +283,6 @@ function StatusFlowUI({ item }: { item: Item }) {
       </>
     ),
     ConsignorConfirmedStatus: <ReadyStatusHandleButtons item={item} />,
-    BiddingStatus: <NotImplemented />,
   });
 
   const path = StatusFlow.flowPath(ITEM_STATUS.enum(item.status), item.type ? ITEM_TYPE.enum(item.type) : null);

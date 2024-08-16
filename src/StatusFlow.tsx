@@ -1,7 +1,7 @@
 import type React from 'react';
 import { type ITEM_STATUS, type ITEM_TYPE } from '@/api/backend/static-configs.data';
 
-type Adjudicator = 'admin' | 'consignor';
+type Adjudicator = 'admin' | 'consignor' | 'system';
 
 type Step = {
   allowTypes?: Array<ITEM_TYPE['key']>;
@@ -152,7 +152,7 @@ export class StatusFlow {
       allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'BiddingStatus',
       nexts: ['SoldStatus', 'CompanyRepurchasedStatus', 'ConsignorConfirmedStatus'],
-      adjudicator: 'admin',
+      adjudicator: 'system',
     },
     SoldStatus: {
       allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
