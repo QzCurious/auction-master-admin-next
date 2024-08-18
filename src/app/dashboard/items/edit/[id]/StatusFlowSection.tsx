@@ -2,7 +2,6 @@
 
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/static-configs.data';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { ItemAppraisalReview } from '@/api/backend/items/ItemAppraisalReview';
@@ -13,6 +12,7 @@ import { ItemReturned } from '@/api/backend/items/ItemReturned';
 import { ItemReturning } from '@/api/backend/items/ItemReturning';
 import { ItemReturnPending } from '@/api/backend/items/ItemReturnPending';
 import { ItemWarehousePersonnelConfirmed } from '@/api/backend/items/ItemWarehousePersonnelConfirmed';
+import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/static-configs.data';
 import { DATE_TIME_FORMAT } from '@/static';
 import { StatusFlow } from '@/StatusFlow';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -285,7 +285,12 @@ function StatusFlowUI({ item }: { item: Item }) {
     ConsignorConfirmedStatus: <ReadyStatusHandleButtons item={item} />,
   });
 
-  const path = StatusFlow.flowPath(ITEM_STATUS.enum(item.status), item.type ? ITEM_TYPE.enum(item.type) : null);
+  const path = StatusFlow.flowPath({
+    from: 'SubmitAppraisalStatus',
+    to: ITEM_STATUS.enum(item.status),
+    type: item.type ? ITEM_TYPE.enum(item.type) : null,
+    withFuture: true,
+  });
 
   const result = path.map((status) => {
     const step = StatusFlow.flow[status];
