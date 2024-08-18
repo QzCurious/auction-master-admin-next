@@ -73,8 +73,8 @@ export function StatusFilter({ selected }: StatusFilterProps) {
           }}
           onClose={close}
         >
-          {options.map(({ value, message }) => (
-            <MenuItem key={value} value={value} sx={{ columnGap: 1 }} title={`${message} ${value}`}>
+          {options.map(({ value, key, message }) => (
+            <MenuItem key={value} value={value} sx={{ columnGap: 1 }} title={`${key} ${value}`}>
               {message}
             </MenuItem>
           ))}
