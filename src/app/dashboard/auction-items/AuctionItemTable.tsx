@@ -167,46 +167,38 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     <TableCell sx={{ textAlign: 'right' }}>{row.reservePrice.toLocaleString()}</TableCell>
                     <TableCell sx={{ textAlign: 'right' }}>{row.highestPrice.toLocaleString()}</TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                      <Stack alignItems="center" spacing={1}>
-                        {R.isIncludedIn(row.status, [
-                          AUCTION_ITEM_STATUS.enum('InitStatus'),
-                          AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
-                          AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
-                          AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
-                        ]) && (
-                          <>
-                            <CountdownTime until={new Date(row.closeAt)} />
-                            <HavePermissionsOnly permissionKeys={['ToggleActivateAuctionItem']}>
-                              <StopWatchButton auctionItem={row} />
-                            </HavePermissionsOnly>
-                          </>
-                        )}
-                        {!R.isIncludedIn(row.status, [
-                          AUCTION_ITEM_STATUS.enum('InitStatus'),
-                          AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
-                          AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
-                          AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
-                        ]) && <div>{AUCTION_ITEM_STATUS.get('value', row.status).message}</div>}
-                      </Stack>
+                      {R.isIncludedIn(row.status, [
+                        AUCTION_ITEM_STATUS.enum('InitStatus'),
+                        AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
+                        AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
+                        AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
+                      ]) ? (
+                        <Stack alignItems="center" spacing={1}>
+                          <CountdownTime until={new Date(row.closeAt)} />
+                          <HavePermissionsOnly permissionKeys={['ToggleActivateAuctionItem']}>
+                            <StopWatchButton auctionItem={row} />
+                          </HavePermissionsOnly>
+                        </Stack>
+                      ) : (
+                        <div>{AUCTION_ITEM_STATUS.get('value', row.status).message}</div>
+                      )}
                     </TableCell>
                     <TableCell>
-                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
-                        {R.isIncludedIn(row.status, [
-                          AUCTION_ITEM_STATUS.enum('InitStatus'),
-                          AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
-                          AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
-                          AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
-                        ]) && (
-                          <>
-                            <HavePermissionsOnly permissionKeys={['UpdateAuctionItem']}>
-                              <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
-                            </HavePermissionsOnly>
-                            <HavePermissionsOnly permissionKeys={['BidAuctionItem']}>
-                              <BidPopover auctionItem={row} />
-                            </HavePermissionsOnly>
-                          </>
-                        )}
-                      </Stack>
+                      {R.isIncludedIn(row.status, [
+                        AUCTION_ITEM_STATUS.enum('InitStatus'),
+                        AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
+                        AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
+                        AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
+                      ]) && (
+                        <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
+                          <HavePermissionsOnly permissionKeys={['UpdateAuctionItem']}>
+                            <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
+                          </HavePermissionsOnly>
+                          <HavePermissionsOnly permissionKeys={['BidAuctionItem']}>
+                            <BidPopover auctionItem={row} />
+                          </HavePermissionsOnly>
+                        </Stack>
+                      )}
                     </TableCell>
                   </>
                 )}
