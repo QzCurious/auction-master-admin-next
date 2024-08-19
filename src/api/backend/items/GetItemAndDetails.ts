@@ -24,7 +24,7 @@ export interface Item {
   minEstimatedPrice: number;
   maxEstimatedPrice: number;
   reservePrice: number;
-  expireAt: string;
+  expireAt: string | null;
   warehouseID: string;
   space: number;
   grossWeight: number;

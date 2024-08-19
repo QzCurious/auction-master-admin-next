@@ -2,10 +2,10 @@
 
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/static-configs.data';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
+import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/static-configs.data';
 import { StatusFlow } from '@/StatusFlow';
 import { zodResolver } from '@hookform/resolvers/zod';
 import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
@@ -15,6 +15,7 @@ import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
+import { DatePicker } from '@mui/x-date-pickers';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import type Quill from 'quill/core';
@@ -42,6 +43,7 @@ const FormSchema = z
     minEstimatedPrice: z.coerce.number().optional(),
     maxEstimatedPrice: z.coerce.number().optional(),
     reservePrice: z.number().min(1, '必填'),
+    expireAt: z.coerce.date().nullable(),
     warehouseID: z.string(),
     space: z.number(),
     grossWeight: z.number(),
@@ -77,6 +79,7 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
       minEstimatedPrice: item.minEstimatedPrice,
       maxEstimatedPrice: item.maxEstimatedPrice,
       reservePrice: item.reservePrice,
+      expireAt: item.expireAt ? new Date(item.expireAt) : null,
       warehouseID: item.warehouseID,
       space: item.space,
       grossWeight: item.grossWeight,
@@ -86,6 +89,7 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
       item.consignorID,
       item.description,
       item.directPurchasePrice,
+      item.expireAt,
       item.grossWeight,
       item.maxEstimatedPrice,
       item.minEstimatedPrice,
@@ -342,6 +346,28 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
             </Grid>
           </>
         )}
+
+        <Grid item xs={12} sm={6}>
+          <Controller
+            control={control}
+            name="expireAt"
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <DatePicker
+                  {...field}
+                  label="過期時間"
+                  format="yyyy/MM/dd"
+                  minDate={new Date()}
+                  // slotProps={{ field: { clearable: true } }}
+                  readOnly={!canUpdate}
+                />
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
+        </Grid>
+
+        <Grid item xs />
 
         <Grid item xs={12} sm={6}>
           <Controller
