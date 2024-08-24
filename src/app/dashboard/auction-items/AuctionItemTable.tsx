@@ -154,7 +154,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                               </Box>{' '}
                               / 評價: {bidder.rating}{' '}
                             </span>
-                            <span style={{ marginLeft: 'auto' }}>¥ {bidder.bidAmount.toLocaleString()}</span>
+                            <span style={{ marginLeft: 'auto' }}>¥{bidder.bidAmount.toLocaleString()}</span>
                           </Stack>
                         ))}
                       </a>

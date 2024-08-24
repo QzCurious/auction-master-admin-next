@@ -100,7 +100,7 @@ function PickedListItem({ item }: { item: AuctionItem }) {
                 結標金額:
               </Typography>{' '}
               <Typography sx={{ display: 'inline' }} component="span" color="text.primary">
-                ¥ {item.closedPrice.toLocaleString()}
+                ¥{item.closedPrice.toLocaleString()}
               </Typography>
             </li>
           </ul>

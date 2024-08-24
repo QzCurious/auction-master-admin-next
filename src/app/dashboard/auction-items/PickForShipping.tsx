@@ -200,7 +200,7 @@ function ShippingForm() {
 
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="body1">
-          共 {auctionItemQueries.length} 筆, 總計 ¥ {auctionItemQueries.sum}
+          共 {auctionItemQueries.length} 筆, 總計 ¥{auctionItemQueries.sum}
         </Typography>
 
         <Button type="submit" variant="contained" disabled={isSubmitting}>
