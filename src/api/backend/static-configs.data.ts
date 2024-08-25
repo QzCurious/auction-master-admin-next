@@ -6,6 +6,16 @@ export const CONFIGS_DATA = {
       value: 1000,
     },
     {
+      key: 'WalletCompanyDirectPurchaseItemAction',
+      message: '公司直購',
+      value: 1001,
+    },
+    {
+      key: 'WalletCompanyPurchasedItemAction',
+      message: '公司買回',
+      value: 1002,
+    },
+    {
       key: 'WalletPayFeeAction',
       message: '支付手續費',
       value: 2000,
@@ -137,7 +147,7 @@ export const CONFIGS_DATA = {
       value: 33,
     },
     {
-      key: 'CompanyRepurchasedStatus',
+      key: 'CompanyPurchasedStatus',
       message: '被公司買回',
       value: 34,
     },
@@ -265,6 +275,55 @@ export const CONFIGS_DATA = {
       key: 'ShippedStatus',
       message: '已寄出',
       value: 3,
+    },
+  ],
+  recordType: [
+    {
+      key: 'SoldItemType',
+      message: '賣出物品',
+      value: 1000,
+    },
+    {
+      key: 'CompanyDirectPurchaseType',
+      message: '公司直購',
+      value: 1001,
+    },
+    {
+      key: 'CompanyPurchasedType',
+      message: '公司買回',
+      value: 1002,
+    },
+    {
+      key: 'PayYahooFeeType',
+      message: '支付結標日拍手續費',
+      value: 2000,
+    },
+    {
+      key: 'PayAuctionItemCancellationFeeType',
+      message: '支付取消日拍手續費',
+      value: 2001,
+    },
+    {
+      key: 'PaySpaceFeeType',
+      message: '支付留倉費',
+      value: 2002,
+    },
+    {
+      key: 'PayShippingCostType',
+      message: '支付運費',
+      value: 2003,
+    },
+  ],
+  recordStatus: [
+    {
+      key: 'UnpaidStatus',
+      message: '未付款',
+      value: 1,
+    },
+    {
+      key: 'PaidStatus',
+      message: '已付款',
+      value: 10,
     },
   ],
   workerType: [

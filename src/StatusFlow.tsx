@@ -152,7 +152,7 @@ export class StatusFlow {
     BiddingStatus: {
       allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
       status: 'BiddingStatus',
-      nexts: ['SoldStatus', 'CompanyRepurchasedStatus', 'ConsignorConfirmedStatus'],
+      nexts: ['SoldStatus', 'CompanyPurchasedStatus', 'ConsignorConfirmedStatus'],
       adjudicator: 'system',
     },
     SoldStatus: {
@@ -175,9 +175,9 @@ export class StatusFlow {
       status: 'ReturnedStatus',
       nexts: [],
     },
-    CompanyRepurchasedStatus: {
+    CompanyPurchasedStatus: {
       allowTypes: ['AppraisableAuctionItemType', 'NonAppraisableAuctionItemType', 'FixedPriceItemType'],
-      status: 'CompanyRepurchasedStatus',
+      status: 'CompanyPurchasedStatus',
       nexts: [],
     },
     CompanyReclaimedStatus: {
