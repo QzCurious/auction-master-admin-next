@@ -16,6 +16,7 @@ import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import lineIcon from './LINE_icon.png';
+import ReportsChart from './ReportsChart';
 
 export const metadata = { title: `Overview | ${config.site.name}` } satisfies Metadata;
 
@@ -70,6 +71,10 @@ export default async function Page() {
             </Link>
           </CardContent>
         </Card>
+      </Grid>
+
+      <Grid xs={12}>
+        <ReportsChart />
       </Grid>
     </Grid>
   );
