@@ -118,7 +118,7 @@ export default function ReportsChart() {
   );
 }
 
-const LABEL_MAP = {
+const LABEL_MAP: Record<keyof Report, string> = {
   totalClosedPrice: '真實結標的總金額',
   totalPrice: '計算給寄售人的總金額',
   totalDirectPurchasePrice: '公司直購總金額',
@@ -127,6 +127,7 @@ const LABEL_MAP = {
   totalCommission: '平台總手續費',
   totalBonus: '總回饋',
   totalProfit: '總損益',
+  totalYahooCancellationFee: '日拍總取消手續費',
   totalSpaceFee: '總留倉費',
   totalShippingCost: '總運費',
 } as const;
@@ -141,10 +142,18 @@ const mapBy: Record<keyof Reports, Array<keyof Report>> = {
     'totalCommission',
     'totalBonus',
     'totalProfit',
+    'totalYahooCancellationFee',
     'totalSpaceFee',
     'totalShippingCost',
   ],
-  TWD: ['totalYahooFee', 'totalCommission', 'totalBonus', 'totalSpaceFee', 'totalShippingCost'],
+  TWD: [
+    'totalYahooFee',
+    'totalCommission',
+    'totalBonus',
+    'totalYahooCancellationFee',
+    'totalSpaceFee',
+    'totalShippingCost',
+  ],
 };
 
 function Content({
@@ -237,72 +246,3 @@ function aggregateReportsByDate(data: NonNullable<Awaited<ReturnType<typeof GetR
   }
   return Object.values(aggregatedReports);
 }
-
-// Example usage: ----------------------------------------------------------
-const sampleData = [
-  {
-    id: 'aaa',
-    reports: {
-      JPY: {
-        totalClosedPrice: 1,
-        totalPrice: 1,
-        totalDirectPurchasePrice: 1,
-        totalPurchasedPrice: 1,
-        totalYahooFee: 1,
-        totalCommission: 1,
-        totalBonus: 1,
-        totalProfit: 1,
-        totalSpaceFee: 1,
-        totalShippingCost: 1,
-      },
-      TWD: {
-        totalClosedPrice: 2,
-        totalPrice: 2,
-        totalDirectPurchasePrice: 2,
-        totalPurchasedPrice: 2,
-        totalYahooFee: 2,
-        totalCommission: 2,
-        totalBonus: 2,
-        totalProfit: 2,
-        totalSpaceFee: 2,
-        totalShippingCost: 2,
-      },
-    },
-    reportAt: '2023-04-01T00:00:00Z',
-    createdAt: '2023-04-01T12:00:00Z',
-  },
-  {
-    id: 'bbb',
-    reports: {
-      JPY: {
-        totalClosedPrice: 1,
-        totalPrice: 1,
-        totalDirectPurchasePrice: 1,
-        totalPurchasedPrice: 1,
-        totalYahooFee: 1,
-        totalCommission: 1,
-        totalBonus: 1,
-        totalProfit: 1,
-        totalSpaceFee: 1,
-        totalShippingCost: 1,
-      },
-      TWD: {
-        totalClosedPrice: 2,
-        totalPrice: 2,
-        totalDirectPurchasePrice: 2,
-        totalPurchasedPrice: 2,
-        totalYahooFee: 2,
-        totalCommission: 2,
-        totalBonus: 2,
-        totalProfit: 2,
-        totalSpaceFee: 2,
-        totalShippingCost: 2,
-      },
-    },
-    reportAt: '2023-04-01T01:00:00Z',
-    createdAt: '2023-04-01T12:00:00Z',
-  },
-];
-
-const result = aggregateReportsByDate(sampleData);
-// console.log(result);

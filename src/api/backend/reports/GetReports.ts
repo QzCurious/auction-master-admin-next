@@ -19,6 +19,7 @@ export interface Report {
   totalCommission: number;
   totalBonus: number;
   totalProfit: number;
+  totalYahooCancellationFee: number;
   totalSpaceFee: number;
   totalShippingCost: number;
 }
@@ -46,6 +47,7 @@ const EMPTY_REPORT: Report = {
   totalCommission: 0,
   totalBonus: 0,
   totalProfit: 0,
+  totalYahooCancellationFee: 0,
   totalSpaceFee: 0,
   totalShippingCost: 0,
 };
