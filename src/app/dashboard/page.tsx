@@ -17,6 +17,7 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 
 import lineIcon from './LINE_icon.png';
 import ReportsChart from './ReportsChart';
+import ReportsRecord from './ReportsRecord';
 
 export const metadata = { title: `Overview | ${config.site.name}` } satisfies Metadata;
 
@@ -75,6 +76,10 @@ export default async function Page() {
 
       <Grid xs={12}>
         <ReportsChart />
+      </Grid>
+
+      <Grid xs={12}>
+        <ReportsRecord />
       </Grid>
     </Grid>
   );

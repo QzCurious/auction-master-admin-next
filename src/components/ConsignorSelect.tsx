@@ -59,7 +59,6 @@ export function ConsignorSelect({
       autoHighlight
       loadingText="載入中..."
       noOptionsText="無結果"
-      onClose={close}
     />
   );
 }

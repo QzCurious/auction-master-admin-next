@@ -22,6 +22,12 @@ export const PERMISSIONS_DATA = [
         url: '/auction-master/backend/static-configs',
         description: '取得系統靜態設定擋',
       },
+      {
+        key: 'GetJPYRates',
+        method: 'GET',
+        url: '/auction-master/backend/jpy-rates',
+        description: '取得日幣匯率',
+      },
     ],
   },
   {
@@ -246,6 +252,12 @@ export const PERMISSIONS_DATA = [
         url: '/auction-master/backend/auction-items/consignor-fee-paid',
         description: '寄售人付清日拍競標商品手續費',
       },
+      {
+        key: 'CancelAuctionItem',
+        method: 'POST',
+        url: '/auction-master/backend/auction-items/cancellation',
+        description: '取消日拍競標商品',
+      },
     ],
   },
   {
@@ -421,6 +433,29 @@ export const PERMISSIONS_DATA = [
         method: 'POST',
         url: '/auction-master/backend/shippings/:id/shipped',
         description: '已寄出',
+      },
+    ],
+  },
+  {
+    message: '報表相關',
+    permissions: [
+      {
+        key: 'GetReports',
+        method: 'GET',
+        url: '/auction-master/backend/reports',
+        description: '取得報表列表',
+      },
+      {
+        key: 'GetRecordsSummary',
+        method: 'GET',
+        url: '/auction-master/backend/reports/records/summary',
+        description: '取得報表紀錄總結',
+      },
+      {
+        key: 'GetRecords',
+        method: 'GET',
+        url: '/auction-master/backend/reports/records',
+        description: '取得報表紀錄列表',
       },
     ],
   },

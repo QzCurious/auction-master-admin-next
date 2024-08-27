@@ -321,9 +321,19 @@ export const CONFIGS_DATA = {
       value: 1,
     },
     {
+      key: 'SubmitAppraisalStatus',
+      message: '已提交付款',
+      value: 2,
+    },
+    {
       key: 'PaidStatus',
       message: '已付款',
       value: 10,
+    },
+    {
+      key: 'CancelPaymentStatus',
+      message: '取消付款',
+      value: 11,
     },
   ],
   workerType: [
@@ -467,6 +477,12 @@ export type SHIPPING_TYPE = (typeof SHIPPING_TYPE.data)[number];
 
 export const SHIPPING_STATUS = createMapper(CONFIGS_DATA.shippingStatus);
 export type SHIPPING_STATUS = (typeof SHIPPING_STATUS.data)[number];
+
+export const RECORD_TYPE = createMapper(CONFIGS_DATA.recordType);
+export type RECORD_TYPE = (typeof RECORD_TYPE.data)[number];
+
+export const RECORD_STATUS = createMapper(CONFIGS_DATA.recordStatus);
+export type RECORD_STATUS = (typeof RECORD_STATUS.data)[number];
 
 export const WORKER_TYPE = createMapper(CONFIGS_DATA.workerType);
 export type WORKER_TYPE = (typeof WORKER_TYPE.data)[number];

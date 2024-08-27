@@ -58,7 +58,7 @@ function isValidInterval(startAt: Date, endAt: Date) {
 export default function ReportsChart() {
   const [endAt, setEndAt] = useState(() => subHours(new Date(), 1));
   const [startAt, setStartAt] = useState(() => startOfDay(subDays(endAt, 7)));
-  const [type, setType] = useState<keyof Reports>('JPY');
+  const [currency, setCurrency] = useState<keyof Reports>('JPY');
   const [slice, setSlice] = useState<Slice>('1d');
 
   const [range, setRange] = useState({ startAt, endAt });
@@ -101,7 +101,7 @@ export default function ReportsChart() {
             views={['year', 'month', 'day', 'hours']}
           />
 
-          <Select value={type} onChange={(e) => setType(e.target.value as 'JPY' | 'TWD')}>
+          <Select value={currency} onChange={(e) => setCurrency(e.target.value as 'JPY' | 'TWD')}>
             <MenuItem value="JPY">JPY</MenuItem>
             <MenuItem value="TWD">TWD</MenuItem>
           </Select>
@@ -112,7 +112,7 @@ export default function ReportsChart() {
           </ToggleButtonGroup>
         </Stack>
 
-        <Content type={type} startAt={range.startAt} endAt={range.endAt} slice={slice} />
+        <Content type={currency} startAt={range.startAt} endAt={range.endAt} slice={slice} />
       </CardContent>
     </Card>
   );
