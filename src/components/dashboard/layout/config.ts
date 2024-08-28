@@ -1,6 +1,7 @@
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { Handshake } from '@phosphor-icons/react/dist/ssr/Handshake';
+import { Invoice } from '@phosphor-icons/react/dist/ssr/Invoice';
 import { Package } from '@phosphor-icons/react/dist/ssr/Package';
 import { ShieldStar } from '@phosphor-icons/react/dist/ssr/ShieldStar';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
@@ -66,6 +67,14 @@ export const navItems = [
     PhosphorIcon: Package,
     permissions: ['GetShippings'],
     matcher: { type: 'startsWith', href: '/dashboard/shippings' },
+  },
+  {
+    key: 'records',
+    title: '交易紀錄',
+    href: '/dashboard/report-records',
+    PhosphorIcon: Invoice,
+    permissions: ['GetRecordsSummary', 'GetRecords'],
+    matcher: { type: 'startsWith', href: '/dashboard/report-records' },
   },
   {
     key: 'workers',

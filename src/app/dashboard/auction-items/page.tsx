@@ -22,7 +22,7 @@ import { PickForShipping, PickForShippingButtons } from './PickForShipping';
 import RemoveSearchBtn from './RemoveSearchBtn';
 import { StatusFilter } from './StatusFilter';
 
-export const metadata = { title: `物品列表 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `日拍競標商品列表 | ${config.site.name}` } satisfies Metadata;
 
 const filterSchema = z.object({
   consignor: z.coerce.number().optional().catch(undefined),

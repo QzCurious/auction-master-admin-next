@@ -13,6 +13,8 @@ const ReqSchema = z.object({
   status: z.number().array().optional(),
   startAt: z.date().optional(),
   endAt: z.date().optional(),
+  limit: z.coerce.number().default(10),
+  offset: z.coerce.number().default(0),
 });
 
 export interface Record {
@@ -60,6 +62,8 @@ export async function GetRecords(payload: z.input<typeof ReqSchema>) {
   }
   data.startAt && query.append('startAt', data.startAt.toISOString());
   data.endAt && query.append('endAt', data.endAt.toISOString());
+  data.offset != null && query.append('offset', data.offset.toString());
+  data.limit != null && query.append('limit', data.limit.toString());
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/reports/records?${query}`, {
     method: 'GET',

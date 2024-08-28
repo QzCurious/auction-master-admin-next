@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 function useStableCallback<T extends (...args: any[]) => any>(fn: T | undefined): T {
   const ref = useRef(fn);
@@ -8,33 +8,37 @@ function useStableCallback<T extends (...args: any[]) => any>(fn: T | undefined)
   return useMemo(() => ((...args: Parameters<T>) => ref.current?.(...args)) as T, []);
 }
 
-interface ControllableState<T> {
+interface ControllableState<T, P extends any[]> {
   defaultValue?: T;
   value?: T;
-  onChange?: (value: T) => void;
+  onChange?: (value: T, ...args: P) => void;
 }
 
-export function useControllableState<T>({
+type s = React.SetStateAction<string>;
+
+export function useControllableState<T, P extends any[] = []>({
   defaultValue,
-  value: valueProp,
+  value,
   onChange,
-}: ControllableState<T>): [T, (value: T | ((prev: T) => T)) => void] {
-  const [state, setState] = useState(defaultValue as T);
+}: ControllableState<T, P>): [
+  state: T,
+  handler: NonNullable<typeof onChange>,
+  // setValue: React.Dispatch<React.SetStateAction<T>>,
+] {
+  const isControlled = value !== undefined;
+  const [uncontrolled, setUncontrolled] = useState(defaultValue as T);
 
-  const isControlled = valueProp !== undefined;
-  const setControlledState = useStableCallback(
-    isControlled
-      ? (value: T | ((prev: T) => T)) => {
-          onChange?.(typeof value === 'function' ? (value as (prev: T) => T)(valueProp) : value);
-        }
-      : undefined
-  );
+  const handler = useStableCallback<NonNullable<typeof onChange>>((value, ...args) => {
+    if (isControlled) onChange?.(value, ...args);
+    else setUncontrolled(value);
+  });
 
-  if (isControlled) {
-    return [valueProp, setControlledState];
-  }
+  // const setValue = useStableCallback<React.Dispatch<React.SetStateAction<T>>>((prev) => {
+  //   if (isControlled) onChange;
+  //   else setUncontrolled(prev);
+  // });
 
-  return [state, setState];
+  return [isControlled ? value : uncontrolled, handler];
 }
 
 function Input({
@@ -43,14 +47,16 @@ function Input({
   defaultValue,
 }: {
   value?: string;
-  onChange?: (value: string) => void;
+  onChange?: (value: string, num: number) => void;
   defaultValue?: string;
 }) {
-  const [state, setState] = useControllableState({ value: '', onChange, defaultValue, });
+  const [state, handler] = useControllableState({ value, onChange, defaultValue });
 
-  return <input />;
+  handler('', 3);
+
+  return <input value={state} onChange={(e) => handler(e.target.value, 3)} />;
 }
 
 function View() {
-  return <Input value="d" onChange={(x) => x} />;
+  return <Input value="d" onChange={(x, num) => x} />;
 }
