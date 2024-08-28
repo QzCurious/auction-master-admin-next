@@ -4,22 +4,24 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { PAGE } from '@/static';
 import { useQuery } from '@tanstack/react-query';
+import { type z } from 'zod';
 
 import { useHavePermissions } from '@/contexts/UserContext';
 import { ConsignorSelect } from '@/components/ConsignorSelect';
 import { FilterPopover } from '@/components/FilterPopover';
 
-const FIELD = 'consignor';
+import { type SearchParamsSchema } from './SearchParamsSchema';
 
-export function ConsignorFilter() {
+const FIELD = 'consignorID';
+
+export function ConsignorFilter({ consignorID }: Pick<z.output<typeof SearchParamsSchema>, 'consignorID'>) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const havePermissions = useHavePermissions();
-  const consignorId = searchParams.get(FIELD) ? Number(searchParams.get(FIELD)) : null;
   const consignorQuery = useQuery({
-    queryFn: () => AdminGetConsignor(consignorId!),
-    queryKey: ['consignor', consignorId],
-    enabled: !!consignorId,
+    queryFn: () => AdminGetConsignor(consignorID!),
+    queryKey: ['consignor', consignorID],
+    enabled: !!consignorID,
   });
 
   if (!havePermissions(['AdminGetConsignor', 'AdminGetConsignors'])) {
@@ -41,7 +43,7 @@ export function ConsignorFilter() {
         <ConsignorSelect
           textFieldProps={{ size: 'small' }}
           sx={{ width: 215 }}
-          value={consignorId}
+          value={consignorID ?? null}
           onChange={(id, consignor) => {
             const newSearchParams = new URLSearchParams(searchParams);
             newSearchParams.delete(PAGE);

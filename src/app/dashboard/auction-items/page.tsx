@@ -2,48 +2,29 @@ import { type Metadata } from 'next';
 import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
 import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers';
-import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
+import { PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Provider } from 'jotai';
-import * as R from 'remeda';
-import { z } from 'zod';
 
 import { config } from '@/config';
 import AutoRefreshPage from '@/components/AutoRefreshPage';
 import RedirectAuthError from '@/components/RedirectAuthError';
+import RemoveSearchBtn from '@/components/RemoveSearchBtn';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import { AuctionItemTable } from './AuctionItemTable';
 import { ConsignorFilter } from './ConsignorFilter';
 import { PickForFeePaid, PickForFeePaidButtons } from './PickForFeePaid';
 import { PickForShipping, PickForShippingButtons } from './PickForShipping';
-import RemoveSearchBtn from './RemoveSearchBtn';
+import { SearchParamsSchema } from './SearchParamsSchema';
 import { StatusFilter } from './StatusFilter';
 
 export const metadata = { title: `日拍競標商品列表 | ${config.site.name}` } satisfies Metadata;
 
-const filterSchema = z.object({
-  consignor: z.coerce.number().optional().catch(undefined),
-  status: z
-    .preprocess(
-      (v) => (typeof v === 'string' ? [v] : v),
-      z.coerce
-        .number()
-        .refine(R.isIncludedIn(AUCTION_ITEM_STATUS.data.map((item) => item.value)))
-        .array()
-    )
-    .default([]),
-});
-
 interface PageProps {
-  searchParams: {
-    consignor?: string;
-    status?: string | string[];
-    stage?: 'picking' | 'checking';
-    picking?: 'shipping' | 'fee';
-  } & PaginationSearchParams;
+  searchParams: Record<string, string | string[] | undefined>;
 }
 
 export default async function Page(pageProps: PageProps) {
@@ -65,15 +46,14 @@ export default async function Page(pageProps: PageProps) {
 }
 
 async function Content({ searchParams }: PageProps) {
-  const pagination = PaginationSchema.parse(searchParams);
-  const filters = filterSchema.parse(searchParams);
+  const filters = parseSearchParams(SearchParamsSchema, searchParams);
 
   const [auctionItemsRes, activeWorkersRes] = await Promise.all([
     GetAuctionItems({
-      consignorID: filters.consignor,
+      consignorID: filters.consignorID,
       status: (() => {
-        if (searchParams['picking'] === 'shipping') return [AUCTION_ITEM_STATUS.enum('ClosedStatus')];
-        if (searchParams['picking'] === 'fee') return [AUCTION_ITEM_STATUS.enum('AwaitingConsignorPayFeeStatus')];
+        if (filters.picking === 'shipping') return [AUCTION_ITEM_STATUS.enum('ClosedStatus')];
+        if (filters.picking === 'fee') return [AUCTION_ITEM_STATUS.enum('AwaitingConsignorPayFeeStatus')];
         if (filters.status.length) return filters.status;
         return [
           AUCTION_ITEM_STATUS.enum('InitStatus'),
@@ -85,8 +65,8 @@ async function Content({ searchParams }: PageProps) {
           AUCTION_ITEM_STATUS.enum('ConsignorRequestCancellationStatus'),
         ];
       })(),
-      limit: pagination[ROWS_PER_PAGE],
-      offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
+      limit: filters[ROWS_PER_PAGE],
+      offset: filters[PAGE] * filters[ROWS_PER_PAGE],
     }),
     GetActivationWorkers(),
   ]);
@@ -104,17 +84,17 @@ async function Content({ searchParams }: PageProps) {
       <AutoRefreshPage ms={10_000}>
         <Stack spacing={3}>
           <Stack direction="row" flexWrap="wrap" gap={2}>
-            <ConsignorFilter />
-            {!searchParams['picking'] && (
+            <ConsignorFilter consignorID={filters.consignorID} />
+            {!filters.picking && (
               <>
                 <StatusFilter selected={filters.status} />
-                <RemoveSearchBtn fields={['consignor', 'status']} />
+                <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'status']} />
               </>
             )}
 
             <Box mx="auto" />
-            <PickForShippingButtons />
-            <PickForFeePaidButtons />
+            <PickForShippingButtons picking={filters.picking} stage={filters.stage} />
+            <PickForFeePaidButtons picking={filters.picking} stage={filters.stage} />
           </Stack>
 
           <AuctionItemTable
@@ -124,8 +104,8 @@ async function Content({ searchParams }: PageProps) {
           />
         </Stack>
 
-        <PickForShipping />
-        <PickForFeePaid />
+        <PickForShipping picking={filters.picking} stage={filters.stage} />
+        <PickForFeePaid picking={filters.picking} stage={filters.stage} />
       </AutoRefreshPage>
     </Provider>
   );

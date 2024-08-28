@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -35,7 +34,7 @@ interface AdminTableProps {
   count: number;
 }
 
-export function AdminTable({ rows, count }: AdminTableProps): React.JSX.Element {
+export function AdminTable({ rows, count }: AdminTableProps) {
   const searchParams = useSearchParams();
   const status = searchParams.get('status');
   const account = searchParams.get('account');

@@ -5,11 +5,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@mui/material';
 import * as R from 'remeda';
 
-interface RemoveSearchBtnProps {
-  fields: string[];
+interface RemoveSearchBtnProps<T extends string> {
+  fields: T[];
 }
 
-export default function RemoveSearchBtn({ fields }: RemoveSearchBtnProps) {
+export default function RemoveSearchBtn<T extends string>({ fields }: RemoveSearchBtnProps<T>) {
   const router = useRouter();
   const searchParams = useSearchParams();
 

@@ -8,14 +8,17 @@ import { Button, Drawer, Stack, Typography } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
 import { useAtom, useAtomValue } from 'jotai';
 import { useSnackbar } from 'notistack';
+import { type z } from 'zod';
 
 import { pickedItemIdsReducerAtom, PickingList } from './PickingList';
+import { type SearchParamsSchema } from './SearchParamsSchema';
 
-export function PickForFeePaidButtons() {
+export function PickForFeePaidButtons({
+  picking,
+  stage,
+}: Pick<z.output<typeof SearchParamsSchema>, 'picking' | 'stage'>) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const picking = searchParams.get('picking');
-  const stage = searchParams.get('stage');
   const [pickedItemIds, dispatch] = useAtom(pickedItemIdsReducerAtom);
 
   return (
@@ -70,11 +73,9 @@ export function PickForFeePaidButtons() {
   );
 }
 
-export function PickForFeePaid() {
+export function PickForFeePaid({ picking, stage }: Pick<z.output<typeof SearchParamsSchema>, 'picking' | 'stage'>) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const picking = searchParams.get('picking');
-  const stage = searchParams.get('stage');
   const pickedItemIds = useAtomValue(pickedItemIdsReducerAtom);
 
   return (

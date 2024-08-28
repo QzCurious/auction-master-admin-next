@@ -1,42 +1,24 @@
 import type { Metadata } from 'next';
-import { SHIPPING_STATUS } from '@/api/backend/static-configs.data';
 import { GetShippings } from '@/api/backend/shippings/GetShippings';
-import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
+import { SHIPPING_STATUS } from '@/api/backend/static-configs.data';
+import { PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import * as R from 'remeda';
-import { z } from 'zod';
 
 import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
+import RemoveSearchBtn from '@/components/RemoveSearchBtn';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
-import RemoveSearchBtn from './RemoveSearchBtn';
+import { SearchParamsSchema } from './SearchParamsSchema';
 import { ShippingsTable } from './ShippingsTable';
 import { StatusFilter } from './StatusFilter';
 
 export const metadata = { title: `出貨列表 | ${config.site.name}` } satisfies Metadata;
 
-const filterSchema = z.object({
-  status: z
-    .preprocess(
-      (v) => (typeof v === 'string' ? [v] : v),
-      z.coerce
-        .number()
-        .refine(R.isIncludedIn(SHIPPING_STATUS.data.map((item) => item.value)))
-        .array()
-    )
-    .default([]),
-});
-
 interface PageProps {
-  searchParams: {
-    consignor?: string;
-    status?: string | string[];
-
-    'pick-for-shipping': 'picking' | 'checking';
-  } & PaginationSearchParams;
+  searchParams: Record<string, string | string[] | undefined>;
 }
 
 export default async function Page(pageProps: PageProps) {
@@ -58,16 +40,15 @@ export default async function Page(pageProps: PageProps) {
 }
 
 async function Content({ searchParams }: PageProps) {
-  const pagination = PaginationSchema.parse(searchParams);
-  const filters = filterSchema.parse(searchParams);
+  const filters = parseSearchParams(SearchParamsSchema, searchParams);
 
   const [ShippingsRes] = await Promise.all([
     GetShippings({
       status: filters.status.length
         ? filters.status
         : [SHIPPING_STATUS.enum('SubmitAppraisalStatus'), SHIPPING_STATUS.enum('ProcessingStatus')],
-      limit: pagination[ROWS_PER_PAGE],
-      offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
+      limit: filters[ROWS_PER_PAGE],
+      offset: filters[PAGE] * filters[ROWS_PER_PAGE],
     }),
   ]);
 
@@ -82,10 +63,10 @@ async function Content({ searchParams }: PageProps) {
   return (
     <Stack spacing={3}>
       <Stack direction="row" flexWrap="wrap" gap={2}>
-        {!searchParams['pick-for-shipping'] && (
+        {!filters['pick-for-shipping'] && (
           <>
             <StatusFilter selected={filters.status} />
-            <RemoveSearchBtn fields={['status']} />
+            <RemoveSearchBtn<keyof typeof filters> fields={['status']} />
           </>
         )}
 

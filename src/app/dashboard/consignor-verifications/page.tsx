@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { CONSIGNOR_VERIFICATION_STATUS } from '@/api/backend/static-configs.data';
 import { AdminGetConsignorVerifications } from '@/api/backend/consignor/AdminGetConsignorVerifications';
-import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
+import { CONSIGNOR_VERIFICATION_STATUS } from '@/api/backend/static-configs.data';
+import { PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
@@ -10,11 +10,12 @@ import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ConsignorVerificationTable } from './ConsignorVerificationTable';
+import { SearchParamsSchema } from './SearchParamsSchema';
 
 export const metadata = { title: `身份驗證列表 | ${config.site.name}` } satisfies Metadata;
 
 interface PageProps {
-  searchParams: PaginationSearchParams;
+  searchParams: Record<string, string | string[] | undefined>;
 }
 
 export default async function Page(pageProps: PageProps) {
@@ -34,12 +35,12 @@ export default async function Page(pageProps: PageProps) {
 }
 
 async function Table({ searchParams }: PageProps) {
-  const pagination = PaginationSchema.parse(searchParams);
+  const filters = parseSearchParams(SearchParamsSchema, searchParams);
   const [consignorVerificationsRes] = await Promise.all([
     AdminGetConsignorVerifications({
       status: CONSIGNOR_VERIFICATION_STATUS.enum('AwaitingVerificationCompletionStatus'),
-      limit: pagination[ROWS_PER_PAGE],
-      offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
+      limit: filters[ROWS_PER_PAGE],
+      offset: filters[PAGE] * filters[ROWS_PER_PAGE],
     }),
   ]);
 

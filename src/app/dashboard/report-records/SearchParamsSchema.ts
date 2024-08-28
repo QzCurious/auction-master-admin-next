@@ -16,12 +16,12 @@ export const SearchParamsSchema = PaginationSchema.extend({
   consignorID: z.coerce.number().optional(),
   type: z.coerce
     .number()
-    .refine(R.isIncludedIn(RECORD_TYPE.data.map((item) => item.value)))
     .array()
+    .transform(R.filter(R.isIncludedIn(RECORD_TYPE.data.map((item) => item.value))))
     .default([]),
   status: z.coerce
     .number()
-    .refine(R.isIncludedIn(RECORD_STATUS.data.map((item) => item.value)))
     .array()
+    .transform(R.filter(R.isIncludedIn(RECORD_STATUS.data.map((item) => item.value))))
     .default([]),
 });

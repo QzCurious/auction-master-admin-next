@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { GetAdmins } from '@/api/backend/admins/GetAdmins';
-import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
+import { PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
 import { Button, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
@@ -12,11 +12,12 @@ import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import { AdminTable } from './AdminTable';
+import { SearchParamsSchema } from './SearchParamsSchema';
 
 export const metadata = { title: `管理員列表 | ${config.site.name}` } satisfies Metadata;
 
 interface PageProps {
-  searchParams: PaginationSearchParams;
+  searchParams: Record<string, string | string[] | undefined>;
 }
 
 export default async function Page(pageProps: PageProps) {
@@ -47,11 +48,11 @@ export default async function Page(pageProps: PageProps) {
 }
 
 async function Table({ searchParams }: PageProps) {
-  const pagination = PaginationSchema.parse(searchParams);
+  const filters = parseSearchParams(SearchParamsSchema, searchParams);
   const [adminRes] = await Promise.all([
     GetAdmins({
-      limit: pagination[ROWS_PER_PAGE],
-      offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
+      limit: filters[ROWS_PER_PAGE],
+      offset: filters[PAGE] * filters[ROWS_PER_PAGE],
     }),
   ]);
 

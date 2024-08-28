@@ -13,12 +13,14 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { pickedItemIdsReducerAtom, PickingList } from './PickingList';
+import { type SearchParamsSchema } from './SearchParamsSchema';
 
-export function PickForShippingButtons() {
+export function PickForShippingButtons({
+  picking,
+  stage,
+}: Pick<z.output<typeof SearchParamsSchema>, 'picking' | 'stage'>) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const picking = searchParams.get('picking');
-  const stage = searchParams.get('stage');
   const [pickedItemIds, dispatch] = useAtom(pickedItemIdsReducerAtom);
 
   return (
@@ -73,11 +75,9 @@ export function PickForShippingButtons() {
   );
 }
 
-export function PickForShipping() {
+export function PickForShipping({ picking, stage }: Pick<z.output<typeof SearchParamsSchema>, 'picking' | 'stage'>) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const picking = searchParams.get('picking');
-  const stage = searchParams.get('stage');
 
   return (
     <Drawer

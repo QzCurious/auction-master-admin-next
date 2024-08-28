@@ -1,40 +1,25 @@
 import type { Metadata } from 'next';
 import { GetItemsAndDetails } from '@/api/backend/items/GetItemsAndDetails';
-import { ITEM_STATUS } from '@/api/backend/static-configs.data';
-import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
+import { PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import * as R from 'remeda';
-import { z } from 'zod';
 
 import { config } from '@/config';
 import AutoRefreshPage from '@/components/AutoRefreshPage';
 import RedirectAuthError from '@/components/RedirectAuthError';
+import RemoveSearchBtn from '@/components/RemoveSearchBtn';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ConsignorFilter } from './ConsignorFilter';
 import DirectIdInput from './DirectIdInput';
 import { ItemTable } from './ItemTable';
-import RemoveSearchBtn from './RemoveSearchBtn';
+import { SearchParamsSchema } from './SearchParamsSchema';
 import { StatusFilter } from './StatusFilter';
 
 export const metadata = { title: `物品列表 | ${config.site.name}` } satisfies Metadata;
 
-const filterSchema = z.object({
-  consignor: z.coerce.number().optional().catch(undefined),
-  status: z
-    .preprocess(
-      (v) => (typeof v === 'string' ? [v] : v),
-      z.coerce
-        .number()
-        .refine(R.isIncludedIn(ITEM_STATUS.data.map((item) => item.value)))
-        .array()
-    )
-    .default([]),
-});
-
 interface PageProps {
-  searchParams: { consignor?: string; status?: string | string[] } & PaginationSearchParams;
+  searchParams: Record<string, string | string[] | undefined>;
 }
 
 export default async function Page(pageProps: PageProps) {
@@ -69,14 +54,13 @@ export default async function Page(pageProps: PageProps) {
 }
 
 async function Content({ searchParams }: PageProps) {
-  const pagination = PaginationSchema.parse(searchParams);
-  const filters = filterSchema.parse(searchParams);
+  const filters = parseSearchParams(SearchParamsSchema, searchParams);
 
   const itemsRes = await GetItemsAndDetails({
     status: filters.status,
-    limit: pagination[ROWS_PER_PAGE],
-    offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
-    consignorID: filters.consignor,
+    limit: filters[ROWS_PER_PAGE],
+    offset: filters[PAGE] * filters[ROWS_PER_PAGE],
+    consignorID: filters.consignorID,
     sort: 'createdAt',
     order: 'desc',
   });
@@ -93,9 +77,9 @@ async function Content({ searchParams }: PageProps) {
     <AutoRefreshPage ms={10_000}>
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
-          <ConsignorFilter />
+          <ConsignorFilter consignorID={filters.consignorID} />
           <StatusFilter selected={filters.status} statusCount={itemsRes.data.statusCounts} />
-          <RemoveSearchBtn fields={['consignor', 'status']} />
+          <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'status']} />
         </Stack>
 
         <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} />

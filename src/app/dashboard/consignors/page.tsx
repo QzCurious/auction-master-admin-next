@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { AdminGetConsignors } from '@/api/backend/consignor/AdminGetConsignors';
-import { PAGE, PaginationSchema, ROWS_PER_PAGE, type PaginationSearchParams } from '@/static';
+import { PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
@@ -9,11 +9,12 @@ import RedirectAuthError from '@/components/RedirectAuthError';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ConsignorTable } from './ConsignorTable';
+import { SearchParamsSchema } from './SearchParamsSchema';
 
 export const metadata = { title: `寄售人列表 | ${config.site.name}` } satisfies Metadata;
 
 interface PageProps {
-  searchParams: PaginationSearchParams;
+  searchParams: Record<string, string | string[] | undefined>;
 }
 
 export default async function Page(pageProps: PageProps) {
@@ -33,12 +34,12 @@ export default async function Page(pageProps: PageProps) {
 }
 
 async function Table({ searchParams }: PageProps) {
-  const pagination = PaginationSchema.parse(searchParams);
+  const filters = parseSearchParams(SearchParamsSchema, searchParams);
   const [consignorsRes] = await Promise.all([
     AdminGetConsignors({
       // sort: 'status',
-      limit: pagination[ROWS_PER_PAGE],
-      offset: pagination[PAGE] * pagination[ROWS_PER_PAGE],
+      limit: filters[ROWS_PER_PAGE],
+      offset: filters[PAGE] * filters[ROWS_PER_PAGE],
     }),
   ]);
 
