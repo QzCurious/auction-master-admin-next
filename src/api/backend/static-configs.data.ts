@@ -16,6 +16,16 @@ export const CONFIGS_DATA = {
       value: 1002,
     },
     {
+      key: 'WalletWithdrawalAction',
+      message: '',
+      value: 1003,
+    },
+    {
+      key: 'WalletWithdrawalRefundAction',
+      message: '',
+      value: 1004,
+    },
+    {
       key: 'WalletPayFeeAction',
       message: '支付手續費',
       value: 2000,
@@ -294,7 +304,12 @@ export const CONFIGS_DATA = {
       value: 1002,
     },
     {
-      key: 'PayYahooFeeType',
+      key: 'WithdrawalType',
+      message: '提領',
+      value: 1003,
+    },
+    {
+      key: 'PayYahooAuctionFeeType',
       message: '支付結標日拍手續費',
       value: 2000,
     },
@@ -321,7 +336,7 @@ export const CONFIGS_DATA = {
       value: 1,
     },
     {
-      key: 'SubmitAppraisalStatus',
+      key: 'SubmitPaymentStatus',
       message: '已提交付款',
       value: 2,
     },
