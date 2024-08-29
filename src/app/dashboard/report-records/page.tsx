@@ -5,7 +5,7 @@ import { DATE_TIME_FORMAT, PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/stat
 import { Card, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { format, startOfDay, subDays, subHours } from 'date-fns';
+import { format } from 'date-fns';
 import { Provider } from 'jotai';
 import * as R from 'remeda';
 
@@ -16,7 +16,7 @@ import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import Filters from './Filters';
-import { isValidInterval, SearchParamsSchema } from './SearchParamsSchema';
+import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
 
 export const metadata = { title: `交易紀錄 | ${config.site.name}` } satisfies Metadata;
 
@@ -44,16 +44,18 @@ export default async function Page(pageProps: PageProps) {
 
 async function Content({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
-
-  filters.endAt ??= subHours(new Date(), 1);
-  filters.startAt ??= startOfDay(subDays(filters.endAt, 7));
-  if (!isValidInterval(filters.startAt, filters.endAt)) {
-    filters.endAt = subHours(new Date(), 1);
-    filters.startAt = startOfDay(subDays(filters.endAt, 7));
-  }
+  const { wasValid, startAt, endAt } = fixRange(filters.startAt, filters.endAt);
 
   const [recordsRes] = await Promise.all([
-    GetRecords({ ...filters, limit: filters[ROWS_PER_PAGE], offset: filters[PAGE] * filters[ROWS_PER_PAGE] }),
+    GetRecords({
+      consignorID: filters.consignorID,
+      type: filters.type,
+      endAt,
+      startAt,
+      status: filters.status,
+      limit: filters[ROWS_PER_PAGE],
+      offset: filters[PAGE] * filters[ROWS_PER_PAGE],
+    }),
   ]);
 
   if (recordsRes.error === '1001') {
@@ -68,7 +70,7 @@ async function Content({ searchParams }: PageProps) {
     <Provider>
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
-          <Filters {...filters} />
+          <Filters {...filters} startAt={wasValid ? startAt : undefined} endAt={wasValid ? endAt : undefined} />
         </Stack>
 
         <Card>

@@ -1,13 +1,27 @@
 import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
 import { PaginationSchema } from '@/static';
-import { addMonths } from 'date-fns';
+import { addDays, addMonths, startOfDay, subDays } from 'date-fns';
 import * as R from 'remeda';
 import { z } from 'zod';
 
 export const MAX_MONTHS = 3;
 
-export function isValidInterval(startAt: Date, endAt: Date) {
-  return startAt && endAt && startAt <= endAt && addMonths(startAt, MAX_MONTHS) >= endAt;
+export function validRange(startAt?: Date, endAt?: Date) {
+  return Boolean(
+    startAt && endAt && startAt <= endAt && endAt <= new Date() && addMonths(startAt, MAX_MONTHS) >= startOfDay(endAt)
+  );
+}
+
+export function fixRange(startAt?: Date, endAt?: Date) {
+  const wasValid = validRange(startAt, endAt);
+
+  if (wasValid) {
+    return { wasValid, startAt, endAt };
+  }
+
+  const defaultEndAt = startOfDay(addDays(new Date(), 1));
+  const defaultStartAt = startOfDay(subDays(defaultEndAt, 7));
+  return { wasValid, startAt: defaultStartAt, endAt: defaultEndAt };
 }
 
 export const SearchParamsSchema = PaginationSchema.extend({
