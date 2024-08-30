@@ -1,15 +1,18 @@
 import { type Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
-import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
+import { RECORD_TYPE } from '@/api/backend/static-configs.data';
+import { getUser } from '@/api/getToken';
 import { DATE_TIME_FORMAT, PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
-import { Card, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
+import { Card, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
-import * as R from 'remeda';
 
 import { config } from '@/config';
+import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
@@ -45,6 +48,10 @@ export default async function Page(pageProps: PageProps) {
 async function Content({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
   const { wasValid, startAt, endAt } = fixRange(filters.startAt, filters.endAt);
+  const user = await getUser();
+  if (!user) {
+    redirect('/auth/sign-in');
+  }
 
   const [recordsRes] = await Promise.all([
     GetRecords({
@@ -80,8 +87,9 @@ async function Content({ searchParams }: PageProps) {
             <Table sx={{ minWidth: '800px' }}>
               <TableHead>
                 <TableRow sx={{ whiteSpace: 'nowrap' }}>
-                  <TableCell>寄售人</TableCell>
                   <TableCell>類型</TableCell>
+                  <TableCell>寄售人</TableCell>
+                  <TableCell>幣別</TableCell>
                   <TableCell>細節</TableCell>
                 </TableRow>
               </TableHead>
@@ -89,36 +97,119 @@ async function Content({ searchParams }: PageProps) {
                 {recordsRes.data.records.length === 0 && <EmptyTableRow />}
                 {recordsRes.data.records.map((row) => (
                   <TableRow hover key={row.id}>
-                    <TableCell title={row.consignorID.toString()}>{row.consignorNickname}</TableCell>
+                    <TableCell title={row.consignorID.toString()}>
+                      <Stack direction="row" alignItems="center">
+                        {row.consignorNickname}
+                        <HavePermissionsOnly permissionKeys={['AdminGetConsignor']}>
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            href={`/dashboard/consignors/edit/${row.consignorID}`}
+                            target="_blank"
+                          >
+                            <LaunchOutlinedIcon fontSize="small" />
+                          </IconButton>
+                        </HavePermissionsOnly>
+                      </Stack>
+                    </TableCell>
                     <TableCell>{RECORD_TYPE.get('value', row.type).message}</TableCell>
-                    <TableCell>
-                      <TableContainer>
+                    <TableCell>{row.currency}</TableCell>
+                    <TableCell sx={{ width: 0 }}>
+                      <TableContainer sx={{ whiteSpace: 'nowrap' }}>
                         <Table size="small">
-                          <TableBody>
-                            {R.entries(row).map(([k, v]) => (
-                              <TableRow key={k}>
-                                <TableCell>{k}</TableCell>
-                                <TableCell>
-                                  {k === 'type' ? (
-                                    <>
-                                      ({v}) {RECORD_TYPE.enum(v)}
-                                    </>
-                                  ) : k === 'status' ? (
-                                    <>
-                                      ({v}) {RECORD_STATUS.enum(v)}
-                                    </>
-                                  ) : k === 'createdAt' || k === 'updatedAt' ? (
-                                    format(new Date(v), DATE_TIME_FORMAT)
-                                  ) : k === 'itemID' ? (
-                                    <Link href={`/dashboard/items/edit/${v}`} target="_blank">
-                                      {v}
-                                    </Link>
-                                  ) : (
-                                    v
-                                  )}
-                                </TableCell>
+                          <TableBody sx={{ '& td:nth-child(2)': { textAlign: 'end' } }}>
+                            <TableRow>
+                              <TableCell>操作代碼</TableCell>
+                              <TableCell>{row.opCode}</TableCell>
+                            </TableRow>
+                            {row.exchangeRate != null && (
+                              <TableRow>
+                                <TableCell>匯率</TableCell>
+                                <TableCell>{row.exchangeRate}</TableCell>
                               </TableRow>
-                            ))}
+                            )}
+                            {row.jpyWithdrawal != null && (
+                              <TableRow>
+                                <TableCell>日幣提款金額</TableCell>
+                                <TableCell>{row.jpyWithdrawal}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.withdrawal != null && (
+                              <TableRow>
+                                <TableCell>提款金額</TableCell>
+                                <TableCell>{row.withdrawal}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.closedPrice != null && (
+                              <TableRow>
+                                <TableCell>結標金額</TableCell>
+                                <TableCell>{row.closedPrice}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.price != null && (
+                              <TableRow>
+                                <TableCell>計算金額</TableCell>
+                                <TableCell>{row.price}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.directPurchasePrice != null && (
+                              <TableRow>
+                                <TableCell>直購金額</TableCell>
+                                <TableCell>{row.directPurchasePrice.toLocaleString()}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.purchasedPrice != null && (
+                              <TableRow>
+                                <TableCell>最低買入金額</TableCell>
+                                <TableCell>{row.purchasedPrice.toLocaleString()}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.yahooAuctionFee != null && (
+                              <TableRow>
+                                <TableCell>日拍手續費</TableCell>
+                                <TableCell>{row.yahooAuctionFee.toLocaleString()}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.commission != null && (
+                              <TableRow>
+                                <TableCell>平台手續費</TableCell>
+                                <TableCell>{row.commission.toLocaleString()}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.bonus != null && (
+                              <TableRow>
+                                <TableCell>回饋</TableCell>
+                                <TableCell>{row.bonus.toLocaleString()}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.profit != null && (
+                              <TableRow>
+                                <TableCell>損益</TableCell>
+                                <TableCell>{row.profit.toLocaleString()}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.yahooCancellationFee != null && (
+                              <TableRow>
+                                <TableCell>日拍取消手續費</TableCell>
+                                <TableCell>{row.yahooCancellationFee.toLocaleString()}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.spaceFee != null && (
+                              <TableRow>
+                                <TableCell>留倉費</TableCell>
+                                <TableCell>{row.spaceFee.toLocaleString()}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.shippingCost != null && (
+                              <TableRow>
+                                <TableCell>運費</TableCell>
+                                <TableCell>{row.shippingCost.toLocaleString()}</TableCell>
+                              </TableRow>
+                            )}
+                            <TableRow>
+                              <TableCell>時間</TableCell>
+                              <TableCell>{format(row.createdAt, DATE_TIME_FORMAT)}</TableCell>
+                            </TableRow>
                           </TableBody>
                         </Table>
                       </TableContainer>
