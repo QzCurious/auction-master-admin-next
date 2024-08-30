@@ -37,7 +37,8 @@ async function Table({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
   const [consignorsRes] = await Promise.all([
     AdminGetConsignors({
-      // sort: 'status',
+      sort: 'createdAt',
+      order: 'desc',
       limit: filters[ROWS_PER_PAGE],
       offset: filters[PAGE] * filters[ROWS_PER_PAGE],
     }),

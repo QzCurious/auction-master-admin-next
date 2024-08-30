@@ -13,6 +13,8 @@ const ReqSchema = z.object({
   status: z.number().array().optional(),
   startAt: z.date().optional(),
   endAt: z.date().optional(),
+  sort: z.string().optional(),
+  order: z.enum(['asc', 'desc']).optional(),
   limit: z.coerce.number().default(10),
   offset: z.coerce.number().default(0),
 });
@@ -62,6 +64,8 @@ export async function GetRecords(payload: z.input<typeof ReqSchema>) {
   }
   data.startAt && query.append('startAt', data.startAt.toISOString());
   data.endAt && query.append('endAt', data.endAt.toISOString());
+  data.sort != null && query.append('sort', data.sort);
+  data.order != null && query.append('order', data.order);
   data.offset != null && query.append('offset', data.offset.toString());
   data.limit != null && query.append('limit', data.limit.toString());
 

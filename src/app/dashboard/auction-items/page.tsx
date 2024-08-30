@@ -65,6 +65,8 @@ async function Content({ searchParams }: PageProps) {
           AUCTION_ITEM_STATUS.enum('ConsignorRequestCancellationStatus'),
         ];
       })(),
+      sort: 'createdAt',
+      order: 'desc',
       limit: filters[ROWS_PER_PAGE],
       offset: filters[PAGE] * filters[ROWS_PER_PAGE],
     }),

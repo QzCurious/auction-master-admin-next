@@ -39,6 +39,8 @@ async function Table({ searchParams }: PageProps) {
   const [consignorVerificationsRes] = await Promise.all([
     AdminGetConsignorVerifications({
       status: CONSIGNOR_VERIFICATION_STATUS.enum('AwaitingVerificationCompletionStatus'),
+      sort: 'createdAt',
+      order: 'desc',
       limit: filters[ROWS_PER_PAGE],
       offset: filters[PAGE] * filters[ROWS_PER_PAGE],
     }),
