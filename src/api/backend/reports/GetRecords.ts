@@ -3,6 +3,7 @@
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { type Currency } from '@/static';
 import { z } from 'zod';
 
 import { type RECORD_STATUS, type RECORD_TYPE } from '../static-configs.data';
@@ -27,7 +28,7 @@ export interface Record {
   opCode: string;
   itemID?: number;
   auctionItemID?: number;
-  currency?: string;
+  currency: Currency;
   exchangeRate?: number;
   jpyWithdrawal?: number;
   withdrawal?: number;

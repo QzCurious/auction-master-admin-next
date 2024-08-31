@@ -3,6 +3,7 @@
 import React from 'react';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
+import { currencySign } from '@/static';
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Skeleton, Typography } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
 import { atom, useAtomValue } from 'jotai';
@@ -100,7 +101,8 @@ function PickedListItem({ item }: { item: AuctionItem }) {
                 結標金額:
               </Typography>{' '}
               <Typography sx={{ display: 'inline' }} component="span" color="text.primary">
-                ¥{item.closedPrice.toLocaleString()}
+                {currencySign('JPY')}
+                {item.closedPrice.toLocaleString()}
               </Typography>
             </li>
           </ul>

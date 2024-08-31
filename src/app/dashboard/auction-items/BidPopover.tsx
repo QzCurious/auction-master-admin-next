@@ -2,6 +2,7 @@
 
 import { BidAuctionItem } from '@/api/backend/auction-items/BidAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
+import { currencySign } from '@/static';
 import {
   Button,
   FormControl,
@@ -95,7 +96,7 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
                     field.onChange(e.target.value === '' ? '' : parseInt(e.target.value));
                   }}
                   InputProps={{
-                    startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                    startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                   }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}

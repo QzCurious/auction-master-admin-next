@@ -6,6 +6,7 @@ import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/static-configs.data';
+import { currencySign } from '@/static';
 import { StatusFlow } from '@/StatusFlow';
 import { zodResolver } from '@hookform/resolvers/zod';
 import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
@@ -259,7 +260,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   }}
                   InputProps={{
                     readOnly: !canUpdate,
-                    startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                    startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                   }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
@@ -284,7 +285,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   }}
                   InputProps={{
                     readOnly: !canUpdate,
-                    startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                    startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                   }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
@@ -311,7 +312,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                       }}
                       InputProps={{
                         readOnly: !canUpdate,
-                        startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                        startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                       }}
                     />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
@@ -336,7 +337,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                       }}
                       InputProps={{
                         readOnly: !canUpdate,
-                        startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                        startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                       }}
                     />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}

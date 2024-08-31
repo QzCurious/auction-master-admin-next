@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
 import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
 import { SHIPPING_TYPE } from '@/api/backend/static-configs.data';
+import { currencySign } from '@/static';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Drawer, FormControl, FormHelperText, Stack, TextField, Typography } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
@@ -200,7 +201,8 @@ function ShippingForm() {
 
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="body1">
-          共 {auctionItemQueries.length} 筆, 總計 ¥{auctionItemQueries.sum}
+          共 {auctionItemQueries.length} 筆, 總計 {currencySign('JPY')}
+          {auctionItemQueries.sum}
         </Typography>
 
         <Button type="submit" variant="contained" disabled={isSubmitting}>

@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
+import { currencySign } from '@/static';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Checkbox, Link } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -154,7 +155,10 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                               </Box>{' '}
                               / 評價: {bidder.rating}{' '}
                             </span>
-                            <span style={{ marginLeft: 'auto' }}>¥{bidder.bidAmount.toLocaleString()}</span>
+                            <span style={{ marginLeft: 'auto' }}>
+                              {currencySign('JPY')}
+                              {bidder.bidAmount.toLocaleString()}
+                            </span>
                           </Stack>
                         ))}
                       </a>

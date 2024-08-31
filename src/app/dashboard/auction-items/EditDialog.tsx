@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { UpdateAuctionItem } from '@/api/backend/auction-items/UpdateAuctionItem';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
+import { currencySign } from '@/static';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -146,7 +147,7 @@ export default function EditDialog({
                         field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                       }}
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                        startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                       }}
                     />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}

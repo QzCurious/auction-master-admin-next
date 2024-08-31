@@ -6,8 +6,10 @@ import {
   ZodDefault,
   ZodEffects,
   ZodNullable,
+  ZodObject,
   ZodOptional,
   ZodReadonly,
+  type SomeZodObject,
   type ZodTypeAny,
 } from 'zod';
 
@@ -53,8 +55,8 @@ export const toPercent = (num: number) => {
 };
 
 // <<< zod ---------
-export function parseSearchParams<T extends z.SomeZodObject>(
-  schema: T,
+export function parseSearchParams<T extends ZodTypeAny>(
+  schema: UnwrapInnerType<T> extends SomeZodObject ? T : never,
   q:
     | URLSearchParams // for client side
     | Record<string, string | string[] | undefined> // for Next.js
@@ -62,9 +64,13 @@ export function parseSearchParams<T extends z.SomeZodObject>(
   // undefined instead of null for convenience of setting default value for destructing assignment
   type Shaped = Record<keyof z.output<T>, string | undefined | string[]>;
 
+  //
+  const unwrappedSchema = unwrapInnerType(schema) as SomeZodObject;
+  if (!(unwrappedSchema instanceof ZodObject)) throw new Error('schema should compatible with ZodObject/SomeZodObject');
+
   if (q instanceof URLSearchParams) {
     const obj = {} as Shaped;
-    for (const [k, s] of Object.entries(schema.shape)) {
+    for (const [k, s] of Object.entries(unwrappedSchema.shape)) {
       if (unwrapInnerType(s) instanceof ZodArray) obj[k as keyof Shaped] = q.getAll(k);
       else obj[k as keyof Shaped] = q.get(k) ?? undefined;
     }
@@ -73,7 +79,7 @@ export function parseSearchParams<T extends z.SomeZodObject>(
   // eslint-disable-next-line no-else-return
   else {
     const obj = {} as Shaped;
-    for (const [k, s] of Object.entries(schema.shape)) {
+    for (const [k, s] of Object.entries(unwrappedSchema.shape)) {
       if (unwrapInnerType(s) instanceof ZodArray) {
         obj[k as keyof Shaped] = q[k] == null ? [] : Array.isArray(q[k]) ? q[k] : [q[k]];
       } else obj[k as keyof Shaped] = q[k] ?? undefined;
@@ -90,6 +96,7 @@ type UnwrapInnerType<
     | ZodReadonly<ZodTypeAny>
     | ZodDefault<ZodTypeAny>
     | ZodCatch<ZodTypeAny>
+    | SomeZodObject
     | ZodTypeAny,
 > =
   T extends ZodEffects<infer U, infer _, infer __>
@@ -104,7 +111,7 @@ type UnwrapInnerType<
             ? UnwrapInnerType<U>
             : T extends ZodCatch<infer U>
               ? UnwrapInnerType<U>
-              : T extends ZodTypeAny
+              : T extends SomeZodObject | ZodTypeAny
                 ? T
                 : never;
 
@@ -139,3 +146,13 @@ function unwrapInnerType<
   return schema as any;
 }
 // >>> zod ---------
+
+export type Currency = 'JPY' | 'TWD';
+export function currencySign(currency: Currency) {
+  switch (currency) {
+    case 'JPY':
+      return '¥';
+    case 'TWD':
+      return 'NT$';
+  }
+}

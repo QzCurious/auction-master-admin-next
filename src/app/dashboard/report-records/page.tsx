@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
 import { RECORD_TYPE } from '@/api/backend/static-configs.data';
 import { getUser } from '@/api/getToken';
-import { DATE_TIME_FORMAT, PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
+import { currencySign, DATE_TIME_FORMAT, PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { Card, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Stack from '@mui/material/Stack';
@@ -89,7 +89,6 @@ async function Content({ searchParams }: PageProps) {
                 <TableRow sx={{ whiteSpace: 'nowrap' }}>
                   <TableCell>類型</TableCell>
                   <TableCell>寄售人</TableCell>
-                  <TableCell>幣別</TableCell>
                   <TableCell>細節</TableCell>
                 </TableRow>
               </TableHead>
@@ -113,7 +112,6 @@ async function Content({ searchParams }: PageProps) {
                       </Stack>
                     </TableCell>
                     <TableCell>{RECORD_TYPE.get('value', row.type).message}</TableCell>
-                    <TableCell>{row.currency}</TableCell>
                     <TableCell sx={{ width: 0 }}>
                       <TableContainer sx={{ whiteSpace: 'nowrap' }}>
                         <Table size="small">
@@ -131,79 +129,118 @@ async function Content({ searchParams }: PageProps) {
                             {row.jpyWithdrawal != null && (
                               <TableRow>
                                 <TableCell>日幣提款金額</TableCell>
-                                <TableCell>{row.jpyWithdrawal}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.jpyWithdrawal}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.withdrawal != null && (
                               <TableRow>
                                 <TableCell>提款金額</TableCell>
-                                <TableCell>{row.withdrawal}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.withdrawal}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.closedPrice != null && (
                               <TableRow>
                                 <TableCell>結標金額</TableCell>
-                                <TableCell>{row.closedPrice}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.closedPrice}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.price != null && (
                               <TableRow>
                                 <TableCell>計算金額</TableCell>
-                                <TableCell>{row.price}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.price}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.directPurchasePrice != null && (
                               <TableRow>
                                 <TableCell>直購金額</TableCell>
-                                <TableCell>{row.directPurchasePrice.toLocaleString()}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.directPurchasePrice.toLocaleString()}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.purchasedPrice != null && (
                               <TableRow>
                                 <TableCell>最低買入金額</TableCell>
-                                <TableCell>{row.purchasedPrice.toLocaleString()}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.purchasedPrice.toLocaleString()}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.yahooAuctionFee != null && (
                               <TableRow>
                                 <TableCell>日拍手續費</TableCell>
-                                <TableCell>{row.yahooAuctionFee.toLocaleString()}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.yahooAuctionFee.toLocaleString()}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.commission != null && (
                               <TableRow>
                                 <TableCell>平台手續費</TableCell>
-                                <TableCell>{row.commission.toLocaleString()}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.commission.toLocaleString()}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.bonus != null && (
                               <TableRow>
                                 <TableCell>回饋</TableCell>
-                                <TableCell>{row.bonus.toLocaleString()}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.bonus.toLocaleString()}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.profit != null && (
                               <TableRow>
                                 <TableCell>損益</TableCell>
-                                <TableCell>{row.profit.toLocaleString()}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.profit.toLocaleString()}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.yahooCancellationFee != null && (
                               <TableRow>
                                 <TableCell>日拍取消手續費</TableCell>
-                                <TableCell>{row.yahooCancellationFee.toLocaleString()}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.yahooCancellationFee.toLocaleString()}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.spaceFee != null && (
                               <TableRow>
                                 <TableCell>留倉費</TableCell>
-                                <TableCell>{row.spaceFee.toLocaleString()}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.spaceFee.toLocaleString()}
+                                </TableCell>
                               </TableRow>
                             )}
                             {row.shippingCost != null && (
                               <TableRow>
                                 <TableCell>運費</TableCell>
-                                <TableCell>{row.shippingCost.toLocaleString()}</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.shippingCost.toLocaleString()}
+                                </TableCell>
                               </TableRow>
                             )}
                             <TableRow>
