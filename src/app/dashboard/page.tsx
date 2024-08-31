@@ -17,7 +17,6 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 
 import lineIcon from './LINE_icon.png';
 import ReportsChart from './ReportsChart';
-import ReportsRecord from './ReportsRecord';
 
 export const metadata = { title: `Overview | ${config.site.name}` } satisfies Metadata;
 
@@ -45,7 +44,11 @@ export default async function Page() {
         <TotalProfit sx={{ height: '100%' }} title="平台手續費比例" value={toPercent(configsRes.data.commissionRate)} />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TotalProfit sx={{ height: '100%' }} title="回饋比例" value={toPercent(configsRes.data.defaultCommissionBonusRate)} />
+        <TotalProfit
+          sx={{ height: '100%' }}
+          title="回饋比例"
+          value={toPercent(configsRes.data.defaultCommissionBonusRate)}
+        />
       </Grid>
 
       <Grid lg={3} sm={6} xs={12}>
@@ -76,10 +79,6 @@ export default async function Page() {
 
       <Grid xs={12}>
         <ReportsChart />
-      </Grid>
-
-      <Grid xs={12}>
-        <ReportsRecord />
       </Grid>
     </Grid>
   );

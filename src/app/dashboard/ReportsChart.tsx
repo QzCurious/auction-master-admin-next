@@ -4,16 +4,7 @@ import { useEffect, useState } from 'react';
 import { type GetReports, type Report, type Reports } from '@/api/backend/reports/GetReports';
 import { GetReportsQueryOptions } from '@/api/backend/reports/GetReports.query';
 import { DATE_FORMAT } from '@/static';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CircularProgress,
-  MenuItem,
-  Select,
-  ToggleButton,
-  ToggleButtonGroup,
-} from '@mui/material';
+import { Card, CardContent, CircularProgress, MenuItem, Select, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -70,7 +61,7 @@ export default function ReportsChart() {
 
   return (
     <Card>
-      <CardHeader title="Reports" />
+      {/* <CardHeader title="Reports" /> */}
       <CardContent>
         <Stack direction="row" spacing={3}>
           <DateTimePicker

@@ -1,11 +1,23 @@
 import { type Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
+import { GetRecordsSummary } from '@/api/backend/reports/GetRecordsSummary';
 import { RECORD_TYPE } from '@/api/backend/static-configs.data';
 import { getUser } from '@/api/getToken';
 import { currencySign, DATE_TIME_FORMAT, PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
-import { Card, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import {
+  Card,
+  CardHeader,
+  Grid,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { format } from 'date-fns';
@@ -53,7 +65,14 @@ async function Content({ searchParams }: PageProps) {
     redirect('/auth/sign-in');
   }
 
-  const [recordsRes] = await Promise.all([
+  const [summaryRes, recordsRes] = await Promise.all([
+    GetRecordsSummary({
+      consignorID: filters.consignorID,
+      type: filters.type,
+      status: filters.status,
+      endAt,
+      startAt,
+    }),
     GetRecords({
       consignorID: filters.consignorID,
       type: filters.type,
@@ -67,11 +86,11 @@ async function Content({ searchParams }: PageProps) {
     }),
   ]);
 
-  if (recordsRes.error === '1001') {
+  if (summaryRes.error === '1001' || recordsRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetRecords']} />;
   }
 
-  if (recordsRes.error === '1003') {
+  if (summaryRes.error === '1003' || recordsRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
@@ -81,6 +100,40 @@ async function Content({ searchParams }: PageProps) {
         <Stack direction="row" flexWrap="wrap" gap={2}>
           <Filters {...filters} startAt={wasValid ? startAt : undefined} endAt={wasValid ? endAt : undefined} />
         </Stack>
+
+        <Grid container gap={4}>
+          <Grid>
+            <Card>
+              <CardHeader title="JPY" />
+              <Table size="small">
+                <TableBody>
+                  {Object.entries(summaryRes.data.JPY).map(([k, v]) => (
+                    <TableRow key={k}>
+                      <TableCell>{k}</TableCell>
+                      <TableCell>{v}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          </Grid>
+
+          <Grid>
+            <Card>
+              <CardHeader title="TWD" />
+              <Table size="small">
+                <TableBody>
+                  {Object.entries(summaryRes.data.TWD).map(([k, v]) => (
+                    <TableRow key={k}>
+                      <TableCell>{k}</TableCell>
+                      <TableCell>{v}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          </Grid>
+        </Grid>
 
         <Card>
           <TableContainer sx={{ overflowX: 'auto' }}>
