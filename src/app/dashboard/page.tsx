@@ -45,7 +45,7 @@ export default async function Page() {
         <TotalProfit sx={{ height: '100%' }} title="平台手續費比例" value={toPercent(configsRes.data.commissionRate)} />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TotalProfit sx={{ height: '100%' }} title="回饋比例" value={toPercent(configsRes.data.commissionBonusRate)} />
+        <TotalProfit sx={{ height: '100%' }} title="回饋比例" value={toPercent(configsRes.data.defaultCommissionBonusRate)} />
       </Grid>
 
       <Grid lg={3} sm={6} xs={12}>
