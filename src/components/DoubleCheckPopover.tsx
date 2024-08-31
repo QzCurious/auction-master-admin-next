@@ -1,3 +1,5 @@
+'use client';
+
 import type React from 'react';
 import { useTransition } from 'react';
 import { Box, Button, Popover, Stack, Typography, type PopoverProps } from '@mui/material';

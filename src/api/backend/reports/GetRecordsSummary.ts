@@ -67,7 +67,7 @@ export async function GetRecordsSummary(payload: z.input<typeof ReqSchema>) {
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/reports/records/summary?${query}`, {
     method: 'GET',
     next: {
-      tags: ['/reports/records/summary'],
+      tags: ['records'],
     },
   });
 

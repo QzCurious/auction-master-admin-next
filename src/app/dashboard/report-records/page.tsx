@@ -2,7 +2,7 @@ import { type Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary } from '@/api/backend/reports/GetRecordsSummary';
-import { RECORD_TYPE } from '@/api/backend/static-configs.data';
+import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
 import { getUser } from '@/api/getToken';
 import { currencySign, DATE_TIME_FORMAT, PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
@@ -31,6 +31,7 @@ import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import Filters from './Filters';
+import { ReviewSubmitPaymentButtons } from './ReviewSubmitPaymentButtons';
 import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
 
 export const metadata = { title: `交易紀錄 | ${config.site.name}` } satisfies Metadata;
@@ -142,6 +143,7 @@ async function Content({ searchParams }: PageProps) {
                 <TableRow sx={{ whiteSpace: 'nowrap' }}>
                   <TableCell>類型</TableCell>
                   <TableCell>寄售人</TableCell>
+                  <TableCell>狀態</TableCell>
                   <TableCell>細節</TableCell>
                 </TableRow>
               </TableHead>
@@ -155,7 +157,7 @@ async function Content({ searchParams }: PageProps) {
                         <HavePermissionsOnly permissionKeys={['AdminGetConsignor']}>
                           <IconButton
                             size="small"
-                            color="primary"
+                            color="secondary"
                             href={`/dashboard/consignors/edit/${row.consignorID}`}
                             target="_blank"
                           >
@@ -165,6 +167,14 @@ async function Content({ searchParams }: PageProps) {
                       </Stack>
                     </TableCell>
                     <TableCell>{RECORD_TYPE.get('value', row.type).message}</TableCell>
+                    <TableCell>
+                      <Stack sx={{ display: 'inline-flex' }} alignItems="center" spacing={1}>
+                        {RECORD_STATUS.get('value', row.status).message}
+                        {row.status === RECORD_STATUS.enum('SubmitPaymentStatus') && (
+                          <ReviewSubmitPaymentButtons recordId={row.id} />
+                        )}
+                      </Stack>
+                    </TableCell>
                     <TableCell sx={{ width: 0 }}>
                       <TableContainer sx={{ whiteSpace: 'nowrap' }}>
                         <Table size="small">

@@ -79,7 +79,7 @@ export async function GetRecords(payload: z.input<typeof ReqSchema>) {
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/reports/records?${query}`, {
     method: 'GET',
     next: {
-      tags: ['/reports/records'],
+      tags: ['records'],
     },
   });
 
