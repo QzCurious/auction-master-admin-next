@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { startTransition, useState } from 'react';
 import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { session } from '@/api/session';
@@ -64,7 +64,7 @@ export function SignInForm() {
             return;
           }
           const goto = new URLSearchParams(location.search).get('goto');
-          router.replace(goto || '/dashboard');
+          location.href = goto ?? '/dashboard';
         })}
       >
         <Stack spacing={2}>

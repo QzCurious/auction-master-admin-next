@@ -11,9 +11,9 @@ import { DynamicLogo } from '@/components/core/logo';
 
 import { SignInForm } from './Form';
 
-export const metadata = { title: `Sign in | Auth | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `登入 | ${config.site.name}` } satisfies Metadata;
 
-export default function Page(): React.JSX.Element {
+export default function Page() {
   return (
     <Box
       sx={{
