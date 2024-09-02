@@ -175,7 +175,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>日幣提款金額</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('JPY')}
                                   {row.jpyWithdrawal}
                                 </TableCell>
                               </TableRow>
@@ -193,7 +193,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>結標金額</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('JPY')}
                                   {row.closedPrice}
                                 </TableCell>
                               </TableRow>
@@ -202,7 +202,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>計算金額</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('JPY')}
                                   {row.price}
                                 </TableCell>
                               </TableRow>
@@ -211,7 +211,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>直購金額</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('JPY')}
                                   {row.directPurchasePrice.toLocaleString()}
                                 </TableCell>
                               </TableRow>
@@ -220,7 +220,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>最低買入金額</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('JPY')}
                                   {row.purchasedPrice.toLocaleString()}
                                 </TableCell>
                               </TableRow>
