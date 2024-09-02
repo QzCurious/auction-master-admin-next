@@ -1,7 +1,7 @@
 import { type Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
-import { GetRecordsSummary } from '@/api/backend/reports/GetRecordsSummary';
+import { GetRecordsSummary, Report } from '@/api/backend/reports/GetRecordsSummary';
 import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
 import { getUser } from '@/api/getToken';
 import { currencySign, DATE_TIME_FORMAT, PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
@@ -106,32 +106,14 @@ async function Content({ searchParams }: PageProps) {
           <Grid>
             <Card>
               <CardHeader title="JPY" />
-              <Table size="small">
-                <TableBody>
-                  {Object.entries(summaryRes.data.JPY).map(([k, v]) => (
-                    <TableRow key={k}>
-                      <TableCell>{k}</TableCell>
-                      <TableCell>{v}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <ReportSummeryTable report={summaryRes.data.JPY} />
             </Card>
           </Grid>
 
           <Grid>
             <Card>
               <CardHeader title="TWD" />
-              <Table size="small">
-                <TableBody>
-                  {Object.entries(summaryRes.data.TWD).map(([k, v]) => (
-                    <TableRow key={k}>
-                      <TableCell>{k}</TableCell>
-                      <TableCell>{v}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <ReportSummeryTable report={summaryRes.data.TWD} />
             </Card>
           </Grid>
         </Grid>
@@ -325,5 +307,92 @@ async function Content({ searchParams }: PageProps) {
         </Card>
       </Stack>
     </Provider>
+  );
+}
+
+function ReportSummeryTable({ report }: { report: Report }) {
+  return (
+    <Table size="small">
+      <TableBody sx={{ '&>tr>td:nth-child(2)': { textAlign: 'end' } }}>
+        {report.totalJpyWithdrawal != 0 && (
+          <TableRow>
+            <TableCell>總提取日幣</TableCell>
+            <TableCell>{report.totalJpyWithdrawal.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalWithdrawal != 0 && (
+          <TableRow>
+            <TableCell>總匯出台幣</TableCell>
+            <TableCell>{report.totalWithdrawal.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalClosedPrice != 0 && (
+          <TableRow>
+            <TableCell>總結標金額</TableCell>
+            <TableCell>{report.totalClosedPrice.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalPrice != 0 && (
+          <TableRow>
+            <TableCell>總結算金額</TableCell>
+            <TableCell>{report.totalPrice.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalDirectPurchasePrice != 0 && (
+          <TableRow>
+            <TableCell>總直購金額</TableCell>
+            <TableCell>{report.totalDirectPurchasePrice.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalPurchasedPrice != 0 && (
+          <TableRow>
+            <TableCell>總買回金額</TableCell>
+            <TableCell>{report.totalPurchasedPrice.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalYahooAuctionFee != 0 && (
+          <TableRow>
+            <TableCell>總日拍手續費</TableCell>
+            <TableCell>{report.totalYahooAuctionFee.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalCommission != 0 && (
+          <TableRow>
+            <TableCell>總平台手續費</TableCell>
+            <TableCell>{report.totalCommission.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalBonus != 0 && (
+          <TableRow>
+            <TableCell>總回饋金額</TableCell>
+            <TableCell>{report.totalBonus.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalProfit != 0 && (
+          <TableRow>
+            <TableCell>總收益</TableCell>
+            <TableCell>{report.totalProfit.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalYahooCancellationFee != 0 && (
+          <TableRow>
+            <TableCell>總日拍取消手續費</TableCell>
+            <TableCell>{report.totalYahooCancellationFee.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalSpaceFee != 0 && (
+          <TableRow>
+            <TableCell>總留倉費</TableCell>
+            <TableCell>{report.totalSpaceFee.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalShippingCost != 0 && (
+          <TableRow>
+            <TableCell>總運費</TableCell>
+            <TableCell>{report.totalShippingCost.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
   );
 }
