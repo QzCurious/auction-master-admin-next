@@ -72,8 +72,8 @@ function RejectPaymentButton({ recordId }: { recordId: Record['id'] }) {
 export function ReviewSubmitPaymentButtons({ recordId }: { recordId: Record['id'] }) {
   return (
     <Stack direction="row" spacing={1}>
-      <ApprovePaymentButton recordId={recordId} />
       <RejectPaymentButton recordId={recordId} />
+      <ApprovePaymentButton recordId={recordId} />
     </Stack>
   );
 }
