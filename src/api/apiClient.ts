@@ -15,7 +15,7 @@ export async function apiClient<Data, ErrorCode extends string = never>(
     console.log(`apiClient:`, `[${init?.method ?? 'GET'} ${url}]:`);
     console.log(`payload:`, init?.body instanceof FormData ? Object.fromEntries(init.body) : init?.body);
     console.log(
-      `response:`,
+      `response: [${res.status}]:`,
       await res
         .clone()
         .json()
