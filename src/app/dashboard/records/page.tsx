@@ -1,7 +1,7 @@
 import { type Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
-import { AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
+import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary, type Report } from '@/api/backend/reports/GetRecordsSummary';
 import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
@@ -25,6 +25,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
+import * as R from 'remeda';
 
 import { config } from '@/config';
 import { HavePermissionsOnly } from '@/contexts/UserContext';
@@ -106,19 +107,23 @@ async function Content({ searchParams }: PageProps) {
         </Stack>
 
         <Grid container gap={4}>
-          <Grid>
-            <Card>
-              <CardHeader title="JPY" />
-              <ReportSummeryTable report={summaryRes.data.JPY} />
-            </Card>
-          </Grid>
+          {R.sum(Object.values(summaryRes.data.JPY)) > 0 && (
+            <Grid>
+              <Card>
+                <CardHeader title="JPY" />
+                <ReportSummeryTable report={summaryRes.data.JPY} />
+              </Card>
+            </Grid>
+          )}
 
-          <Grid>
-            <Card>
-              <CardHeader title="TWD" />
-              <ReportSummeryTable report={summaryRes.data.TWD} />
-            </Card>
-          </Grid>
+          {R.sum(Object.values(summaryRes.data.TWD)) > 0 && (
+            <Grid>
+              <Card>
+                <CardHeader title="TWD" />
+                <ReportSummeryTable report={summaryRes.data.TWD} />
+              </Card>
+            </Grid>
+          )}
         </Grid>
 
         <Card>
