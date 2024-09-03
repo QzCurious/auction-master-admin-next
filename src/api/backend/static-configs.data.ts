@@ -17,12 +17,12 @@ export const CONFIGS_DATA = {
     },
     {
       key: 'WalletWithdrawalAction',
-      message: '',
+      message: '提款',
       value: 1003,
     },
     {
       key: 'WalletWithdrawalRefundAction',
-      message: '',
+      message: '提款返回',
       value: 1004,
     },
     {
