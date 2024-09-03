@@ -1,12 +1,15 @@
 import { type Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
+import { AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
-import { GetRecordsSummary, Report } from '@/api/backend/reports/GetRecordsSummary';
+import { GetRecordsSummary, type Report } from '@/api/backend/reports/GetRecordsSummary';
 import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
 import { getUser } from '@/api/getToken';
 import { currencySign, DATE_TIME_FORMAT, PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import {
+  Box,
   Card,
   CardHeader,
   Grid,
@@ -123,8 +126,8 @@ async function Content({ searchParams }: PageProps) {
             <Table sx={{ minWidth: '800px' }}>
               <TableHead>
                 <TableRow sx={{ whiteSpace: 'nowrap' }}>
-                  <TableCell>類型</TableCell>
                   <TableCell>寄售人</TableCell>
+                  <TableCell>類型</TableCell>
                   <TableCell>狀態</TableCell>
                   <TableCell>細節</TableCell>
                 </TableRow>
@@ -133,7 +136,7 @@ async function Content({ searchParams }: PageProps) {
                 {recordsRes.data.records.length === 0 && <EmptyTableRow />}
                 {recordsRes.data.records.map((row) => (
                   <TableRow hover key={row.id}>
-                    <TableCell title={row.consignorID.toString()}>
+                    <TableCell title={process.env.NODE_ENV === 'development' ? row.consignorID.toString() : ''}>
                       <Stack direction="row" alignItems="center">
                         {row.consignorNickname}
                         <HavePermissionsOnly permissionKeys={['AdminGetConsignor']}>
@@ -148,12 +151,46 @@ async function Content({ searchParams }: PageProps) {
                         </HavePermissionsOnly>
                       </Stack>
                     </TableCell>
-                    <TableCell>{RECORD_TYPE.get('value', row.type).message}</TableCell>
+                    <TableCell
+                      title={process.env.NODE_ENV === 'development' ? `${row.type} ${RECORD_TYPE.enum(row.type)}` : ''}
+                    >
+                      {RECORD_TYPE.get('value', row.type).message}
+                    </TableCell>
                     <TableCell>
-                      <Stack sx={{ display: 'inline-flex' }} alignItems="center" spacing={1}>
+                      <Stack direction="row" spacing={3} alignItems="center">
                         {RECORD_STATUS.get('value', row.status).message}
+
                         {row.status === RECORD_STATUS.enum('SubmitPaymentStatus') && (
-                          <ReviewSubmitPaymentButtons recordId={row.id} />
+                          <Box>
+                            {row.auctionItemID && <AuctionItemInfo auctionItemId={row.auctionItemID} />}
+                            <ReviewSubmitPaymentButtons recordId={row.id} />
+                            {row.type === RECORD_TYPE.enum('PayAuctionItemCancellationFeeType') && (
+                              <span>
+                                請先確認商品
+                                <Typography component="span" variant="body2" color="primary">
+                                  已下架
+                                </Typography>
+                                後再執行
+                                <Typography component="span" variant="body2" color="primary">
+                                  確認付款
+                                </Typography>
+                                操作
+                              </span>
+                            )}
+                            {row.type === RECORD_TYPE.enum('PayYahooAuctionFeeType') && (
+                              <span>
+                                請先確認商品
+                                <Typography component="span" variant="body2" color="primary">
+                                  已上架
+                                </Typography>
+                                後再執行
+                                <Typography component="span" variant="body2" color="primary">
+                                  確認付款
+                                </Typography>
+                                操作
+                              </span>
+                            )}
+                          </Box>
                         )}
                       </Stack>
                     </TableCell>
@@ -394,5 +431,33 @@ function ReportSummeryTable({ report }: { report: Report }) {
         )}
       </TableBody>
     </Table>
+  );
+}
+
+async function AuctionItemInfo({ auctionItemId }: { auctionItemId: AuctionItem['id'] }) {
+  const [auctionItemRes] = await Promise.all([GetAuctionItem(auctionItemId)]);
+
+  if (auctionItemRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
+  }
+
+  if (auctionItemRes.error === '1003') {
+    return <RedirectAuthError />;
+  }
+
+  return (
+    <div>
+      {/* <p>出品帳號: {auctionItemRes.data.sellerName}</p> */}
+      <p>
+        商品編號:{' '}
+        <a
+          href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${auctionItemRes.data.auctionID}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {auctionItemRes.data.auctionID}
+        </a>
+      </p>
+    </div>
   );
 }

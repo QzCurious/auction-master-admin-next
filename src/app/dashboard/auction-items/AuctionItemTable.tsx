@@ -82,7 +82,10 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     />
                   </TableCell>
                 )}
-                <TableCell sx={{ maxWidth: '200px' }}>
+                <TableCell
+                  sx={{ maxWidth: '200px' }}
+                  title={process.env.NODE_ENV === 'development' ? row.id.toString() : undefined}
+                >
                   {row.photo ? (
                     <Box
                       component="img"
@@ -170,7 +173,10 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     </TableCell>
                     <TableCell sx={{ textAlign: 'right' }}>{row.reservePrice.toLocaleString()}</TableCell>
                     <TableCell sx={{ textAlign: 'right' }}>{row.highestPrice.toLocaleString()}</TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                    <TableCell
+                      sx={{ whiteSpace: 'nowrap' }}
+                      title={process.env.NODE_ENV === 'development' ? AUCTION_ITEM_STATUS.enum(row.status) : undefined}
+                    >
                       {R.isIncludedIn(row.status, [
                         AUCTION_ITEM_STATUS.enum('InitStatus'),
                         AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),

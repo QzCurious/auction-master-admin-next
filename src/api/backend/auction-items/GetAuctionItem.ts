@@ -21,6 +21,17 @@ export interface AuctionItem {
   status: AUCTION_ITEM_STATUS['value'];
   createdAt: string;
   updatedAt: string;
+  consignorNickname: string;
+  sellerName: string;
+  watcherName: string;
+  bidders: Array<{
+    account: string;
+    rating: number;
+    bidAmount: number;
+    quantity: number;
+    lastBidAt: string;
+  }>;
+  recordID: string;
 }
 
 type Data = AuctionItem;

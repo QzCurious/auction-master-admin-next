@@ -43,6 +43,7 @@ export interface AuctionItem {
     quantity: number;
     lastBidAt: string;
   }>;
+  recordID: string;
 }
 
 interface Data {
