@@ -1,7 +1,10 @@
 'use client';
 
-import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
+import * as React from 'react';
+import Link from 'next/link';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
+import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
+import { toPercent } from '@/static';
 import EditIcon from '@mui/icons-material/Edit';
 import { Chip, TableContainer } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -14,12 +17,10 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Link from 'next/link';
-import * as React from 'react';
 
+import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
-import { HavePermissionsOnly } from '@/contexts/UserContext';
 
 import { statusColor } from './statusColor';
 
@@ -39,8 +40,8 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                 <TableCell>帳號</TableCell>
                 <TableCell>暱稱</TableCell>
                 <TableCell>手機</TableCell>
-                <TableCell>銀行代碼</TableCell>
                 <TableCell>銀行帳號</TableCell>
+                <TableCell>回饋比例</TableCell>
                 <TableCell>狀態</TableCell>
                 <TableCell>操作</TableCell>
               </TableRow>
@@ -66,15 +67,13 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                       </Stack>
                     </TableCell>
                     <TableCell>
-                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        {row.bankCode}
-                      </Stack>
+                      {!!row.bankCode && !!row.bankAccount && (
+                        <>
+                          ({row.bankCode}) {row.bankAccount}
+                        </>
+                      )}
                     </TableCell>
-                    <TableCell>
-                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        {row.bankAccount}
-                      </Stack>
-                    </TableCell>
+                    <TableCell>{toPercent(row.commissionBonusRate)}</TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
                         <Chip

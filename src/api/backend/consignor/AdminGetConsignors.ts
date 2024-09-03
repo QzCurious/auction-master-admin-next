@@ -18,11 +18,18 @@ const ReqSchema = z.object({
 
 export interface Consignor {
   id: number;
+  avatar: string;
   account: string;
   password: string;
   nickname: string;
+  commissionBonusRate: number;
   name: string;
   identification: string;
+  gender: number;
+  birthday: string;
+  city: string;
+  district: string;
+  streetAddress: string;
   phone: string;
   bankCode: string;
   bankAccount: string;

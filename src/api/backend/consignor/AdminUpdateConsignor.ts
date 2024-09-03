@@ -11,6 +11,7 @@ const ReqSchema = z.object({
   password: z.string().optional(),
   nickname: z.string().optional(),
   status: z.number().optional(),
+  commissionBonusRate: z.number().optional(),
 });
 
 type Data = 'Success';
@@ -24,6 +25,7 @@ export async function AdminUpdateConsignor(id: number, payload: z.input<typeof R
   data.password && formData.append('password', data.password);
   data.nickname != null && formData.append('nickname', data.nickname);
   data.status != null && formData.append('status', data.status.toString());
+  data.commissionBonusRate != null && formData.append('commissionBonusRate', data.commissionBonusRate.toString());
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/consignors/${id}`, {
     method: 'PATCH',

@@ -2,11 +2,11 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
+import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Chip, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Button, Chip, Grid, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
 import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
+import { BigNumber } from 'bignumber.js';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import * as R from 'remeda';
@@ -33,6 +34,7 @@ const FormSchema = z
     status: z.number().refine(R.isIncludedIn(CONSIGNOR_STATUS.data.map((item) => item.value)), { message: '必填' }),
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
+    commissionBonusRate: z.coerce.number().min(0).max(100),
   })
   .refine((data) => (!data.password ? true : data.password === data.confirmPassword), {
     message: '請重新確認新密碼',
@@ -41,7 +43,13 @@ const FormSchema = z
 
 export default function ConsignorForm({ consignor }: ConsignorFromProps) {
   const defaultValues = useMemo(
-    () => ({ nickname: consignor.nickname, status: consignor.status, password: '', confirmPassword: '' }),
+    () => ({
+      nickname: consignor.nickname,
+      status: consignor.status,
+      password: '',
+      confirmPassword: '',
+      commissionBonusRate: BigNumber(consignor.commissionBonusRate).multipliedBy(100).toNumber(),
+    }),
     [consignor]
   );
   const router = useRouter();
@@ -62,7 +70,10 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
   return (
     <form
       onSubmit={handleSubmit(async (data) => {
-        const res = await AdminUpdateConsignor(consignor.id, { ...data });
+        const res = await AdminUpdateConsignor(consignor.id, {
+          ...data,
+          commissionBonusRate: BigNumber(data.commissionBonusRate).dividedBy(100).toNumber(),
+        });
         if (res.error) {
           enqueueSnackbar(res.error, { variant: 'error' });
           return;
@@ -153,7 +164,30 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
               />
             </Grid>
 
-            <Grid item xs />
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name="commissionBonusRate"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <TextField
+                      {...field}
+                      label="回饋比例"
+                      type="number"
+                      fullWidth
+                      onChange={(e) => {
+                        field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                      }}
+                      inputProps={{ step: 0.1 }}
+                      InputProps={{
+                        endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                      }}
+                    />
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
 
             <Grid item xs={12} sm={6}>
               <Controller
