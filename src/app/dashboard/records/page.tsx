@@ -2,6 +2,7 @@ import { type Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
+import { AdminGetConsignor, Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary, type Report } from '@/api/backend/reports/GetRecordsSummary';
 import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
@@ -12,6 +13,7 @@ import {
   Box,
   Card,
   CardHeader,
+  Chip,
   Grid,
   IconButton,
   Table,
@@ -163,13 +165,32 @@ async function Content({ searchParams }: PageProps) {
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={3} alignItems="center">
-                        {RECORD_STATUS.get('value', row.status).message}
+                        <Chip size="small" label={RECORD_STATUS.get('value', row.status).message} />
 
-                        {row.status === RECORD_STATUS.enum('SubmitPaymentStatus') && (
-                          <Box>
-                            {row.auctionItemID && <AuctionItemInfo auctionItemId={row.auctionItemID} />}
-                            <ReviewSubmitPaymentButtons recordId={row.id} />
-                            {row.type === RECORD_TYPE.enum('PayAuctionItemCancellationFeeType') && (
+                        {row.status === RECORD_STATUS.enum('SubmitPaymentStatus') &&
+                          row.type === RECORD_TYPE.enum('WithdrawalType') && (
+                            <Box>
+                              <ConsignorBankInfo consignorID={row.consignorID} />
+                              <ReviewSubmitPaymentButtons recordId={row.id} />
+                              <span>
+                                請
+                                <Typography component="span" variant="body2" color="primary">
+                                  完成匯款
+                                </Typography>
+                                後再執行
+                                <Typography component="span" variant="body2" color="primary">
+                                  確認付款
+                                </Typography>
+                                操作
+                              </span>
+                            </Box>
+                          )}
+
+                        {row.status === RECORD_STATUS.enum('SubmitPaymentStatus') &&
+                          row.type === RECORD_TYPE.enum('PayAuctionItemCancellationFeeType') && (
+                            <Box>
+                              {row.auctionItemID && <AuctionItemInfo auctionItemId={row.auctionItemID} />}
+                              <ReviewSubmitPaymentButtons recordId={row.id} />
                               <span>
                                 請先確認商品
                                 <Typography component="span" variant="body2" color="primary">
@@ -181,8 +202,33 @@ async function Content({ searchParams }: PageProps) {
                                 </Typography>
                                 操作
                               </span>
-                            )}
-                            {row.type === RECORD_TYPE.enum('PayYahooAuctionFeeType') && (
+                            </Box>
+                          )}
+
+                        {row.status === RECORD_STATUS.enum('SubmitPaymentStatus') &&
+                          row.type === RECORD_TYPE.enum('PayAuctionItemCancellationFeeType') && (
+                            <Box>
+                              {row.auctionItemID && <AuctionItemInfo auctionItemId={row.auctionItemID} />}
+                              <ReviewSubmitPaymentButtons recordId={row.id} />
+                              <span>
+                                請先確認商品
+                                <Typography component="span" variant="body2" color="primary">
+                                  已下架
+                                </Typography>
+                                後再執行
+                                <Typography component="span" variant="body2" color="primary">
+                                  確認付款
+                                </Typography>
+                                操作
+                              </span>
+                            </Box>
+                          )}
+
+                        {row.status === RECORD_STATUS.enum('SubmitPaymentStatus') &&
+                          row.type === RECORD_TYPE.enum('PayYahooAuctionFeeType') && (
+                            <Box>
+                              {row.auctionItemID && <AuctionItemInfo auctionItemId={row.auctionItemID} />}
+                              <ReviewSubmitPaymentButtons recordId={row.id} />
                               <span>
                                 請先確認商品
                                 <Typography component="span" variant="body2" color="primary">
@@ -194,9 +240,8 @@ async function Content({ searchParams }: PageProps) {
                                 </Typography>
                                 操作
                               </span>
-                            )}
-                          </Box>
-                        )}
+                            </Box>
+                          )}
                       </Stack>
                     </TableCell>
                     <TableCell sx={{ width: 0 }}>
@@ -462,6 +507,26 @@ async function AuctionItemInfo({ auctionItemId }: { auctionItemId: AuctionItem['
         >
           {auctionItemRes.data.auctionID}
         </a>
+      </p>
+    </div>
+  );
+}
+
+async function ConsignorBankInfo({ consignorID }: { consignorID: Consignor['id'] }) {
+  const [consignorRes] = await Promise.all([AdminGetConsignor(consignorID)]);
+
+  if (consignorRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
+  }
+
+  if (consignorRes.error === '1003') {
+    return <RedirectAuthError />;
+  }
+
+  return (
+    <div>
+      <p>
+        銀行帳戶: ({consignorRes.data.bankCode}) {consignorRes.data.bankAccount}
       </p>
     </div>
   );

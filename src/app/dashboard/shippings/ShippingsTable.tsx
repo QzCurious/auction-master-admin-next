@@ -1,9 +1,9 @@
 'use client';
 
-import { SHIPPING_STATUS, SHIPPING_TYPE } from '@/api/backend/static-configs.data';
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
+import { SHIPPING_STATUS, SHIPPING_TYPE } from '@/api/backend/static-configs.data';
 import { DATE_TIME_FORMAT } from '@/static';
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 import CropFreeOutlinedIcon from '@mui/icons-material/CropFreeOutlined';
@@ -110,7 +110,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                                     bgcolor: 'white',
                                   }}
                                 >
-                                  <Link href={item.photos[0].photo} target="_blank" rel="noreferrer">
+                                  <Link href={item.photos?.[0]?.photo} target="_blank" rel="noreferrer">
                                     <CropFreeOutlinedIcon />
                                   </Link>
                                   <HavePermissionsOnly permissionKeys={['GetItemAndDetails', 'AdminGetConsignor']}>
@@ -119,7 +119,11 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                                     </Link>
                                   </HavePermissionsOnly>
                                 </Stack>
-                                <img src={item.photos[0].photo} style={{ display: 'block', maxWidth: '100%' }} alt="" />
+                                <img
+                                  src={item.photos?.[0]?.photo}
+                                  style={{ display: 'block', maxWidth: '100%' }}
+                                  alt=""
+                                />
                                 <Typography>{item.name}</Typography>
                               </Paper>
                             </Popover>
