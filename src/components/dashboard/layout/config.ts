@@ -71,10 +71,10 @@ export const navItems = [
   {
     key: 'records',
     title: '交易紀錄',
-    href: '/dashboard/report-records',
+    href: '/dashboard/records',
     PhosphorIcon: Invoice,
     permissions: ['GetRecordsSummary', 'GetRecords'],
-    matcher: { type: 'startsWith', href: '/dashboard/report-records' },
+    matcher: { type: 'startsWith', href: '/dashboard/records' },
   },
   {
     key: 'workers',
