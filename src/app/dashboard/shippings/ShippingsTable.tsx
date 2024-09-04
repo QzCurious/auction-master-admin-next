@@ -39,6 +39,7 @@ import { enqueueSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 
 import { HavePermissionsOnly } from '@/contexts/UserContext';
+import CopyButton from '@/components/CopyButton';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
@@ -200,9 +201,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                         </Typography>
                         <Typography variant="body2">
                           {row.shipmentTrackingNumber}
-                          <IconButton size="small" type="button" onClick={() => copy(row.shipmentTrackingNumber)}>
-                            <ContentCopyOutlinedIcon sx={{ fontSize: 'var(--icon-fontSize-sm)' }} />
-                          </IconButton>
+                          <CopyButton text={row.shipmentTrackingNumber} />
                         </Typography>
                       </div>
                     )}

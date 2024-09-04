@@ -2,7 +2,7 @@ import { type Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { AdminGetConsignor, Consignor } from '@/api/backend/consignor/AdminGetConsignor';
+import { AdminGetConsignor, type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary, type RecordSummary } from '@/api/backend/reports/GetRecordsSummary';
 import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
@@ -10,8 +10,6 @@ import { getUser } from '@/api/getToken';
 import { currencySign, DATE_TIME_FORMAT, PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import {
-  Box,
-  Card,
   CardHeader,
   Chip,
   Grid,
@@ -23,8 +21,9 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import Typography from '@mui/material/Typography/Typography';
+import { Box, Stack } from '@mui/system';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
 import * as R from 'remeda';
@@ -36,6 +35,7 @@ import RedirectAuthError from '@/components/RedirectAuthError';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
+import CopyButton from '../../../components/CopyButton';
 import Filters from './Filters';
 import { ReviewSubmitPaymentButtons } from './ReviewSubmitPaymentButtons';
 import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
@@ -556,6 +556,7 @@ async function ConsignorBankInfo({ consignorID }: { consignorID: Consignor['id']
     <div>
       <p>
         銀行帳戶: ({consignorRes.data.bankCode}) {consignorRes.data.bankAccount}
+        <CopyButton text={consignorRes.data.bankAccount} />
       </p>
     </div>
   );
