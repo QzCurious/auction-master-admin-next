@@ -419,7 +419,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   onChange={(e) => {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
-                  InputProps={{ readOnly: !canUpdate }}
+                  InputProps={{ readOnly: !canUpdate, endAdornment: <InputAdornment position="end">g</InputAdornment> }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
@@ -441,7 +441,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   onChange={(e) => {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
-                  InputProps={{ readOnly: !canUpdate }}
+                  InputProps={{ readOnly: !canUpdate, endAdornment: <InputAdornment position="end">g</InputAdornment> }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
