@@ -13,9 +13,10 @@ const ReqSchema = z.object({
   endAt: z.date().optional(),
 });
 
-export interface Report {
+export interface RecordSummary {
   totalJpyWithdrawal: number;
   totalWithdrawal: number;
+  totalWithdrawalTransferFee: number;
   totalClosedPrice: number;
   totalPrice: number;
   totalDirectPurchasePrice: number;
@@ -30,17 +31,18 @@ export interface Report {
 }
 
 export interface Reports {
-  JPY?: Report;
-  TWD?: Report;
+  JPY?: RecordSummary;
+  TWD?: RecordSummary;
 }
 
 type Data = Reports;
 
 type ErrorCode = never;
 
-const EMPTY_REPORT: Report = {
+const EMPTY_REPORT: RecordSummary = {
   totalJpyWithdrawal: 0,
   totalWithdrawal: 0,
+  totalWithdrawalTransferFee: 0,
   totalClosedPrice: 0,
   totalPrice: 0,
   totalDirectPurchasePrice: 0,

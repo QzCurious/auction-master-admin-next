@@ -11,11 +11,14 @@ const ReqSchema = z.object({
 });
 
 export interface Report {
+  totalJpyWithdrawal: number;
+  totalWithdrawal: number;
+  totalWithdrawalTransferFee: number;
   totalClosedPrice: number;
   totalPrice: number;
   totalDirectPurchasePrice: number;
   totalPurchasedPrice: number;
-  totalYahooFee: number;
+  totalYahooAuctionFee: number;
   totalCommission: number;
   totalBonus: number;
   totalProfit: number;
@@ -39,11 +42,14 @@ type Data = Array<{
 type ErrorCode = never;
 
 const EMPTY_REPORT: Report = {
+  totalJpyWithdrawal: 0,
+  totalWithdrawal: 0,
+  totalWithdrawalTransferFee: 0,
   totalClosedPrice: 0,
   totalPrice: 0,
   totalDirectPurchasePrice: 0,
   totalPurchasedPrice: 0,
-  totalYahooFee: 0,
+  totalYahooAuctionFee: 0,
   totalCommission: 0,
   totalBonus: 0,
   totalProfit: 0,

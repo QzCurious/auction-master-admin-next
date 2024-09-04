@@ -4,7 +4,7 @@ import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { AdminGetConsignor, Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
-import { GetRecordsSummary, type Report } from '@/api/backend/reports/GetRecordsSummary';
+import { GetRecordsSummary, type RecordSummary } from '@/api/backend/reports/GetRecordsSummary';
 import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
 import { getUser } from '@/api/getToken';
 import { currencySign, DATE_TIME_FORMAT, PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
@@ -247,6 +247,7 @@ async function Content({ searchParams }: PageProps) {
                     <TableCell sx={{ width: 0 }}>
                       <TableContainer sx={{ whiteSpace: 'nowrap' }}>
                         <Table size="small">
+                          {/* v4 https://docs.google.com/spreadsheets/d/1S2-9S-AOAJG5a_hHFlA1N6YN1W5LZjpZzptL2UgBj5w/edit?usp=sharing */}
                           <TableBody sx={{ '& td:nth-child(2)': { textAlign: 'end' } }}>
                             <TableRow>
                               <TableCell>操作代碼</TableCell>
@@ -263,7 +264,7 @@ async function Content({ searchParams }: PageProps) {
                                 <TableCell>日幣提款金額</TableCell>
                                 <TableCell>
                                   {currencySign('JPY')}
-                                  {row.jpyWithdrawal}
+                                  {row.jpyWithdrawal.toLocaleString()}
                                 </TableCell>
                               </TableRow>
                             )}
@@ -272,8 +273,29 @@ async function Content({ searchParams }: PageProps) {
                                 <TableCell>提款金額</TableCell>
                                 <TableCell>
                                   {currencySign(row.currency)}
-                                  {row.withdrawal}
+                                  {row.withdrawal.toLocaleString()}
                                 </TableCell>
+                              </TableRow>
+                            )}
+                            {row.withdrawalTransferFee != null && (
+                              <TableRow>
+                                <TableCell>提款手續費</TableCell>
+                                <TableCell>
+                                  {currencySign(row.currency)}
+                                  {row.withdrawalTransferFee.toLocaleString()}
+                                </TableCell>
+                              </TableRow>
+                            )}
+                            {row.bankCode != null && (
+                              <TableRow>
+                                <TableCell>銀行代碼</TableCell>
+                                <TableCell>{row.bankCode}</TableCell>
+                              </TableRow>
+                            )}
+                            {row.bankAccount != null && (
+                              <TableRow>
+                                <TableCell>銀行帳號</TableCell>
+                                <TableCell>{row.bankAccount}</TableCell>
                               </TableRow>
                             )}
                             {row.closedPrice != null && (
@@ -397,20 +419,27 @@ async function Content({ searchParams }: PageProps) {
   );
 }
 
-function ReportSummeryTable({ report }: { report: Report }) {
+function ReportSummeryTable({ report }: { report: RecordSummary }) {
   return (
     <Table size="small">
+      {/* v4 https://docs.google.com/spreadsheets/d/1S2-9S-AOAJG5a_hHFlA1N6YN1W5LZjpZzptL2UgBj5w/edit?usp=sharing */}
       <TableBody sx={{ '&>tr>td:nth-child(2)': { textAlign: 'end' } }}>
         {report.totalJpyWithdrawal != 0 && (
           <TableRow>
-            <TableCell>總提取日幣</TableCell>
+            <TableCell>總提款日幣</TableCell>
             <TableCell>{report.totalJpyWithdrawal.toLocaleString()}</TableCell>
           </TableRow>
         )}
         {report.totalWithdrawal != 0 && (
           <TableRow>
-            <TableCell>總匯出台幣</TableCell>
+            <TableCell>總提款台幣</TableCell>
             <TableCell>{report.totalWithdrawal.toLocaleString()}</TableCell>
+          </TableRow>
+        )}
+        {report.totalWithdrawalTransferFee != 0 && (
+          <TableRow>
+            <TableCell>總提款手續費</TableCell>
+            <TableCell>{report.totalWithdrawalTransferFee.toLocaleString()}</TableCell>
           </TableRow>
         )}
         {report.totalClosedPrice != 0 && (

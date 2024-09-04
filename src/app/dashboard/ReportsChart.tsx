@@ -110,11 +110,14 @@ export default function ReportsChart() {
 }
 
 const LABEL_MAP: Record<keyof Report, string> = {
+  totalJpyWithdrawal: '總提款日幣',
+  totalWithdrawal: '總提款台幣',
+  totalWithdrawalTransferFee: '總提款手續費',
   totalClosedPrice: '真實結標的總金額',
   totalPrice: '計算給寄售人的總金額',
   totalDirectPurchasePrice: '公司直購總金額',
   totalPurchasedPrice: '公司買回總金額',
-  totalYahooFee: '日拍總手續費',
+  totalYahooAuctionFee: '日拍總手續費',
   totalCommission: '平台總手續費',
   totalBonus: '總回饋',
   totalProfit: '總損益',
@@ -125,11 +128,12 @@ const LABEL_MAP: Record<keyof Report, string> = {
 
 const mapBy: Record<keyof Reports, Array<keyof Report>> = {
   JPY: [
+    'totalJpyWithdrawal',
     'totalClosedPrice',
     'totalPrice',
     'totalDirectPurchasePrice',
     'totalPurchasedPrice',
-    'totalYahooFee',
+    'totalYahooAuctionFee',
     'totalCommission',
     'totalBonus',
     'totalProfit',
@@ -138,7 +142,9 @@ const mapBy: Record<keyof Reports, Array<keyof Report>> = {
     'totalShippingCost',
   ],
   TWD: [
-    'totalYahooFee',
+    'totalWithdrawal',
+    'totalWithdrawalTransferFee',
+    'totalYahooAuctionFee',
     'totalCommission',
     'totalBonus',
     'totalYahooCancellationFee',
