@@ -46,7 +46,7 @@ export default async function Page() {
       <Grid lg={3} sm={6} xs={12}>
         <TotalProfit
           sx={{ height: '100%' }}
-          title="回饋比例"
+          title="預設回饋比例"
           value={toPercent(configsRes.data.defaultCommissionBonusRate)}
         />
       </Grid>
