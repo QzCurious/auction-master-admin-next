@@ -96,7 +96,9 @@ async function Content({ searchParams }: PageProps) {
 
             <Box mx="auto" />
             <PickForShippingButtons picking={filters.picking} stage={filters.stage} />
-            <PickForFeePaidButtons picking={filters.picking} stage={filters.stage} />
+            {/* TODO
+              <PickForFeePaidButtons picking={filters.picking} stage={filters.stage} />
+            */}
           </Stack>
 
           <AuctionItemTable
