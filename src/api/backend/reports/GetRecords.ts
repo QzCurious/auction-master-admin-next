@@ -28,7 +28,6 @@ export interface Record {
   opCode: string;
   itemID?: number;
   auctionItemID?: number;
-  currency: Currency;
   exchangeRate?: number;
   jpyWithdrawal?: number;
   withdrawal?: number;
@@ -40,13 +39,18 @@ export interface Record {
   directPurchasePrice?: number;
   purchasedPrice?: number;
   yahooAuctionFeeRate?: number;
+  yahooAuctionFeeJpy?: number;
   yahooAuctionFee?: number;
   commissionRate?: number;
   commission?: number;
   bonusRate?: number;
   bonus?: number;
   profit?: number;
+  shippingCostsWithinJapan?: number;
+  internationalShippingCosts?: number;
+  yahooCancellationFeeJpy?: number;
   yahooCancellationFee?: number;
+  spaceFeeJpy?: number;
   spaceFee?: number;
   shippingCost?: number;
   status: RECORD_STATUS['value'];

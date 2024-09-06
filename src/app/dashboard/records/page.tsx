@@ -235,7 +235,7 @@ async function Content({ searchParams }: PageProps) {
                     <TableCell sx={{ width: 0 }}>
                       <TableContainer sx={{ whiteSpace: 'nowrap' }}>
                         <Table size="small">
-                          {/* v4 https://docs.google.com/spreadsheets/d/1S2-9S-AOAJG5a_hHFlA1N6YN1W5LZjpZzptL2UgBj5w/edit?usp=sharing */}
+                          {/* v5 https://docs.google.com/spreadsheets/d/1S2-9S-AOAJG5a_hHFlA1N6YN1W5LZjpZzptL2UgBj5w/edit?gid=1734093702#gid=1734093702 */}
                           <TableBody sx={{ '& td:nth-child(2)': { textAlign: 'end' } }}>
                             <TableRow>
                               <TableCell>操作代碼</TableCell>
@@ -260,7 +260,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>提款金額</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('TWD')}
                                   {row.withdrawal.toLocaleString()}
                                 </TableCell>
                               </TableRow>
@@ -269,7 +269,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>提款手續費</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('TWD')}
                                   {row.withdrawalTransferFee.toLocaleString()}
                                 </TableCell>
                               </TableRow>
@@ -322,11 +322,20 @@ async function Content({ searchParams }: PageProps) {
                                 </TableCell>
                               </TableRow>
                             )}
+                            {row.yahooAuctionFeeJpy != null && (
+                              <TableRow>
+                                <TableCell>日拍手續費</TableCell>
+                                <TableCell>
+                                  {currencySign('JPY')}
+                                  {row.yahooAuctionFeeJpy.toLocaleString()}
+                                </TableCell>
+                              </TableRow>
+                            )}
                             {row.yahooAuctionFee != null && (
                               <TableRow>
                                 <TableCell>日拍手續費</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('JPY')}
                                   {row.yahooAuctionFee.toLocaleString()}
                                 </TableCell>
                               </TableRow>
@@ -335,7 +344,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>平台手續費</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('JPY')}
                                   {row.commission.toLocaleString()}
                                 </TableCell>
                               </TableRow>
@@ -344,7 +353,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>回饋</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('JPY')}
                                   {row.bonus.toLocaleString()}
                                 </TableCell>
                               </TableRow>
@@ -353,8 +362,17 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>損益</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('JPY')}
                                   {row.profit.toLocaleString()}
+                                </TableCell>
+                              </TableRow>
+                            )}
+                            {row.yahooCancellationFeeJpy != null && (
+                              <TableRow>
+                                <TableCell>日拍取消手續費</TableCell>
+                                <TableCell>
+                                  {currencySign('JPY')}
+                                  {row.yahooCancellationFeeJpy.toLocaleString()}
                                 </TableCell>
                               </TableRow>
                             )}
@@ -362,8 +380,17 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>日拍取消手續費</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('TWD')}
                                   {row.yahooCancellationFee.toLocaleString()}
+                                </TableCell>
+                              </TableRow>
+                            )}
+                            {row.spaceFeeJpy != null && (
+                              <TableRow>
+                                <TableCell>留倉費</TableCell>
+                                <TableCell>
+                                  {currencySign('JPY')}
+                                  {row.spaceFeeJpy.toLocaleString()}
                                 </TableCell>
                               </TableRow>
                             )}
@@ -371,7 +398,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>留倉費</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('TWD')}
                                   {row.spaceFee.toLocaleString()}
                                 </TableCell>
                               </TableRow>
@@ -380,7 +407,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>運費</TableCell>
                                 <TableCell>
-                                  {currencySign(row.currency)}
+                                  {currencySign('JPY')}
                                   {row.shippingCost.toLocaleString()}
                                 </TableCell>
                               </TableRow>
