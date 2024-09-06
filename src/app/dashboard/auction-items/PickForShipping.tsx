@@ -6,7 +6,16 @@ import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuction
 import { SHIPPING_TYPE } from '@/api/backend/static-configs.data';
 import { currencySign } from '@/static';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Drawer, FormControl, FormHelperText, Stack, TextField, Typography } from '@mui/material';
+import {
+  Button,
+  Drawer,
+  FormControl,
+  FormHelperText,
+  InputAdornment,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
 import { useAtom, useAtomValue } from 'jotai';
 import { useSnackbar } from 'notistack';
@@ -100,6 +109,8 @@ export function PickForShipping({ picking, stage }: Pick<z.output<typeof SearchP
 }
 
 const Schema = z.object({
+  shippingCostsWithinJapan: z.number(),
+  internationalShippingCosts: z.number(),
   address: z.string().min(1, { message: '必填' }),
   recipientName: z.string().min(1, { message: '必填' }),
   phone: z.string().min(1, { message: '必填' }),
@@ -164,13 +175,61 @@ function ShippingForm() {
         enqueueSnackbar('已出貨', { variant: 'success' });
       })}
     >
-      <Stack spacing={3} mt={2}>
+      <Stack spacing={2} mt={2}>
+        <Controller
+          control={control}
+          name="shippingCostsWithinJapan"
+          render={({ field, fieldState }) => (
+            <FormControl fullWidth error={!!fieldState.error}>
+              <TextField
+                {...field}
+                size="small"
+                label="日本國內運費"
+                fullWidth
+                type="number"
+                onChange={(e) => {
+                  field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                }}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
+                }}
+                inputProps={{ min: 0 }}
+              />
+              {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+            </FormControl>
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="internationalShippingCosts"
+          render={({ field, fieldState }) => (
+            <FormControl fullWidth error={!!fieldState.error}>
+              <TextField
+                {...field}
+                size="small"
+                label="台灣國際運費"
+                fullWidth
+                type="number"
+                onChange={(e) => {
+                  field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                }}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">{currencySign('TWD')}</InputAdornment>,
+                }}
+                inputProps={{ min: 0 }}
+              />
+              {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+            </FormControl>
+          )}
+        />
+
         <Controller
           control={control}
           name="address"
           render={({ field, fieldState }) => (
             <FormControl fullWidth error={!!fieldState.error}>
-              <TextField {...field} label="收貨地址" fullWidth />
+              <TextField {...field} size="small" label="收貨地址" fullWidth />
               {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
             </FormControl>
           )}
@@ -181,7 +240,7 @@ function ShippingForm() {
           name="recipientName"
           render={({ field, fieldState }) => (
             <FormControl fullWidth error={!!fieldState.error}>
-              <TextField {...field} label="收貨人姓名" fullWidth />
+              <TextField {...field} size="small" label="收貨人姓名" fullWidth />
               {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
             </FormControl>
           )}
@@ -192,7 +251,7 @@ function ShippingForm() {
           name="phone"
           render={({ field, fieldState }) => (
             <FormControl fullWidth error={!!fieldState.error}>
-              <TextField {...field} label="收貨人電話" fullWidth />
+              <TextField {...field} size="small" label="收貨人電話" fullWidth />
               {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
             </FormControl>
           )}

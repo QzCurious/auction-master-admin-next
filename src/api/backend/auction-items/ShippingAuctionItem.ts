@@ -12,6 +12,8 @@ const ReqSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal(SHIPPING_TYPE.enum('AddressType')),
     auctionItemIDs: z.array(z.number()),
+    shippingCostsWithinJapan: z.number(),
+    internationalShippingCosts: z.number(),
     address: z.string(),
     recipientName: z.string(),
     phone: z.string(),
@@ -19,6 +21,8 @@ const ReqSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal(SHIPPING_TYPE.enum('SevenElevenType')),
     auctionItemIDs: z.array(z.number()),
+    shippingCostsWithinJapan: z.number(),
+    internationalShippingCosts: z.number(),
     storeNumber: z.string(),
     storeName: z.string(),
     recipientName: z.string(),
@@ -27,6 +31,8 @@ const ReqSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal(SHIPPING_TYPE.enum('FamilyType')),
     auctionItemIDs: z.array(z.number()),
+    shippingCostsWithinJapan: z.number(),
+    internationalShippingCosts: z.number(),
     storeNumber: z.string(),
     storeName: z.string(),
     recipientName: z.string(),
