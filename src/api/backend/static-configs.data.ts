@@ -328,6 +328,11 @@ export const CONFIGS_DATA = {
       message: '支付運費',
       value: 2003,
     },
+    {
+      key: 'InternationalShippingCostsType',
+      message: '國際運費',
+      value: 3000,
+    },
   ],
   recordStatus: [
     {
