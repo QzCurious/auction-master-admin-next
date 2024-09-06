@@ -27,6 +27,7 @@ export interface Item {
   expireAt: string | null;
   warehouseID: string;
   space: number;
+  shippingCostsWithinJapan: number;
   grossWeight: number;
   volumetricWeight: number;
   status: ITEM_STATUS['value'];

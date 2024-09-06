@@ -47,6 +47,7 @@ const FormSchema = z
     expireAt: z.coerce.date().nullable(),
     warehouseID: z.string(),
     space: z.number(),
+    shippingCostsWithinJapan: z.number(),
     grossWeight: z.number(),
     volumetricWeight: z.number(),
   })
@@ -83,6 +84,7 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
       expireAt: item.expireAt ? new Date(item.expireAt) : null,
       warehouseID: item.warehouseID,
       space: item.space,
+      shippingCostsWithinJapan: item.shippingCostsWithinJapan,
       grossWeight: item.grossWeight,
       volumetricWeight: item.volumetricWeight,
     }),
@@ -96,6 +98,7 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
       item.minEstimatedPrice,
       item.name,
       item.reservePrice,
+      item.shippingCostsWithinJapan,
       item.space,
       item.type,
       item.volumetricWeight,
@@ -368,8 +371,6 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
           />
         </Grid>
 
-        <Grid item xs />
-
         <Grid item xs={12} sm={6}>
           <Controller
             control={control}
@@ -398,6 +399,31 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
                   InputProps={{ readOnly: !canUpdate }}
+                />
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="shippingCostsWithinJapan"
+            control={control}
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <TextField
+                  {...field}
+                  label="日本運費"
+                  type="number"
+                  fullWidth
+                  onChange={(e) => {
+                    field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                  }}
+                  InputProps={{
+                    readOnly: !canUpdate,
+                    startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
+                  }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>

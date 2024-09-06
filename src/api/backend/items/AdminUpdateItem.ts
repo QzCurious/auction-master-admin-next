@@ -24,6 +24,7 @@ const ReqSchema = z.object({
   expireAt: z.date().nullable().optional(),
   warehouseID: z.string().optional(),
   space: z.number().optional(),
+  shippingCostsWithinJapan: z.number().optional(),
   grossWeight: z.number().optional(),
   volumetricWeight: z.number().optional(),
   status: z.number().optional(),
@@ -48,6 +49,8 @@ export async function AdminUpdateItem(id: number, payload: z.input<typeof ReqSch
   data.expireAt != null && formData.append('expireAt', data.expireAt.toISOString());
   data.warehouseID != null && formData.append('warehouseID', data.warehouseID);
   data.space != null && formData.append('space', data.space.toString());
+  data.shippingCostsWithinJapan != null &&
+    formData.append('shippingCostsWithinJapan', data.shippingCostsWithinJapan.toString());
   data.grossWeight != null && formData.append('grossWeight', data.grossWeight.toString());
   data.volumetricWeight != null && formData.append('volumetricWeight', data.volumetricWeight.toString());
   data.status != null && formData.append('status', data.status.toString());
