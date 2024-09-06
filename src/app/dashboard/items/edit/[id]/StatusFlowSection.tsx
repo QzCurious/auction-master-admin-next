@@ -187,20 +187,21 @@ function StatusFlowUI({ item }: { item: Item }) {
       </HavePermissionsOnly>
     ),
     WarehouseReturnPendingStatus: (
-      <HavePermissionsOnly permissionKeys={['ItemReturning']}>
-        <ApproveBtn
-          text="退貨中"
-          popoverTitle="標記為退貨中"
-          onConfirm={async () => {
-            const res = await ItemReturning(item.id);
-            if (res.error) {
-              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
-              return;
-            }
-            enqueueSnackbar('已將物品標記為退貨中', { variant: 'success' });
-          }}
-        />
-      </HavePermissionsOnly>
+      // <HavePermissionsOnly permissionKeys={['ItemReturning']}>
+      //   <ApproveBtn
+      //     text="退貨中"
+      //     popoverTitle="標記為退貨中"
+      //     onConfirm={async () => {
+      //       const res = await ItemReturning(item.id);
+      //       if (res.error) {
+      //         enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+      //         return;
+      //       }
+      //       enqueueSnackbar('已將物品標記為退貨中', { variant: 'success' });
+      //     }}
+      //   />
+      // </HavePermissionsOnly>
+      null
     ),
     WarehouseReturningStatus: (
       <HavePermissionsOnly permissionKeys={['ItemReturned']}>
