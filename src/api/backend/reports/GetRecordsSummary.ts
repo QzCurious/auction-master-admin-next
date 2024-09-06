@@ -21,40 +21,23 @@ export interface RecordSummary {
   totalPrice: number;
   totalDirectPurchasePrice: number;
   totalPurchasedPrice: number;
+  totalYahooAuctionFeeJpy: number;
   totalYahooAuctionFee: number;
   totalCommission: number;
   totalBonus: number;
   totalProfit: number;
+  totalShippingCostsWithinJapan: number;
+  totalInternationalShippingCosts: number;
+  totalYahooCancellationFeeJpy: number;
   totalYahooCancellationFee: number;
+  totalSpaceFeeJpy: number;
   totalSpaceFee: number;
   totalShippingCost: number;
 }
 
-export interface Reports {
-  JPY?: RecordSummary;
-  TWD?: RecordSummary;
-}
-
-type Data = Reports;
+type Data = RecordSummary;
 
 type ErrorCode = never;
-
-const EMPTY_REPORT: RecordSummary = {
-  totalJpyWithdrawal: 0,
-  totalWithdrawal: 0,
-  totalWithdrawalTransferFee: 0,
-  totalClosedPrice: 0,
-  totalPrice: 0,
-  totalDirectPurchasePrice: 0,
-  totalPurchasedPrice: 0,
-  totalYahooAuctionFee: 0,
-  totalCommission: 0,
-  totalBonus: 0,
-  totalProfit: 0,
-  totalYahooCancellationFee: 0,
-  totalSpaceFee: 0,
-  totalShippingCost: 0,
-};
 
 export async function GetRecordsSummary(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
@@ -76,16 +59,6 @@ export async function GetRecordsSummary(payload: z.input<typeof ReqSchema>) {
       tags: ['records'],
     },
   });
-
-  if (!res.error) {
-    return {
-      ...res,
-      data: {
-        JPY: res.data.JPY ?? EMPTY_REPORT,
-        TWD: res.data.TWD ?? EMPTY_REPORT,
-      },
-    };
-  }
 
   return res;
 }
