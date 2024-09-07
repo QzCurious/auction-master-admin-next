@@ -53,7 +53,7 @@ export function PickingList() {
   );
 }
 
-function ListItemSkeleton() {
+export function ListItemSkeleton() {
   return (
     <ListItem alignItems="flex-start">
       <ListItemAvatar>
@@ -77,7 +77,7 @@ function ListItemSkeleton() {
   );
 }
 
-function PickedListItem({ item }: { item: AuctionItem }) {
+export function PickedListItem({ item }: { item: AuctionItem }) {
   return (
     <ListItem alignItems="flex-start">
       <ListItemAvatar>

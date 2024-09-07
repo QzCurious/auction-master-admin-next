@@ -3,9 +3,8 @@
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
-import { SHIPPING_STATUS, SHIPPING_TYPE } from '@/api/backend/static-configs.data';
+import { SHIPMENT_TYPE, SHIPPING_STATUS } from '@/api/backend/static-configs.data';
 import { DATE_TIME_FORMAT } from '@/static';
-import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 import CropFreeOutlinedIcon from '@mui/icons-material/CropFreeOutlined';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import {
@@ -13,7 +12,6 @@ import {
   Chip,
   FormControl,
   FormHelperText,
-  IconButton,
   Link,
   Paper,
   Popover,
@@ -32,7 +30,6 @@ import TableRow from '@mui/material/TableRow';
 import { MapPin } from '@phosphor-icons/react/dist/csr/MapPin';
 import { Phone } from '@phosphor-icons/react/dist/csr/Phone';
 import { Tag } from '@phosphor-icons/react/dist/csr/Tag';
-import copy from 'copy-to-clipboard';
 import { format } from 'date-fns';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { enqueueSnackbar } from 'notistack';
@@ -70,7 +67,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
             {rows.length === 0 && <EmptyTableRow />}
             {rows.map((row) => (
               <TableRow hover key={row.id}>
-                <TableCell>{SHIPPING_TYPE.get('value', row.type).message}</TableCell>
+                <TableCell>{SHIPMENT_TYPE.get('value', row.shipmentType).message}</TableCell>
                 <TableCell>
                   <Stack>
                     {row.items.map((item) => (
@@ -194,7 +191,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                       </HavePermissionsOnly>
                     )}
 
-                    {row.status === SHIPPING_STATUS.enum('ShippedStatus') && (
+                    {row.status === SHIPPING_STATUS.enum('ShippedStatus') && !!row.shipmentTrackingNumber && (
                       <div>
                         <Typography variant="body2" color="GrayText">
                           出貨單號

@@ -6,37 +6,34 @@ import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
-import { SHIPPING_TYPE } from '../static-configs.data';
+import { SHIPMENT_TYPE } from '../static-configs.data';
 
-const ReqSchema = z.discriminatedUnion('type', [
+const ReqSchema = z.discriminatedUnion('shipmentType', [
   z.object({
-    type: z.literal(SHIPPING_TYPE.enum('AddressType')),
+    shipmentType: z.literal(SHIPMENT_TYPE.enum('AddressShipmentType')),
     auctionItemIDs: z.array(z.number()),
-    shippingCostsWithinJapan: z.number(),
-    internationalShippingCosts: z.number(),
     address: z.string(),
     recipientName: z.string(),
     phone: z.string(),
+    shippingCostsWithinJapan: z.number(),
   }),
   z.object({
-    type: z.literal(SHIPPING_TYPE.enum('SevenElevenType')),
+    shipmentType: z.literal(SHIPMENT_TYPE.enum('SevenElevenShipmentType')),
     auctionItemIDs: z.array(z.number()),
-    shippingCostsWithinJapan: z.number(),
-    internationalShippingCosts: z.number(),
     storeNumber: z.string(),
     storeName: z.string(),
     recipientName: z.string(),
     phone: z.string(),
+    shippingCostsWithinJapan: z.number(),
   }),
   z.object({
-    type: z.literal(SHIPPING_TYPE.enum('FamilyType')),
+    shipmentType: z.literal(SHIPMENT_TYPE.enum('FamilyShipmentType')),
     auctionItemIDs: z.array(z.number()),
-    shippingCostsWithinJapan: z.number(),
-    internationalShippingCosts: z.number(),
     storeNumber: z.string(),
     storeName: z.string(),
     recipientName: z.string(),
     phone: z.string(),
+    shippingCostsWithinJapan: z.number(),
   }),
 ]);
 

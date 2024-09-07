@@ -1,17 +1,20 @@
 'use client';
 
+import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
 import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
-import { SHIPPING_TYPE } from '@/api/backend/static-configs.data';
+import { SHIPMENT_TYPE } from '@/api/backend/static-configs.data';
 import { currencySign } from '@/static';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
+  Divider,
   Drawer,
   FormControl,
   FormHelperText,
   InputAdornment,
+  List,
   Stack,
   TextField,
   Typography,
@@ -20,9 +23,13 @@ import { useQueries } from '@tanstack/react-query';
 import { useAtom, useAtomValue } from 'jotai';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
+import * as R from 'remeda';
 import { z } from 'zod';
 
-import { pickedItemIdsReducerAtom, PickingList } from './PickingList';
+import RedirectAuthError from '@/components/RedirectAuthError';
+import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+
+import { ListItemSkeleton, pickedItemIdsReducerAtom, PickedListItem } from './PickingList';
 import { type SearchParamsSchema } from './SearchParamsSchema';
 
 export function PickForShippingButtons({
@@ -100,17 +107,13 @@ export function PickForShipping({ picking, stage }: Pick<z.output<typeof SearchP
         router.replace(`?${newSearchParams}`);
       }}
     >
-      <Stack sx={{ width: '100%', height: '100%', bgcolor: 'background.paper' }}>
-        <PickingList />
-        <ShippingForm />
-      </Stack>
+      <ShippingForm />
     </Drawer>
   );
 }
 
 const Schema = z.object({
-  shippingCostsWithinJapan: z.number(),
-  internationalShippingCosts: z.number(),
+  shippingCostsWithinJapan: z.number({ message: '必填' }).min(0).array(),
   address: z.string().min(1, { message: '必填' }),
   recipientName: z.string().min(1, { message: '必填' }),
   phone: z.string().min(1, { message: '必填' }),
@@ -121,46 +124,52 @@ function ShippingForm() {
   const pickedItemIds = useAtomValue(pickedItemIdsReducerAtom);
   const auctionItemQueries = useQueries({
     queries: pickedItemIds.map(GetAuctionItemQueryOptions),
-    combine: (queries) => {
-      if (queries.some((q) => q.isPending)) {
-        return { isPending: true } as const;
-      }
-      if (queries.some((q) => q.isError) || queries.some((q) => q.data?.error)) {
-        return { isError: true } as const;
-      }
-      return {
-        length: queries.length,
-        sum: queries.reduce((acc, item) => acc + item.data!.data!.closedPrice, 0).toLocaleString(),
-      } as const;
-    },
   });
 
   const { enqueueSnackbar } = useSnackbar();
   const {
     control,
     handleSubmit,
+    watch,
     formState: { isSubmitting },
   } = useForm<z.output<typeof Schema>>({
     defaultValues: {
       address: '',
       recipientName: '',
       phone: '',
+      shippingCostsWithinJapan: [],
     },
     resolver: zodResolver(Schema),
   });
 
-  if (auctionItemQueries.isPending || auctionItemQueries.isError) return;
+  const error = auctionItemQueries.map((q) => q.data?.error);
+  if (error.some((err) => err === '1001')) {
+    return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
+  }
+  if (error.some((err) => err === '1003')) {
+    return <RedirectAuthError />;
+  }
+
+  if (auctionItemQueries.some((q) => q.data?.error === '1001')) {
+    return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
+  }
+  if (auctionItemQueries.some((q) => q.data?.error === '1003')) {
+    return <RedirectAuthError />;
+  }
+
+  const queries = auctionItemQueries.filter((q) => !q.isError);
+  const shippingCostsWithinJapan = watch('shippingCostsWithinJapan');
 
   return (
     <Stack
       component="form"
-      p={2}
-      spacing={2}
+      sx={{ width: '100%', height: '100%', bgcolor: 'background.paper' }}
       onSubmit={handleSubmit(async (data) => {
         const res = await ShippingAuctionItem({
           ...data,
-          type: SHIPPING_TYPE.enum('AddressType'),
+          shipmentType: SHIPMENT_TYPE.enum('AddressShipmentType'),
           auctionItemIDs: pickedItemIds,
+          shippingCostsWithinJapan: R.sum(data.shippingCostsWithinJapan),
         });
 
         if (res.error) {
@@ -175,98 +184,89 @@ function ShippingForm() {
         enqueueSnackbar('已出貨', { variant: 'success' });
       })}
     >
-      <Stack spacing={2} mt={2}>
-        <Controller
-          control={control}
-          name="shippingCostsWithinJapan"
-          render={({ field, fieldState }) => (
-            <FormControl fullWidth error={!!fieldState.error}>
-              <TextField
-                {...field}
-                size="small"
-                label="日本國內運費"
-                fullWidth
-                type="number"
-                onChange={(e) => {
-                  field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
-                }}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
-                }}
-                inputProps={{ min: 0 }}
-              />
-              {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-            </FormControl>
-          )}
-        />
+      <List sx={{ flex: 1, overflow: 'auto' }}>
+        {queries.map((item, i) => (
+          <React.Fragment key={pickedItemIds[i]}>
+            {item.isPending ? <ListItemSkeleton /> : <PickedListItem item={item.data.data!} />}
+            <Controller
+              control={control}
+              name={`shippingCostsWithinJapan.${i}`}
+              render={({ field, fieldState }) => (
+                <FormControl sx={{ px: 2 }} fullWidth error={!!fieldState.error}>
+                  <TextField
+                    {...field}
+                    size="small"
+                    label="日本國內運費"
+                    fullWidth
+                    type="number"
+                    onChange={(e) => {
+                      field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                    }}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
+                    }}
+                    inputProps={{ min: 0 }}
+                  />
+                  {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                </FormControl>
+              )}
+            />
+            <Divider variant="middle" component="li" sx={{ mt: 2 }} />
+          </React.Fragment>
+        ))}
+      </List>
+      <Stack p={2} spacing={2}>
+        <Stack spacing={2} mt={2}>
+          <Controller
+            control={control}
+            name="address"
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <TextField {...field} size="small" label="收貨地址" fullWidth />
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
 
-        <Controller
-          control={control}
-          name="internationalShippingCosts"
-          render={({ field, fieldState }) => (
-            <FormControl fullWidth error={!!fieldState.error}>
-              <TextField
-                {...field}
-                size="small"
-                label="台灣國際運費"
-                fullWidth
-                type="number"
-                onChange={(e) => {
-                  field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
-                }}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">{currencySign('TWD')}</InputAdornment>,
-                }}
-                inputProps={{ min: 0 }}
-              />
-              {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-            </FormControl>
-          )}
-        />
+          <Controller
+            control={control}
+            name="recipientName"
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <TextField {...field} size="small" label="收貨人姓名" fullWidth />
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
 
-        <Controller
-          control={control}
-          name="address"
-          render={({ field, fieldState }) => (
-            <FormControl fullWidth error={!!fieldState.error}>
-              <TextField {...field} size="small" label="收貨地址" fullWidth />
-              {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-            </FormControl>
-          )}
-        />
+          <Controller
+            control={control}
+            name="phone"
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <TextField {...field} size="small" label="收貨人電話" fullWidth />
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
+        </Stack>
 
-        <Controller
-          control={control}
-          name="recipientName"
-          render={({ field, fieldState }) => (
-            <FormControl fullWidth error={!!fieldState.error}>
-              <TextField {...field} size="small" label="收貨人姓名" fullWidth />
-              {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-            </FormControl>
-          )}
-        />
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="body1">
+            共 {auctionItemQueries.length} 筆, 運費總計 {currencySign('JPY')}
+            {(() => {
+              const sum = R.sum(shippingCostsWithinJapan.map((v) => v || 0));
+              if (Number.isNaN(sum)) {
+                return 0;
+              }
+              return sum.toLocaleString();
+            })()}
+          </Typography>
 
-        <Controller
-          control={control}
-          name="phone"
-          render={({ field, fieldState }) => (
-            <FormControl fullWidth error={!!fieldState.error}>
-              <TextField {...field} size="small" label="收貨人電話" fullWidth />
-              {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-            </FormControl>
-          )}
-        />
-      </Stack>
-
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Typography variant="body1">
-          共 {auctionItemQueries.length} 筆, 總計 {currencySign('JPY')}
-          {auctionItemQueries.sum}
-        </Typography>
-
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
-          出貨
-        </Button>
+          <Button type="submit" variant="contained" disabled={isSubmitting}>
+            出貨
+          </Button>
+        </Stack>
       </Stack>
     </Stack>
   );

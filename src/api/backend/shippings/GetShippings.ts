@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type SHIPPING_STATUS, type SHIPPING_TYPE } from '../static-configs.data';
+import { type SHIPMENT_TYPE, type SHIPPING_STATUS } from '../static-configs.data';
 
 const ReqSchema = z.object({
   status: z.coerce.number().array().optional(),
@@ -17,13 +17,13 @@ const ReqSchema = z.object({
 
 export interface Shipping {
   id: string;
-  type: SHIPPING_TYPE['value'];
+  actionType: number;
+  shipmentType: SHIPMENT_TYPE['value'];
   itemIDs: Array<number>;
-  auctionItemIDs: Array<number>;
   address: string;
   recipientName: string;
   phone: string;
-  shipmentTrackingNumber: string;
+  shipmentTrackingNumber: string | null;
   status: SHIPPING_STATUS['value'];
   createdAt: string;
   updatedAt: string;
