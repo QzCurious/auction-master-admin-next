@@ -367,6 +367,24 @@ async function Content({ searchParams }: PageProps) {
                                 </TableCell>
                               </TableRow>
                             )}
+                            {row.shippingCostsWithinJapan != null && (
+                              <TableRow>
+                                <TableCell>日本國內運費</TableCell>
+                                <TableCell>
+                                  {currencySign('JPY')}
+                                  {row.shippingCostsWithinJapan.toLocaleString()}
+                                </TableCell>
+                              </TableRow>
+                            )}
+                            {row.internationalShippingCosts != null && (
+                              <TableRow>
+                                <TableCell>國際運費</TableCell>
+                                <TableCell>
+                                  {currencySign('JPY')}
+                                  {row.internationalShippingCosts.toLocaleString()}
+                                </TableCell>
+                              </TableRow>
+                            )}
                             {row.yahooCancellationFeeJpy != null && (
                               <TableRow>
                                 <TableCell>日拍取消手續費</TableCell>
