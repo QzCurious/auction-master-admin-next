@@ -4,7 +4,7 @@ import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
 import { SHIPMENT_TYPE, SHIPPING_STATUS } from '@/api/backend/static-configs.data';
-import { DATE_TIME_FORMAT } from '@/static';
+import { currencySign, DATE_TIME_FORMAT } from '@/static';
 import CropFreeOutlinedIcon from '@mui/icons-material/CropFreeOutlined';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import {
@@ -12,6 +12,7 @@ import {
   Chip,
   FormControl,
   FormHelperText,
+  InputAdornment,
   Link,
   Paper,
   Popover,
@@ -223,6 +224,7 @@ function ShippedPopover({ row }: { row: Shipping }) {
   } = useForm({
     defaultValues: {
       shipmentTrackingNumber: '',
+      internationalShippingCosts: '' as unknown as number,
     },
   });
 
@@ -258,21 +260,46 @@ function ShippedPopover({ row }: { row: Shipping }) {
               })}
             >
               <Typography variant="subtitle1">標示為已寄出</Typography>
-              <FormControl sx={{ mt: 1 }}>
+              <Stack spacing={1.5} mt={2}>
                 <Controller
-                  name="shipmentTrackingNumber"
+                  name="internationalShippingCosts"
                   control={control}
-                  rules={{ required: '請輸入出貨單號碼' }}
+                  rules={{ required: '必填' }}
                   render={({ field, fieldState }) => (
                     <FormControl fullWidth error={!!fieldState.error}>
-                      <TextField {...field} label="出貨單號碼" size="small" type="text" fullWidth />
+                      <TextField
+                        {...field}
+                        size="small"
+                        label="國際運費"
+                        fullWidth
+                        type="number"
+                        onChange={(e) => {
+                          field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                        }}
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start">{currencySign('TWD')}</InputAdornment>,
+                        }}
+                        inputProps={{ min: 0 }}
+                      />
                       {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                     </FormControl>
                   )}
                 />
-              </FormControl>
 
-              <Stack direction="row" gap={2} justifyContent="end" sx={{ mt: 1 }}>
+                <Controller
+                  name="shipmentTrackingNumber"
+                  control={control}
+                  rules={{ required: '必填' }}
+                  render={({ field, fieldState }) => (
+                    <FormControl fullWidth error={!!fieldState.error}>
+                      <TextField {...field} size="small" label="出貨單號碼" fullWidth type="text" />
+                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                    </FormControl>
+                  )}
+                />
+              </Stack>
+
+              <Stack direction="row" mt={1.5} gap={2} justifyContent="end">
                 <Button type="button" variant="outlined" size="small" color="error" onClick={popupState.close}>
                   取消
                 </Button>
