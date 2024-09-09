@@ -1,3 +1,5 @@
+'use server';
+
 import { apiClient } from '@/api/apiClient';
 import { withAuth } from '@/api/withAuth';
 
@@ -34,8 +36,6 @@ interface Data extends Configs {}
 type ErrorCode = never;
 
 export async function GetBackendConfigs() {
-  'use server';
-
   const res = await withAuth(apiClient)<Data, ErrorCode>('/configs', {
     method: 'GET',
     next: {

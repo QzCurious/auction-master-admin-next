@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { GetItemsAndDetails } from '@/api/backend/items/GetItemsAndDetails';
+import { ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { parseSearchParams } from '@/helper/parseSearchParams';
 import { PAGE, ROWS_PER_PAGE } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { Box } from '@mui/system';
 
 import { config } from '@/config';
 import AutoRefreshPage from '@/components/AutoRefreshPage';
@@ -12,8 +14,8 @@ import RemoveSearchBtn from '@/components/RemoveSearchBtn';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ConsignorFilter } from './ConsignorFilter';
-import DirectIdInput from './DirectIdInput';
 import { ItemTable } from './ItemTable';
+import { PickForReturn, PickForReturnButtons } from './PickForReturn';
 import { SearchParamsSchema } from './SearchParamsSchema';
 import { StatusFilter } from './StatusFilter';
 
@@ -33,7 +35,7 @@ export default async function Page(pageProps: PageProps) {
           </Typography>
 
           <Stack direction="row" spacing={1}>
-            <DirectIdInput />
+            {/* <DirectIdInput /> */}
 
             {/* <Button
               LinkComponent={Link}
@@ -55,16 +57,21 @@ export default async function Page(pageProps: PageProps) {
 }
 
 async function Content({ searchParams }: PageProps) {
-  const filters = parseSearchParams(SearchParamsSchema, searchParams);
+  const query = parseSearchParams(SearchParamsSchema, searchParams);
 
-  const itemsRes = await GetItemsAndDetails({
-    status: filters.status,
-    limit: filters[ROWS_PER_PAGE],
-    offset: filters[PAGE] * filters[ROWS_PER_PAGE],
-    consignorID: filters.consignorID,
-    sort: 'createdAt',
-    order: 'desc',
-  });
+  const [itemsRes] = await Promise.all([
+    GetItemsAndDetails({
+      status: (() => {
+        if (query.picking === 'return') return [ITEM_STATUS.enum('WarehouseReturnPendingStatus')];
+        return query.status;
+      })(),
+      limit: query[ROWS_PER_PAGE],
+      offset: query[PAGE] * query[ROWS_PER_PAGE],
+      consignorID: query.consignorID,
+      sort: 'createdAt',
+      order: 'desc',
+    }),
+  ]);
 
   if (itemsRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetItemsAndDetails']} />;
@@ -78,13 +85,26 @@ async function Content({ searchParams }: PageProps) {
     <AutoRefreshPage ms={10_000}>
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
-          <ConsignorFilter consignorID={filters.consignorID} />
-          <StatusFilter selected={filters.status} statusCount={itemsRes.data.statusCounts} />
-          <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'status']} />
+          <ConsignorFilter consignorID={query.consignorID} />
+          {!query.picking && (
+            <>
+              <StatusFilter selected={query.status} statusCount={itemsRes.data.statusCounts} />
+              <RemoveSearchBtn<keyof typeof query> fields={['consignorID', 'status']} />
+            </>
+          )}
+
+          <Box mx="auto" />
+          <PickForReturnButtons picking={query.picking} stage={query.stage} />
         </Stack>
 
-        <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} />
+        {query.picking === 'return' && !query.consignorID ? (
+          '退貨請先鎖定寄售人'
+        ) : (
+          <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} query={query} />
+        )}
       </Stack>
+
+      <PickForReturn picking={query.picking} stage={query.stage} />
     </AutoRefreshPage>
   );
 }

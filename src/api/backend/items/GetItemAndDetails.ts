@@ -1,10 +1,12 @@
+'use server';
+
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
 import { type ITEM_STATUS, type ITEM_TYPE } from '../static-configs.data';
 
-export const ReqSchema = z.object({
+const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),
   status: z.coerce.number().optional(),
   sort: z.string().optional(),
@@ -48,7 +50,6 @@ interface Data extends Item {}
 type ErrorCode = never;
 
 export async function GetItemAndDetails(id: number) {
-  'use server';
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}`, {
     method: 'GET',
     next: { tags: ['items'] },

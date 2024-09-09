@@ -426,7 +426,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>運費</TableCell>
                                 <TableCell>
-                                  {currencySign('JPY')}
+                                  {currencySign('TWD')}
                                   {row.shippingCost.toLocaleString()}
                                 </TableCell>
                               </TableRow>

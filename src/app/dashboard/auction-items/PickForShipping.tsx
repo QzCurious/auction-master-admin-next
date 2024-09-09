@@ -142,14 +142,6 @@ function ShippingForm() {
     resolver: zodResolver(Schema),
   });
 
-  const error = auctionItemQueries.map((q) => q.data?.error);
-  if (error.some((err) => err === '1001')) {
-    return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
-  }
-  if (error.some((err) => err === '1003')) {
-    return <RedirectAuthError />;
-  }
-
   if (auctionItemQueries.some((q) => q.data?.error === '1001')) {
     return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
   }
