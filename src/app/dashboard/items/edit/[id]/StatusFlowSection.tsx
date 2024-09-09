@@ -9,10 +9,10 @@ import { ItemAppraiserConfirmed } from '@/api/backend/items/ItemAppraiserConfirm
 import { ItemArrival } from '@/api/backend/items/ItemArrival';
 import { ItemBidding } from '@/api/backend/items/ItemBidding';
 import { ItemReturned } from '@/api/backend/items/ItemReturned';
-import { ItemReturning } from '@/api/backend/items/ItemReturning';
 import { ItemReturnPending } from '@/api/backend/items/ItemReturnPending';
 import { ItemWarehousePersonnelConfirmed } from '@/api/backend/items/ItemWarehousePersonnelConfirmed';
 import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/static-configs.data';
+import { useUntil } from '@/helper/useUntil';
 import { DATE_TIME_FORMAT } from '@/static';
 import { StatusFlow } from '@/StatusFlow';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -186,7 +186,7 @@ function StatusFlowUI({ item }: { item: Item }) {
         />
       </HavePermissionsOnly>
     ),
-    WarehouseReturnPendingStatus: (
+    WarehouseReturnPendingStatus:
       // <HavePermissionsOnly permissionKeys={['ItemReturning']}>
       //   <ApproveBtn
       //     text="退貨中"
@@ -201,8 +201,7 @@ function StatusFlowUI({ item }: { item: Item }) {
       //     }}
       //   />
       // </HavePermissionsOnly>
-      null
-    ),
+      null,
     WarehouseReturningStatus: (
       <HavePermissionsOnly permissionKeys={['ItemReturned']}>
         <ApproveBtn
@@ -436,10 +435,12 @@ function ApproveBtn({
   text,
   popoverTitle,
   onConfirm,
+  disabled,
 }: {
   text: string;
   popoverTitle: string;
   onConfirm: () => void | Promise<void>;
+  disabled?: boolean;
 }) {
   const {
     formState: { isDirty },
@@ -450,7 +451,13 @@ function ApproveBtn({
 
   return (
     <>
-      <Button {...bindTrigger(popupState)} type="submit" size="small" variant="contained" disabled={isDirty}>
+      <Button
+        {...bindTrigger(popupState)}
+        type="submit"
+        size="small"
+        variant="contained"
+        disabled={isDirty || disabled}
+      >
         {text}
       </Button>
       <DoubleCheckPopover
@@ -470,6 +477,7 @@ function ReadyStatusHandleButtons({ item }: { item: Item }) {
   const { enqueueSnackbar } = useSnackbar();
   const [auctionID, setAuctionID] = useState('');
   const [error, setError] = useState('');
+  const expired = useUntil(item.expireAt ? new Date(item.expireAt) : null, { fallback: false });
 
   return (
     <HavePermissionsOnly permissionKeys={['ItemBidding']}>
@@ -478,14 +486,17 @@ function ReadyStatusHandleButtons({ item }: { item: Item }) {
           <TextField
             size="small"
             label="日拍物品代碼"
+            disabled={expired}
             value={auctionID}
             onChange={(e) => setAuctionID(e.target.value)}
           />
           {error && <FormHelperText>{error}</FormHelperText>}
+          {expired && <FormHelperText>物品已過期，須等寄售人繳留倉費</FormHelperText>}
         </FormControl>
         <ApproveBtn
           text="上架"
           popoverTitle="標記為上架"
+          disabled={expired}
           onConfirm={async () => {
             setError('');
             if (!auctionID) return;

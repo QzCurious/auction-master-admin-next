@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { GetShippings } from '@/api/backend/shippings/GetShippings';
 import { SHIPPING_STATUS } from '@/api/backend/static-configs.data';
-import { PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
+import { parseSearchParams } from '@/helper/parseSearchParams';
+import { PAGE, ROWS_PER_PAGE } from '@/static';
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { GetAdmins } from '@/api/backend/admins/GetAdmins';
-import { PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
+import { parseSearchParams } from '@/helper/parseSearchParams';
+import { PAGE, ROWS_PER_PAGE } from '@/static';
 import { Button, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';

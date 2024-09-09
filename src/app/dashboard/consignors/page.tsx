@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { AdminGetConsignors } from '@/api/backend/consignor/AdminGetConsignors';
-import { PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
+import { parseSearchParams } from '@/helper/parseSearchParams';
+import { PAGE, ROWS_PER_PAGE } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 

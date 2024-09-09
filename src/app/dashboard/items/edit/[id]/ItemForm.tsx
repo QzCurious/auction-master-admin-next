@@ -361,7 +361,6 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   {...field}
                   label="過期時間"
                   format="yyyy/MM/dd"
-                  minDate={new Date()}
                   // slotProps={{ field: { clearable: true } }}
                   readOnly={!canUpdate}
                 />

@@ -2,7 +2,8 @@ import { type Metadata } from 'next';
 import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
 import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers';
-import { PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
+import { parseSearchParams } from '@/helper/parseSearchParams';
+import { PAGE, ROWS_PER_PAGE } from '@/static';
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -16,7 +17,7 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 
 import { AuctionItemTable } from './AuctionItemTable';
 import { ConsignorFilter } from './ConsignorFilter';
-import { PickForFeePaid, PickForFeePaidButtons } from './PickForFeePaid';
+import { PickForFeePaid } from './PickForFeePaid';
 import { PickForShipping, PickForShippingButtons } from './PickForShipping';
 import { SearchParamsSchema } from './SearchParamsSchema';
 import { StatusFilter } from './StatusFilter';

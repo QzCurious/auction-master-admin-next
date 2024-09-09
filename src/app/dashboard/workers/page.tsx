@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { GetWorkers } from '@/api/backend/workers/GetWorkers';
-import { PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
+import { parseSearchParams } from '@/helper/parseSearchParams';
+import { PAGE, ROWS_PER_PAGE } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 

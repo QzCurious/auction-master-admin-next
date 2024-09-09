@@ -7,7 +7,8 @@ import { GetRecords } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary, type RecordSummary } from '@/api/backend/reports/GetRecordsSummary';
 import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
 import { getUser } from '@/api/getToken';
-import { currencySign, DATE_TIME_FORMAT, PAGE, parseSearchParams, ROWS_PER_PAGE } from '@/static';
+import { parseSearchParams } from '@/helper/parseSearchParams';
+import { currencySign, DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE } from '@/static';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import {
   CardHeader,
