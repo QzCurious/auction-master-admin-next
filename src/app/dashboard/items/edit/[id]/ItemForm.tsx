@@ -126,6 +126,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
     handleSubmit,
     formState: { isSubmitting, isDirty },
     getValues,
+    setError,
     reset,
   } = useFormContext<z.output<typeof FormSchema>>();
   const { enqueueSnackbar } = useSnackbar();
@@ -163,6 +164,10 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
             ? R.omit(data, ['minEstimatedPrice', 'maxEstimatedPrice'])
             : data
         );
+        if (res.error === '1031') {
+          setError('warehouseID', { message: '倉庫編號已存在' });
+          return;
+        }
         if (res.error) {
           enqueueSnackbar(res.error, { variant: 'error' });
           return;

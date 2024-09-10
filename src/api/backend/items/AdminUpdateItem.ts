@@ -33,7 +33,9 @@ const ReqSchema = z.object({
 
 type Data = 'Success';
 
-type ErrorCode = never;
+type ErrorCode =
+  // same warehouseId
+  '1031';
 
 export async function AdminUpdateItem(id: number, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
