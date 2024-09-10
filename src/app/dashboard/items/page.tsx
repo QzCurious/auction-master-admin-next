@@ -6,6 +6,7 @@ import { PAGE, ROWS_PER_PAGE } from '@/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
+import { Provider } from 'jotai';
 
 import { config } from '@/config';
 import AutoRefreshPage from '@/components/AutoRefreshPage';
@@ -82,29 +83,31 @@ async function Content({ searchParams }: PageProps) {
   }
 
   return (
-    <AutoRefreshPage ms={10_000}>
-      <Stack spacing={3}>
-        <Stack direction="row" flexWrap="wrap" gap={2}>
-          <ConsignorFilter consignorID={query.consignorID} />
-          {!query.picking && (
-            <>
-              <StatusFilter selected={query.status} statusCount={itemsRes.data.statusCounts} />
-              <RemoveSearchBtn<keyof typeof query> fields={['consignorID', 'status']} />
-            </>
-          )}
+    <Provider>
+      <AutoRefreshPage ms={10_000}>
+        <Stack spacing={3}>
+          <Stack direction="row" flexWrap="wrap" gap={2}>
+            <ConsignorFilter consignorID={query.consignorID} />
+            {!query.picking && (
+              <>
+                <StatusFilter selected={query.status} statusCount={itemsRes.data.statusCounts} />
+                <RemoveSearchBtn<keyof typeof query> fields={['consignorID', 'status']} />
+              </>
+            )}
 
-          <Box mx="auto" />
-          <PickForReturnButtons picking={query.picking} stage={query.stage} />
+            <Box mx="auto" />
+            <PickForReturnButtons picking={query.picking} stage={query.stage} />
+          </Stack>
+
+          {query.picking === 'return' && !query.consignorID ? (
+            '退貨請先鎖定寄售人'
+          ) : (
+            <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} query={query} />
+          )}
         </Stack>
 
-        {query.picking === 'return' && !query.consignorID ? (
-          '退貨請先鎖定寄售人'
-        ) : (
-          <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} query={query} />
-        )}
-      </Stack>
-
-      <PickForReturn picking={query.picking} stage={query.stage} />
-    </AutoRefreshPage>
+        <PickForReturn picking={query.picking} stage={query.stage} />
+      </AutoRefreshPage>
+    </Provider>
   );
 }
