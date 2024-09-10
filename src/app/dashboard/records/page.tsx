@@ -237,6 +237,26 @@ async function Content({ searchParams }: PageProps) {
                                     </span>
                                   </Box>
                                 );
+                              case RECORD_TYPE.enum('PaySpaceFeeType'):
+                                if (row.spaceFee == null)
+                                  return <Typography color="error">發生錯誤，請聯繫開發人員(4)</Typography>;
+                                return (
+                                  <Box>
+                                    <ReviewSubmitPaymentButtons recordId={row.id} />
+                                    <span>
+                                      請確認
+                                      <Typography component="span" variant="body2" color="primary">
+                                        收到匯款 {currencySign('TWD')}
+                                        {row.spaceFee.toLocaleString()}
+                                      </Typography>
+                                      後再執行
+                                      <Typography component="span" variant="body2" color="primary">
+                                        確認付款
+                                      </Typography>
+                                      操作
+                                    </span>
+                                  </Box>
+                                );
 
                               default:
                                 return <Typography color="error">發生錯誤，請聯繫開發人員(99)</Typography>;
