@@ -3,7 +3,7 @@
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
-import { SHIPMENT_TYPE, SHIPPING_STATUS } from '@/api/backend/static-configs.data';
+import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/api/backend/static-configs.data';
 import { currencySign, DATE_TIME_FORMAT } from '@/static';
 import CropFreeOutlinedIcon from '@mui/icons-material/CropFreeOutlined';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
@@ -232,7 +232,17 @@ function ShippedPopover({ row }: { row: Shipping }) {
     <PopupState variant="popover">
       {(popupState) => (
         <>
-          <Button type="button" variant="contained" size="small" {...bindTrigger(popupState)}>
+          <Button
+            type="button"
+            variant="contained"
+            size="small"
+            {...bindTrigger(popupState)}
+            title={
+              process.env.NODE_ENV === 'development'
+                ? `${row.actionType} ${ACTION_TYPE.enum(row.actionType)}`
+                : undefined
+            }
+          >
             已寄出
           </Button>
           <Popover
@@ -250,7 +260,16 @@ function ShippedPopover({ row }: { row: Shipping }) {
               component="form"
               sx={{ p: '16px 20px' }}
               onSubmit={handleSubmit(async (data) => {
-                const res = await Shipped(row.id, data);
+                const res = await Shipped(
+                  row.id,
+                  row.actionType === ACTION_TYPE.enum('YahooDispatchActionType')
+                    ? {
+                        internationalShippingCosts: data.internationalShippingCosts,
+                        shipmentTrackingNumber: data.shipmentTrackingNumber,
+                      }
+                    : { shipmentTrackingNumber: data.shipmentTrackingNumber }
+                );
+
                 if (res.error) {
                   enqueueSnackbar(res.error, { variant: 'error' });
                   return;
@@ -261,30 +280,32 @@ function ShippedPopover({ row }: { row: Shipping }) {
             >
               <Typography variant="subtitle1">標示為已寄出</Typography>
               <Stack spacing={1.5} mt={2}>
-                <Controller
-                  name="internationalShippingCosts"
-                  control={control}
-                  rules={{ required: '必填' }}
-                  render={({ field, fieldState }) => (
-                    <FormControl fullWidth error={!!fieldState.error}>
-                      <TextField
-                        {...field}
-                        size="small"
-                        label="國際運費"
-                        fullWidth
-                        type="number"
-                        onChange={(e) => {
-                          field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
-                        }}
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start">{currencySign('TWD')}</InputAdornment>,
-                        }}
-                        inputProps={{ min: 0 }}
-                      />
-                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                    </FormControl>
-                  )}
-                />
+                {row.actionType === ACTION_TYPE.enum('YahooDispatchActionType') && (
+                  <Controller
+                    name="internationalShippingCosts"
+                    control={control}
+                    rules={{ required: '必填' }}
+                    render={({ field, fieldState }) => (
+                      <FormControl fullWidth error={!!fieldState.error}>
+                        <TextField
+                          {...field}
+                          size="small"
+                          label="國際運費"
+                          fullWidth
+                          type="number"
+                          onChange={(e) => {
+                            field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                          }}
+                          InputProps={{
+                            startAdornment: <InputAdornment position="start">{currencySign('TWD')}</InputAdornment>,
+                          }}
+                          inputProps={{ min: 0 }}
+                        />
+                        {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                      </FormControl>
+                    )}
+                  />
+                )}
 
                 <Controller
                   name="shipmentTrackingNumber"

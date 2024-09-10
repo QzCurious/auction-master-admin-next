@@ -10,7 +10,7 @@ import { type Shipping } from './GetShippings';
 
 const ReqSchema = z.object({
   shipmentTrackingNumber: z.string(),
-  internationalShippingCosts: z.number(),
+  internationalShippingCosts: z.number().optional(),
 });
 
 type Data = 'Success';
@@ -22,7 +22,8 @@ export async function Shipped(id: Shipping['id'], payload: z.input<typeof ReqSch
   const formData = new FormData();
 
   formData.append('shipmentTrackingNumber', data.shipmentTrackingNumber);
-  formData.append('internationalShippingCosts', data.internationalShippingCosts.toString());
+  data.internationalShippingCosts != null &&
+    formData.append('internationalShippingCosts', data.internationalShippingCosts.toString());
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/shippings/${id}/shipped`, {
     method: 'POST',

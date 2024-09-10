@@ -157,80 +157,91 @@ async function Content({ searchParams }: PageProps) {
                         <Chip size="small" label={RECORD_STATUS.get('value', row.status).message} />
 
                         {row.status === RECORD_STATUS.enum('SubmitPaymentStatus') &&
-                          row.type === RECORD_TYPE.enum('WithdrawalType') && (
-                            <Box>
-                              <ConsignorBankInfo consignorID={row.consignorID} />
-                              <ReviewSubmitPaymentButtons recordId={row.id} />
-                              <span>
-                                請
-                                <Typography component="span" variant="body2" color="primary">
-                                  完成匯款
-                                </Typography>
-                                後再執行
-                                <Typography component="span" variant="body2" color="primary">
-                                  確認付款
-                                </Typography>
-                                操作
-                              </span>
-                            </Box>
-                          )}
+                          (function iife() {
+                            switch (row.type) {
+                              case RECORD_TYPE.enum('WithdrawalType'):
+                                return (
+                                  <Box>
+                                    <ConsignorBankInfo consignorID={row.consignorID} />
+                                    <ReviewSubmitPaymentButtons recordId={row.id} />
+                                    <span>
+                                      請
+                                      <Typography component="span" variant="body2" color="primary">
+                                        完成匯款
+                                      </Typography>
+                                      後再執行
+                                      <Typography component="span" variant="body2" color="primary">
+                                        確認付款
+                                      </Typography>
+                                      操作
+                                    </span>
+                                  </Box>
+                                );
+                              case RECORD_TYPE.enum('PayAuctionItemCancellationFeeType'):
+                                if (row.auctionItemID == null)
+                                  return <Typography color="error">發生錯誤，請聯繫開發人員(1)</Typography>;
+                                return (
+                                  <Box>
+                                    <AuctionItemInfo auctionItemId={row.auctionItemID} />
+                                    <ReviewSubmitPaymentButtons recordId={row.id} />
+                                    <span>
+                                      請先確認商品
+                                      <Typography component="span" variant="body2" color="primary">
+                                        已下架
+                                      </Typography>
+                                      後再執行
+                                      <Typography component="span" variant="body2" color="primary">
+                                        確認付款
+                                      </Typography>
+                                      操作
+                                    </span>
+                                  </Box>
+                                );
+                              case RECORD_TYPE.enum('PayYahooAuctionFeeType'):
+                                if (row.auctionItemID == null)
+                                  return <Typography color="error">發生錯誤，請聯繫開發人員(2)</Typography>;
+                                return (
+                                  <Box>
+                                    <AuctionItemInfo auctionItemId={row.auctionItemID} />
+                                    <ReviewSubmitPaymentButtons recordId={row.id} />
+                                    <span>
+                                      請先確認商品
+                                      <Typography component="span" variant="body2" color="primary">
+                                        已上架
+                                      </Typography>
+                                      後再執行
+                                      <Typography component="span" variant="body2" color="primary">
+                                        確認付款
+                                      </Typography>
+                                      操作
+                                    </span>
+                                  </Box>
+                                );
+                              case RECORD_TYPE.enum('PayReturnItemFeeType'):
+                                if (row.spaceFee == null || row.shippingCost == null)
+                                  return <Typography color="error">發生錯誤，請聯繫開發人員(3)</Typography>;
+                                return (
+                                  <Box>
+                                    <ReviewSubmitPaymentButtons recordId={row.id} />
+                                    <span>
+                                      請確認
+                                      <Typography component="span" variant="body2" color="primary">
+                                        收到匯款 {currencySign('TWD')}
+                                        {(row.spaceFee + row.shippingCost).toLocaleString()}
+                                      </Typography>
+                                      後再執行
+                                      <Typography component="span" variant="body2" color="primary">
+                                        確認付款
+                                      </Typography>
+                                      操作
+                                    </span>
+                                  </Box>
+                                );
 
-                        {row.status === RECORD_STATUS.enum('SubmitPaymentStatus') &&
-                          row.type === RECORD_TYPE.enum('PayAuctionItemCancellationFeeType') && (
-                            <Box>
-                              {row.auctionItemID && <AuctionItemInfo auctionItemId={row.auctionItemID} />}
-                              <ReviewSubmitPaymentButtons recordId={row.id} />
-                              <span>
-                                請先確認商品
-                                <Typography component="span" variant="body2" color="primary">
-                                  已下架
-                                </Typography>
-                                後再執行
-                                <Typography component="span" variant="body2" color="primary">
-                                  確認付款
-                                </Typography>
-                                操作
-                              </span>
-                            </Box>
-                          )}
-
-                        {row.status === RECORD_STATUS.enum('SubmitPaymentStatus') &&
-                          row.type === RECORD_TYPE.enum('PayAuctionItemCancellationFeeType') && (
-                            <Box>
-                              {row.auctionItemID && <AuctionItemInfo auctionItemId={row.auctionItemID} />}
-                              <ReviewSubmitPaymentButtons recordId={row.id} />
-                              <span>
-                                請先確認商品
-                                <Typography component="span" variant="body2" color="primary">
-                                  已下架
-                                </Typography>
-                                後再執行
-                                <Typography component="span" variant="body2" color="primary">
-                                  確認付款
-                                </Typography>
-                                操作
-                              </span>
-                            </Box>
-                          )}
-
-                        {row.status === RECORD_STATUS.enum('SubmitPaymentStatus') &&
-                          row.type === RECORD_TYPE.enum('PayYahooAuctionFeeType') && (
-                            <Box>
-                              {row.auctionItemID && <AuctionItemInfo auctionItemId={row.auctionItemID} />}
-                              <ReviewSubmitPaymentButtons recordId={row.id} />
-                              <span>
-                                請先確認商品
-                                <Typography component="span" variant="body2" color="primary">
-                                  已上架
-                                </Typography>
-                                後再執行
-                                <Typography component="span" variant="body2" color="primary">
-                                  確認付款
-                                </Typography>
-                                操作
-                              </span>
-                            </Box>
-                          )}
+                              default:
+                                return <Typography color="error">發生錯誤，請聯繫開發人員(99)</Typography>;
+                            }
+                          })()}
                       </Stack>
                     </TableCell>
                     <TableCell sx={{ width: 0 }}>

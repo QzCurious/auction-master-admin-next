@@ -118,7 +118,7 @@ export class StatusFlow {
         'CompanyDirectPurchaseType',
       ],
       status: 'WarehouseReturningStatus',
-      nexts: ['ReturnedStatus'],
+      nexts: ['WarehouseReturnPendingStatus', 'ReturnedStatus'],
       adjudicator: 'admin',
     },
     WarehousePersonnelConfirmedStatus: {
@@ -230,7 +230,8 @@ export class StatusFlow {
     while (true) {
       const last = path[path.length - 1];
       const step = this.flow[last];
-      const happyNext = step.nexts.find((s) => type === null || this.flow[s].allowTypes.some((t) => t === type));
+      const notYetVisited = step.nexts.filter((s) => !path.includes(s));
+      const happyNext = notYetVisited.find((s) => type === null || this.flow[s].allowTypes.some((t) => t === type));
       if (!happyNext) break;
       path.push(happyNext);
     }
