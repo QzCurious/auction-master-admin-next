@@ -2,6 +2,7 @@
 
 import { revalidateTag } from 'next/cache';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
+import { appendEntries } from '@/static';
 import * as R from 'remeda';
 import { z } from 'zod';
 
@@ -29,18 +30,7 @@ export async function ItemReturning(payload: z.output<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
-
-  formData.append('consignorID', data.consignorID.toString());
-  formData.append('shipmentType', data.shipmentType.toString());
-  for(const id of data.itemID) {
-    formData.append('itemID', id.toString());
-  }
-  formData.append('address', data.address);
-  // formData.append('storeNumber', data.storeNumber);
-  // formData.append('storeName', data.storeName);
-  formData.append('recipientName', data.recipientName);
-  formData.append('phone', data.phone);
-  formData.append('shippingCosts', data.shippingCosts.toString());
+  appendEntries(formData, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>('/items/returning', {
     method: 'POST',

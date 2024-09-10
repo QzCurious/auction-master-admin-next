@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from './apiClient';
@@ -17,12 +17,11 @@ type ErrorCode =
   // TokenIncorrect
   '1003';
 
-export async function sessionRefresh(payload: z.input<typeof ReqSchema>) {
-  throwIfInvalid(payload, ReqSchema);
+export async function AdminRefreshToken(payload: z.input<typeof ReqSchema>) {
+  const { token, refreshToken } = throwIfInvalid(payload, ReqSchema);
 
-  const { token, refreshToken } = payload;
   const formData = new FormData();
-  formData.append('refreshToken', refreshToken);
+  appendEntries(formData, { refreshToken });
 
   const res = await apiClient<Data, ErrorCode>('/session/refresh', {
     method: 'POST',

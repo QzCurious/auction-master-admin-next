@@ -5,9 +5,9 @@ import { cookieConfigs } from '@/static';
 import { jwtDecode } from 'jwt-decode';
 
 import { type JwtPayload } from './JwtPayload';
-import { sessionRefresh } from './session-refresh';
+import { AdminRefreshToken } from './AdminRefreshToken';
 
-let sessionRefreshing: ReturnType<typeof sessionRefresh> | null = null;
+let sessionRefreshing: ReturnType<typeof AdminRefreshToken> | null = null;
 
 export async function getToken({ force }: { force?: boolean } = { force: false }) {
   // no token
@@ -29,7 +29,7 @@ export async function getToken({ force }: { force?: boolean } = { force: false }
   }
 
   if (!sessionRefreshing) {
-    sessionRefreshing = sessionRefresh({ token: token.value, refreshToken: refreshToken.value });
+    sessionRefreshing = AdminRefreshToken({ token: token.value, refreshToken: refreshToken.value });
   }
 
   const res = await sessionRefreshing;

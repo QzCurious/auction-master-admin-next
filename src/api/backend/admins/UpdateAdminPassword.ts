@@ -3,6 +3,7 @@
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -12,16 +13,17 @@ const ReqSchema = z.object({
 
 type Data = 'Success';
 
-// 11: password cannot be same as old password
-// 1004: old password incorrect
-type ErrorCode = '11' | '1004';
+type ErrorCode =
+  // password cannot be same as old password
+  | '11'
+  // old password incorrect
+  | '1004';
 
 export async function UpdateAdminPassword(id: number, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
-  data.oldPassword && formData.append('oldPassword', data.oldPassword);
-  data.password && formData.append('password', data.password);
+  appendEntries(formData, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/${id}/password`, {
     method: 'PATCH',

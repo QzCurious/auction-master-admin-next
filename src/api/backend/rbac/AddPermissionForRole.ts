@@ -4,6 +4,7 @@ import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -16,13 +17,10 @@ type Data = 'Success';
 type ErrorCode = never;
 
 export async function AddPermissionForRole(payload: z.input<typeof ReqSchema>) {
-  throwIfInvalid(payload, ReqSchema);
+  const data = throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
-  formData.append('role', payload.role);
-  for (const id of payload.permissionKey) {
-    formData.append('permissionKey', id);
-  }
+  appendEntries(formData, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>('/permissions', {
     method: 'POST',

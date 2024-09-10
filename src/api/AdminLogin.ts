@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { cookieConfigs } from '@/static';
+import { appendEntries, cookieConfigs } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from './apiClient';
@@ -28,12 +28,11 @@ type ErrorCode =
   // AdminNotExist
   | '1502';
 
-export async function session(payload: z.input<typeof ReqSchema>) {
-  throwIfInvalid(payload, ReqSchema);
+export async function AdminLogin(payload: z.input<typeof ReqSchema>) {
+  const data = throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
-  formData.append('account', payload.account);
-  formData.append('password', payload.password);
+  appendEntries(formData, data);
 
   const res = await apiClient<Data, ErrorCode>('/session', {
     method: 'POST',

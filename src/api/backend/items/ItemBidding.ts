@@ -2,6 +2,7 @@
 
 import { revalidateTag } from 'next/cache';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
@@ -21,7 +22,7 @@ export async function ItemBidding(id: number, payload: z.input<typeof ReqSchema>
   const data = throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
-  formData.append('auctionID', data.auctionID);
+  appendEntries(formData, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/bidding`, {
     method: 'POST',

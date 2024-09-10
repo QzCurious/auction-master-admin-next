@@ -3,6 +3,7 @@
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -33,10 +34,8 @@ export interface Reports {
 }
 
 type Data = Array<{
-  id: string;
   reports: Reports;
   reportAt: string;
-  createdAt: string;
 }> | null;
 
 type ErrorCode = never;
@@ -62,8 +61,7 @@ export async function GetReports(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
-  data.startAt && query.append('startAt', data.startAt.toISOString());
-  data.endAt && query.append('endAt', data.endAt.toISOString());
+  appendEntries(query, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/reports?${query}`, {
     method: 'GET',

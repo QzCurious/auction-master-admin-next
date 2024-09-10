@@ -1,3 +1,6 @@
+'use server';
+
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
@@ -5,7 +8,7 @@ import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
 import { type WORKER_TYPE } from '../static-configs.data';
 
-export const ReqSchema = z.object({
+const ReqSchema = z.object({
   type: z.string().array().optional(),
   status: z.coerce.number().array().optional(),
   limit: z.coerce.number().default(10),
@@ -40,18 +43,10 @@ interface Data {
 type ErrorCode = never;
 
 export async function GetWorkers(payload: z.input<typeof ReqSchema>) {
-  'use server';
-  const parsed = throwIfInvalid(payload, ReqSchema);
+  const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
-  for (const type of parsed.type ?? []) {
-    query.append('type', type.toString());
-  }
-  for (const status of parsed.status ?? []) {
-    query.append('status', status.toString());
-  }
-  parsed.limit != null && query.append('limit', parsed.limit.toString());
-  parsed.offset != null && query.append('offset', parsed.offset.toString());
+  appendEntries(query, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/workers?${query}`, {
     method: 'GET',

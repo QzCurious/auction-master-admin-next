@@ -3,6 +3,7 @@
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -43,15 +44,7 @@ export async function GetRecordsSummary(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
-  for (const type of data.type ?? []) {
-    query.append('type', type.toString());
-  }
-  data.consignorID && query.append('consignorID', data.consignorID.toString());
-  for (const status of data.status ?? []) {
-    query.append('status', status.toString());
-  }
-  data.startAt && query.append('startAt', data.startAt.toISOString());
-  data.endAt && query.append('endAt', data.endAt.toISOString());
+  appendEntries(query, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/reports/records/summary?${query}`, {
     method: 'GET',

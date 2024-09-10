@@ -1,3 +1,6 @@
+'use server';
+
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
@@ -5,7 +8,7 @@ import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
 import { type ITEM_STATUS, type ITEM_TYPE } from '../static-configs.data';
 
-export const ReqSchema = z.object({
+const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),
   status: z.coerce.number().array().optional(),
   sort: z.string().optional(),
@@ -56,18 +59,10 @@ interface Data {
 type ErrorCode = never;
 
 export async function GetItemsAndDetails(payload: z.input<typeof ReqSchema>) {
-  'use server';
-  const parsed = throwIfInvalid(payload, ReqSchema);
+  const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
-  parsed.consignorID != null && query.append('consignorID', parsed.consignorID.toString());
-  for (const status of parsed.status ?? []) {
-    query.append('status', status.toString());
-  }
-  parsed.sort != null && query.append('sort', parsed.sort);
-  parsed.order != null && query.append('order', parsed.order);
-  parsed.limit != null && query.append('limit', parsed.limit.toString());
-  parsed.offset != null && query.append('offset', parsed.offset.toString());
+  appendEntries(query, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/items?${query}`, {
     method: 'GET',

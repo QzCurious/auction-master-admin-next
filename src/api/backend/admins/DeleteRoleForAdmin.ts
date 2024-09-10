@@ -4,6 +4,7 @@ import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -18,9 +19,7 @@ export async function DeleteRoleForAdmin(account: string, payload: z.input<typeo
   throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
-  for (const role of payload.roles) {
-    query.append('role', role);
-  }
+  appendEntries(query, payload);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/account/${account}/roles?${query.toString()}`, {
     method: 'DELETE',

@@ -4,6 +4,7 @@ import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -19,8 +20,7 @@ export async function CreateWorker(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
-  formData.append('type', data.type);
-  formData.append('url', data.url);
+  appendEntries(formData, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>('/workers', {
     method: 'POST',

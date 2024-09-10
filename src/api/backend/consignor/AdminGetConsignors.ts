@@ -1,5 +1,6 @@
 'use server';
 
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
@@ -46,15 +47,10 @@ interface Data {
 type ErrorCode = never;
 
 export async function AdminGetConsignors(payload: z.input<typeof ReqSchema>) {
-  const parsed = throwIfInvalid(payload, ReqSchema);
+  const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
-  parsed.fuzzyNickname && query.append('fuzzyNickname', parsed.fuzzyNickname);
-  parsed.status != null && query.append('status', parsed.status.toString());
-  parsed.sort != null && query.append('sort', parsed.sort);
-  parsed.order != null && query.append('order', parsed.order);
-  parsed.limit != null && query.append('limit', parsed.limit.toString());
-  parsed.offset != null && query.append('offset', parsed.offset.toString());
+  appendEntries(query, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/consignors?${query}`, {
     method: 'GET',

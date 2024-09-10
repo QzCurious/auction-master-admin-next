@@ -1,9 +1,11 @@
+'use server';
+
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
 
-export const ReqSchema = z.object({
+const ReqSchema = z.object({
   limit: z.coerce.number().default(10),
   offset: z.coerce.number().default(0),
 });
@@ -31,8 +33,6 @@ type Data = Worker;
 type ErrorCode = never;
 
 export async function GetWorker(id: number) {
-  'use server';
-
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/workers/${id}`, {
     method: 'GET',
     next: { tags: ['workers'] },

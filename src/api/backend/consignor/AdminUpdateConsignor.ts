@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
@@ -22,10 +23,7 @@ export async function AdminUpdateConsignor(id: number, payload: z.input<typeof R
   const data = throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
-  data.password && formData.append('password', data.password);
-  data.nickname != null && formData.append('nickname', data.nickname);
-  data.status != null && formData.append('status', data.status.toString());
-  data.commissionBonusRate != null && formData.append('commissionBonusRate', data.commissionBonusRate.toString());
+  appendEntries(formData, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/consignors/${id}`, {
     method: 'PATCH',

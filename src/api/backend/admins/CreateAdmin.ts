@@ -4,6 +4,7 @@ import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -19,8 +20,7 @@ export async function CreateAdmin(payload: z.input<typeof ReqSchema>) {
   throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
-  formData.append('account', payload.account);
-  formData.append('password', payload.password);
+  appendEntries(formData, payload);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>('/admins', {
     method: 'POST',

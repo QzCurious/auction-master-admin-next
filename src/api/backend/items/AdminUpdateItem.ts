@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
+import { appendEntries } from '@/static';
 import * as R from 'remeda';
 import { z } from 'zod';
 
@@ -38,22 +39,7 @@ export async function AdminUpdateItem(id: number, payload: z.input<typeof ReqSch
   const data = throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
-  data.consignorID != null && formData.append('consignorID', data.consignorID.toString());
-  data.type != null && formData.append('type', data.type.toString());
-  data.name != null && formData.append('name', data.name);
-  data.description != null && formData.append('description', data.description);
-  data.directPurchasePrice != null && formData.append('directPurchasePrice', data.directPurchasePrice.toString());
-  data.minEstimatedPrice != null && formData.append('minEstimatedPrice', data.minEstimatedPrice.toString());
-  data.maxEstimatedPrice != null && formData.append('maxEstimatedPrice', data.maxEstimatedPrice.toString());
-  data.reservePrice != null && formData.append('reservePrice', data.reservePrice.toString());
-  data.expireAt != null && formData.append('expireAt', data.expireAt.toISOString());
-  data.warehouseID != null && formData.append('warehouseID', data.warehouseID);
-  data.space != null && formData.append('space', data.space.toString());
-  data.shippingCostsWithinJapan != null &&
-    formData.append('shippingCostsWithinJapan', data.shippingCostsWithinJapan.toString());
-  data.grossWeight != null && formData.append('grossWeight', data.grossWeight.toString());
-  data.volumetricWeight != null && formData.append('volumetricWeight', data.volumetricWeight.toString());
-  data.status != null && formData.append('status', data.status.toString());
+  appendEntries(formData, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}`, {
     method: 'PATCH',

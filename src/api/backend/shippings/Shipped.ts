@@ -4,6 +4,7 @@ import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 import { type Shipping } from './GetShippings';
@@ -19,11 +20,9 @@ type ErrorCode = never;
 
 export async function Shipped(id: Shipping['id'], payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
-  const formData = new FormData();
 
-  formData.append('shipmentTrackingNumber', data.shipmentTrackingNumber);
-  data.internationalShippingCosts != null &&
-    formData.append('internationalShippingCosts', data.internationalShippingCosts.toString());
+  const formData = new FormData();
+  appendEntries(formData, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/shippings/${id}/shipped`, {
     method: 'POST',

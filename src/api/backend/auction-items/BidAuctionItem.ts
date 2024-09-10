@@ -4,6 +4,7 @@ import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 import { type AuctionItem } from './GetAuctionItems';
@@ -22,7 +23,7 @@ export async function BidAuctionItem(id: AuctionItem['id'], payload: z.input<typ
   const data = throwIfInvalid(payload, ReqSchema);
 
   const formData = new FormData();
-  formData.append('price', data.price.toString());
+  appendEntries(formData, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items/${id}/bid`, {
     method: 'POST',

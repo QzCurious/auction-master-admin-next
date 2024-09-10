@@ -1,9 +1,9 @@
 'use client';
 
-import { startTransition, useState } from 'react';
+import { useState } from 'react';
 import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
-import { session } from '@/api/session';
+import { AdminLogin } from '@/api/AdminLogin';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -50,7 +50,7 @@ export function SignInForm() {
       {errors.root && <Alert severity="error">{errors.root.message}</Alert>}
       <form
         onSubmit={handleSubmit(async (data) => {
-          const res = await session(data);
+          const res = await AdminLogin(data);
           if (res.error === '1004' || res.error === '1502') {
             setError('root', { message: '帳號或密碼錯誤' });
             return;

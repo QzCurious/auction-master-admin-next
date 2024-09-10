@@ -1,5 +1,6 @@
 'use server';
 
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
@@ -54,17 +55,10 @@ interface Data {
 type ErrorCode = never;
 
 export async function GetAuctionItems(payload: z.input<typeof ReqSchema>) {
-  const parsed = throwIfInvalid(payload, ReqSchema);
+  const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
-  parsed.consignorID != null && query.append('consignorID', parsed.consignorID.toString());
-  for (const status of parsed.status ?? []) {
-    query.append('status', status.toString());
-  }
-  parsed.sort != null && query.append('sort', parsed.sort);
-  parsed.order != null && query.append('order', parsed.order);
-  parsed.limit != null && query.append('limit', parsed.limit.toString());
-  parsed.offset != null && query.append('offset', parsed.offset.toString());
+  appendEntries(query, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items?${query}`, {
     method: 'GET',

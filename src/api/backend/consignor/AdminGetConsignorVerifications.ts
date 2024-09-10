@@ -1,5 +1,6 @@
 'use server';
 
+import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
@@ -45,12 +46,7 @@ export async function AdminGetConsignorVerifications(payload: z.input<typeof Req
   const parsed = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
-  parsed.account && query.append('account', parsed.account);
-  parsed.status != null && query.append('status', parsed.status.toString());
-  parsed.sort != null && query.append('sort', parsed.sort);
-  parsed.order != null && query.append('order', parsed.order);
-  parsed.limit != null && query.append('limit', parsed.limit.toString());
-  parsed.offset != null && query.append('offset', parsed.offset.toString());
+  appendEntries(query, parsed);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/consignors/verifications?${query}`, {
     method: 'GET',

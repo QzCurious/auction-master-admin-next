@@ -1,3 +1,5 @@
+'use server';
+
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
 import { type WORKER_STATUS, type WORKER_TYPE } from '../static-configs.data';
@@ -25,7 +27,6 @@ type Data = Array<Worker>;
 type ErrorCode = never;
 
 export async function GetActivationWorkers() {
-  'use server';
   const res = await withAuth(apiClient)<Data, ErrorCode>('/workers/activation', {
     method: 'GET',
     next: { tags: ['workers'] },
