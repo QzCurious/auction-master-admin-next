@@ -7,13 +7,15 @@ import { withAuth } from '@/api/withAuth';
 import { appendEntries } from '@/static';
 import { z } from 'zod';
 
-const ReqSchema = z.object({
-  password: z
-    .string()
-    .optional()
-    .transform((val) => val || undefined),
-  status: z.number(),
-});
+const ReqSchema = z
+  .object({
+    password: z
+      .string()
+      .optional()
+      .transform((val) => val || undefined),
+    status: z.number(),
+  })
+  .partial();
 
 type Data = 'Success';
 

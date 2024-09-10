@@ -7,20 +7,22 @@ import { withAuth } from '@/api/withAuth';
 import { appendEntries } from '@/static';
 import { z } from 'zod';
 
-const ReqSchema = z.object({
-  type: z.string(),
-  url: z.string(),
-  account: z.string(),
-  name: z.string(),
-  phone: z.string(),
-  postalCode: z.string(),
-  birthday: z.coerce.date(),
-  email: z.literal('').or(z.string().email()),
-  simCardNumber: z.string(),
-  activationAt: z.coerce.date(),
-  remark: z.string(),
-  status: z.coerce.number(),
-});
+const ReqSchema = z
+  .object({
+    type: z.string(),
+    url: z.string(),
+    account: z.string(),
+    name: z.string(),
+    phone: z.string(),
+    postalCode: z.string(),
+    birthday: z.coerce.date(),
+    email: z.literal('').or(z.string().email()),
+    simCardNumber: z.string(),
+    activationAt: z.coerce.date(),
+    remark: z.string(),
+    status: z.coerce.number(),
+  })
+  .partial();
 
 type Data = 'Success';
 

@@ -1,11 +1,13 @@
 'use client';
 
 import type React from 'react';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/static-configs.data';
+import { getDirtyFields } from '@/helper/getDirtyFields';
 import { currencySign } from '@/static';
 import { StatusFlow } from '@/StatusFlow';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -71,8 +73,8 @@ const FormSchema = z
   });
 
 export function ItemFormProvider({ item, children }: { item: Item; children: React.ReactNode }) {
-  const defaultValues = useMemo(
-    () => ({
+  const form = useForm<z.input<typeof FormSchema>>({
+    values: {
       consignorID: item.consignorID,
       type: item.type,
       name: item.name,
@@ -87,47 +89,22 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
       shippingCostsWithinJapan: item.shippingCostsWithinJapan,
       grossWeight: item.grossWeight,
       volumetricWeight: item.volumetricWeight,
-    }),
-    [
-      item.consignorID,
-      item.description,
-      item.directPurchasePrice,
-      item.expireAt,
-      item.grossWeight,
-      item.maxEstimatedPrice,
-      item.minEstimatedPrice,
-      item.name,
-      item.reservePrice,
-      item.shippingCostsWithinJapan,
-      item.space,
-      item.type,
-      item.volumetricWeight,
-      item.warehouseID,
-    ]
-  );
-  const form = useForm<z.input<typeof FormSchema>>({
-    defaultValues,
+    },
     resolver: zodResolver(FormSchema),
   });
-
-  // 編輯成功後重置表單，對應 server data
-  const { reset } = form;
-  useEffect(() => {
-    reset(defaultValues);
-  }, [defaultValues, reset]);
 
   return <FormProvider {...form}>{children}</FormProvider>;
 }
 
 export function ItemForm({ item, consignor }: ItemFromProps) {
+  const router = useRouter();
   const {
     watch,
     control,
     handleSubmit,
-    formState: { isSubmitting, isDirty },
+    formState: { isSubmitting, dirtyFields, defaultValues },
     getValues,
     setError,
-    reset,
   } = useFormContext<z.output<typeof FormSchema>>();
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
@@ -142,28 +119,20 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
 
   const quillRef = useRef<Quill>(null);
 
-  const handleReset = useCallback(() => {
-    reset();
-    quillRef.current?.setContents(
-      item.description ? new Delta({ ops: JSON.parse(item.description) }) : new Delta().insert('\n').ops
-    );
-  }, [item.description, reset]);
-  useEffect(() => {
-    handleReset();
-  }, [handleReset]);
-
   return (
     <Card
       sx={{ py: 2, px: 3 }}
       component="form"
       onSubmit={handleSubmit(async (data) => {
-        const res = await AdminUpdateItem(
-          item.id,
-          data.type === ITEM_TYPE.enum('FixedPriceItemType') ||
-            data.type === ITEM_TYPE.enum('NonAppraisableAuctionItemType')
+        const fixedData =
+          data.type !== ITEM_TYPE.enum('AppraisableAuctionItemType')
             ? R.omit(data, ['minEstimatedPrice', 'maxEstimatedPrice'])
-            : data
-        );
+            : data;
+        const dirtyValues = getDirtyFields(fixedData, dirtyFields);
+        if (Object.keys(dirtyValues).length === 0) return;
+
+        const res = await AdminUpdateItem(item.id, dirtyValues);
+
         if (res.error === '1031') {
           setError('warehouseID', { message: '倉庫編號已存在' });
           return;
@@ -178,15 +147,34 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
       <Stack direction="row" columnGap={2}>
         <Typography variant="h6">物品資訊</Typography>
         <Box sx={{ ml: 'auto' }} />
-        {process.env.NODE_ENV === 'development' && (
-          <Button onClick={() => console.log(getValues())}>Get form values</Button>
-        )}
 
-        {isDirty && (
-          <Button type="button" color="secondary" variant="text" onClick={handleReset}>
-            重設
+        {process.env.NODE_ENV === 'development' && <Button onClick={() => router.refresh()}>Refetch</Button>}
+        {process.env.NODE_ENV === 'development' && (
+          <Button
+            onClick={() => {
+              console.log('values', getValues());
+              console.log('dirtyFields', dirtyFields);
+              console.log('defaultValues', defaultValues);
+            }}
+          >
+            Log values
           </Button>
         )}
+
+        {/* {isDirty && (
+          <Button
+            type="button"
+            color="secondary"
+            variant="text"
+            onClick={() => {
+              if (defaultValues?.description) {
+                quillRef.current?.setContents(new Delta({ ops: JSON.parse(defaultValues.description) }));
+              }
+            }}
+          >
+            重設
+          </Button>
+        )} */}
         {canUpdate && (
           <Button type="submit" variant="contained" disabled={isSubmitting}>
             送出

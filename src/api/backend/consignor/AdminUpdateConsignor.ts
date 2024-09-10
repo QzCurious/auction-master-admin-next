@@ -8,12 +8,14 @@ import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
 
-const ReqSchema = z.object({
-  password: z.string().optional(),
-  nickname: z.string().optional(),
-  status: z.number().optional(),
-  commissionBonusRate: z.number().optional(),
-});
+const ReqSchema = z
+  .object({
+    password: z.string(),
+    nickname: z.string(),
+    status: z.number(),
+    commissionBonusRate: z.number(),
+  })
+  .partial();
 
 type Data = 'Success';
 

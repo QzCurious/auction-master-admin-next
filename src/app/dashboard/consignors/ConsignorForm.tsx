@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
 import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
+import { getDirtyFields } from '@/helper/getDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -42,26 +43,21 @@ const FormSchema = z
   });
 
 export default function ConsignorForm({ consignor }: ConsignorFromProps) {
-  const defaultValues = useMemo(
-    () => ({
-      nickname: consignor.nickname,
-      status: consignor.status,
-      password: '',
-      confirmPassword: '',
-      commissionBonusRate: BigNumber(consignor.commissionBonusRate).multipliedBy(100).toNumber(),
-    }),
-    [consignor]
-  );
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>();
   const {
     control,
     handleSubmit,
-    setError,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting, dirtyFields, defaultValues },
     getValues,
   } = useForm<z.output<typeof FormSchema>>({
-    defaultValues,
+    values: {
+      nickname: consignor.nickname,
+      status: consignor.status,
+      password: '',
+      confirmPassword: '',
+      commissionBonusRate: BigNumber(consignor.commissionBonusRate).multipliedBy(100).toNumber(),
+    },
     resolver: zodResolver(FormSchema),
   });
   const { enqueueSnackbar } = useSnackbar();
@@ -70,16 +66,22 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
   return (
     <form
       onSubmit={handleSubmit(async (data) => {
-        const res = await AdminUpdateConsignor(consignor.id, {
+        const fixedData = {
           ...data,
           commissionBonusRate: BigNumber(data.commissionBonusRate).dividedBy(100).toNumber(),
-        });
+        };
+        const dirtyValues = getDirtyFields(fixedData, dirtyFields);
+        if (Object.keys(dirtyValues).length === 0) return;
+
+        const res = await AdminUpdateConsignor(consignor.id, dirtyValues);
         if (res.error) {
           enqueueSnackbar(res.error, { variant: 'error' });
           return;
         }
         enqueueSnackbar('寄售人資訊已更新', { variant: 'success' });
-        router.push('/dashboard/consignors');
+        if (process.env.NODE_ENV !== 'development') {
+          router.push('/dashboard/consignors');
+        }
       })}
     >
       <Stack rowGap={3} sx={{ mt: 4 }}>
@@ -87,9 +89,19 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
           <Stack direction="row" columnGap={2}>
             <Typography variant="h6">寄售人資訊</Typography>
             <Box sx={{ ml: 'auto' }} />
+            {process.env.NODE_ENV === 'development' && <Button onClick={() => router.refresh()}>Refetch</Button>}
             {process.env.NODE_ENV === 'development' && (
-              <Button onClick={() => console.log(getValues())}>Get form values</Button>
+              <Button
+                onClick={() => {
+                  console.log('values', getValues());
+                  console.log('dirtyFields', dirtyFields);
+                  console.log('defaultValues', defaultValues);
+                }}
+              >
+                Log values
+              </Button>
             )}
+
             <Button
               type="submit"
               variant="contained"

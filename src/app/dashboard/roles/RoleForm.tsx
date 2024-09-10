@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { AddPermissionForRole } from '@/api/backend/rbac/AddPermissionForRole';
 import { CreateRole } from '@/api/backend/rbac/CreateRole';
@@ -40,39 +40,32 @@ const FormSchema = z.object({
 });
 
 export default function RoleForm({ role, permissions }: RoleFromProps) {
-  const defaultValues = useMemo(
-    () => ({
-      role: '',
-      description: '',
-      ...role,
-      permissionKey: role?.permission.map((p) => p.key) ?? [],
-    }),
-    [role]
-  );
   const router = useRouter();
   const {
     control,
     handleSubmit,
     setError,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting, dirtyFields, defaultValues },
     getValues,
-    reset,
   } = useForm<z.input<typeof FormSchema>>({
-    defaultValues,
+    values: {
+      role: '',
+      description: '',
+      ...role,
+      permissionKey: role?.permission.map((p) => p.key) ?? [],
+    },
     resolver: zodResolver(FormSchema),
   });
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
-
-  useEffect(() => {
-    reset(defaultValues);
-  }, [defaultValues, reset]);
 
   return (
     <form
       onSubmit={handleSubmit(
         role
           ? async (data) => {
+              if (!dirtyFields.permissionKey) return;
+
               const addPermissions = data.permissionKey.filter(
                 (key) => !role.permission.map((p) => p.key).includes(key as never)
               );
@@ -255,8 +248,17 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
           </>
         )}
         <CardActions sx={{ justifyContent: 'flex-end' }}>
+          {process.env.NODE_ENV === 'development' && <Button onClick={() => router.refresh()}>Refetch</Button>}
           {process.env.NODE_ENV === 'development' && (
-            <Button onClick={() => console.log(getValues())}>Get form values</Button>
+            <Button
+              onClick={() => {
+                console.log('values', getValues());
+                console.log('dirtyFields', dirtyFields);
+                console.log('defaultValues', defaultValues);
+              }}
+            >
+              Log values
+            </Button>
           )}
 
           {(!role || (role && havePermissions(['AddPermissionForRole', 'DeletePermissionForRole']))) && (

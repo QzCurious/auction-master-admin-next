@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AddRoleForAdmin } from '@/api/backend/admins/AddRoleForAdmin';
 import { CreateAdmin } from '@/api/backend/admins/CreateAdmin';
 import { DeleteRoleForAdmin } from '@/api/backend/admins/DeleteRoleForAdmin';
 import { type Admin } from '@/api/backend/admins/GetAdmin';
 import { UpdateAdmin } from '@/api/backend/admins/UpdateAdmin';
-import { ADMIN_STATUS } from '@/api/backend/static-configs.data';
 import { type Role } from '@/api/backend/rbac/GetRoles';
+import { ADMIN_STATUS } from '@/api/backend/static-configs.data';
+import { getDirtyFields } from '@/helper/getDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -60,46 +61,41 @@ const EditFormSchema = z
 export default function AdminForm({ admin, roles }: AdminFromProps) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>();
-  const defaultValues = useMemo(
-    () => ({
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting, dirtyFields, defaultValues },
+    getValues,
+  } = useForm({
+    values: {
       account: '',
       roles: [],
       status: null,
       ...admin,
       password: '',
       confirmPassword: '',
-    }),
-    [admin]
-  );
-  const {
-    control,
-    handleSubmit,
-    formState: { isSubmitting },
-    getValues,
-    reset,
-  } = useForm({
-    defaultValues,
+    },
     resolver: zodResolver(admin ? EditFormSchema : CreateFormSchema),
   });
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
-
-  useEffect(() => {
-    reset(defaultValues);
-  }, [defaultValues, reset]);
 
   return (
     <form
       onSubmit={handleSubmit(
         admin
           ? async (data) => {
+              const dirtyValues = getDirtyFields(data, dirtyFields);
+              if (Object.keys(dirtyValues).length === 0) return;
+
               const addPermissions = data.roles.filter((role) => !admin.roles.includes(role));
               const deletedPermissions = admin.roles.filter((role) => !data.roles.includes(role));
               const res = await Promise.all([
                 havePermissions(['UpdateAdmin']) &&
+                  (dirtyFields.status || dirtyFields.password) &&
                   UpdateAdmin(admin.id, {
-                    status: data.status ?? admin.status,
-                    password: data.password,
+                    status: dirtyFields.status ? (data.status ?? admin.status) : undefined,
+                    password: dirtyFields.password ? data.password : undefined,
                   }),
                 havePermissions(['AddRoleForAdmin']) &&
                   addPermissions.length &&
@@ -120,6 +116,9 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                 return;
               }
               enqueueSnackbar('管理員資訊已更新', { variant: 'success' });
+              if (process.env.NODE_ENV !== 'development') {
+                router.push('/dashboard/admins');
+              }
             }
           : async (data) => {
               const createAdminRes = await CreateAdmin({
@@ -147,9 +146,19 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
           <Stack direction="row" columnGap={2}>
             <Typography variant="h6">管理員資訊</Typography>
             <Box sx={{ ml: 'auto' }} />
+            {process.env.NODE_ENV === 'development' && <Button onClick={() => router.refresh()}>Refetch</Button>}
             {process.env.NODE_ENV === 'development' && (
-              <Button onClick={() => console.log(getValues())}>Get form values</Button>
+              <Button
+                onClick={() => {
+                  console.log('values', getValues());
+                  console.log('dirtyFields', dirtyFields);
+                  console.log('defaultValues', defaultValues);
+                }}
+              >
+                Log values
+              </Button>
             )}
+
             {(!admin ||
               (admin && havePermissions(['UpdateAdmin'])) ||
               (admin && havePermissions(['AddRoleForAdmin', 'DeleteRoleForAdmin']))) && (

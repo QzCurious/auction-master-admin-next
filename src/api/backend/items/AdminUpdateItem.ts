@@ -10,26 +10,25 @@ import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
 import { ITEM_TYPE } from '../static-configs.data';
 
-const ReqSchema = z.object({
-  consignorID: z.number().optional(),
-  type: z
-    .number()
-    .refine(R.isIncludedIn([0, ...ITEM_TYPE.data.map((item) => item.value)] as const))
-    .optional(),
-  name: z.string().min(1).optional(),
-  description: z.string().nullable().optional(),
-  directPurchasePrice: z.number().optional(),
-  minEstimatedPrice: z.number().optional(),
-  maxEstimatedPrice: z.number().optional(),
-  reservePrice: z.number().min(1).optional(),
-  expireAt: z.date().nullable().optional(),
-  warehouseID: z.string().optional(),
-  space: z.number().optional(),
-  shippingCostsWithinJapan: z.number().optional(),
-  grossWeight: z.number().optional(),
-  volumetricWeight: z.number().optional(),
-  status: z.number().optional(),
-});
+const ReqSchema = z
+  .object({
+    consignorID: z.number(),
+    type: z.number().refine(R.isIncludedIn([0, ...ITEM_TYPE.data.map((item) => item.value)] as const)),
+    name: z.string().min(1),
+    description: z.string().nullable(),
+    directPurchasePrice: z.number(),
+    minEstimatedPrice: z.number(),
+    maxEstimatedPrice: z.number(),
+    reservePrice: z.number().min(1),
+    expireAt: z.date().nullable(),
+    warehouseID: z.string(),
+    space: z.number(),
+    shippingCostsWithinJapan: z.number(),
+    grossWeight: z.number(),
+    volumetricWeight: z.number(),
+    status: z.number(),
+  })
+  .partial();
 
 type Data = 'Success';
 

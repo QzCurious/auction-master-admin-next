@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/static-configs.data';
 import { type Worker } from '@/api/backend/workers/GetWorker';
 import { UpdateWorker } from '@/api/backend/workers/UpdateWorker';
+import { getDirtyFields } from '@/helper/getDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -38,59 +38,41 @@ const FormSchema = z.object({
 });
 
 export function WorkerForm({ worker }: WorkerFromProps) {
-  const defaultValues = useMemo(
-    () =>
-      ({
-        type: worker.type,
-        url: worker.url,
-        account: worker.account,
-        name: worker.name,
-        phone: worker.phone,
-        postalCode: worker.postalCode,
-        birthday: worker.birthday ? new Date(worker.birthday) : undefined,
-        email: worker.email,
-        simCardNumber: worker.simCardNumber,
-        activationAt: worker.activationAt ? new Date(worker.activationAt) : undefined,
-        remark: worker.remark,
-        status: worker.status,
-      }) as FormSchemaType,
-    [worker]
-  );
   const {
-    watch,
     control,
     handleSubmit,
-    formState: { isSubmitting, isDirty },
+    formState: { isSubmitting, dirtyFields, defaultValues },
     getValues,
-    reset,
   } = useForm<z.input<typeof FormSchema>>({
-    defaultValues,
+    values: {
+      type: worker.type,
+      url: worker.url,
+      account: worker.account,
+      name: worker.name,
+      phone: worker.phone,
+      postalCode: worker.postalCode,
+      birthday: new Date(worker.birthday),
+      email: worker.email,
+      simCardNumber: worker.simCardNumber,
+      activationAt: new Date(worker.activationAt),
+      remark: worker.remark,
+      status: worker.status,
+    },
     resolver: zodResolver(FormSchema),
   });
 
-  // 編輯成功後重置表單，對應 server data
-  useEffect(() => {
-    reset(defaultValues);
-  }, [defaultValues, reset]);
-
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-  const canUpdate = true;
-  // const canUpdate =
-  //   havePermissions(['AdminUpdateItem']) &&
-  //   worker.status !== ITEM_STATUS_MAP.BiddingStatus &&
-  //   // 判斷是否為最後一個狀態
-  //   !Object.values(StatusFlow.flow)
-  //     .filter((f) => f.nexts.length === 0)
-  //     .map((f) => ITEM_STATUS_MAP[f.status])
-  //     .includes(worker.status as never);
 
   return (
     <Card
       sx={{ py: 2, px: 3 }}
       component="form"
       onSubmit={handleSubmit(async (data) => {
-        const res = await UpdateWorker(worker.id, data);
+        const dirtyValues = getDirtyFields(data, dirtyFields);
+        if (Object.keys(dirtyValues).length === 0) return;
+
+        const res = await UpdateWorker(worker.id, dirtyValues);
         if (res.error) {
           enqueueSnackbar(res.error, { variant: 'error' });
           return;
@@ -104,20 +86,27 @@ export function WorkerForm({ worker }: WorkerFromProps) {
       <Stack direction="row" columnGap={2}>
         <Typography variant="h6">物品資訊</Typography>
         <Box sx={{ ml: 'auto' }} />
+        {process.env.NODE_ENV === 'development' && <Button onClick={() => router.refresh()}>Refetch</Button>}
         {process.env.NODE_ENV === 'development' && (
-          <Button onClick={() => console.log(getValues())}>Get form values</Button>
+          <Button
+            onClick={() => {
+              console.log('values', getValues());
+              console.log('dirtyFields', dirtyFields);
+              console.log('defaultValues', defaultValues);
+            }}
+          >
+            Log values
+          </Button>
         )}
 
-        {isDirty && (
+        {/* {isDirty && (
           <Button type="button" color="secondary" variant="text" onClick={reset}>
             重設
           </Button>
-        )}
-        {canUpdate && (
-          <Button type="submit" variant="contained" disabled={isSubmitting}>
-            送出
-          </Button>
-        )}
+        )} */}
+        <Button type="submit" variant="contained" disabled={isSubmitting}>
+          送出
+        </Button>
       </Stack>
 
       <Grid container spacing={3} sx={{ mt: 0 }}>
@@ -128,7 +117,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
                 <InputLabel>類型</InputLabel>
-                <Select {...field} label="類型" fullWidth readOnly={!canUpdate}>
+                <Select {...field} label="類型" fullWidth>
                   {WORKER_TYPE.data.map((type) => (
                     <MenuItem key={type.value} value={type.value}>
                       {type.message}
@@ -147,7 +136,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="url"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="IP" type="text" fullWidth InputProps={{ readOnly: !canUpdate }} />
+                <TextField {...field} label="IP" type="text" fullWidth />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -160,7 +149,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="account"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="帳號" type="text" fullWidth InputProps={{ readOnly: !canUpdate }} />
+                <TextField {...field} label="帳號" type="text" fullWidth />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -173,7 +162,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="name"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="名稱" type="text" fullWidth InputProps={{ readOnly: !canUpdate }} />
+                <TextField {...field} label="名稱" type="text" fullWidth />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -186,7 +175,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="phone"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="電話" type="text" fullWidth InputProps={{ readOnly: !canUpdate }} />
+                <TextField {...field} label="電話" type="text" fullWidth />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -199,7 +188,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="postalCode"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="郵遞區號" type="text" fullWidth InputProps={{ readOnly: !canUpdate }} />
+                <TextField {...field} label="郵遞區號" type="text" fullWidth />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -225,7 +214,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="email"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="信箱" type="text" fullWidth InputProps={{ readOnly: !canUpdate }} />
+                <TextField {...field} label="信箱" type="text" fullWidth />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -238,7 +227,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="simCardNumber"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="SIM 卡號" type="text" fullWidth InputProps={{ readOnly: !canUpdate }} />
+                <TextField {...field} label="SIM 卡號" type="text" fullWidth />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -265,7 +254,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
                 <InputLabel>狀態</InputLabel>
-                <Select {...field} label="狀態" fullWidth readOnly={!canUpdate}>
+                <Select {...field} label="狀態" fullWidth>
                   {WORKER_STATUS.data.map((type) => (
                     <MenuItem key={type.value} value={type.value}>
                       {type.message}
@@ -284,15 +273,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="remark"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField
-                  {...field}
-                  label="備註"
-                  type="text"
-                  fullWidth
-                  multiline
-                  rows={4}
-                  InputProps={{ readOnly: !canUpdate }}
-                />
+                <TextField {...field} label="備註" type="text" fullWidth multiline rows={4} />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
