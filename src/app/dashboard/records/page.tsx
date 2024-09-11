@@ -122,7 +122,6 @@ async function Content({ searchParams }: PageProps) {
             <Table sx={{ minWidth: '800px' }}>
               <TableHead>
                 <TableRow sx={{ whiteSpace: 'nowrap' }}>
-                  <TableCell>寄售人</TableCell>
                   <TableCell>類型</TableCell>
                   <TableCell>狀態</TableCell>
                   <TableCell>細節</TableCell>
@@ -132,21 +131,6 @@ async function Content({ searchParams }: PageProps) {
                 {recordsRes.data.records.length === 0 && <EmptyTableRow />}
                 {recordsRes.data.records.map((row) => (
                   <TableRow hover key={row.id}>
-                    <TableCell title={process.env.NODE_ENV === 'development' ? row.consignorID.toString() : ''}>
-                      <Stack direction="row" alignItems="center">
-                        {row.consignorNickname}
-                        <HavePermissionsOnly permissionKeys={['AdminGetConsignor']}>
-                          <IconButton
-                            size="small"
-                            color="secondary"
-                            href={`/dashboard/consignors/edit/${row.consignorID}`}
-                            target="_blank"
-                          >
-                            <LaunchOutlinedIcon fontSize="small" />
-                          </IconButton>
-                        </HavePermissionsOnly>
-                      </Stack>
-                    </TableCell>
                     <TableCell
                       title={process.env.NODE_ENV === 'development' ? `${row.type} ${RECORD_TYPE.enum(row.type)}` : ''}
                     >
@@ -160,6 +144,12 @@ async function Content({ searchParams }: PageProps) {
                           (function iife() {
                             switch (row.type) {
                               case RECORD_TYPE.enum('WithdrawalType'):
+                                if (row.consignorID == null)
+                                  return (
+                                    <Typography color="error">
+                                      發生錯誤，請聯繫開發人員(#{row.id} missing consignorID)
+                                    </Typography>
+                                  );
                                 return (
                                   <Box>
                                     <ConsignorBankInfo consignorID={row.consignorID} />
@@ -179,7 +169,11 @@ async function Content({ searchParams }: PageProps) {
                                 );
                               case RECORD_TYPE.enum('PayAuctionItemCancellationFeeType'):
                                 if (row.auctionItemID == null)
-                                  return <Typography color="error">發生錯誤，請聯繫開發人員(1)</Typography>;
+                                  return (
+                                    <Typography color="error">
+                                      發生錯誤，請聯繫開發人員(#{row.id} missing auctionItemID)
+                                    </Typography>
+                                  );
                                 return (
                                   <Box>
                                     <AuctionItemInfo auctionItemId={row.auctionItemID} />
@@ -199,7 +193,11 @@ async function Content({ searchParams }: PageProps) {
                                 );
                               case RECORD_TYPE.enum('PayYahooAuctionFeeType'):
                                 if (row.auctionItemID == null)
-                                  return <Typography color="error">發生錯誤，請聯繫開發人員(2)</Typography>;
+                                  return (
+                                    <Typography color="error">
+                                      發生錯誤，請聯繫開發人員(#{row.id} missing auctionItemID)
+                                    </Typography>
+                                  );
                                 return (
                                   <Box>
                                     <AuctionItemInfo auctionItemId={row.auctionItemID} />
@@ -219,7 +217,11 @@ async function Content({ searchParams }: PageProps) {
                                 );
                               case RECORD_TYPE.enum('PayReturnItemFeeType'):
                                 if (row.spaceFee == null || row.shippingCost == null)
-                                  return <Typography color="error">發生錯誤，請聯繫開發人員(3)</Typography>;
+                                  return (
+                                    <Typography color="error">
+                                      發生錯誤，請聯繫開發人員(#{row.id} missing spaceFee or shippingCost)
+                                    </Typography>
+                                  );
                                 return (
                                   <Box>
                                     <ReviewSubmitPaymentButtons recordId={row.id} />
@@ -239,7 +241,11 @@ async function Content({ searchParams }: PageProps) {
                                 );
                               case RECORD_TYPE.enum('PaySpaceFeeType'):
                                 if (row.spaceFee == null)
-                                  return <Typography color="error">發生錯誤，請聯繫開發人員(4)</Typography>;
+                                  return (
+                                    <Typography color="error">
+                                      發生錯誤，請聯繫開發人員(#{row.id} missing spaceFee)
+                                    </Typography>
+                                  );
                                 return (
                                   <Box>
                                     <ReviewSubmitPaymentButtons recordId={row.id} />
@@ -259,7 +265,7 @@ async function Content({ searchParams }: PageProps) {
                                 );
 
                               default:
-                                return <Typography color="error">發生錯誤，請聯繫開發人員(99)</Typography>;
+                                return <Typography color="error">發生錯誤，請聯繫開發人員(unhandled flow)</Typography>;
                             }
                           })()}
                       </Stack>
@@ -268,7 +274,29 @@ async function Content({ searchParams }: PageProps) {
                       <TableContainer sx={{ whiteSpace: 'nowrap' }}>
                         <Table size="small">
                           {/* v5 https://docs.google.com/spreadsheets/d/1S2-9S-AOAJG5a_hHFlA1N6YN1W5LZjpZzptL2UgBj5w/edit?gid=1734093702#gid=1734093702 */}
-                          <TableBody sx={{ '& td:nth-child(2)': { textAlign: 'end' } }}>
+                          <TableBody
+                            sx={{ '& td:nth-child(1)': { width: 0 }, '& td:nth-child(2)': { textAlign: 'end' } }}
+                          >
+                            {!!row.consignorID && !!row.consignorNickname && (
+                              <TableRow>
+                                <TableCell>寄售人</TableCell>
+                                <TableCell
+                                  title={process.env.NODE_ENV === 'development' ? row.consignorID.toString() : ''}
+                                >
+                                  {row.consignorNickname}
+                                  <HavePermissionsOnly permissionKeys={['AdminGetConsignor']}>
+                                    <IconButton
+                                      size="small"
+                                      color="secondary"
+                                      href={`/dashboard/consignors/edit/${row.consignorID}`}
+                                      target="_blank"
+                                    >
+                                      <LaunchOutlinedIcon fontSize="small" />
+                                    </IconButton>
+                                  </HavePermissionsOnly>
+                                </TableCell>
+                              </TableRow>
+                            )}
                             <TableRow>
                               <TableCell>操作代碼</TableCell>
                               <TableCell>{row.opCode}</TableCell>

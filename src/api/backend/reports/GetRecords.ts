@@ -23,8 +23,8 @@ const ReqSchema = z.object({
 export interface Record {
   id: string;
   type: RECORD_TYPE['value'];
-  consignorID: number;
-  consignorNickname: string;
+  consignorID?: number;
+  consignorNickname?: string;
   opCode: string;
   itemID?: number;
   auctionItemID?: number;
