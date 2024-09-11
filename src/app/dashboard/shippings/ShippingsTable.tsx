@@ -164,7 +164,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                           {(popupState) => (
                             <>
                               <Button type="button" variant="outlined" size="small" {...bindTrigger(popupState)}>
-                                理貨中
+                                開始理貨
                               </Button>
                               <DoubleCheckPopover
                                 {...bindPopover(popupState)}
