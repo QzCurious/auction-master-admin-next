@@ -19,43 +19,28 @@ export interface Report {
   totalPrice: number;
   totalDirectPurchasePrice: number;
   totalPurchasedPrice: number;
+  totalYahooAuctionFeeJpy: number;
   totalYahooAuctionFee: number;
   totalCommission: number;
   totalBonus: number;
   totalProfit: number;
+  totalShippingCostsWithinJapan: number;
+  totalInternationalShippingCosts: number;
+  totalYahooCancellationFeeJpy: number;
   totalYahooCancellationFee: number;
+  totalSpaceFeeJpy: number;
   totalSpaceFee: number;
   totalShippingCost: number;
 }
 
-export interface Reports {
-  JPY?: Report;
-  TWD?: Report;
-}
-
 type Data = Array<{
-  reports: Reports;
+  id: string;
+  reports: Report;
   reportAt: string;
-}> | null;
+  createdAt: string;
+}>;
 
 type ErrorCode = never;
-
-const EMPTY_REPORT: Report = {
-  totalJpyWithdrawal: 0,
-  totalWithdrawal: 0,
-  totalWithdrawalTransferFee: 0,
-  totalClosedPrice: 0,
-  totalPrice: 0,
-  totalDirectPurchasePrice: 0,
-  totalPurchasedPrice: 0,
-  totalYahooAuctionFee: 0,
-  totalCommission: 0,
-  totalBonus: 0,
-  totalProfit: 0,
-  totalYahooCancellationFee: 0,
-  totalSpaceFee: 0,
-  totalShippingCost: 0,
-};
 
 export async function GetReports(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
@@ -69,20 +54,6 @@ export async function GetReports(payload: z.input<typeof ReqSchema>) {
       tags: ['reports'],
     },
   });
-
-  if (!res.error) {
-    return {
-      ...res,
-      data:
-        res.data?.map((report) => ({
-          ...report,
-          reports: {
-            JPY: report.reports.JPY ?? EMPTY_REPORT,
-            TWD: report.reports.TWD ?? EMPTY_REPORT,
-          },
-        })) ?? [],
-    };
-  }
 
   return res;
 }

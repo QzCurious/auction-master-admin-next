@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { type GetReports, type Report, type Reports } from '@/api/backend/reports/GetReports';
+import { type GetReports, type Report } from '@/api/backend/reports/GetReports';
 import { GetReportsQueryOptions } from '@/api/backend/reports/GetReports.query';
-import { DATE_FORMAT } from '@/static';
-import { Card, CardContent, CircularProgress, MenuItem, Select, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { currencySign, DATE_FORMAT } from '@/static';
+import { Card, CardContent, CircularProgress, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -38,6 +38,20 @@ const colors: Array<Record<'borderColor' | 'backgroundColor', `rgba(${string})`>
   { borderColor: 'rgba(60, 179, 113, 1)', backgroundColor: 'rgba(60, 179, 113, 0.2)' },
   { borderColor: 'rgba(218, 112, 214, 1)', backgroundColor: 'rgba(218, 112, 214, 0.2)' },
   { borderColor: 'rgba(70, 130, 180, 1)', backgroundColor: 'rgba(70, 130, 180, 0.2)' },
+  { borderColor: 'rgba(255, 0, 0, 1)', backgroundColor: 'rgba(255, 0, 0, 0.2)' },
+  { borderColor: 'rgba(0, 255, 0, 1)', backgroundColor: 'rgba(0, 255, 0, 0.2)' },
+  { borderColor: 'rgba(0, 0, 255, 1)', backgroundColor: 'rgba(0, 0, 255, 0.2)' },
+  { borderColor: 'rgba(128, 0, 128, 1)', backgroundColor: 'rgba(128, 0, 128, 0.2)' },
+  { borderColor: 'rgba(0, 255, 255, 1)', backgroundColor: 'rgba(0, 255, 255, 0.2)' },
+  { borderColor: 'rgba(255, 0, 255, 1)', backgroundColor: 'rgba(255, 0, 255, 0.2)' },
+  { borderColor: 'rgba(128, 128, 0, 1)', backgroundColor: 'rgba(128, 128, 0, 0.2)' },
+  { borderColor: 'rgba(128, 0, 0, 1)', backgroundColor: 'rgba(128, 0, 0, 0.2)' },
+  { borderColor: 'rgba(0, 128, 0, 1)', backgroundColor: 'rgba(0, 128, 0, 0.2)' },
+  { borderColor: 'rgba(0, 0, 128, 1)', backgroundColor: 'rgba(0, 0, 128, 0.2)' },
+  { borderColor: 'rgba(255, 192, 203, 1)', backgroundColor: 'rgba(255, 192, 203, 0.2)' },
+  { borderColor: 'rgba(210, 105, 30, 1)', backgroundColor: 'rgba(210, 105, 30, 0.2)' },
+  { borderColor: 'rgba(100, 149, 237, 1)', backgroundColor: 'rgba(100, 149, 237, 0.2)' },
+  { borderColor: 'rgba(50, 205, 50, 1)', backgroundColor: 'rgba(50, 205, 50, 0.2)' },
 ] as const;
 
 const MAX_MONTHS = 3;
@@ -49,7 +63,6 @@ function isValidInterval(startAt: Date, endAt: Date) {
 export default function ReportsChart() {
   const [endAt, setEndAt] = useState(() => subHours(new Date(), 1));
   const [startAt, setStartAt] = useState(() => startOfDay(subDays(endAt, 7)));
-  const [currency, setCurrency] = useState<keyof Reports>('JPY');
   const [slice, setSlice] = useState<Slice>('1d');
 
   const [range, setRange] = useState({ startAt, endAt });
@@ -92,18 +105,13 @@ export default function ReportsChart() {
             views={['year', 'month', 'day', 'hours']}
           />
 
-          <Select value={currency} onChange={(e) => setCurrency(e.target.value as 'JPY' | 'TWD')}>
-            <MenuItem value="JPY">JPY</MenuItem>
-            <MenuItem value="TWD">TWD</MenuItem>
-          </Select>
-
           <ToggleButtonGroup exclusive value={slice} onChange={(_, v) => setSlice(v as '1h' | '1d')}>
             <ToggleButton value="1h">1h</ToggleButton>
             <ToggleButton value="1d">1d</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
 
-        <Content type={currency} startAt={range.startAt} endAt={range.endAt} slice={slice} />
+        <Content startAt={range.startAt} endAt={range.endAt} slice={slice} />
       </CardContent>
     </Card>
   );
@@ -117,53 +125,21 @@ const LABEL_MAP: Record<keyof Report, string> = {
   totalPrice: '計算給寄售人的總金額',
   totalDirectPurchasePrice: '公司直購總金額',
   totalPurchasedPrice: '公司買回總金額',
-  totalYahooAuctionFee: '日拍總手續費',
+  totalYahooAuctionFeeJpy: `日拍總手續費(${currencySign('JPY')})`,
+  totalYahooAuctionFee: `日拍總手續費(${currencySign('TWD')})`,
   totalCommission: '平台總手續費',
   totalBonus: '總回饋',
   totalProfit: '總損益',
-  totalYahooCancellationFee: '日拍總取消手續費',
-  totalSpaceFee: '總留倉費',
+  totalShippingCostsWithinJapan: '日本國內運費',
+  totalInternationalShippingCosts: '國際運費',
+  totalYahooCancellationFeeJpy: `日拍總取消手續費(${currencySign('JPY')})`,
+  totalYahooCancellationFee: `日拍總取消手續費(${currencySign('TWD')})`,
+  totalSpaceFeeJpy: `總留倉費(${currencySign('JPY')})`,
+  totalSpaceFee: `總留倉費(${currencySign('TWD')})`,
   totalShippingCost: '總運費',
 } as const;
 
-const mapBy: Record<keyof Reports, Array<keyof Report>> = {
-  JPY: [
-    'totalJpyWithdrawal',
-    'totalClosedPrice',
-    'totalPrice',
-    'totalDirectPurchasePrice',
-    'totalPurchasedPrice',
-    'totalYahooAuctionFee',
-    'totalCommission',
-    'totalBonus',
-    'totalProfit',
-    'totalYahooCancellationFee',
-    'totalSpaceFee',
-    'totalShippingCost',
-  ],
-  TWD: [
-    'totalWithdrawal',
-    'totalWithdrawalTransferFee',
-    'totalYahooAuctionFee',
-    'totalCommission',
-    'totalBonus',
-    'totalYahooCancellationFee',
-    'totalSpaceFee',
-    'totalShippingCost',
-  ],
-};
-
-function Content({
-  type,
-  startAt,
-  endAt,
-  slice,
-}: {
-  type: keyof typeof mapBy;
-  startAt: Date;
-  endAt: Date;
-  slice: Slice;
-}) {
+function Content({ startAt, endAt, slice }: { startAt: Date; endAt: Date; slice: Slice }) {
   const crossYears = startAt.getFullYear() !== endAt.getFullYear();
   const { data, isPending, error, isFetching } = useQuery({
     ...GetReportsQueryOptions({ startAt, endAt }),
@@ -211,9 +187,9 @@ function Content({
           labels: data.data.map((r) =>
             format(r.reportAt, `${crossYears ? 'yyyy-' : ''}MM-dd ${slice === '1h' ? 'HH:mm' : ''}`)
           ),
-          datasets: mapBy[type].map((key, i) => ({
-            label: LABEL_MAP[key],
-            data: data.data.map((r) => r.reports[type][key]),
+          datasets: Object.keys(LABEL_MAP).map((key, i) => ({
+            label: LABEL_MAP[key as keyof typeof LABEL_MAP],
+            data: data.data.map((r) => r.reports[key as keyof typeof LABEL_MAP]),
             ...colors[i],
           })),
         }}
@@ -223,7 +199,7 @@ function Content({
 }
 
 function aggregateReportsByDate(data: NonNullable<Awaited<ReturnType<typeof GetReports>>['data']>) {
-  const aggregatedReports: Record<string, { reportAt: string; reports: Required<Reports> }> = {};
+  const aggregatedReports: Record<string, { reportAt: string; reports: Report }> = {};
   for (const d of data) {
     const reportAt = format(new Date(d.reportAt), DATE_FORMAT);
     if (!aggregatedReports[reportAt]) {
@@ -231,14 +207,10 @@ function aggregateReportsByDate(data: NonNullable<Awaited<ReturnType<typeof GetR
       continue;
     }
 
-    for (const _currency of Object.keys(aggregatedReports[reportAt].reports)) {
-      const currency = _currency as keyof Reports;
+    for (const _key of Object.keys(aggregatedReports[reportAt].reports)) {
+      const key = _key as keyof Report;
 
-      for (const _key of Object.keys(aggregatedReports[reportAt].reports[currency])) {
-        const key = _key as keyof Report;
-
-        aggregatedReports[reportAt].reports[currency][key] += d.reports[currency][key];
-      }
+      aggregatedReports[reportAt].reports[key] += d.reports[key];
     }
   }
   return Object.values(aggregatedReports);
