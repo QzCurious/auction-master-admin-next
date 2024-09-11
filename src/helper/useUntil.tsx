@@ -1,33 +1,57 @@
 'use client';
 
 import type React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
-export function useUntil<T extends Date | null | undefined>(
-  date: T,
-  opts?: T extends Date
-    ? { ms?: number }
-    : {
-        ms?: number;
-        fallback?: boolean;
-      }
-) {
-  const fallback = !!opts && 'fallback' in opts ? (opts.fallback ?? true) : true;
-  const passed = useCallback(() => (date instanceof Date ? new Date() >= date : fallback), [date, fallback]);
-  const [isPassed, setIsPassed] = useState(passed);
+/**
+ * Why onFalsy is required when date is falsy:
+ * ```typescript
+ * const expired = useUntil(date, { onFalsy: false });
+ * const passed = useUntil(date, { onFalsy: true });
+ * ```
+ */
+type useUntilParams<T extends string | Date | null | undefined> = [T] extends [NonNullable<T>]
+  ? [date: T, opts?: { ms?: number }]
+  : [date: T, opts: { ms?: number; onFalsy: boolean }];
+
+export function useUntil<T extends string | Date | null | undefined>(...[date, opts]: useUntilParams<T>): boolean {
+  if (!date && !opts) throw new TypeError('opts.onFalsy is required when date is falsy');
+
+  const [, forceRerender] = useReducer(() => ({}), {});
+  const onFalsy = !!opts && 'onFalsy' in opts ? opts.onFalsy : true;
+  const _date = useMemo(() => (date instanceof Date ? date : typeof date === 'string' ? new Date(date) : null), [date]);
+  const check = useCallback(() => (_date ? _date <= new Date() : onFalsy), [_date, onFalsy]);
+  const isUntil = check();
 
   useEffect(() => {
-    setIsPassed(passed);
+    if (check()) return;
     const interval = setInterval(() => {
-      setIsPassed(passed);
+      if (check()) {
+        forceRerender();
+        clearInterval(interval);
+      }
     }, opts?.ms ?? 1000);
 
     return () => clearInterval(interval);
-  }, [opts?.ms, passed]);
+  }, [check, opts?.ms]);
 
-  return isPassed;
+  return isUntil;
 }
 
-export function Until({ date, children }: { date: Date; children: React.ReactNode }) {
-  return useUntil(date) ? <>{children}</> : null;
+type UntilProps<T extends string | Date | null | undefined> = [T] extends [NonNullable<T>]
+  ? { date: T; opts?: { ms?: number } }
+  : { date: T; opts: { ms?: number; onFalsy: boolean } };
+
+export function Until<T extends string | Date | null | undefined>({
+  date,
+  opts,
+  children,
+}: UntilProps<T> & {
+  children: React.ReactNode;
+}) {
+  // @ts-expect-error cannot type this generic well
+  return useUntil(date, opts) ? (
+    //
+    <>{children}</>
+  ) : null;
 }
