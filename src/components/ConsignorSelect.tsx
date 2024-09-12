@@ -43,7 +43,7 @@ export function ConsignorSelect({
       filterOptions={(x) => x}
       isOptionEqualToValue={(option, value) => option.nickname === value.nickname}
       options={data?.data?.consignors ?? []}
-      value={data?.data?.consignors.find((x) => x.id === value)}
+      value={data?.data?.consignors.find((x) => x.id === value) ?? null}
       onChange={(_, newValue) => {
         onChange(newValue?.id ?? null, newValue);
       }}
