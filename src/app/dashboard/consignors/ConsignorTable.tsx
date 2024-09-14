@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
-import { toPercent } from '@/static';
+import { currencySign, toPercent } from '@/static';
 import EditIcon from '@mui/icons-material/Edit';
 import { Chip, TableContainer } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -41,6 +41,7 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                 <TableCell>暱稱</TableCell>
                 <TableCell>手機</TableCell>
                 <TableCell>銀行帳號</TableCell>
+                <TableCell>大師幣/紅利</TableCell>
                 <TableCell>回饋比例</TableCell>
                 <TableCell>狀態</TableCell>
                 <TableCell>操作</TableCell>
@@ -72,6 +73,26 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                           ({row.bankCode}) {row.bankAccount}
                         </>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td width={0}>大師幣</td>
+                            <td style={{ paddingLeft: '0.5rem', textAlign: 'right' }}>
+                              {currencySign('JPY')}
+                              {row.walletBalance.toLocaleString()}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td width={0}>紅利</td>
+                            <td style={{ paddingLeft: '0.5rem', textAlign: 'right' }}>
+                              {currencySign('JPY')}
+                              {row.bonusBalance.toLocaleString()}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </TableCell>
                     <TableCell>{toPercent(row.commissionBonusRate)}</TableCell>
                     <TableCell>

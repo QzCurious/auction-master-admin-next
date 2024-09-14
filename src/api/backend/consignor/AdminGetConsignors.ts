@@ -37,6 +37,8 @@ export interface Consignor {
   status: CONSIGNOR_STATUS['value'];
   createdAt: string;
   updatedAt: string;
+  walletBalance: number;
+  bonusBalance: number;
 }
 
 interface Data {
