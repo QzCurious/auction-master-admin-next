@@ -22,7 +22,7 @@ import WithoutPermissionsError from '@/components/WithoutPermissionsError/Withou
 import Filters from './Filters';
 import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
 
-export const metadata = { title: `交易紀錄 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `紅利紀錄 | ${config.site.name}` } satisfies Metadata;
 
 interface PageProps {
   searchParams: Record<string, string | string[] | undefined>;
