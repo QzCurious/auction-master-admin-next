@@ -1,9 +1,7 @@
 {
-  "name": "material-kit-react",
-  "version": "4.0.0",
-  "author": "Devias",
+  "name": "auction-master-admin-next",
+  "version": "0.1.0",
   "licence": "MIT",
-  "homepage": "https://devias.io",
   "private": false,
   "scripts": {
     "dev": "PORT=16001 next dev",
