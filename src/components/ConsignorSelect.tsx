@@ -19,16 +19,18 @@ export function ConsignorSelect({
   disableClearable?: boolean;
 }) {
   const [inputValue, setInputValue] = useState('');
-  const { data, error, isFetching } = useQuery({
-    queryFn: () => AdminGetConsignors({ fuzzyNickname: inputValue, limit: 20, offset: 0 }),
-    queryKey: ['consignors', inputValue],
-    placeholderData: keepPreviousData,
-    enabled: !!inputValue,
-  });
   const consignorQuery = useQuery({
     queryFn: () => AdminGetConsignor(Number(value)),
     queryKey: ['consignor', value],
-    enabled: !!Number(value),
+    enabled: value != null,
+  });
+
+  const _inputValue = inputValue || (consignorQuery.data?.data?.nickname ?? '');
+  const { data, error, isFetching } = useQuery({
+    queryFn: () => AdminGetConsignors({ fuzzyNickname: _inputValue, limit: 20, offset: 0 }),
+    queryKey: ['consignors', _inputValue],
+    placeholderData: keepPreviousData,
+    enabled: !!_inputValue,
   });
 
   if (error || consignorQuery.error) throw new Error('Bug');
@@ -38,14 +40,26 @@ export function ConsignorSelect({
       sx={sx}
       loading={isFetching}
       disableClearable={disableClearable}
-      inputValue={inputValue}
-      onInputChange={(_, v) => setInputValue(v)}
+      inputValue={_inputValue}
+      onInputChange={(_, v, reason) => {
+        // fxxk mui
+        if (reason === 'reset') return;
+        setInputValue(v);
+      }}
       filterOptions={(x) => x}
-      isOptionEqualToValue={(option, value) => option.nickname === value.nickname}
+      isOptionEqualToValue={(option, value) => option.id === value.id}
       options={data?.data?.consignors ?? []}
       value={data?.data?.consignors.find((x) => x.id === value) ?? null}
       onChange={(_, newValue) => {
-        onChange(newValue?.id ?? null, newValue);
+        if (newValue) {
+          onChange(newValue.id, newValue);
+          // fxxk mui
+          setInputValue(newValue.nickname);
+        } else {
+          onChange(null, null);
+          // fxxk mui
+          setInputValue('');
+        }
       }}
       getOptionLabel={(option) => option.nickname}
       renderInput={(inputProps) => <TextField {...inputProps} {...textFieldProps} />}

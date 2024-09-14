@@ -17,6 +17,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { Wallet } from '@phosphor-icons/react/dist/ssr';
 
 import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
@@ -53,8 +54,11 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                 return (
                   <TableRow hover key={row.id} selected={false}>
                     <TableCell>
-                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+                      <Stack direction="row" spacing={0.5}>
                         {row.account}
+                        <Link href={`/dashboard/wallet-logs?consignorID=${row.id}`} target="_blank" rel="noreferrer">
+                          <Wallet size={20} />
+                        </Link>
                       </Stack>
                     </TableCell>
                     <TableCell>
