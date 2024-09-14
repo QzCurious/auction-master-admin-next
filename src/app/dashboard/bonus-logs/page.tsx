@@ -1,8 +1,8 @@
 import { type Metadata } from 'next';
 import Link from 'next/link';
+import { AdminGetBonusLogs, type BonusLogs } from '@/api/backend/bonuses/AdminGetBonusLogs';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
-import { WALLET_ACTION } from '@/api/backend/static-configs.data';
-import { AdminGetWalletLogs, type WalletLogs } from '@/api/backend/wallets/AdminGetWalletLogs';
+import { BONUS_ACTION } from '@/api/backend/static-configs.data';
 import { parseSearchParams } from '@/helper/parseSearchParams';
 import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE } from '@/static';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
@@ -14,7 +14,6 @@ import { format } from 'date-fns';
 import { Provider } from 'jotai';
 
 import { config } from '@/config';
-import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
@@ -35,7 +34,7 @@ export default async function Page(pageProps: PageProps) {
       <Stack direction="row" spacing={3}>
         <Stack spacing={2} direction="row" justifyContent="space-between" sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4" sx={{ flexShrink: 0 }}>
-            錢包紀錄
+            紅利紀錄
           </Typography>
         </Stack>
       </Stack>
@@ -50,9 +49,8 @@ export default async function Page(pageProps: PageProps) {
 async function Content({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
   const { wasValid, startAt, endAt } = fixRange(filters.startAt, filters.endAt);
-
-  const [walletLogsRes] = await Promise.all([
-    AdminGetWalletLogs({
+  const [bonusLogsRes] = await Promise.all([
+    AdminGetBonusLogs({
       consignorID: filters.consignorID,
       action: filters.action,
       endAt,
@@ -64,11 +62,11 @@ async function Content({ searchParams }: PageProps) {
     }),
   ]);
 
-  if (walletLogsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['AdminGetWalletLogs']} />;
+  if (bonusLogsRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['AdminGetBonusLogs']} />;
   }
 
-  if (walletLogsRes.error === '1003') {
+  if (bonusLogsRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
@@ -92,8 +90,8 @@ async function Content({ searchParams }: PageProps) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {walletLogsRes.data.walletLogs.length === 0 && <EmptyTableRow />}
-                {walletLogsRes.data.walletLogs.map((row) => (
+                {bonusLogsRes.data.bonusLogs.length === 0 && <EmptyTableRow />}
+                {bonusLogsRes.data.bonusLogs.map((row) => (
                   <TableRow hover key={row.id}>
                     <TableCell>
                       <ConsignorInfo consignorID={row.consignorID} />
@@ -101,12 +99,12 @@ async function Content({ searchParams }: PageProps) {
                     <TableCell
                       title={
                         process.env.NODE_ENV === 'development'
-                          ? `${row.action} ${WALLET_ACTION.enum(row.action)}`
+                          ? `${row.action} ${BONUS_ACTION.enum(row.action)}`
                           : undefined
                       }
                     >
                       <Stack>
-                        <span>{WALLET_ACTION.get('value', row.action).message}</span>
+                        <span>{BONUS_ACTION.get('value', row.action).message}</span>
                         <span>{row.opCode}</span>
                       </Stack>
                     </TableCell>
@@ -125,14 +123,14 @@ async function Content({ searchParams }: PageProps) {
             </Table>
           </TableContainer>
           <Divider />
-          <SearchParamsPagination count={walletLogsRes.data.count} />
+          <SearchParamsPagination count={bonusLogsRes.data.count} />
         </Card>
       </Stack>
     </Provider>
   );
 }
 
-async function ConsignorInfo({ consignorID }: { consignorID: WalletLogs['consignorID'] }) {
+async function ConsignorInfo({ consignorID }: { consignorID: BonusLogs['consignorID'] }) {
   const res = await AdminGetConsignor(consignorID);
 
   if (res.error === '1001') {
