@@ -81,4 +81,4 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          script: docker-compose up --quiet-pull -d auction-master-front auction-master-admin
+          script: docker-compose pull --quiet auction-master-admin && docker-compose up -d auction-master-admin
