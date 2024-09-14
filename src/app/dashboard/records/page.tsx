@@ -377,7 +377,7 @@ async function Content({ searchParams }: PageProps) {
                               <TableRow>
                                 <TableCell>日拍手續費</TableCell>
                                 <TableCell>
-                                  {currencySign('JPY')}
+                                  {currencySign('TWD')}
                                   {row.yahooAuctionFee.toLocaleString()}
                                 </TableCell>
                               </TableRow>
