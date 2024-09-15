@@ -274,6 +274,26 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
                 )}
               />
             </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="大師幣"
+                type="text"
+                InputProps={{ readOnly: true }}
+                value={consignor.walletBalance.toLocaleString()}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="紅利"
+                type="text"
+                InputProps={{ readOnly: true }}
+                value={consignor.bonusBalance.toLocaleString()}
+              />
+            </Grid>
           </Grid>
         </Card>
       </Stack>
