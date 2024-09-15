@@ -269,9 +269,10 @@ async function Content({ searchParams }: PageProps) {
                                   <HavePermissionsOnly permissionKeys={['AdminGetConsignor']}>
                                     <IconButton
                                       size="small"
-                                      color="secondary"
+                                      color="primary"
                                       href={`/dashboard/consignors/edit/${row.consignorID}`}
                                       target="_blank"
+                                      rel="noreferrer"
                                     >
                                       <LaunchOutlinedIcon fontSize="small" />
                                     </IconButton>

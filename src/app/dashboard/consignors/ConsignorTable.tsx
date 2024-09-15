@@ -6,6 +6,7 @@ import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
 import { currencySign, toPercent } from '@/static';
 import EditIcon from '@mui/icons-material/Edit';
+import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { Chip, TableContainer } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -17,7 +18,6 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Wallet } from '@phosphor-icons/react/dist/ssr';
 
 import { HavePermissionsOnly } from '@/contexts/UserContext';
 import EmptyTableRow from '@/components/EmptyTableRow';
@@ -42,7 +42,7 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                 <TableCell>暱稱</TableCell>
                 <TableCell>手機</TableCell>
                 <TableCell>銀行帳號</TableCell>
-                <TableCell>大師幣/紅利</TableCell>
+                <TableCell sx={{ width: 0 }}>大師幣/紅利</TableCell>
                 <TableCell>回饋比例</TableCell>
                 <TableCell>狀態</TableCell>
                 <TableCell>操作</TableCell>
@@ -53,14 +53,7 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
               {rows.map((row) => {
                 return (
                   <TableRow hover key={row.id} selected={false}>
-                    <TableCell>
-                      <Stack direction="row" spacing={0.5}>
-                        {row.account}
-                        <Link href={`/dashboard/wallet-logs?consignorID=${row.id}`} target="_blank" rel="noreferrer">
-                          <Wallet size={20} />
-                        </Link>
-                      </Stack>
-                    </TableCell>
+                    <TableCell>{row.account}</TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
                         {row.nickname}
@@ -79,26 +72,50 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                       )}
                     </TableCell>
                     <TableCell>
-                      <table>
+                      <table style={{ whiteSpace: 'nowrap', minWidth: '100%' }}>
                         <tbody>
                           <tr>
                             <td width={0}>大師幣</td>
-                            <td style={{ paddingLeft: '0.5rem', textAlign: 'right' }}>
+                            <td style={{ width: '100%', paddingLeft: '0.5rem', textAlign: 'right' }}>
                               {currencySign('JPY')}
                               {row.walletBalance.toLocaleString()}
+                            </td>
+                            <td width={0}>
+                              <IconButton
+                                LinkComponent={Link}
+                                size="small"
+                                color="primary"
+                                href={`/dashboard/consignor-balance/wallet-logs?consignorID=${row.id}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <LaunchOutlinedIcon fontSize="small" />
+                              </IconButton>
                             </td>
                           </tr>
                           <tr>
                             <td width={0}>紅利</td>
-                            <td style={{ paddingLeft: '0.5rem', textAlign: 'right' }}>
+                            <td style={{ width: '100%', paddingLeft: '0.5rem', textAlign: 'right' }}>
                               {currencySign('JPY')}
                               {row.bonusBalance.toLocaleString()}
+                            </td>
+                            <td width={0}>
+                              <IconButton
+                                LinkComponent={Link}
+                                size="small"
+                                color="primary"
+                                href={`/dashboard/consignor-balance/bonus-logs?consignorID=${row.id}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <LaunchOutlinedIcon fontSize="small" />
+                              </IconButton>
                             </td>
                           </tr>
                         </tbody>
                       </table>
                     </TableCell>
-                    <TableCell>{toPercent(row.commissionBonusRate)}</TableCell>
+                    <TableCell sx={{ textAlign: 'right' }}>{toPercent(row.commissionBonusRate)}</TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
                         <Chip

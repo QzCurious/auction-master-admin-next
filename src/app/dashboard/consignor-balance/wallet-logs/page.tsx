@@ -1,22 +1,30 @@
-import { type Metadata } from 'next';
-import Link from 'next/link';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { WALLET_ACTION } from '@/api/backend/static-configs.data';
 import { AdminGetWalletLogs, type WalletLogs } from '@/api/backend/wallets/AdminGetWalletLogs';
 import { parseSearchParams } from '@/helper/parseSearchParams';
 import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE } from '@/static';
-import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
-import { Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
+import { TableContainer } from '@mui/material';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import { Box, Stack } from '@mui/system';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
+import { type Metadata } from 'next';
+import Link from 'next/link';
 
-import { config } from '@/config';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import { config } from '@/config';
 
 import Filters from './Filters';
 import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
@@ -131,11 +139,18 @@ async function ConsignorInfo({ consignorID }: { consignorID: WalletLogs['consign
   }
 
   return (
-    <Stack whiteSpace="nowrap" direction="row" spacing={0.5}>
+    <>
       {res.data.nickname}
-      <Link href={`/dashboard/consignors/edit/${consignorID}`} target="_blank" rel="noreferrer">
-        <OpenInNewOutlinedIcon fontSize="small" />
-      </Link>
-    </Stack>
+      <IconButton
+        LinkComponent={Link}
+        size="small"
+        color="primary"
+        href={`/dashboard/consignors/edit/${consignorID}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <LaunchOutlinedIcon fontSize="small" />
+      </IconButton>
+    </>
   );
 }
