@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { RECORD_STATUS, RECORD_TYPE, WALLET_ACTION } from '@/api/backend/static-configs.data';
+import { BONUS_ACTION } from '@/api/backend/static-configs.data';
 import { Box, Chip, FormControl, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { addMonths, closestTo, isValid, subMonths } from 'date-fns';
@@ -130,13 +130,13 @@ export default function Filters({ endAt, startAt, action, consignorID }: z.outpu
             ) : (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                 {selected.map((v) => (
-                  <Chip key={v} label={WALLET_ACTION.get('value', v).message} />
+                  <Chip key={v} label={BONUS_ACTION.get('value', v).message} />
                 ))}
               </Box>
             )
           }
         >
-          {RECORD_TYPE.data.map(({ value, message }) => (
+          {BONUS_ACTION.data.map(({ value, message }) => (
             <MenuItem key={value} value={value}>
               {message}
             </MenuItem>

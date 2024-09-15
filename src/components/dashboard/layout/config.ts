@@ -1,4 +1,4 @@
-import { Coins, PiggyBank, Wallet } from '@phosphor-icons/react/dist/ssr';
+import { PiggyBank, Wallet } from '@phosphor-icons/react/dist/ssr';
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { Handshake } from '@phosphor-icons/react/dist/ssr/Handshake';
@@ -46,20 +46,12 @@ export const navItems = [
     matcher: { type: 'startsWith', href: '/dashboard/consignors' },
   },
   {
-    key: 'wallet-logs',
-    title: '錢包紀錄',
-    href: '/dashboard/wallet-logs',
+    key: 'consignor-balance',
+    title: '帳戶紀錄',
+    href: '/dashboard/consignor-balance/wallet-logs',
     PhosphorIcon: Wallet,
-    permissions: ['AdminGetWalletLogs'],
-    matcher: { type: 'startsWith', href: '/dashboard/wallet-logs' },
-  },
-  {
-    key: 'bonus-logs',
-    title: '紅利紀錄',
-    href: '/dashboard/bonus-logs',
-    PhosphorIcon: PiggyBank,
-    permissions: ['AdminGetBonusLogs'],
-    matcher: { type: 'startsWith', href: '/dashboard/bonus-logs' },
+    permissions: ['AdminGetWalletLogs', 'AdminGetBonusLogs'],
+    matcher: { type: 'startsWith', href: '/dashboard/consignor-balance' },
   },
   {
     key: 'items',

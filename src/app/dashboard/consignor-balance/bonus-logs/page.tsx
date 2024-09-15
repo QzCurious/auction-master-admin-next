@@ -8,7 +8,6 @@ import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE } from '@/static';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import { Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Card from '@mui/material/Card';
-import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
@@ -30,19 +29,9 @@ interface PageProps {
 
 export default async function Page(pageProps: PageProps) {
   return (
-    <Stack spacing={3}>
-      <Stack direction="row" spacing={3}>
-        <Stack spacing={2} direction="row" justifyContent="space-between" sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4" sx={{ flexShrink: 0 }}>
-            紅利紀錄
-          </Typography>
-        </Stack>
-      </Stack>
-
-      <section>
-        <Content {...pageProps} />
-      </section>
-    </Stack>
+    <section>
+      <Content {...pageProps} />
+    </section>
   );
 }
 
