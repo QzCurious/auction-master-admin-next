@@ -1,4 +1,4 @@
-import { PiggyBank, Wallet } from '@phosphor-icons/react/dist/ssr';
+import { Wallet } from '@phosphor-icons/react/dist/ssr';
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { Handshake } from '@phosphor-icons/react/dist/ssr/Handshake';

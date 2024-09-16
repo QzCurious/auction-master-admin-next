@@ -12,7 +12,8 @@ import { currencySign } from '@/static';
 import { StatusFlow } from '@/StatusFlow';
 import { zodResolver } from '@hookform/resolvers/zod';
 import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
-import { Button, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
+import { Button, Grid, IconButton, InputAdornment, InputLabel, Link, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -27,7 +28,7 @@ import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-fo
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import { useHavePermissions } from '@/contexts/UserContext';
+import { HavePermissionsOnly, useHavePermissions } from '@/contexts/UserContext';
 import QuillTextEditor from '@/components/QuillTextEditor/QuillTextEditor';
 
 interface ItemFromProps {
@@ -184,23 +185,31 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
 
       <Grid container spacing={3} sx={{ mt: 0 }}>
         <Grid item xs={12} sm={6}>
-          <Controller
-            control={control}
-            name="consignorID"
-            render={({ field, fieldState }) => (
-              <FormControl fullWidth error={!!fieldState.error}>
-                <TextField
-                  value={consignor.nickname}
-                  // {...field}
-                  inputProps={{ readOnly: true }}
-                  label="寄售人"
-                  type="text"
-                  fullWidth
-                />
-                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-              </FormControl>
-            )}
-          />
+          <HavePermissionsOnly permissionKeys={['AdminGetConsignor']}>
+            <TextField
+              value={consignor.nickname}
+              inputProps={{ readOnly: true }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      LinkComponent={Link}
+                      size="small"
+                      color="primary"
+                      href={`/dashboard/consignors?consignorID=${consignor.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <LaunchOutlinedIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              label="寄售人"
+              type="text"
+              fullWidth
+            />
+          </HavePermissionsOnly>
         </Grid>
 
         <Grid item xs />

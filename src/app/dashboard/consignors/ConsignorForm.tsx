@@ -2,26 +2,31 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
+import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
 import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
 import { getDirtyFields } from '@/helper/getDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Chip, Grid, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
+import { Button, Chip, Grid, InputAdornment, InputLabel, Link, MenuItem, Select, TextField } from '@mui/material';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography/Typography';
-import { Box, Stack } from '@mui/system';
 import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
+import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
+import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { BigNumber } from 'bignumber.js';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import { useHandleNoPermissions } from '@/contexts/UserContext';
+import { HavePermissionsOnly, useHandleNoPermissions } from '@/contexts/UserContext';
 
 import { statusColor } from './statusColor';
 
@@ -111,6 +116,21 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
               送出
             </Button>
           </Stack>
+
+          {consignor && (
+            <Stack direction="row" spacing={3}>
+              <HavePermissionsOnly permissionKeys={['GetItemsAndDetails']}>
+                <Link href={`/dashboard/items?consignorID=${consignor.id}`} target="_blank" rel="noreferrer">
+                  <StackSimple /> 寄售人物品
+                </Link>
+              </HavePermissionsOnly>
+              <HavePermissionsOnly permissionKeys={['GetAuctionItems']}>
+                <Link href={`/dashboard/auction-items?consignorID=${consignor.id}`} target="_blank" rel="noreferrer">
+                  <Gavel /> 寄售人日拍商品
+                </Link>
+              </HavePermissionsOnly>
+            </Stack>
+          )}
 
           <Grid container spacing={3} sx={{ mt: 0 }}>
             <Grid item xs={12} sm={6}>
@@ -280,7 +300,23 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
                 fullWidth
                 label="大師幣"
                 type="text"
-                InputProps={{ readOnly: true }}
+                InputProps={{
+                  readOnly: true,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        LinkComponent={Link}
+                        size="small"
+                        color="primary"
+                        href={`/dashboard/consignor-balance/wallet-logs?consignorID=${consignor.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <LaunchOutlinedIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
                 value={consignor.walletBalance.toLocaleString()}
               />
             </Grid>
@@ -290,7 +326,23 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
                 fullWidth
                 label="紅利"
                 type="text"
-                InputProps={{ readOnly: true }}
+                InputProps={{
+                  readOnly: true,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        LinkComponent={Link}
+                        size="small"
+                        color="primary"
+                        href={`/dashboard/consignor-balance/bonus-logs?consignorID=${consignor.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <LaunchOutlinedIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
                 value={consignor.bonusBalance.toLocaleString()}
               />
             </Grid>

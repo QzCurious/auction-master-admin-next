@@ -132,7 +132,7 @@ async function ConsignorInfo({ consignorID }: { consignorID: BonusLogs['consigno
   return (
     <Stack whiteSpace="nowrap" direction="row" spacing={0.5}>
       {res.data.nickname}
-      <Link href={`/dashboard/consignors/edit/${consignorID}`} target="_blank" rel="noreferrer">
+      <Link href={`/dashboard/consignors?consignorID=${consignorID}`} target="_blank" rel="noreferrer">
         <OpenInNewOutlinedIcon fontSize="small" />
       </Link>
     </Stack>

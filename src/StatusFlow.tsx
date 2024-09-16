@@ -195,6 +195,12 @@ export class StatusFlow {
       }
         ? k
         : never]: React.ReactNode;
+    } & {
+      [k in keyof typeof this.flow as (typeof this.flow)[k] extends {
+        adjudicator: 'system';
+      }
+        ? k
+        : never]?: React.ReactNode;
     }
   ) {
     return actionMap;

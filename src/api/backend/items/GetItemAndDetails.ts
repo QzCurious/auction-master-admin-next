@@ -43,6 +43,8 @@ export interface Item {
     updatedAt: string;
   }>;
   pastStatuses?: { [k in ITEM_STATUS['value']]?: string };
+  auctionItemID?: number;
+  recordID?: string;
 }
 
 interface Data extends Item {}

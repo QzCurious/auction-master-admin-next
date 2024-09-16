@@ -15,21 +15,13 @@ import { useUntil } from '@/helper/useUntil';
 import { DATE_TIME_FORMAT } from '@/static';
 import { StatusFlow } from '@/StatusFlow';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import {
-  Button,
-  Chip,
-  colors,
-  FormHelperText,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from '@mui/material';
+import { Button, Chip, colors, Grid, IconButton, InputLabel, Link, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
+import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import copy from 'copy-to-clipboard';
 import { format } from 'date-fns';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
@@ -282,6 +274,13 @@ function StatusFlowUI({ item }: { item: Item }) {
       </>
     ),
     ConsignorConfirmedStatus: <ReadyStatusHandleButtons item={item} />,
+    BiddingStatus: (
+      <HavePermissionsOnly permissionKeys={['GetAuctionItem']}>
+        <Link href={`/dashboard/auction-items/${item.auctionItemID}`} target="_blank" rel="noreferrer">
+          <Gavel /> 日拍商品
+        </Link>
+      </HavePermissionsOnly>
+    ),
   });
 
   const path = StatusFlow.flowPath({

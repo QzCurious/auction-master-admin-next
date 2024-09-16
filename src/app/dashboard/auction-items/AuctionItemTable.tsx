@@ -17,6 +17,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { useAtom } from 'jotai';
 import * as R from 'remeda';
 
@@ -110,6 +111,13 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                       }}
                     />
                   )}
+                  <Stack>
+                    <HavePermissionsOnly permissionKeys={['GetItemAndDetails']}>
+                      <Link href={`/dashboard/items/edit/${row.itemID}`} target="_blank" rel="noreferrer">
+                        <Gavel /> 物品
+                      </Link>
+                    </HavePermissionsOnly>
+                  </Stack>
                 </TableCell>
                 <TableCell>
                   <Link

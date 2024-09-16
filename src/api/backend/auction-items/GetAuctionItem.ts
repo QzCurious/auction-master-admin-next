@@ -36,7 +36,9 @@ export interface AuctionItem {
 
 type Data = AuctionItem;
 
-type ErrorCode = never;
+type ErrorCode =
+  // get auction item error
+  '21';
 
 export async function GetAuctionItem(id: number) {
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items/${id}`, {

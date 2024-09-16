@@ -145,7 +145,7 @@ async function ConsignorInfo({ consignorID }: { consignorID: WalletLogs['consign
         LinkComponent={Link}
         size="small"
         color="primary"
-        href={`/dashboard/consignors/edit/${consignorID}`}
+        href={`/dashboard/consignors?consignorID=${consignorID}`}
         target="_blank"
         rel="noreferrer"
       >
