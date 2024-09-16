@@ -42,7 +42,7 @@ export interface Item {
     createdAt: string;
     updatedAt: string;
   }>;
-  pastStatuses: { [k in ITEM_STATUS['value']]?: string };
+  pastStatuses?: { [k in ITEM_STATUS['value']]?: string };
 }
 
 interface Data extends Item {}

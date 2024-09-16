@@ -294,7 +294,7 @@ function StatusFlowUI({ item }: { item: Item }) {
   const result = path.map((status) => {
     const step = StatusFlow.flow[status];
     const active = ITEM_STATUS.enum(step.status) === item.status;
-    const time = item.pastStatuses[ITEM_STATUS.enum(step.status)];
+    const time = item.pastStatuses?.[ITEM_STATUS.enum(step.status)];
     const action = status in actionMap ? actionMap[status as keyof typeof actionMap] : null;
 
     return (
