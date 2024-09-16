@@ -689,6 +689,10 @@ async function AuctionItemInfo({ auctionItemId }: { auctionItemId: AuctionItem['
     return <RedirectAuthError />;
   }
 
+  if (auctionItemRes.error === '21') {
+    return <Typography color="error">無法取得商品資訊</Typography>;
+  }
+
   return (
     <div>
       {/* <p>出品帳號: {auctionItemRes.data.sellerName}</p> */}
