@@ -4,18 +4,19 @@ import Quill, { Delta, type EmitterSource, type Range } from 'quill/core';
 
 import 'quill/dist/quill.snow.css';
 
-import { BackgroundStyle } from 'quill/formats/background'
-import Bold from 'quill/formats/bold'
-import { ColorStyle } from 'quill/formats/color'
-import Header from 'quill/formats/header'
-import IndentClass from 'quill/formats/indent'
-import Italic from 'quill/formats/italic'
-import Link from 'quill/formats/link'
-import ListItem from 'quill/formats/list'
-import Underline from 'quill/formats/underline'
-import Toolbar from 'quill/modules/toolbar'
-import SnowTheme from 'quill/themes/snow'
-import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react'
+import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
+import { BackgroundStyle } from 'quill/formats/background';
+import Bold from 'quill/formats/bold';
+import { ColorStyle } from 'quill/formats/color';
+import Header from 'quill/formats/header';
+import Image from 'quill/formats/image';
+import IndentClass from 'quill/formats/indent';
+import Italic from 'quill/formats/italic';
+import Link from 'quill/formats/link';
+import ListItem from 'quill/formats/list';
+import Underline from 'quill/formats/underline';
+import Toolbar from 'quill/modules/toolbar';
+import SnowTheme from 'quill/themes/snow';
 
 import './QuillTextEditor.css';
 
@@ -30,6 +31,7 @@ Quill.register('formats/background', BackgroundStyle);
 Quill.register('formats/indent', IndentClass);
 Quill.register('formats/link', Link);
 Quill.register('formats/list', ListItem);
+Quill.register('formats/image', Image);
 
 interface EditorProps {
   readOnly?: boolean;
@@ -64,19 +66,49 @@ const QuillTextEditor = forwardRef<Quill, EditorProps>(function QuillTextEditor(
       modules: {
         toolbar: hideToolbarRef.current
           ? false
-          : [
-              [{ header: [1, 2, 3, false] }],
-              ['bold', 'italic', 'underline'], // toggled buttons
-              ['link'],
-              // ['link', 'image'],
+          : {
+              container: [
+                [{ header: [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'], // toggled buttons
+                // ['link'],
+                ['link', 'image'],
 
-              [{ list: 'ordered' }, { list: 'bullet' }],
-              [{ indent: '-1' }, { indent: '+1' }], // outdent/indent
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ indent: '-1' }, { indent: '+1' }], // outdent/indent
 
-              [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+                [{ color: [] }, { background: [] }], // dropdown with defaults from theme
 
-              ['clean'], // remove formatting button
-            ],
+                ['clean'], // remove formatting button
+              ],
+              handlers: {
+                image: () => {
+                  const input = document.createElement('input');
+                  input.setAttribute('type', 'file');
+                  input.setAttribute('accept', 'image/*');
+                  input.click();
+
+                  input.onchange = async () => {
+                    const file = input.files ? input.files[0] : null;
+                    if (file) {
+                      const formData = new FormData();
+                      formData.append('image', file);
+
+                      const res = await fetch('http://172.234.95.57:3001/upload', {
+                        method: 'POST',
+                        body: formData,
+                      });
+
+                      const url = await res.text();
+
+                      const range = quill.getSelection();
+                      if (range) {
+                        quill.insertEmbed(range.index, 'image', url);
+                      }
+                    }
+                  };
+                },
+              },
+            },
       },
       theme: 'snow',
     });
