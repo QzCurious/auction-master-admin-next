@@ -6,7 +6,7 @@ import { AddPermissionForRole } from '@/api/backend/rbac/AddPermissionForRole';
 import { CreateRole } from '@/api/backend/rbac/CreateRole';
 import { DeletePermissionForRole } from '@/api/backend/rbac/DeletePermissionForRole';
 import { type GetPermissions } from '@/api/backend/rbac/GetPermissions';
-import { type RolePermissions } from '@/api/backend/rbac/GetRolesPermission';
+import { type RolePermissions } from '@/api/backend/rbac/GetRolePermissions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Grid, TextField } from '@mui/material';
 import Button from '@mui/material/Button';

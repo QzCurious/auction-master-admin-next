@@ -5,8 +5,9 @@ import { type PermissionKey } from './permissions.data';
 
 export interface Permission {
   key: PermissionKey;
-  method: string;
   url: string;
+  method: string;
+  fields: Array<string>;
   description: string;
 }
 

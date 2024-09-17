@@ -13,7 +13,7 @@ type Data = RolePermissions;
 
 type ErrorCode = never;
 
-export async function GetRolesPermission(role: Role['role']) {
+export async function GetRolePermissions(role: Role['role']) {
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/roles/${role}/permissions`, {
     method: 'GET',
     next: {

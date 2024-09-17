@@ -22,6 +22,7 @@ import { addMonths, closestTo, format, startOfDay, subDays, subHours, subMonths 
 import { Line } from 'react-chartjs-2';
 
 import RedirectAuthError from '@/components/RedirectAuthError';
+import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 Chart.register(CategoryScale, Legend, Tooltip, CategoryScale, LinearScale, LineController, LineElement, PointElement);
 
@@ -158,7 +159,8 @@ function Content({ startAt, endAt, slice }: { startAt: Date; endAt: Date; slice:
 
   if (error) return null;
   if (isPending) return <Box mt={3}>Loading...</Box>;
-  if (data.error) return <RedirectAuthError />;
+  if (data.error === '1001') return <WithoutPermissionsError permissions={['GetReports']} />;
+  if (data.error === '1003') return <RedirectAuthError />;
 
   return (
     <Box mt={3} sx={{ position: 'relative' }}>

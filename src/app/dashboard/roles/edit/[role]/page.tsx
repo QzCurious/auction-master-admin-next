@@ -1,7 +1,7 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { GetPermissions } from '@/api/backend/rbac/GetPermissions';
-import { GetRolesPermission } from '@/api/backend/rbac/GetRolesPermission';
+import { GetRolePermissions } from '@/api/backend/rbac/GetRolePermissions';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
@@ -39,9 +39,9 @@ async function Page(pageProps: PageProps) {
 export default Page;
 
 async function Form({ params }: PageProps) {
-  const [permissionsRes, rolesPermissionsRes] = await Promise.all([GetPermissions(), GetRolesPermission(params.role)]);
+  const [permissionsRes, rolesPermissionsRes] = await Promise.all([GetPermissions(), GetRolePermissions(params.role)]);
   if (permissionsRes.error === '1001' || rolesPermissionsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetPermissions', 'GetRolesPermission']} />;
+    return <WithoutPermissionsError permissions={['GetPermissions', 'GetRolePermissions']} />;
   }
 
   if (permissionsRes.error === '1003' || rolesPermissionsRes.error === '1003') {

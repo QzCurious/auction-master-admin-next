@@ -1,10 +1,10 @@
-import { type PermissionKey } from './backend/rbac/permissions.data';
+import { type Permission } from './backend/rbac/GetPermissions';
 
 export interface JwtPayload {
   id: number;
   account: string;
   role: Array<string>;
-  permissions: Array<PermissionKey>;
+  permissions: Array<Permission>;
   exp: number;
   iat: number;
   nbf: number;

@@ -26,7 +26,7 @@ export function useHavePermissions() {
         return true;
       }
 
-      return !!user && permissionKeys.every((permission) => user.permissions.includes(permission));
+      return !!user && permissionKeys.every((permission) => user.permissions.some((p) => permission === p.key));
     },
     [user]
   );
