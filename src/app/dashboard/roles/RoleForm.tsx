@@ -29,7 +29,8 @@ import { useHavePermissions } from '@/contexts/UserContext';
 
 interface RoleFromProps {
   // edit
-  role?: RolePermissions;
+  role?: string;
+  rolePermissions?: RolePermissions;
   permissions: Awaited<ReturnType<typeof GetPermissions>>['data'];
 }
 
@@ -39,7 +40,7 @@ const FormSchema = z.object({
   permissionKey: z.string().array(),
 });
 
-export default function RoleForm({ role, permissions }: RoleFromProps) {
+export default function RoleForm({ role, rolePermissions, permissions }: RoleFromProps) {
   const router = useRouter();
   const {
     control,
@@ -49,10 +50,9 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
     getValues,
   } = useForm<z.input<typeof FormSchema>>({
     values: {
-      role: '',
-      description: '',
-      ...role,
-      permissionKey: role?.permission.map((p) => p.key) ?? [],
+      role: role ?? '',
+      description: rolePermissions?.description ?? '',
+      permissionKey: rolePermissions?.permission.map((p) => p.key) ?? [],
     },
     resolver: zodResolver(FormSchema),
   });
@@ -62,14 +62,14 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
   return (
     <form
       onSubmit={handleSubmit(
-        role
+        rolePermissions
           ? async (data) => {
               if (!dirtyFields.permissionKey) return;
 
               const addPermissions = data.permissionKey.filter(
-                (key) => !role.permission.map((p) => p.key).includes(key as never)
+                (key) => !rolePermissions.permission.map((p) => p.key).includes(key as never)
               );
-              const removePermissions = role.permission
+              const removePermissions = rolePermissions.permission
                 .filter((p) => !data.permissionKey.includes(p.key))
                 .map((p) => p.key);
               const res = await Promise.all([
@@ -129,7 +129,13 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               name="role"
               render={({ field, fieldState }) => (
                 <FormControl error={!!fieldState.error}>
-                  <TextField inputProps={{ readOnly: !!role }} {...field} label="角色名稱" type="text" fullWidth />
+                  <TextField
+                    inputProps={{ readOnly: !!rolePermissions }}
+                    {...field}
+                    label="角色名稱"
+                    type="text"
+                    fullWidth
+                  />
                   {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                 </FormControl>
               )}
@@ -141,7 +147,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
               render={({ field, fieldState }) => (
                 <FormControl error={!!fieldState.error}>
                   <TextField
-                    inputProps={{ readOnly: !!role }}
+                    inputProps={{ readOnly: !!rolePermissions }}
                     {...field}
                     fullWidth
                     multiline
@@ -158,7 +164,7 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
         </CardContent>
         <Divider />
 
-        {(role || (!role && havePermissions(['AddPermissionForRole']))) && permissions && (
+        {(rolePermissions || (!rolePermissions && havePermissions(['AddPermissionForRole']))) && permissions && (
           <>
             <CardHeader title="權限設定" subheader="角色的權限授權範圍" />
             <Divider />
@@ -181,10 +187,13 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                                   !group.permissions.every((p) => field.value.includes(p.key))
                                 }
                                 onChange={(event) => {
-                                  if (!role && !havePermissions(['AddPermissionForRole'])) {
+                                  if (!rolePermissions && !havePermissions(['AddPermissionForRole'])) {
                                     return;
                                   }
-                                  if (role && !havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])) {
+                                  if (
+                                    rolePermissions &&
+                                    !havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])
+                                  ) {
                                     return;
                                   }
 
@@ -214,11 +223,11 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
                                     size="small"
                                     checked={field.value.includes(permission.key)}
                                     onChange={(event) => {
-                                      if (!role && !havePermissions(['AddPermissionForRole'])) {
+                                      if (!rolePermissions && !havePermissions(['AddPermissionForRole'])) {
                                         return;
                                       }
                                       if (
-                                        role &&
+                                        rolePermissions &&
                                         !havePermissions(['AddPermissionForRole', 'DeletePermissionForRole'])
                                       ) {
                                         return;
@@ -261,7 +270,8 @@ export default function RoleForm({ role, permissions }: RoleFromProps) {
             </Button>
           )}
 
-          {(!role || (role && havePermissions(['AddPermissionForRole', 'DeletePermissionForRole']))) && (
+          {(!rolePermissions ||
+            (rolePermissions && havePermissions(['AddPermissionForRole', 'DeletePermissionForRole']))) && (
             <Button type="submit" variant="contained" disabled={isSubmitting}>
               送出
             </Button>

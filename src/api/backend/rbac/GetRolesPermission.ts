@@ -4,20 +4,21 @@ import { withAuth } from '@/api/withAuth';
 import { type Permission } from './GetPermissions';
 import { type Role } from './GetRoles';
 
-export type RolePermissions = Role & {
+export interface RolePermissions {
+  description: string;
   permission: Permission[];
-};
+}
 
-type Data = Array<RolePermissions>;
+type Data = RolePermissions;
 
 type ErrorCode = never;
 
-export async function GetRolesPermission() {
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/roles/permissions', {
+export async function GetRolesPermission(role: Role['role']) {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/roles/${role}/permissions`, {
     method: 'GET',
     next: {
       tags: ['roles'],
-    }
+    },
   });
 
   return res;

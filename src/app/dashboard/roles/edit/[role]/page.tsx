@@ -1,6 +1,5 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
-import { notFound } from 'next/navigation';
 import { GetPermissions } from '@/api/backend/rbac/GetPermissions';
 import { GetRolesPermission } from '@/api/backend/rbac/GetRolesPermission';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -40,7 +39,7 @@ async function Page(pageProps: PageProps) {
 export default Page;
 
 async function Form({ params }: PageProps) {
-  const [permissionsRes, rolesPermissionsRes] = await Promise.all([GetPermissions(), GetRolesPermission()]);
+  const [permissionsRes, rolesPermissionsRes] = await Promise.all([GetPermissions(), GetRolesPermission(params.role)]);
   if (permissionsRes.error === '1001' || rolesPermissionsRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetPermissions', 'GetRolesPermission']} />;
   }
@@ -49,11 +48,5 @@ async function Form({ params }: PageProps) {
     return <RedirectAuthError />;
   }
 
-  const role = rolesPermissionsRes.data.find((role) => decodeURI(params.role) === role.role);
-
-  if (!role) {
-    notFound();
-  }
-
-  return <RoleForm permissions={permissionsRes.data} role={role} />;
+  return <RoleForm permissions={permissionsRes.data} role={params.role} rolePermissions={rolesPermissionsRes.data} />;
 }
