@@ -9,7 +9,12 @@ import { z } from 'zod';
 
 const ReqSchema = z.object({
   role: z.string(),
-  permissionKey: z.string().array(),
+  permissions: z
+    .object({
+      key: z.string(),
+      fields: z.string().array(),
+    })
+    .array(),
 });
 
 type Data = 'Success';
@@ -19,13 +24,10 @@ type ErrorCode = never;
 export async function DeletePermissionForRole(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
-  const d = {
-    role: data.role,
-    permissions: data.permissionKey.map((k) => `${k}:[*]`),
-  };
+  const permissions = data.permissions.flatMap((p) => p.fields.map((f) => `${p.key}:${f}`));
 
   const query = new URLSearchParams();
-  appendEntries(query, d);
+  appendEntries(query, { role: data.role, permissionKey: permissions });
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/permissions?${query.toString()}`, {
     method: 'DELETE',

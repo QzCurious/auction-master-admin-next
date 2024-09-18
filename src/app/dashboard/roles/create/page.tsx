@@ -8,6 +8,7 @@ import { Stack } from '@mui/system';
 
 import { config } from '@/config';
 import RedirectAuthError from '@/components/RedirectAuthError';
+import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
 
 import RoleForm from '../RoleForm';
 
@@ -34,13 +35,14 @@ export default Page;
 
 async function Form() {
   const [permissionsRes] = await Promise.all([GetPermissions()]);
+
+  if (permissionsRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['GetPermissions']} />;
+  }
+
   if (permissionsRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
-  if (permissionsRes.data || permissionsRes.error === '1001') {
-    return <RoleForm permissions={permissionsRes.data} />;
-  }
-
-  throw new Error('Bug');
+  return <RoleForm permissionGroups={permissionsRes.data} />;
 }

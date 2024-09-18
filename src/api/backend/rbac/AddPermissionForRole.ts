@@ -8,7 +8,12 @@ import { z } from 'zod';
 
 const ReqSchema = z.object({
   role: z.string(),
-  permissionKey: z.string().array(),
+  permissions: z
+    .object({
+      key: z.string(),
+      fields: z.string().array(),
+    })
+    .array(),
 });
 
 type Data = 'Success';
@@ -18,18 +23,10 @@ type ErrorCode = never;
 export async function AddPermissionForRole(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
-  const d = {
-    role: data.role,
-    permissions: data.permissionKey.map((k) => ({
-      key: k,
-      fields: ['*'],
-    })),
-  };
-
   const res = await withAuth(apiClient)<Data, ErrorCode>('/permissions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(d),
+    body: JSON.stringify(data),
   });
 
   revalidateTag('roles');

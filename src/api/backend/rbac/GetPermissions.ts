@@ -1,6 +1,5 @@
 import { apiClient } from '@/api/apiClient';
 import { withAuth } from '@/api/withAuth';
-
 import { type PermissionKey } from '@/domain/permission/types';
 
 export interface Permission {
@@ -11,10 +10,12 @@ export interface Permission {
   description: string;
 }
 
-type Data = Array<{
+export interface PermissionGroup {
   message: string;
   permissions: Array<Permission>;
-}>;
+}
+
+type Data = Array<PermissionGroup>;
 
 type ErrorCode = never;
 
