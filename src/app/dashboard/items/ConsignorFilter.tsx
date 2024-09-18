@@ -6,7 +6,7 @@ import { PAGE } from '@/static';
 import { useQuery } from '@tanstack/react-query';
 import { type z } from 'zod';
 
-import { useHavePermissions } from '@/contexts/UserContext';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { ConsignorSelect } from '@/components/ConsignorSelect';
 import { FilterPopover } from '@/components/FilterPopover';
 

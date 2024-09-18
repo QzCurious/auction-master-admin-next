@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { type z } from 'zod';
 
 import { ConsignorSelect } from '@/components/ConsignorSelect';
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 
 import { MAX_MONTHS, validRange, type SearchParamsSchema } from './SearchParamsSchema';
 

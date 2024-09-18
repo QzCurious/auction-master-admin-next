@@ -8,7 +8,7 @@ import { DateTimePicker } from '@mui/x-date-pickers';
 import { addMonths, closestTo, isValid, subMonths } from 'date-fns';
 import { type z } from 'zod';
 
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import { ConsignorSelect } from '@/components/ConsignorSelect';
 
 import { MAX_MONTHS, validRange, type SearchParamsSchema } from './SearchParamsSchema';

@@ -22,7 +22,7 @@ import { useMotionValue } from 'framer-motion';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 
 const PhotoListSchema = z.object({
   photos: z

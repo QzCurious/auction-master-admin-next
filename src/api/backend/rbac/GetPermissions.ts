@@ -1,7 +1,7 @@
 import { apiClient } from '@/api/apiClient';
 import { withAuth } from '@/api/withAuth';
 
-import { type PermissionKey } from './permissions.data';
+import { type PermissionKey } from '@/domain/permission/types';
 
 export interface Permission {
   key: PermissionKey;

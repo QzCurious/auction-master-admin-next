@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 
 import type { NavItemConfig } from '@/types/nav';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
-import { useHavePermissions } from '@/contexts/UserContext';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 
 interface NavItemProps extends Omit<NavItemConfig, 'items'> {}
 

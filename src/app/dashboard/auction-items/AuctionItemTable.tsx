@@ -21,7 +21,7 @@ import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { useAtom } from 'jotai';
 import * as R from 'remeda';
 
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import { CountdownTime } from '@/components/CountdownTime';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';

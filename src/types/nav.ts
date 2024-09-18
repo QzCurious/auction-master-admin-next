@@ -1,4 +1,4 @@
-import { type PermissionKey } from '@/api/backend/rbac/permissions.data';
+import { type PermissionKey } from '@/domain/permission/types';
 import { type Icon } from '@phosphor-icons/react/dist/lib/types.d';
 
 export interface NavItemConfig {

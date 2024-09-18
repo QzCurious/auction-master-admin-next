@@ -19,8 +19,13 @@ type ErrorCode = never;
 export async function DeletePermissionForRole(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
+  const d = {
+    role: data.role,
+    permissions: data.permissionKey.map((k) => `${k}:[*]`),
+  };
+
   const query = new URLSearchParams();
-  appendEntries(query, data);
+  appendEntries(query, d);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/permissions?${query.toString()}`, {
     method: 'DELETE',

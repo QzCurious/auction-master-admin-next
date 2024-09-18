@@ -36,7 +36,7 @@ import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { enqueueSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import CopyButton from '@/components/CopyButton';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';

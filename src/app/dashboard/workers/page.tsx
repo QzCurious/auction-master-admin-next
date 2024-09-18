@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { config } from '@/config';
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import RedirectAuthError from '@/components/RedirectAuthError';
 import RemoveSearchBtn from '@/components/RemoveSearchBtn';
 import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';

@@ -3,6 +3,8 @@
 import * as React from 'react';
 import { useContext, useState } from 'react';
 import { UpdateAdminPassword } from '@/api/backend/admins/UpdateAdminPassword';
+import { useHandleNoPermissions } from '@/domain/permission/useHandleNoPermissions';
+import { UserContext } from '@/domain/user/UserContext';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -18,8 +20,6 @@ import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlas
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-import { useHandleNoPermissions, UserContext } from '@/contexts/UserContext';
 
 const FormSchema = z
   .object({

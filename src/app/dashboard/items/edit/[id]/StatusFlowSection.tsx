@@ -28,7 +28,7 @@ import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state
 import { useSnackbar } from 'notistack';
 import { useFormContext } from 'react-hook-form';
 
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
 import { type FormSchemaType } from './ItemForm';

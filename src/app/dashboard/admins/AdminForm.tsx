@@ -23,7 +23,7 @@ import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useHavePermissions } from '@/contexts/UserContext';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 
 import { statusColor } from '../consignors/statusColor';
 

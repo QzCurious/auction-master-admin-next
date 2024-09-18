@@ -22,7 +22,8 @@ import TableRow from '@mui/material/TableRow';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 
-import { HavePermissionsOnly, useHavePermissions } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';

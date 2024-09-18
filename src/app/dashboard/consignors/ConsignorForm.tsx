@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
 import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
+import { useHandleNoPermissions } from '@/domain/permission/useHandleNoPermissions';
 import { getDirtyFields } from '@/helper/getDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
@@ -26,7 +27,7 @@ import { Controller, useForm } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import { HavePermissionsOnly, useHandleNoPermissions } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 
 import { statusColor } from './statusColor';
 

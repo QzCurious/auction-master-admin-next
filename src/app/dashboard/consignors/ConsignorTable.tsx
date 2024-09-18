@@ -19,7 +19,7 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 

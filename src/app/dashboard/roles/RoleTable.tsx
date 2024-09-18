@@ -25,7 +25,7 @@ import Typography from '@mui/material/Typography';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
 interface CustomersTableProps {

@@ -35,7 +35,7 @@ import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state
 import { enqueueSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 

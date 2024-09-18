@@ -30,7 +30,7 @@ import TableRow from '@mui/material/TableRow';
 import { format } from 'date-fns';
 import { useSnackbar } from 'notistack';
 
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 

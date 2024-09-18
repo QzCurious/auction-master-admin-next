@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { redirect } from 'next/navigation';
 import { getUser } from '@/api/getToken';
+import { UserContextProvider } from '@/domain/user/UserContext';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
-import { UserContextProvider } from '@/contexts/UserContext';
 import { MainNav } from '@/components/dashboard/layout/main-nav';
 
 import SideNavMenu from '../SideNavMenu';

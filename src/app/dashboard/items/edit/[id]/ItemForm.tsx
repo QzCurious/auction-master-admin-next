@@ -28,7 +28,8 @@ import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-fo
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import { HavePermissionsOnly, useHavePermissions } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import QuillTextEditor from '@/components/QuillTextEditor/QuillTextEditor';
 
 interface ItemFromProps {

@@ -1,4 +1,5 @@
-import { PERMISSION_MAP, type PermissionKey } from '@/api/backend/rbac/permissions.data';
+import { PERMISSION_MAP } from '@/domain/permission/permissions.data';
+import { type PermissionKey } from '@/domain/permission/types';
 import { Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 

@@ -591,5 +591,4 @@ export const PERMISSIONS_DATA = [
   },
 ] as const;
 
-export type PermissionKey = (typeof PERMISSIONS_DATA)[number]['permissions'][number]['key'];
 export const PERMISSION_MAP = mapToObj(PERMISSIONS_DATA.map((x) => x.permissions).flat(), (x) => [x.key, x] as const);

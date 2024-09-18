@@ -17,7 +17,7 @@ import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 import { useSnackbar } from 'notistack';
 
 import { paths } from '@/paths';
-import { UserContext } from '@/contexts/UserContext';
+import { UserContext } from '@/domain/user/UserContext';
 
 export interface UserPopoverProps {
   anchorEl: Element | null;

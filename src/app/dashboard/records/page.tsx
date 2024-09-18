@@ -18,7 +18,7 @@ import { format } from 'date-fns';
 import { Provider } from 'jotai';
 
 import { config } from '@/config';
-import { HavePermissionsOnly } from '@/contexts/UserContext';
+import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import EmptyTableRow from '@/components/EmptyTableRow';
 import RedirectAuthError from '@/components/RedirectAuthError';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
