@@ -60,7 +60,7 @@ export default function StatusFlowSection({ item }: { item: Item }) {
         狀態流程 <TriggerToFlowFigure />
       </Typography>
 
-      <HavePermissionsOnly permissionKeys={['AdminUpdateItem']}>
+      <HavePermissionsOnly permissions={['AdminUpdateItem']}>
         <IconButton sx={{ position: 'absolute', top: 6, right: 6 }} onClick={() => setShowMore(!showMore)}>
           <MoreVertIcon />
         </IconButton>
@@ -130,7 +130,7 @@ function StatusFlowUI({ item }: { item: Item }) {
 
   const actionMap = StatusFlow.makeActionMap('admin', {
     SubmitAppraisalStatus: (
-      <HavePermissionsOnly permissionKeys={['ItemAppraisalReview']}>
+      <HavePermissionsOnly permissions={['ItemAppraisalReview']}>
         <RejectBtn
           text="估價失敗"
           popoverTitle="標記為估價失敗"
@@ -162,7 +162,7 @@ function StatusFlowUI({ item }: { item: Item }) {
       </HavePermissionsOnly>
     ),
     ConsignorShippedItem: (
-      <HavePermissionsOnly permissionKeys={['ItemArrival']}>
+      <HavePermissionsOnly permissions={['ItemArrival']}>
         <ApproveBtn
           text="到貨"
           popoverTitle="標記為到貨"
@@ -211,7 +211,7 @@ function StatusFlowUI({ item }: { item: Item }) {
       null,
     WarehouseArrivalStatus: (
       <>
-        <HavePermissionsOnly permissionKeys={['ItemReturnPending']}>
+        <HavePermissionsOnly permissions={['ItemReturnPending']}>
           <RejectBtn
             text="準備退貨"
             popoverTitle="標記為準備退貨"
@@ -225,7 +225,7 @@ function StatusFlowUI({ item }: { item: Item }) {
             }}
           />
         </HavePermissionsOnly>
-        <HavePermissionsOnly permissionKeys={['ItemWarehousePersonnelConfirmed']}>
+        <HavePermissionsOnly permissions={['ItemWarehousePersonnelConfirmed']}>
           <ApproveBtn
             text="倉管確認"
             popoverTitle="標記為倉管已確認"
@@ -243,7 +243,7 @@ function StatusFlowUI({ item }: { item: Item }) {
     ),
     WarehousePersonnelConfirmedStatus: (
       <>
-        <HavePermissionsOnly permissionKeys={['ItemReturnPending']}>
+        <HavePermissionsOnly permissions={['ItemReturnPending']}>
           <RejectBtn
             text="準備退貨"
             popoverTitle="標記為準備退貨"
@@ -257,7 +257,7 @@ function StatusFlowUI({ item }: { item: Item }) {
             }}
           />
         </HavePermissionsOnly>
-        <HavePermissionsOnly permissionKeys={['ItemAppraiserConfirmed']}>
+        <HavePermissionsOnly permissions={['ItemAppraiserConfirmed']}>
           <ApproveBtn
             text="鑑價師確認"
             popoverTitle="標記為鑑價師已確認"
@@ -275,7 +275,7 @@ function StatusFlowUI({ item }: { item: Item }) {
     ),
     ConsignorConfirmedStatus: <ReadyStatusHandleButtons item={item} />,
     BiddingStatus: (
-      <HavePermissionsOnly permissionKeys={['GetAuctionItem']}>
+      <HavePermissionsOnly permissions={['GetAuctionItem']}>
         <Link href={`/dashboard/auction-items/${item.auctionItemID}`} target="_blank" rel="noreferrer">
           <Gavel /> 日拍商品
         </Link>
@@ -478,7 +478,7 @@ function ReadyStatusHandleButtons({ item }: { item: Item }) {
   const expired = useUntil(item.expireAt, { onFalsy: false });
 
   return (
-    <HavePermissionsOnly permissionKeys={['ItemBidding']}>
+    <HavePermissionsOnly permissions={['ItemBidding']}>
       <Stack spacing={1} mt={0.5}>
         <FormControl error={!!error}>
           <TextField

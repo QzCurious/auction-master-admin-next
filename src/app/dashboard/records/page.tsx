@@ -266,7 +266,7 @@ async function Content({ searchParams }: PageProps) {
                                   title={process.env.NODE_ENV === 'development' ? row.consignorID.toString() : ''}
                                 >
                                   {row.consignorNickname}
-                                  <HavePermissionsOnly permissionKeys={['AdminGetConsignor']}>
+                                  <HavePermissionsOnly permissions={['AdminGetConsignor']}>
                                     <IconButton
                                       size="small"
                                       color="primary"

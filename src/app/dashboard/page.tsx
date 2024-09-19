@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { GetBackendConfigs } from '@/api/backend/GetConfigs';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { toPercent } from '@/static';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
@@ -78,7 +79,9 @@ export default async function Page() {
       </Grid>
 
       <Grid xs={12}>
-        <ReportsChart />
+        <HavePermissionsOnly permissions={['GetReports']}>
+          <ReportsChart />
+        </HavePermissionsOnly>
       </Grid>
     </Grid>
   );

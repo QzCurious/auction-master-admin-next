@@ -83,7 +83,7 @@ export function ConsignorVerificationTable({ rows, count }: ConsignorVerificatio
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        <HavePermissionsOnly permissionKeys={['HandleConsignorVerification']}>
+                        <HavePermissionsOnly permissions={['HandleConsignorVerification']}>
                           <AuditBtn consignorVerification={row} />
                         </HavePermissionsOnly>
                       </Stack>

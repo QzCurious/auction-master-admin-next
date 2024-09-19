@@ -126,7 +126,7 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        <HavePermissionsOnly permissionKeys={['AdminUpdateConsignor']}>
+                        <HavePermissionsOnly permissions={['AdminUpdateConsignor']}>
                           <IconButton LinkComponent={Link} href={`/dashboard/consignors/edit/${row.id}`}>
                             <EditIcon />
                           </IconButton>

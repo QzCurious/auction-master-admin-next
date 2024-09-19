@@ -7,13 +7,13 @@ import { useHavePermissions } from './useHavePermissions';
 
 export function HavePermissionsOnly({
   children,
-  permissionKeys,
+  permissions,
 }: {
   children: React.ReactNode;
-  permissionKeys: Array<PermissionKey> | Array<PermissionKeyField>;
+  permissions: Array<PermissionKey> | Array<PermissionKeyField>;
 }) {
   const havePermissions = useHavePermissions();
-  const permitted = havePermissions(permissionKeys);
+  const permitted = havePermissions(permissions);
 
   if (!permitted) {
     return null;

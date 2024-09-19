@@ -186,7 +186,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
 
       <Grid container spacing={3} sx={{ mt: 0 }}>
         <Grid item xs={12} sm={6}>
-          <HavePermissionsOnly permissionKeys={['AdminGetConsignor']}>
+          <HavePermissionsOnly permissions={['AdminGetConsignor']}>
             <TextField
               value={consignor.nickname}
               inputProps={{ readOnly: true }}

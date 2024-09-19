@@ -32,7 +32,7 @@ export default async function Page(pageProps: PageProps) {
             Worker 列表
           </Typography>
 
-          <HavePermissionsOnly permissionKeys={['CreateWorker']}>
+          <HavePermissionsOnly permissions={['CreateWorker']}>
             <CreateDialog />
           </HavePermissionsOnly>
         </Stack>

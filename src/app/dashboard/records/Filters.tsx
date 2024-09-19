@@ -94,7 +94,7 @@ export default function Filters({ endAt, startAt, type, status, consignorID }: z
         views={['year', 'month', 'day', 'hours', 'minutes']}
       />
 
-      <HavePermissionsOnly permissionKeys={['AdminGetConsignor', 'AdminGetConsignors']}>
+      <HavePermissionsOnly permissions={['AdminGetConsignor', 'AdminGetConsignors']}>
         <ConsignorSelect
           sx={{ width: 215 }}
           textFieldProps={{ label: '寄售人暱稱' }}

@@ -110,7 +110,7 @@ export function WorkerTable({ rows, count }: WorkerTableProps) {
                   <TableCell>{row.name}</TableCell>
                   <TableCell>
                     {row.status !== WORKER_STATUS.enum('InvalidatedStatus') ? (
-                      <HavePermissionsOnly permissionKeys={['ToggleActivateWorker']}>
+                      <HavePermissionsOnly permissions={['ToggleActivateWorker']}>
                         <StatusSwitch row={row} />
                       </HavePermissionsOnly>
                     ) : (
@@ -119,12 +119,12 @@ export function WorkerTable({ rows, count }: WorkerTableProps) {
                   </TableCell>
                   <TableCell>
                     <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                      <HavePermissionsOnly permissionKeys={['UpdateWorker']}>
+                      <HavePermissionsOnly permissions={['UpdateWorker']}>
                         <IconButton LinkComponent={Link} href={`/dashboard/workers/edit/${row.id}`}>
                           <EditIcon />
                         </IconButton>
                       </HavePermissionsOnly>
-                      <HavePermissionsOnly permissionKeys={['DeleteWorker']}>
+                      <HavePermissionsOnly permissions={['DeleteWorker']}>
                         <DeleteDialog worker={row} />
                       </HavePermissionsOnly>
                     </Stack>

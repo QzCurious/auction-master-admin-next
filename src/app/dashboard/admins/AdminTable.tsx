@@ -101,12 +101,12 @@ export function AdminTable({ rows, count }: AdminTableProps) {
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        <HavePermissionsOnly permissionKeys={['GetAdmin', 'GetConfigs', 'GetRoles']}>
+                        <HavePermissionsOnly permissions={['GetAdmin', 'GetConfigs', 'GetRoles']}>
                           <IconButton LinkComponent={Link} href={`/dashboard/admins/edit/${row.id}`}>
                             <EditIcon />
                           </IconButton>
                         </HavePermissionsOnly>
-                        <HavePermissionsOnly permissionKeys={['DeleteAdmin']}>
+                        <HavePermissionsOnly permissions={['DeleteAdmin']}>
                           <DeleteBtn row={row} />
                         </HavePermissionsOnly>
                       </Stack>

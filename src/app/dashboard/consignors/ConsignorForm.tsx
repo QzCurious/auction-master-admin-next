@@ -120,12 +120,12 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
 
           {consignor && (
             <Stack direction="row" spacing={3}>
-              <HavePermissionsOnly permissionKeys={['GetItemsAndDetails']}>
+              <HavePermissionsOnly permissions={['GetItemsAndDetails']}>
                 <Link href={`/dashboard/items?consignorID=${consignor.id}`} target="_blank" rel="noreferrer">
                   <StackSimple /> 寄售人物品
                 </Link>
               </HavePermissionsOnly>
-              <HavePermissionsOnly permissionKeys={['GetAuctionItems']}>
+              <HavePermissionsOnly permissions={['GetAuctionItems']}>
                 <Link href={`/dashboard/auction-items?consignorID=${consignor.id}`} target="_blank" rel="noreferrer">
                   <Gavel /> 寄售人日拍商品
                 </Link>

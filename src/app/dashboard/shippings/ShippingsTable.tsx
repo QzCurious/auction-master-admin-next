@@ -112,7 +112,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                                   <Link href={item.photos?.[0]?.photo} target="_blank" rel="noreferrer">
                                     <CropFreeOutlinedIcon />
                                   </Link>
-                                  <HavePermissionsOnly permissionKeys={['GetItemAndDetails', 'AdminGetConsignor']}>
+                                  <HavePermissionsOnly permissions={['GetItemAndDetails', 'AdminGetConsignor']}>
                                     <Link href={`/dashboard/items/edit/${item.id}`} target="_blank" rel="noreferrer">
                                       <OpenInNewOutlinedIcon />
                                     </Link>
@@ -159,7 +159,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                 <TableCell>
                   <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
                     {row.status === SHIPPING_STATUS.enum('SubmitAppraisalStatus') && (
-                      <HavePermissionsOnly permissionKeys={['ProcessingShipping']}>
+                      <HavePermissionsOnly permissions={['ProcessingShipping']}>
                         <PopupState variant="popover">
                           {(popupState) => (
                             <>
@@ -187,7 +187,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                     )}
 
                     {row.status === SHIPPING_STATUS.enum('ProcessingStatus') && (
-                      <HavePermissionsOnly permissionKeys={['Shipped']}>
+                      <HavePermissionsOnly permissions={['Shipped']}>
                         <ShippedPopover row={row} />
                       </HavePermissionsOnly>
                     )}

@@ -112,7 +112,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     />
                   )}
                   <Stack>
-                    <HavePermissionsOnly permissionKeys={['GetItemAndDetails']}>
+                    <HavePermissionsOnly permissions={['GetItemAndDetails']}>
                       <Link href={`/dashboard/items/edit/${row.itemID}`} target="_blank" rel="noreferrer">
                         <Gavel /> 物品
                       </Link>
@@ -193,7 +193,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                       ]) ? (
                         <Stack alignItems="center" spacing={1}>
                           <CountdownTime until={new Date(row.closeAt)} />
-                          <HavePermissionsOnly permissionKeys={['ToggleActivateAuctionItem']}>
+                          <HavePermissionsOnly permissions={['ToggleActivateAuctionItem']}>
                             <StopWatchButton auctionItem={row} />
                           </HavePermissionsOnly>
                         </Stack>
@@ -209,10 +209,10 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                         AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
                       ]) && (
                         <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
-                          <HavePermissionsOnly permissionKeys={['UpdateAuctionItem']}>
+                          <HavePermissionsOnly permissions={['UpdateAuctionItem']}>
                             <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
                           </HavePermissionsOnly>
-                          <HavePermissionsOnly permissionKeys={['BidAuctionItem']}>
+                          <HavePermissionsOnly permissions={['BidAuctionItem']}>
                             <BidPopover auctionItem={row} />
                           </HavePermissionsOnly>
                         </Stack>

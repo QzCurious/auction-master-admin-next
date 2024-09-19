@@ -137,7 +137,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
             <iframe title="download" name="download_iframe" style={{ display: 'none' }} />
           </>
         )}
-        <HavePermissionsOnly permissionKeys={['AdminUpsertItemPhoto']}>
+        <HavePermissionsOnly permissions={['AdminUpsertItemPhoto']}>
           <Button type="button" variant="contained" onClick={() => document.getElementById('file-upload')?.click()}>
             新增
           </Button>
@@ -219,7 +219,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
                         spacing={1}
                         sx={{ position: 'absolute', top: 0, right: 0, height: 'fit-content', pr: 1, pt: 1 }}
                       >
-                        <HavePermissionsOnly permissionKeys={['AdminDeleteItemPhoto']}>
+                        <HavePermissionsOnly permissions={['AdminDeleteItemPhoto']}>
                           <IconButton
                             type="button"
                             sx={{
@@ -241,7 +241,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
                           </IconButton>
                         </HavePermissionsOnly>
 
-                        <HavePermissionsOnly permissionKeys={['AdminReorderItemPhoto']}>
+                        <HavePermissionsOnly permissions={['AdminReorderItemPhoto']}>
                           <IconButton
                             type="button"
                             size="small"
