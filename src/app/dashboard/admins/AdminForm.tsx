@@ -9,6 +9,7 @@ import { type Admin } from '@/api/backend/admins/GetAdmin';
 import { UpdateAdmin } from '@/api/backend/admins/UpdateAdmin';
 import { type Role } from '@/api/backend/rbac/GetRoles';
 import { ADMIN_STATUS } from '@/api/backend/static-configs.data';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { getDirtyFields } from '@/helper/getDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -193,7 +194,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                       label="Status"
                       value={field.value ?? ('' as const)}
                       fullWidth
-                      readOnly={admin && !havePermissions(['UpdateAdmin'])}
+                      readOnly={admin && !havePermissions([{ key: 'UpdateAdmin', fields: ['status'] }])}
                       renderValue={(selected) => (
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                           <Chip
@@ -216,81 +217,83 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Controller
-                control={control}
-                name="password"
-                render={({ field, fieldState }) => (
-                  <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="密碼"
-                      type={showPassword ? 'text' : 'password'}
-                      InputProps={{
-                        readOnly: admin && !havePermissions(['UpdateAdmin']),
-                        endAdornment: showPassword ? (
-                          <EyeIcon
-                            cursor="pointer"
-                            fontSize="var(--icon-fontSize-md)"
-                            onClick={(): void => {
-                              setShowPassword(false);
-                            }}
-                          />
-                        ) : (
-                          <EyeSlashIcon
-                            cursor="pointer"
-                            fontSize="var(--icon-fontSize-md)"
-                            onClick={(): void => {
-                              setShowPassword(true);
-                            }}
-                          />
-                        ),
-                      }}
-                    />
-                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                  </FormControl>
-                )}
-              />
-            </Grid>
+            <HavePermissionsOnly permissions={[{ key: 'UpdateAdmin', fields: ['password'] }]}>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field, fieldState }) => (
+                    <FormControl fullWidth error={!!fieldState.error}>
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="密碼"
+                        type={showPassword ? 'text' : 'password'}
+                        InputProps={{
+                          readOnly: admin && !havePermissions(['UpdateAdmin']),
+                          endAdornment: showPassword ? (
+                            <EyeIcon
+                              cursor="pointer"
+                              fontSize="var(--icon-fontSize-md)"
+                              onClick={(): void => {
+                                setShowPassword(false);
+                              }}
+                            />
+                          ) : (
+                            <EyeSlashIcon
+                              cursor="pointer"
+                              fontSize="var(--icon-fontSize-md)"
+                              onClick={(): void => {
+                                setShowPassword(true);
+                              }}
+                            />
+                          ),
+                        }}
+                      />
+                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                    </FormControl>
+                  )}
+                />
+              </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Controller
-                control={control}
-                name="confirmPassword"
-                render={({ field, fieldState }) => (
-                  <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="確認密碼"
-                      type={showPassword ? 'text' : 'password'}
-                      InputProps={{
-                        readOnly: admin && !havePermissions(['UpdateAdmin']),
-                        endAdornment: showPassword ? (
-                          <EyeIcon
-                            cursor="pointer"
-                            fontSize="var(--icon-fontSize-md)"
-                            onClick={(): void => {
-                              setShowPassword(false);
-                            }}
-                          />
-                        ) : (
-                          <EyeSlashIcon
-                            cursor="pointer"
-                            fontSize="var(--icon-fontSize-md)"
-                            onClick={(): void => {
-                              setShowPassword(true);
-                            }}
-                          />
-                        ),
-                      }}
-                    />
-                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                  </FormControl>
-                )}
-              />
-            </Grid>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  control={control}
+                  name="confirmPassword"
+                  render={({ field, fieldState }) => (
+                    <FormControl fullWidth error={!!fieldState.error}>
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="確認密碼"
+                        type={showPassword ? 'text' : 'password'}
+                        InputProps={{
+                          readOnly: admin && !havePermissions(['UpdateAdmin']),
+                          endAdornment: showPassword ? (
+                            <EyeIcon
+                              cursor="pointer"
+                              fontSize="var(--icon-fontSize-md)"
+                              onClick={(): void => {
+                                setShowPassword(false);
+                              }}
+                            />
+                          ) : (
+                            <EyeSlashIcon
+                              cursor="pointer"
+                              fontSize="var(--icon-fontSize-md)"
+                              onClick={(): void => {
+                                setShowPassword(true);
+                              }}
+                            />
+                          ),
+                        }}
+                      />
+                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                    </FormControl>
+                  )}
+                />
+              </Grid>
+            </HavePermissionsOnly>
 
             <Grid item xs={12} sm={6} display={!admin && !havePermissions(['AddRoleForAdmin']) ? 'none' : undefined}>
               <Controller

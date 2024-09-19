@@ -218,10 +218,23 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
         <Grid item xs={12} sm={6}>
           <Controller
             control={control}
-            name="name"
+            name="type"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="名稱" type="text" fullWidth InputProps={{ readOnly: !canUpdate }} />
+                <InputLabel>類型</InputLabel>
+                <Select
+                  {...field}
+                  label="類型"
+                  fullWidth
+                  readOnly={!canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['type'] }])}
+                >
+                  {item.type === 0 && <MenuItem value={0}>(待定)</MenuItem>}
+                  {ITEM_TYPE.data.map((type) => (
+                    <MenuItem key={type.value} value={type.value}>
+                      {type.message}
+                    </MenuItem>
+                  ))}
+                </Select>
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -231,19 +244,18 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
         <Grid item xs={12} sm={6}>
           <Controller
             control={control}
-            name="type"
+            name="name"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <InputLabel>類型</InputLabel>
-                <Select {...field} label="類型" fullWidth readOnly={!canUpdate}>
-                  {/* <MenuItem value={0}>(待定)</MenuItem> */}
-                  {item.type === 0 && <MenuItem value={0}>(待定)</MenuItem>}
-                  {ITEM_TYPE.data.map((type) => (
-                    <MenuItem key={type.value} value={type.value}>
-                      {type.message}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <TextField
+                  {...field}
+                  label="名稱"
+                  type="text"
+                  fullWidth
+                  InputProps={{
+                    readOnly: !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['name'] }]),
+                  }}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -262,7 +274,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   label="是否為全新品"
                   onChange={(e) => field.onChange(e.target.value === 'true')}
                   fullWidth
-                  readOnly={!canUpdate}
+                  readOnly={!canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['isNew'] }])}
                 >
                   <MenuItem value="true">是</MenuItem>
                   <MenuItem value="false">否</MenuItem>
@@ -288,7 +300,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
                   InputProps={{
-                    readOnly: !canUpdate,
+                    readOnly:
+                      !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['directPurchasePrice'] }]),
                     startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                   }}
                 />
@@ -313,7 +326,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
                   InputProps={{
-                    readOnly: !canUpdate,
+                    readOnly: !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['reservePrice'] }]),
                     startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                   }}
                 />
@@ -340,7 +353,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                         field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                       }}
                       InputProps={{
-                        readOnly: !canUpdate,
+                        readOnly:
+                          !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['minEstimatedPrice'] }]),
                         startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                       }}
                     />
@@ -365,7 +379,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                         field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                       }}
                       InputProps={{
-                        readOnly: !canUpdate,
+                        readOnly:
+                          !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['maxEstimatedPrice'] }]),
                         startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                       }}
                     />
@@ -388,7 +403,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   label="過期時間"
                   format="yyyy/MM/dd"
                   // slotProps={{ field: { clearable: true } }}
-                  readOnly={!canUpdate}
+                  readOnly={!canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['expireAt'] }])}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
@@ -402,7 +417,15 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
             name="warehouseID"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="倉庫編號" type="text" fullWidth InputProps={{ readOnly: !canUpdate }} />
+                <TextField
+                  {...field}
+                  label="倉庫編號"
+                  type="text"
+                  fullWidth
+                  InputProps={{
+                    readOnly: !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['warehouseID'] }]),
+                  }}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -423,7 +446,9 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   onChange={(e) => {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
-                  InputProps={{ readOnly: !canUpdate }}
+                  InputProps={{
+                    readOnly: !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['space'] }]),
+                  }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
@@ -446,7 +471,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
                   InputProps={{
-                    readOnly: !canUpdate,
+                    readOnly:
+                      !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['shippingCostsWithinJapan'] }]),
                     startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                   }}
                 />
@@ -470,7 +496,10 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   onChange={(e) => {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
-                  InputProps={{ readOnly: !canUpdate, endAdornment: <InputAdornment position="end">g</InputAdornment> }}
+                  InputProps={{
+                    readOnly: !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['grossWeight'] }]),
+                    endAdornment: <InputAdornment position="end">g</InputAdornment>,
+                  }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
@@ -492,7 +521,10 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   onChange={(e) => {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
-                  InputProps={{ readOnly: !canUpdate, endAdornment: <InputAdornment position="end">g</InputAdornment> }}
+                  InputProps={{
+                    readOnly: !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['volumetricWeight'] }]),
+                    endAdornment: <InputAdornment position="end">g</InputAdornment>,
+                  }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
@@ -517,7 +549,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
               <FormControl fullWidth error={!!fieldState.error}>
                 <QuillTextEditor
                   ref={quillRef}
-                  readOnly={!canUpdate}
+                  readOnly={!canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['description'] }])}
                   defaultValue={new Delta({ ops: JSON.parse(field.value) })}
                   onTextChange={(delta, oldDelta) => field.onChange(JSON.stringify(oldDelta.compose(delta).ops))}
                 />

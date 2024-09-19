@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/static-configs.data';
 import { type Worker } from '@/api/backend/workers/GetWorker';
 import { UpdateWorker } from '@/api/backend/workers/UpdateWorker';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { getDirtyFields } from '@/helper/getDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
@@ -63,6 +64,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
 
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
+  const havePermissions = useHavePermissions();
 
   return (
     <Card
@@ -117,7 +119,12 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
                 <InputLabel>類型</InputLabel>
-                <Select {...field} label="類型" fullWidth>
+                <Select
+                  {...field}
+                  label="類型"
+                  fullWidth
+                  readOnly={!havePermissions([{ key: 'UpdateWorker', fields: ['type'] }])}
+                >
                   {WORKER_TYPE.data.map((type) => (
                     <MenuItem key={type.value} value={type.value}>
                       {type.message}
@@ -136,7 +143,13 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="url"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="IP" type="text" fullWidth />
+                <TextField
+                  {...field}
+                  label="IP"
+                  type="text"
+                  fullWidth
+                  InputProps={{ readOnly: !havePermissions([{ key: 'UpdateWorker', fields: ['url'] }]) }}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -149,7 +162,13 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="account"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="帳號" type="text" fullWidth />
+                <TextField
+                  {...field}
+                  label="帳號"
+                  type="text"
+                  fullWidth
+                  InputProps={{ readOnly: !havePermissions([{ key: 'UpdateWorker', fields: ['account'] }]) }}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -162,7 +181,13 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="name"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="名稱" type="text" fullWidth />
+                <TextField
+                  {...field}
+                  label="名稱"
+                  type="text"
+                  fullWidth
+                  InputProps={{ readOnly: !havePermissions([{ key: 'UpdateWorker', fields: ['name'] }]) }}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -175,7 +200,13 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="phone"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="電話" type="text" fullWidth />
+                <TextField
+                  {...field}
+                  label="電話"
+                  type="text"
+                  fullWidth
+                  InputProps={{ readOnly: !havePermissions([{ key: 'UpdateWorker', fields: ['phone'] }]) }}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -188,7 +219,13 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="postalCode"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="郵遞區號" type="text" fullWidth />
+                <TextField
+                  {...field}
+                  label="郵遞區號"
+                  type="text"
+                  fullWidth
+                  InputProps={{ readOnly: !havePermissions([{ key: 'UpdateWorker', fields: ['postalCode'] }]) }}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -201,7 +238,12 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="birthday"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <DatePicker {...field} label="生日" format="yyyy/MM/dd" />
+                <DatePicker
+                  {...field}
+                  label="生日"
+                  format="yyyy/MM/dd"
+                  readOnly={!havePermissions([{ key: 'UpdateWorker', fields: ['birthday'] }])}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -214,7 +256,13 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="email"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="信箱" type="text" fullWidth />
+                <TextField
+                  {...field}
+                  label="信箱"
+                  type="text"
+                  fullWidth
+                  InputProps={{ readOnly: !havePermissions([{ key: 'UpdateWorker', fields: ['email'] }]) }}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -227,7 +275,13 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="simCardNumber"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="SIM 卡號" type="text" fullWidth />
+                <TextField
+                  {...field}
+                  label="SIM 卡號"
+                  type="text"
+                  fullWidth
+                  InputProps={{ readOnly: !havePermissions([{ key: 'UpdateWorker', fields: ['simCardNumber'] }]) }}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -240,7 +294,13 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="activationAt"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <DateTimePicker {...field} label="啟用時間" format="yyyy/MM/dd HH:mm:ss" timeSteps={{ minutes: 1 }} />
+                <DateTimePicker
+                  {...field}
+                  label="啟用時間"
+                  format="yyyy/MM/dd HH:mm:ss"
+                  timeSteps={{ minutes: 1 }}
+                  readOnly={!havePermissions([{ key: 'UpdateWorker', fields: ['activationAt'] }])}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -254,7 +314,12 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
                 <InputLabel>狀態</InputLabel>
-                <Select {...field} label="狀態" fullWidth>
+                <Select
+                  {...field}
+                  label="狀態"
+                  fullWidth
+                  readOnly={!havePermissions([{ key: 'UpdateWorker', fields: ['status'] }])}
+                >
                   {WORKER_STATUS.data.map((type) => (
                     <MenuItem key={type.value} value={type.value}>
                       {type.message}
@@ -273,7 +338,15 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             name="remark"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <TextField {...field} label="備註" type="text" fullWidth multiline rows={4} />
+                <TextField
+                  {...field}
+                  label="備註"
+                  type="text"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  InputProps={{ readOnly: !havePermissions([{ key: 'UpdateWorker', fields: ['remark'] }]) }}
+                />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}

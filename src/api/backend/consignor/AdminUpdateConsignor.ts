@@ -12,6 +12,11 @@ const ReqSchema = z
   .object({
     password: z.string(),
     nickname: z.string(),
+    name: z.string(),
+    identification: z.string(),
+    phone: z.string(),
+    bankCode: z.string(),
+    bankAccount: z.string(),
     status: z.number(),
     commissionBonusRate: z.number(),
   })

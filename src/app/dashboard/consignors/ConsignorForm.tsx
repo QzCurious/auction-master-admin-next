@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
 import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHandleNoPermissions } from '@/domain/permission/useHandleNoPermissions';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { getDirtyFields } from '@/helper/getDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
@@ -27,8 +29,6 @@ import { Controller, useForm } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
-
 import { statusColor } from './statusColor';
 
 interface ConsignorFromProps {
@@ -39,6 +39,11 @@ const FormSchema = z
   .object({
     nickname: z.string().min(1, '必填'),
     status: z.number().refine(R.isIncludedIn(CONSIGNOR_STATUS.data.map((item) => item.value)), { message: '必填' }),
+    name: z.string(),
+    identification: z.string(),
+    phone: z.string(),
+    bankCode: z.string(),
+    bankAccount: z.string(),
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
     commissionBonusRate: z.coerce.number().min(0).max(100),
@@ -60,6 +65,11 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
     values: {
       nickname: consignor.nickname,
       status: consignor.status,
+      name: consignor.name,
+      identification: consignor.identification,
+      phone: consignor.phone,
+      bankCode: consignor.bankCode,
+      bankAccount: consignor.bankAccount,
       password: '',
       confirmPassword: '',
       commissionBonusRate: BigNumber(consignor.commissionBonusRate).multipliedBy(100).toNumber(),
@@ -68,6 +78,7 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
   });
   const { enqueueSnackbar } = useSnackbar();
   const handleNoPermissions = useHandleNoPermissions();
+  const havePermissions = useHavePermissions();
 
   return (
     <form
@@ -163,6 +174,7 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
                           color={statusColor(selected as never)}
                         />
                       )}
+                      readOnly={!havePermissions([{ key: 'AdminUpdateConsignor', fields: ['status'] }])}
                       fullWidth
                     >
                       {CONSIGNOR_STATUS.data.map(({ value, message }) => (
@@ -190,7 +202,15 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
                 name="nickname"
                 render={({ field, fieldState }) => (
                   <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField {...field} label="暱稱" type="text" fullWidth />
+                    <TextField
+                      {...field}
+                      label="暱稱"
+                      type="text"
+                      fullWidth
+                      InputProps={{
+                        readOnly: !havePermissions([{ key: 'AdminUpdateConsignor', fields: ['nickname'] }]),
+                      }}
+                    />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                   </FormControl>
                 )}
@@ -214,6 +234,7 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
                       inputProps={{ step: 0.1 }}
                       InputProps={{
                         endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                        readOnly: !havePermissions([{ key: 'AdminUpdateConsignor', fields: ['commissionBonusRate'] }]),
                       }}
                     />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
@@ -222,79 +243,81 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Controller
-                control={control}
-                name="password"
-                render={({ field, fieldState }) => (
-                  <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="密碼"
-                      type={showPassword ? 'text' : 'password'}
-                      InputProps={{
-                        endAdornment: showPassword ? (
-                          <EyeIcon
-                            cursor="pointer"
-                            fontSize="var(--icon-fontSize-md)"
-                            onClick={(): void => {
-                              setShowPassword(false);
-                            }}
-                          />
-                        ) : (
-                          <EyeSlashIcon
-                            cursor="pointer"
-                            fontSize="var(--icon-fontSize-md)"
-                            onClick={(): void => {
-                              setShowPassword(true);
-                            }}
-                          />
-                        ),
-                      }}
-                    />
-                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                  </FormControl>
-                )}
-              />
-            </Grid>
+            <HavePermissionsOnly permissions={[{ key: 'AdminUpdateConsignor', fields: ['password'] }]}>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field, fieldState }) => (
+                    <FormControl fullWidth error={!!fieldState.error}>
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="密碼"
+                        type={showPassword ? 'text' : 'password'}
+                        InputProps={{
+                          endAdornment: showPassword ? (
+                            <EyeIcon
+                              cursor="pointer"
+                              fontSize="var(--icon-fontSize-md)"
+                              onClick={(): void => {
+                                setShowPassword(false);
+                              }}
+                            />
+                          ) : (
+                            <EyeSlashIcon
+                              cursor="pointer"
+                              fontSize="var(--icon-fontSize-md)"
+                              onClick={(): void => {
+                                setShowPassword(true);
+                              }}
+                            />
+                          ),
+                        }}
+                      />
+                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                    </FormControl>
+                  )}
+                />
+              </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Controller
-                control={control}
-                name="confirmPassword"
-                render={({ field, fieldState }) => (
-                  <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="確認密碼"
-                      type={showPassword ? 'text' : 'password'}
-                      InputProps={{
-                        endAdornment: showPassword ? (
-                          <EyeIcon
-                            cursor="pointer"
-                            fontSize="var(--icon-fontSize-md)"
-                            onClick={(): void => {
-                              setShowPassword(false);
-                            }}
-                          />
-                        ) : (
-                          <EyeSlashIcon
-                            cursor="pointer"
-                            fontSize="var(--icon-fontSize-md)"
-                            onClick={(): void => {
-                              setShowPassword(true);
-                            }}
-                          />
-                        ),
-                      }}
-                    />
-                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                  </FormControl>
-                )}
-              />
-            </Grid>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  control={control}
+                  name="confirmPassword"
+                  render={({ field, fieldState }) => (
+                    <FormControl fullWidth error={!!fieldState.error}>
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="確認密碼"
+                        type={showPassword ? 'text' : 'password'}
+                        InputProps={{
+                          endAdornment: showPassword ? (
+                            <EyeIcon
+                              cursor="pointer"
+                              fontSize="var(--icon-fontSize-md)"
+                              onClick={(): void => {
+                                setShowPassword(false);
+                              }}
+                            />
+                          ) : (
+                            <EyeSlashIcon
+                              cursor="pointer"
+                              fontSize="var(--icon-fontSize-md)"
+                              onClick={(): void => {
+                                setShowPassword(true);
+                              }}
+                            />
+                          ),
+                        }}
+                      />
+                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                    </FormControl>
+                  )}
+                />
+              </Grid>
+            </HavePermissionsOnly>
 
             <Grid item xs={12} sm={6}>
               <TextField
@@ -345,6 +368,113 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
                   ),
                 }}
                 value={consignor.bonusBalance.toLocaleString()}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Controller
+                control={control}
+                name="name"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <TextField
+                      {...field}
+                      label="姓名"
+                      type="text"
+                      fullWidth
+                      InputProps={{
+                        readOnly: !havePermissions([{ key: 'AdminUpdateConsignor', fields: ['name'] }]),
+                      }}
+                    />
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
+
+            <Grid item xs />
+
+            <Grid item xs={12} sm={6}>
+              <Controller
+                control={control}
+                name="identification"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <TextField
+                      {...field}
+                      label="身分證字號"
+                      type="text"
+                      fullWidth
+                      InputProps={{
+                        readOnly: !havePermissions([{ key: 'AdminUpdateConsignor', fields: ['identification'] }]),
+                      }}
+                    />
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Controller
+                control={control}
+                name="phone"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <TextField
+                      {...field}
+                      label="手機號碼"
+                      type="text"
+                      fullWidth
+                      InputProps={{
+                        readOnly: !havePermissions([{ key: 'AdminUpdateConsignor', fields: ['phone'] }]),
+                      }}
+                    />
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Controller
+                control={control}
+                name="bankCode"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <TextField
+                      {...field}
+                      label="銀行代碼"
+                      type="text"
+                      fullWidth
+                      InputProps={{
+                        readOnly: !havePermissions([{ key: 'AdminUpdateConsignor', fields: ['bankCode'] }]),
+                      }}
+                    />
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Controller
+                control={control}
+                name="bankAccount"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <TextField
+                      {...field}
+                      label="銀行戶號"
+                      type="text"
+                      fullWidth
+                      InputProps={{
+                        readOnly: !havePermissions([{ key: 'AdminUpdateConsignor', fields: ['bankAccount'] }]),
+                      }}
+                    />
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
               />
             </Grid>
           </Grid>
