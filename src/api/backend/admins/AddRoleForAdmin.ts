@@ -8,7 +8,7 @@ import { appendEntries } from '@/static';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
-  roles: z.string().array(),
+  role: z.string().array(),
 });
 
 type Data = 'Success';

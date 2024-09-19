@@ -9,6 +9,7 @@ import { type Admin } from '@/api/backend/admins/GetAdmin';
 import { UpdateAdmin } from '@/api/backend/admins/UpdateAdmin';
 import { type Role } from '@/api/backend/rbac/GetRoles';
 import { ADMIN_STATUS } from '@/api/backend/static-configs.data';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { getDirtyFields } from '@/helper/getDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
@@ -22,8 +23,6 @@ import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlas
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 
 import { statusColor } from '../consignors/statusColor';
 
@@ -100,12 +99,12 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                 havePermissions(['AddRoleForAdmin']) &&
                   addPermissions.length &&
                   AddRoleForAdmin(admin.account, {
-                    roles: addPermissions,
+                    role: addPermissions,
                   }),
                 havePermissions(['DeleteRoleForAdmin']) &&
                   deletedPermissions.length &&
                   DeleteRoleForAdmin(admin.account, {
-                    roles: deletedPermissions,
+                    role: deletedPermissions,
                   }),
               ]);
               const errors = res.filter((x) => !!x && !!x.error).map((res) => res.error);
@@ -130,7 +129,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                 return;
               }
               if (havePermissions(['AddRoleForAdmin']) && data.roles.length) {
-                const addRolesToAdminRes = await AddRoleForAdmin(data.account, { roles: data.roles });
+                const addRolesToAdminRes = await AddRoleForAdmin(data.account, { role: data.roles });
                 if (addRolesToAdminRes.error) {
                   enqueueSnackbar(addRolesToAdminRes.error, { variant: 'error' });
                   return;
