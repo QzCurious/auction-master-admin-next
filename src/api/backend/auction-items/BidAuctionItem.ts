@@ -22,12 +22,12 @@ type ErrorCode =
 export async function BidAuctionItem(id: AuctionItem['id'], payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
-  const formData = new FormData();
-  appendEntries(formData, data);
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items/${id}/bid`, {
     method: 'POST',
-    body: formData,
+    body: urlencoded,
   });
 
   revalidateTag('auction-items');

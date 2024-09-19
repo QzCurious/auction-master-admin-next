@@ -31,12 +31,12 @@ type ErrorCode =
 export async function AdminLogin(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
-  const formData = new FormData();
-  appendEntries(formData, data);
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, data);
 
   const res = await apiClient<Data, ErrorCode>('/session', {
     method: 'POST',
-    body: formData,
+    body: urlencoded,
   });
 
   if (res.error) {

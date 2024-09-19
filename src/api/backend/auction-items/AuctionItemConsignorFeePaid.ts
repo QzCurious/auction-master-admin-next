@@ -18,12 +18,12 @@ type ErrorCode = 'never';
 export async function AuctionItemConsignorFeePaid(payload: z.input<typeof ReqSchema>) {
   const parsed = throwIfInvalid(payload, ReqSchema);
 
-  const formData = new FormData();
-  appendEntries(formData, parsed);
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, parsed);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items/consignor-fee-paid`, {
     method: 'POST',
-    body: formData,
+    body: urlencoded,
   });
 
   revalidateTag('auction-items');

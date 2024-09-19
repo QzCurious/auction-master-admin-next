@@ -21,12 +21,12 @@ type ErrorCode = never;
 export async function Shipped(id: Shipping['id'], payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
-  const formData = new FormData();
-  appendEntries(formData, data);
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/shippings/${id}/shipped`, {
     method: 'POST',
-    body: formData,
+    body: urlencoded,
   });
 
   revalidateTag('shippings');

@@ -24,12 +24,12 @@ type ErrorCode = never;
 export async function AdminUpdateConsignor(id: number, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
-  const formData = new FormData();
-  appendEntries(formData, data);
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, data);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/consignors/${id}`, {
     method: 'PATCH',
-    body: formData,
+    body: urlencoded,
   });
 
   revalidateTag('consignors');

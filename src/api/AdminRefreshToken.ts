@@ -20,12 +20,12 @@ type ErrorCode =
 export async function AdminRefreshToken(payload: z.input<typeof ReqSchema>) {
   const { token, refreshToken } = throwIfInvalid(payload, ReqSchema);
 
-  const formData = new FormData();
-  appendEntries(formData, { refreshToken });
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, { refreshToken });
 
   const res = await apiClient<Data, ErrorCode>('/session/refresh', {
     method: 'POST',
-    body: formData,
+    body: urlencoded,
     headers: {
       Authorization: `Bearer ${token}`,
     },

@@ -19,12 +19,12 @@ type ErrorCode = never;
 export async function CreateAdmin(payload: z.input<typeof ReqSchema>) {
   throwIfInvalid(payload, ReqSchema);
 
-  const formData = new FormData();
-  appendEntries(formData, payload);
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, payload);
 
   const res = await withAuth(apiClient)<Data, ErrorCode>('/admins', {
     method: 'POST',
-    body: formData,
+    body: urlencoded,
   });
 
   revalidateTag('admins');
