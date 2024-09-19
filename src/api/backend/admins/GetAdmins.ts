@@ -17,10 +17,11 @@ const ReqSchema = z.object({
 export interface Admin {
   id: number;
   account: string;
-  roles: Role['role'][];
+  password: string;
   status: ADMIN_STATUS['value'];
   createdAt: string;
   updatedAt: string;
+  roles: Array<Role['role']>;
 }
 
 interface Data {

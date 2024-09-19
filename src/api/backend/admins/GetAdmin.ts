@@ -3,14 +3,17 @@
 import { apiClient } from '@/api/apiClient';
 import { withAuth } from '@/api/withAuth';
 
+import { type Role } from '../rbac/GetRoles';
+import { type ADMIN_STATUS } from '../static-configs.data';
+
 export interface Admin {
   id: number;
   account: string;
-  roles: string[];
   password: string;
-  status: number;
+  status: ADMIN_STATUS['value'];
   createdAt: string;
   updatedAt: string;
+  roles: Array<Role['role']>;
 }
 
 interface Data extends Admin {}

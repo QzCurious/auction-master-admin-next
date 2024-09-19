@@ -7,7 +7,7 @@ import { withAuth } from '@/api/withAuth';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
-  role: z.string(),
+  role: z.string().transform((r) => [r]),
   permissions: z
     .object({
       key: z.string(),
