@@ -48,5 +48,11 @@ async function Form({ params }: PageProps) {
     return <RedirectAuthError />;
   }
 
-  return <RoleForm permissionGroups={permissionsRes.data} role={params.role} rolePermissions={rolesPermissionsRes.data} />;
+  return (
+    <RoleForm
+      permissionGroups={permissionsRes.data}
+      role={decodeURI(params.role)}
+      rolePermissions={rolesPermissionsRes.data}
+    />
+  );
 }
