@@ -7,6 +7,8 @@ import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { ITEM_STATUS, ITEM_TYPE } from '@/api/backend/static-configs.data';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { getDirtyFields } from '@/helper/getDirtyFields';
 import { currencySign } from '@/static';
 import { StatusFlow } from '@/StatusFlow';
@@ -28,8 +30,6 @@ import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-fo
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
-import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import QuillTextEditor from '@/components/QuillTextEditor/QuillTextEditor';
 
 interface ItemFromProps {
@@ -42,6 +42,7 @@ const FormSchema = z
   .object({
     consignorID: z.number(),
     type: z.number().refine(R.isIncludedIn([0, ...ITEM_TYPE.data.map((item) => item.value)])),
+    isNew: z.coerce.boolean(),
     name: z.string().min(1, '必填'),
     description: z.string().default(''),
     directPurchasePrice: z.number(),
@@ -79,6 +80,7 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
     values: {
       consignorID: item.consignorID,
       type: item.type,
+      isNew: item.isNew,
       name: item.name,
       description: item.description ? item.description : JSON.stringify(new Delta().insert('\n').ops),
       directPurchasePrice: item.directPurchasePrice,
@@ -213,8 +215,6 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
           </HavePermissionsOnly>
         </Grid>
 
-        <Grid item xs />
-
         <Grid item xs={12} sm={6}>
           <Controller
             control={control}
@@ -243,6 +243,29 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                       {type.message}
                     </MenuItem>
                   ))}
+                </Select>
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <Controller
+            control={control}
+            name="isNew"
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <InputLabel>是否為全新品</InputLabel>
+                <Select
+                  {...field}
+                  label="是否為全新品"
+                  onChange={(e) => field.onChange(e.target.value === 'true')}
+                  fullWidth
+                  readOnly={!canUpdate}
+                >
+                  <MenuItem value="true">是</MenuItem>
+                  <MenuItem value="false">否</MenuItem>
                 </Select>
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>

@@ -14,6 +14,7 @@ const ReqSchema = z
   .object({
     consignorID: z.number(),
     type: z.number().refine(R.isIncludedIn([0, ...ITEM_TYPE.data.map((item) => item.value)] as const)),
+    isNew: z.boolean(),
     name: z.string().min(1),
     description: z.string().nullable(),
     directPurchasePrice: z.number(),
