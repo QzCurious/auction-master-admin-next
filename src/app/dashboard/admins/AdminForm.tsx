@@ -198,7 +198,7 @@ export default function AdminForm({ admin, roles }: AdminFromProps) {
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                           <Chip
                             key={selected}
-                            label={ADMIN_STATUS.get('value', selected as ADMIN_STATUS['value']).message}
+                            label={ADMIN_STATUS.get('value', selected).message}
                             color={statusColor(selected as never)}
                           />
                         </Box>
