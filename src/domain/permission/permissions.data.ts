@@ -73,6 +73,13 @@ export const PERMISSIONS_DATA = [
         description: '取得所有權限',
       },
       {
+        key: 'GetAdminPermissions',
+        url: '/auction-master/backend/permissions/:account',
+        method: 'GET',
+        fields: ['*'],
+        description: '取得管理者擁有的權限',
+      },
+      {
         key: 'AddPermissionForRole',
         url: '/auction-master/backend/permissions',
         method: 'POST',

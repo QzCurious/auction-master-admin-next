@@ -4,8 +4,8 @@ import { cookies } from 'next/headers';
 import { cookieConfigs } from '@/static';
 import { jwtDecode } from 'jwt-decode';
 
-import { type JwtPayload } from './JwtPayload';
 import { AdminRefreshToken } from './AdminRefreshToken';
+import { type JwtPayload } from './JwtPayload';
 
 let sessionRefreshing: ReturnType<typeof AdminRefreshToken> | null = null;
 
@@ -62,7 +62,6 @@ export async function getUser() {
   const user = {
     id: jwt.id,
     account: jwt.account,
-    permissions: jwt.permissions,
   };
   return user;
 }

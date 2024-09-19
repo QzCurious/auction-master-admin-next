@@ -10,7 +10,7 @@ interface RedirectAuthErrorProps {
   children?: React.ReactNode | ((isPending: boolean) => React.ReactNode);
 }
 
-export default function RedirectAuthError({ message = 'Please sign in first', children }: RedirectAuthErrorProps) {
+export default function RedirectAuthError({ message = '請先登入', children }: RedirectAuthErrorProps) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [isPending, startTransition] = useTransition();

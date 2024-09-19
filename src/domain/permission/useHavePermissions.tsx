@@ -2,11 +2,11 @@
 
 import { useCallback, useContext } from 'react';
 
-import { UserContext } from '../user/UserContext';
+import { PermissionsContext } from './PermissionsContext';
 import type { PermissionKey, PermissionKeyField } from './types';
 
 export function useHavePermissions() {
-  const user = useContext(UserContext);
+  const userPermissions = useContext(PermissionsContext);
 
   const havePermissions = useCallback(
     (permissions: Array<PermissionKey> | Array<PermissionKeyField>) => {
@@ -14,17 +14,19 @@ export function useHavePermissions() {
         return true;
       }
 
-      if (!user) return false;
+      if (!userPermissions) return false;
 
-      return permissions.every((permission) =>
-        user.permissions.some((p) =>
-          typeof permission === 'string'
-            ? permission === p.key
-            : permission.key === p.key && permission.field.every((f) => p.fields.includes(f))
-        )
-      );
+      return permissions.every((p) => {
+        if (typeof p === 'string') {
+          return p in userPermissions;
+        }
+        if (!(p.key in userPermissions)) {
+          return false;
+        }
+        return p.field.every(userPermissions[p.key].fields.includes);
+      });
     },
-    [user]
+    [userPermissions]
   );
 
   return havePermissions;
