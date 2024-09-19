@@ -28,9 +28,10 @@ export interface Item {
   minEstimatedPrice: number;
   maxEstimatedPrice: number;
   reservePrice: number;
-  expireAt: string;
+  expireAt: string | null;
   warehouseID: string;
   space: number;
+  shippingCostsWithinJapan: number;
   grossWeight: number;
   volumetricWeight: number;
   status: ITEM_STATUS['value'];
@@ -43,7 +44,9 @@ export interface Item {
     createdAt: string;
     updatedAt: string;
   }>;
-  pastStatuses: { [k in ITEM_STATUS['value']]?: string };
+  pastStatuses?: { [k in ITEM_STATUS['value']]?: string };
+  auctionItemID?: number;
+  recordID?: string;
 }
 
 export type StatusCount = {
