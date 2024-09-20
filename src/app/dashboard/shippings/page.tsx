@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
 import { GetShippings } from '@/api/backend/shippings/GetShippings';
-import { SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { RangeFilter } from '@/domain/crud/RangeFilter';
+import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
+import { SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
-
-import { SearchParamsSchema } from './SearchParamsSchema';
+import { fixRange, MAX_MONTHS, SearchParamsSchema } from './SearchParamsSchema';
 import { ShippingsTable } from './ShippingsTable';
 import { StatusFilter } from './StatusFilter';
 
@@ -41,12 +41,15 @@ export default async function Page(pageProps: PageProps) {
 
 async function Content({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
+  const { startAt, endAt } = fixRange(filters.startAt, filters.endAt);
 
   const [ShippingsRes] = await Promise.all([
     GetShippings({
       status: filters.status.length
         ? filters.status
         : [SHIPPING_STATUS.enum('SubmitAppraisalStatus'), SHIPPING_STATUS.enum('ProcessingStatus')],
+      endAt,
+      startAt,
       sort: 'createdAt',
       order: 'desc',
       limit: filters[ROWS_PER_PAGE],
@@ -65,10 +68,16 @@ async function Content({ searchParams }: PageProps) {
   return (
     <Stack spacing={3}>
       <Stack direction="row" flexWrap="wrap" gap={2}>
-        {!filters['pick-for-shipping'] && (
+        {filters['pick-for-shipping'] ? (
           <>
+            <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} />
+            <RemoveSearchBtn<keyof typeof filters> fields={['startAt', 'endAt']} />
+          </>
+        ) : (
+          <>
+            <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} />
             <StatusFilter selected={filters.status} />
-            <RemoveSearchBtn<keyof typeof filters> fields={['status']} />
+            <RemoveSearchBtn<keyof typeof filters> fields={['startAt', 'endAt', 'status']} />
           </>
         )}
 

@@ -5,6 +5,7 @@ import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { RangeFilter } from '@/domain/crud/RangeFilter';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
@@ -20,8 +21,7 @@ import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
 import { ActionFilter } from './ActionFilter';
-import Filters from './Filters';
-import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
+import { fixRange, MAX_MONTHS, SearchParamsSchema } from './SearchParamsSchema';
 
 export const metadata = { title: `紅利紀錄 | ${SITE_NAME}` } satisfies Metadata;
 
@@ -39,7 +39,7 @@ export default async function Page(pageProps: PageProps) {
 
 async function Content({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
-  const { wasValid, startAt, endAt } = fixRange(filters.startAt, filters.endAt);
+  const { startAt, endAt } = fixRange(filters.startAt, filters.endAt);
   const [bonusLogsRes] = await Promise.all([
     AdminGetBonusLogs({
       consignorID: filters.consignorID,
@@ -66,7 +66,7 @@ async function Content({ searchParams }: PageProps) {
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
           <ConsignorFilter consignorID={filters.consignorID} />
-          <Filters {...filters} startAt={wasValid ? startAt : undefined} endAt={wasValid ? endAt : undefined} />
+          <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} />
           <ActionFilter selected={filters.action} />
           <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'startAt', 'endAt', 'action']} />
         </Stack>

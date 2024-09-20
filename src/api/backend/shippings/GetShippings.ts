@@ -1,15 +1,17 @@
 'use server';
 
 import { appendEntries } from '@/domain/crud/appendEntries';
+import { type ACTION_TYPE, type SHIPMENT_TYPE, type SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type ACTION_TYPE, type SHIPMENT_TYPE, type SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   status: z.coerce.number().array().optional(),
+  startAt: z.coerce.date().optional(),
+  endAt: z.coerce.date().optional(),
   sort: z.string().optional(),
   order: z.enum(['asc', 'desc']).optional(),
   limit: z.coerce.number().default(10),

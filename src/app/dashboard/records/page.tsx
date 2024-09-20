@@ -9,6 +9,7 @@ import { getUser } from '@/domain/auth/getToken';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { RangeFilter } from '@/domain/crud/RangeFilter';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
@@ -26,9 +27,8 @@ import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
 import CopyButton from '../../../components/CopyButton';
-import Filters from './Filters';
 import { ReviewSubmitPaymentButtons } from './ReviewSubmitPaymentButtons';
-import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
+import { fixRange, MAX_MONTHS, SearchParamsSchema } from './SearchParamsSchema';
 import { StatusFilter } from './StatusFilter';
 import { TypeFilter } from './TypeFilter';
 
@@ -58,7 +58,7 @@ export default async function Page(pageProps: PageProps) {
 
 async function Content({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
-  const { wasValid, startAt, endAt } = fixRange(filters.startAt, filters.endAt);
+  const { startAt, endAt } = fixRange(filters.startAt, filters.endAt);
   const user = await getUser();
   if (!user) {
     redirect('/auth/sign-in');
@@ -98,7 +98,7 @@ async function Content({ searchParams }: PageProps) {
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
           <ConsignorFilter consignorID={filters.consignorID} />
-          <Filters {...filters} startAt={wasValid ? startAt : undefined} endAt={wasValid ? endAt : undefined} />
+          <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} />
           <TypeFilter selected={filters.type} />
           <StatusFilter selected={filters.status} />
           <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'startAt', 'endAt', 'type', 'status']} />
