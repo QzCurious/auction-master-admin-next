@@ -1,7 +1,6 @@
 'use client';
 
 import type React from 'react';
-import { useSearchParams } from 'next/navigation';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Button from '@mui/material/Button';
@@ -12,19 +11,15 @@ import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state
 
 export function FilterPopover({
   label,
-  field,
-  transform,
+  value,
   onRemove,
   children,
 }: {
   label: string;
-  field: string;
-  transform?: (value: string) => string;
+  value?: string | null;
   onRemove?: () => void;
   children?: React.ReactNode | (({ close }: { close: () => void }) => React.ReactNode);
 }) {
-  const searchParams = useSearchParams();
-  const value = searchParams.get(field) || '';
   const popupState = usePopupState({
     variant: 'popover',
     disableAutoFocus: true,
@@ -54,7 +49,7 @@ export function FilterPopover({
         {label}
         {value && (
           <Typography color="primary" variant="inherit">
-            : {transform ? transform(value) : value}
+            : {value}
           </Typography>
         )}
       </Button>

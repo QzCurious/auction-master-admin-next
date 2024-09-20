@@ -2,27 +2,27 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PAGE } from '@/domain/static/static';
-import { WORKER_TYPE } from '@/domain/static/static-config-mappers';
+import { RECORD_STATUS } from '@/domain/static/static-config-mappers';
 import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
-const FIELD = 'type';
+const FIELD = 'status';
 
-const options = [WORKER_TYPE.data[0], WORKER_TYPE.data[1]] as const;
-options.length satisfies typeof WORKER_TYPE.data.length;
+const options = [RECORD_STATUS.data[0], RECORD_STATUS.data[1], RECORD_STATUS.data[2], RECORD_STATUS.data[3]] as const;
+options.length satisfies typeof RECORD_STATUS.data.length;
 
-interface TypeFilterProps {
+interface StatusFilterProps {
   selected: Array<(typeof options)[number]['value']>;
 }
 
-export function TypeFilter({ selected }: TypeFilterProps) {
+export function StatusFilter({ selected }: StatusFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   return (
     <FilterPopover
-      label="類型"
+      label="狀態"
       value={selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);

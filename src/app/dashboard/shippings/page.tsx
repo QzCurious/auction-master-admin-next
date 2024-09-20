@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import RemoveSearchBtn from '@/components/RemoveSearchBtn';
+import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { SearchParamsSchema } from './SearchParamsSchema';

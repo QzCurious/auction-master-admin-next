@@ -1,10 +1,12 @@
-import { type Metadata } from 'next';
-import Link from 'next/link';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminGetWalletLogs, type WalletLogs } from '@/api/backend/wallets/AdminGetWalletLogs';
-import { WALLET_ACTION } from '@/domain/static/static-config-mappers';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
+import { WALLET_ACTION } from '@/domain/static/static-config-mappers';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { TableContainer } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -19,12 +21,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
+import { type Metadata } from 'next';
+import Link from 'next/link';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
+import { ActionFilter } from './ActionFilter';
 import Filters from './Filters';
 import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
 
@@ -71,7 +74,10 @@ async function Content({ searchParams }: PageProps) {
     <Provider>
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
+          <ConsignorFilter consignorID={filters.consignorID} />
           <Filters {...filters} startAt={wasValid ? startAt : undefined} endAt={wasValid ? endAt : undefined} />
+          <ActionFilter selected={filters.action} />
+          <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'startAt', 'endAt', 'action']} />
         </Stack>
 
         <Card>

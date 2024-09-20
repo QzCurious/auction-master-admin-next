@@ -1,21 +1,21 @@
 import { type Metadata } from 'next';
 import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
 import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers';
-import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
+import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Provider } from 'jotai';
 
 import AutoRefreshPage from '@/components/AutoRefreshPage';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import RemoveSearchBtn from '@/components/RemoveSearchBtn';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
+import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 
 import { AuctionItemTable } from './AuctionItemTable';
-import { ConsignorFilter } from './ConsignorFilter';
 import { PickForFeePaid } from './PickForFeePaid';
 import { PickForShipping, PickForShippingButtons } from './PickForShipping';
 import { SearchParamsSchema } from './SearchParamsSchema';

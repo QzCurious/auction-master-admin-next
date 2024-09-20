@@ -2,15 +2,25 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PAGE } from '@/domain/static/static';
-import { WORKER_TYPE } from '@/domain/static/static-config-mappers';
+import { RECORD_TYPE } from '@/domain/static/static-config-mappers';
 import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
-const FIELD = 'type';
+const FILED = 'type';
 
-const options = [WORKER_TYPE.data[0], WORKER_TYPE.data[1]] as const;
-options.length satisfies typeof WORKER_TYPE.data.length;
+const options = [
+  RECORD_TYPE.data[0],
+  RECORD_TYPE.data[1],
+  RECORD_TYPE.data[2],
+  RECORD_TYPE.data[3],
+  RECORD_TYPE.data[4],
+  RECORD_TYPE.data[5],
+  RECORD_TYPE.data[6],
+  RECORD_TYPE.data[7],
+  RECORD_TYPE.data[8],
+] as const;
+options.length satisfies typeof RECORD_TYPE.data.length;
 
 interface TypeFilterProps {
   selected: Array<(typeof options)[number]['value']>;
@@ -26,7 +36,7 @@ export function TypeFilter({ selected }: TypeFilterProps) {
       value={selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.delete(FIELD);
+        newSearchParams.delete(FILED);
         newSearchParams.delete(PAGE);
         router.push(`?${newSearchParams}`);
       }}
@@ -53,9 +63,9 @@ export function TypeFilter({ selected }: TypeFilterProps) {
           }
           onChange={(v) => {
             const newSearchParams = new URLSearchParams(searchParams);
-            newSearchParams.delete(FIELD);
+            newSearchParams.delete(FILED);
             for (const value of v.target.value) {
-              newSearchParams.append(FIELD, value.toString());
+              newSearchParams.append(FILED, value.toString());
             }
             router.push(`?${newSearchParams.toString()}`);
           }}

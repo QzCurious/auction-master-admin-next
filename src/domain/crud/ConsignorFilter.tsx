@@ -2,19 +2,17 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
+import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { PAGE } from '@/domain/static/static';
 import { useQuery } from '@tanstack/react-query';
-import { type z } from 'zod';
 
-import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { ConsignorSelect } from '@/components/ConsignorSelect';
 import { FilterPopover } from '@/components/FilterPopover';
 
-import { type SearchParamsSchema } from './SearchParamsSchema';
-
 const FIELD = 'consignorID';
 
-export function ConsignorFilter({ consignorID }: Pick<z.output<typeof SearchParamsSchema>, 'consignorID'>) {
+export function ConsignorFilter({ consignorID }: { consignorID?: Consignor['id'] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const havePermissions = useHavePermissions();
@@ -31,8 +29,7 @@ export function ConsignorFilter({ consignorID }: Pick<z.output<typeof SearchPara
   return (
     <FilterPopover
       label="寄售人暱稱"
-      field={FIELD}
-      transform={() => consignorQuery.data?.data?.nickname || '--'}
+      value={consignorID ? consignorQuery.data?.data?.nickname || '--' : null}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.delete(FIELD);

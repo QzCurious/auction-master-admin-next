@@ -10,10 +10,10 @@ import { Provider } from 'jotai';
 
 import AutoRefreshPage from '@/components/AutoRefreshPage';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import RemoveSearchBtn from '@/components/RemoveSearchBtn';
+import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
-import { ConsignorFilter } from './ConsignorFilter';
+import { ConsignorFilter } from '../../../domain/crud/ConsignorFilter';
 import { ItemTable } from './ItemTable';
 import { PickForReturn, PickForReturnButtons } from './PickForReturn';
 import { SearchParamsSchema } from './SearchParamsSchema';

@@ -2,27 +2,36 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PAGE } from '@/domain/static/static';
-import { WORKER_TYPE } from '@/domain/static/static-config-mappers';
+import { WALLET_ACTION } from '@/domain/static/static-config-mappers';
 import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
-const FIELD = 'type';
+const FIELD = 'action';
 
-const options = [WORKER_TYPE.data[0], WORKER_TYPE.data[1]] as const;
-options.length satisfies typeof WORKER_TYPE.data.length;
+const options = [
+  WALLET_ACTION.data[0],
+  WALLET_ACTION.data[1],
+  WALLET_ACTION.data[2],
+  WALLET_ACTION.data[3],
+  WALLET_ACTION.data[4],
+  WALLET_ACTION.data[5],
+  WALLET_ACTION.data[6],
+  WALLET_ACTION.data[7],
+] as const;
+options.length satisfies typeof WALLET_ACTION.data.length;
 
-interface TypeFilterProps {
+interface StatusFilterProps {
   selected: Array<(typeof options)[number]['value']>;
 }
 
-export function TypeFilter({ selected }: TypeFilterProps) {
+export function ActionFilter({ selected }: StatusFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   return (
     <FilterPopover
-      label="類型"
+      label="操作"
       value={selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);
@@ -41,7 +50,7 @@ export function TypeFilter({ selected }: TypeFilterProps) {
           renderValue={(selected) =>
             selected.length === 0 ? (
               <Typography color="text.secondary" fontStyle="italic">
-                全部
+                預設
               </Typography>
             ) : (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -61,8 +70,8 @@ export function TypeFilter({ selected }: TypeFilterProps) {
           }}
           onClose={close}
         >
-          {options.map(({ value, message }) => (
-            <MenuItem key={value} value={value} sx={{ columnGap: 1 }} title={`${message} ${value}`}>
+          {options.map(({ value, key, message }) => (
+            <MenuItem key={value} value={value} sx={{ columnGap: 1 }} title={`${key} ${value}`}>
               {message}
             </MenuItem>
           ))}

@@ -419,4 +419,4 @@ export const CONFIGS_DATA = {
       value: 99,
     },
   ],
-} as const
+} as const;

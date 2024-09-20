@@ -1,13 +1,13 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { WORKER_STATUS } from '@/domain/static/static-config-mappers';
 import { PAGE } from '@/domain/static/static';
+import { WORKER_STATUS } from '@/domain/static/static-config-mappers';
 import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
-const field = 'status';
+const FIELD = 'status';
 
 const options = [WORKER_STATUS.data[0], WORKER_STATUS.data[1], WORKER_STATUS.data[2]] as const;
 options.length satisfies typeof WORKER_STATUS.data.length;
@@ -23,11 +23,10 @@ export function StatusFilter({ selected }: StatusFilterProps) {
   return (
     <FilterPopover
       label="狀態"
-      field={field}
-      transform={() => selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
+      value={selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.delete(field);
+        newSearchParams.delete(FIELD);
         newSearchParams.delete(PAGE);
         router.push(`?${newSearchParams}`);
       }}
@@ -54,9 +53,9 @@ export function StatusFilter({ selected }: StatusFilterProps) {
           }
           onChange={(v) => {
             const newSearchParams = new URLSearchParams(searchParams);
-            newSearchParams.delete(field);
+            newSearchParams.delete(FIELD);
             for (const value of v.target.value) {
-              newSearchParams.append(field, value.toString());
+              newSearchParams.append(FIELD, value.toString());
             }
             router.push(`?${newSearchParams.toString()}`);
           }}

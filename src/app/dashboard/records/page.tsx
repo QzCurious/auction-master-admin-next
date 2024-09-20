@@ -5,11 +5,15 @@ import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { AdminGetConsignor, type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary, type RecordSummary } from '@/api/backend/reports/GetRecordsSummary';
-import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { RECORD_STATUS, RECORD_TYPE } from '@/domain/static/static-config-mappers';
 import { getUser } from '@/domain/auth/getToken';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { currencySign, DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
+import { RECORD_STATUS, RECORD_TYPE } from '@/domain/static/static-config-mappers';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { Chip, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -19,14 +23,14 @@ import { format } from 'date-fns';
 import { Provider } from 'jotai';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import CopyButton from '../../../components/CopyButton';
 import Filters from './Filters';
 import { ReviewSubmitPaymentButtons } from './ReviewSubmitPaymentButtons';
 import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
+import { StatusFilter } from './StatusFilter';
+import { TypeFilter } from './TypeFilter';
 
 export const metadata = { title: `交易紀錄 | ${SITE_NAME}` } satisfies Metadata;
 
@@ -93,7 +97,11 @@ async function Content({ searchParams }: PageProps) {
     <Provider>
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
+          <ConsignorFilter consignorID={filters.consignorID} />
           <Filters {...filters} startAt={wasValid ? startAt : undefined} endAt={wasValid ? endAt : undefined} />
+          <TypeFilter selected={filters.type} />
+          <StatusFilter selected={filters.status} />
+          <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'startAt', 'endAt', 'type', 'status']} />
         </Stack>
 
         <ReportSummeryTable summary={summaryRes.data} />
