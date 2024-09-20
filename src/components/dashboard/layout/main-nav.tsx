@@ -1,22 +1,36 @@
 'use client';
 
 import * as React from 'react';
+import { useContext, useState } from 'react';
+import RouterLink from 'next/link';
 import SideNavMenu from '@/app/SideNavMenu';
+import { logout } from '@/domain/auth/logout';
+import refreshTokenAction from '@/domain/auth/refreshTokenAction';
+import { UserContext } from '@/domain/auth/UserContext';
 import { Drawer } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
+import { SignOut as SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
+import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
+import { useSnackbar } from 'notistack';
 
-import { usePopover } from '@/hooks/use-popover';
-
-import { UserPopover } from './user-popover';
-
-export function MainNav(): React.JSX.Element {
-  const [openNav, setOpenNav] = React.useState<boolean>(false);
-
-  const userPopover = usePopover<HTMLDivElement>();
+export function MainNav() {
+  const user = useContext(UserContext);
+  const [openNav, setOpenNav] = useState(false);
+  const popupState = usePopupState({
+    variant: 'popover',
+  });
+  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <React.Fragment>
@@ -37,7 +51,7 @@ export function MainNav(): React.JSX.Element {
         >
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
             <IconButton
-              onClick={(): void => {
+              onClick={() => {
                 setOpenNav(true);
               }}
               sx={{ display: { lg: 'none' } }}
@@ -90,16 +104,60 @@ export function MainNav(): React.JSX.Element {
                 </IconButton>
               </Badge>
             </Tooltip> */}
-            <Avatar
-              onClick={userPopover.handleOpen}
-              ref={userPopover.anchorRef}
-              src="/assets/avatar.png"
-              sx={{ cursor: 'pointer' }}
-            />
+            <Avatar src="/assets/avatar.png" sx={{ cursor: 'pointer' }} {...bindTrigger(popupState)} />
           </Stack>
         </Stack>
       </Box>
-      <UserPopover anchorEl={userPopover.anchorRef.current} onClose={userPopover.handleClose} open={userPopover.open} />
+
+      <Popover
+        {...bindPopover(popupState)}
+        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        slotProps={{ paper: { sx: { width: '240px' } } }}
+      >
+        <Box sx={{ p: '16px 20px ' }}>
+          <Typography variant="subtitle1">{user?.account}</Typography>
+          {/* <Typography color="text.secondary" variant="body2"></Typography> */}
+        </Box>
+        <Divider />
+        <MenuList disablePadding sx={{ p: '8px', '& .MuiMenuItem-root': { borderRadius: 1 } }}>
+          <MenuItem component={RouterLink} href="/dashboard/settings" onClick={() => popupState.open()}>
+            <ListItemIcon>
+              <GearSixIcon fontSize="var(--icon-fontSize-md)" />
+            </ListItemIcon>
+            設定
+          </MenuItem>
+          {/* <MenuItem component={RouterLink} href={paths.dashboard.account} onClick={onClose}>
+          <ListItemIcon>
+            <UserIcon fontSize="var(--icon-fontSize-md)" />
+          </ListItemIcon>
+          Profile
+        </MenuItem> */}
+          {process.env.NODE_ENV === 'development' && (
+            <MenuItem
+              onClick={async () => {
+                const error = await refreshTokenAction();
+                if (error) {
+                  enqueueSnackbar(error, { variant: 'error' });
+                  return;
+                }
+                enqueueSnackbar('Token refreshed', { variant: 'success' });
+              }}
+            >
+              <ListItemIcon>
+                <SignOutIcon fontSize="var(--icon-fontSize-md)" />
+              </ListItemIcon>
+              刷新 Token
+            </MenuItem>
+          )}
+
+          <MenuItem onClick={() => logout()}>
+            <ListItemIcon>
+              <SignOutIcon fontSize="var(--icon-fontSize-md)" />
+            </ListItemIcon>
+            登出
+          </MenuItem>
+        </MenuList>
+      </Popover>
     </React.Fragment>
   );
 }

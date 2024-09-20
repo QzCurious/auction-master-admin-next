@@ -1,4 +1,4 @@
-import type { NavItemConfig } from '@/types/nav';
+import type { NavItemConfig } from '@/components/dashboard/layout/nav';
 
 export function isNavItemActive({
   disabled,

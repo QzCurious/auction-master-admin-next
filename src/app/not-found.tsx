@@ -8,8 +8,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
-import { paths } from '@/paths';
-
 export const metadata = { title: `Not found | ${SITE_NAME}` } satisfies Metadata;
 
 export default function NotFound(): React.JSX.Element {
@@ -32,7 +30,7 @@ export default function NotFound(): React.JSX.Element {
         </Typography>
         <Button
           component={RouterLink}
-          href={paths.home}
+          href="/dashboard"
           startIcon={<ArrowLeftIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
         >

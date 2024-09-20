@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-import type { NavItemConfig } from '@/types/nav';
-import { isNavItemActive } from '@/lib/is-nav-item-active';
+import type { NavItemConfig } from '@/components/dashboard/layout/nav';
+import { isNavItemActive } from '@/components/dashboard/layout/is-nav-item-active';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 
 interface NavItemProps extends Omit<NavItemConfig, 'items'> {}

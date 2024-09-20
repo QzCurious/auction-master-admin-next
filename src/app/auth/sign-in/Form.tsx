@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AdminLogin } from '@/api/AdminLogin';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,7 +9,6 @@ import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
-import Link from '@mui/material/Link';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -18,8 +16,6 @@ import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-import { paths } from '@/paths';
 
 const Schema = z.object({
   account: z.string().min(1, { message: 'Account is required' }),
@@ -115,11 +111,11 @@ export function SignInForm() {
             )}
           />
 
-          <div>
+          {/* <div>
             <Link component={RouterLink} href={paths.auth.resetPassword} variant="subtitle2">
               忘記密碼
             </Link>
-          </div>
+          </div> */}
 
           <Button disabled={isSubmitting} type="submit" variant="contained">
             登入

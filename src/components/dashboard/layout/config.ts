@@ -10,8 +10,7 @@ import { TerminalWindow } from '@phosphor-icons/react/dist/ssr/TerminalWindow';
 import { UserCircleGear } from '@phosphor-icons/react/dist/ssr/UserCircleGear';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 
-import type { NavItemConfig } from '@/types/nav';
-import { paths } from '@/paths';
+import type { NavItemConfig } from '@/components/dashboard/layout/nav';
 
 export const navItems = [
   {
@@ -97,7 +96,7 @@ export const navItems = [
   {
     key: 'settings',
     title: '設定',
-    href: paths.dashboard.settings,
+    href: '/dashboard/settings',
     PhosphorIcon: GearSixIcon,
     permissions: ['UpdateAdminPassword'],
   },
