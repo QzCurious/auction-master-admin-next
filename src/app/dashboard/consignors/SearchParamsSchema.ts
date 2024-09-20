@@ -1,4 +1,4 @@
-import { PaginationSchema } from '@/static';
+import { PaginationSchema } from '@/domain/static/static';
 import { z } from 'zod';
 
 export const SearchParamsSchema = PaginationSchema.extend({

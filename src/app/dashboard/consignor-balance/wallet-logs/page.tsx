@@ -1,8 +1,10 @@
+import { type Metadata } from 'next';
+import Link from 'next/link';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
-import { WALLET_ACTION } from '@/api/backend/static-configs.data';
 import { AdminGetWalletLogs, type WalletLogs } from '@/api/backend/wallets/AdminGetWalletLogs';
-import { parseSearchParams } from '@/helper/parseSearchParams';
-import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE } from '@/static';
+import { WALLET_ACTION } from '@/domain/static/static-config-mappers';
+import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { TableContainer } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -17,19 +19,16 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
-import { type Metadata } from 'next';
-import Link from 'next/link';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import RedirectAuthError from '@/components/RedirectAuthError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
-import { config } from '@/config';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import Filters from './Filters';
 import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
 
-export const metadata = { title: `錢包紀錄 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `錢包紀錄 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
   searchParams: Record<string, string | string[] | undefined>;

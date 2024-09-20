@@ -1,5 +1,5 @@
-import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
-import { PaginationSchema } from '@/static';
+import { RECORD_STATUS, RECORD_TYPE } from '@/domain/static/static-config-mappers';
+import { PaginationSchema } from '@/domain/static/static';
 import { addDays, addMonths, startOfDay, subDays } from 'date-fns';
 import * as R from 'remeda';
 import { z } from 'zod';

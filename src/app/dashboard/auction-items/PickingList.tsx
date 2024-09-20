@@ -3,14 +3,14 @@
 import React from 'react';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
-import { currencySign } from '@/static';
+import { currencySign } from '@/domain/static/static';
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Skeleton, Typography } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
 import { atom, useAtomValue } from 'jotai';
 import { atomWithReducer } from 'jotai/utils';
 
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 export const pickingTypeAtom = atom<'shipping' | 'fee' | null>(null);
 export const pickedItemIdsReducerAtom = atomWithReducer(

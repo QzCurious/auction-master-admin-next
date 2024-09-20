@@ -1,4 +1,4 @@
-import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
+import { CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
 
 export const statusColor = (status: CONSIGNOR_STATUS['value']) => {
   switch (status) {

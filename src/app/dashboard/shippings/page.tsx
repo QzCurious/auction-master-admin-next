@@ -1,22 +1,21 @@
 import type { Metadata } from 'next';
 import { GetShippings } from '@/api/backend/shippings/GetShippings';
-import { SHIPPING_STATUS } from '@/api/backend/static-configs.data';
-import { parseSearchParams } from '@/helper/parseSearchParams';
-import { PAGE, ROWS_PER_PAGE } from '@/static';
+import { SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
+import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { config } from '@/config';
-import RedirectAuthError from '@/components/RedirectAuthError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import RemoveSearchBtn from '@/components/RemoveSearchBtn';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { SearchParamsSchema } from './SearchParamsSchema';
 import { ShippingsTable } from './ShippingsTable';
 import { StatusFilter } from './StatusFilter';
 
-export const metadata = { title: `出貨列表 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `出貨列表 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
   searchParams: Record<string, string | string[] | undefined>;

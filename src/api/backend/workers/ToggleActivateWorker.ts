@@ -7,7 +7,7 @@ import { withAuth } from '@/api/withAuth';
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import { WORKER_STATUS } from '../static-configs.data';
+import { WORKER_STATUS } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   status: z.coerce.number().refine(R.isIncludedIn(WORKER_STATUS.data.map((item) => item.value))),

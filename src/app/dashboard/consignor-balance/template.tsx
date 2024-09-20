@@ -1,13 +1,12 @@
 import type React from 'react';
 import { type Metadata } from 'next';
+import { SITE_NAME } from '@/domain/static/static';
 import Typography from '@mui/material/Typography/Typography';
 import { Stack } from '@mui/system';
 
-import { config } from '@/config';
-
 import BalanceTabs from './BalanceTabs';
 
-export const metadata = { title: `帳戶紀錄 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `帳戶紀錄 | ${SITE_NAME}` } satisfies Metadata;
 
 export default function Template({ children }: { children: React.ReactNode }) {
   return (

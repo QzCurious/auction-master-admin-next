@@ -1,15 +1,14 @@
 import type { Metadata } from 'next';
 import { GetWorkers } from '@/api/backend/workers/GetWorkers';
-import { parseSearchParams } from '@/helper/parseSearchParams';
-import { PAGE, ROWS_PER_PAGE } from '@/static';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { config } from '@/config';
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
-import RedirectAuthError from '@/components/RedirectAuthError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import RemoveSearchBtn from '@/components/RemoveSearchBtn';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import CreateDialog from './CreateDialog';
 import { SearchParamsSchema } from './SearchParamsSchema';
@@ -17,7 +16,7 @@ import { StatusFilter } from './StatusFilter';
 import { TypeFilter } from './TypeFilter';
 import { WorkerTable } from './WorkerTable';
 
-export const metadata = { title: `Worker 列表 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `Worker 列表 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
   searchParams: Record<string, string | string[] | undefined>;

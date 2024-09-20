@@ -4,8 +4,8 @@ import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
 import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
-import { SHIPMENT_TYPE } from '@/api/backend/static-configs.data';
-import { currencySign } from '@/static';
+import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
+import { currencySign } from '@/domain/static/static';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -26,8 +26,8 @@ import { Controller, useForm } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ListItemSkeleton, pickedItemIdsReducerAtom, PickedListItem } from './PickingList';
 import { type SearchParamsSchema } from './SearchParamsSchema';

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { Metadata } from 'next';
+import { SITE_NAME } from '@/domain/static/static';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Pagination from '@mui/material/Pagination';
@@ -11,12 +12,11 @@ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 import dayjs from 'dayjs';
 
-import { config } from '@/config';
-import { IntegrationCard } from '@/components/dashboard/integrations/integrations-card';
 import type { Integration } from '@/components/dashboard/integrations/integrations-card';
+import { IntegrationCard } from '@/components/dashboard/integrations/integrations-card';
 import { CompaniesFilters } from '@/components/dashboard/integrations/integrations-filters';
 
-export const metadata = { title: `Integrations | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `Integrations | ${SITE_NAME}` } satisfies Metadata;
 
 const integrations = [
   {

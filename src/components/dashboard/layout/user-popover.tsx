@@ -2,8 +2,8 @@
 
 import { useContext } from 'react';
 import RouterLink from 'next/link';
-import { logout } from '@/api/logout';
-import refreshTokenAction from '@/api/refreshTokenAction';
+import { logout } from '@/domain/auth/logout';
+import refreshTokenAction from '@/domain/auth/refreshTokenAction';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -17,7 +17,7 @@ import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 import { useSnackbar } from 'notistack';
 
 import { paths } from '@/paths';
-import { UserContext } from '@/domain/user/UserContext';
+import { UserContext } from '@/domain/auth/UserContext';
 
 export interface UserPopoverProps {
   anchorEl: Element | null;

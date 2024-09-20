@@ -2,8 +2,8 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { type StatusCount } from '@/api/backend/items/GetItemsAndDetails';
-import { ITEM_STATUS } from '@/api/backend/static-configs.data';
-import { PAGE } from '@/static';
+import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
+import { PAGE } from '@/domain/static/static';
 import { StatusFlow } from '@/StatusFlow';
 import { Badge, Box, Chip, colors, MenuItem, Select, Typography } from '@mui/material';
 import * as R from 'remeda';

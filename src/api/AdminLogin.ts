@@ -2,7 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { appendEntries, cookieConfigs } from '@/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
+import { CookieConfigs } from "@/domain/auth/CookieConfigs";
 import { z } from 'zod';
 
 import { apiClient } from './apiClient';
@@ -43,8 +44,8 @@ export async function AdminLogin(payload: z.input<typeof ReqSchema>) {
     return res;
   }
 
-  cookies().set(cookieConfigs.token.name, res.data.token, cookieConfigs.token.opts());
-  cookies().set(cookieConfigs.refreshToken.name, res.data.refreshToken, cookieConfigs.refreshToken.opts());
+  cookies().set(CookieConfigs.token.name, res.data.token, CookieConfigs.token.opts());
+  cookies().set(CookieConfigs.refreshToken.name, res.data.refreshToken, CookieConfigs.refreshToken.opts());
 
   revalidatePath('/', 'layout');
 

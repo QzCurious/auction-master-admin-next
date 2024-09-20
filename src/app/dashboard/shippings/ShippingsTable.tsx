@@ -3,8 +3,8 @@
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
-import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/api/backend/static-configs.data';
-import { currencySign, DATE_TIME_FORMAT } from '@/static';
+import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
+import { currencySign, DATE_TIME_FORMAT } from '@/domain/static/static';
 import CropFreeOutlinedIcon from '@mui/icons-material/CropFreeOutlined';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import {

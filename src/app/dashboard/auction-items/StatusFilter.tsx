@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
-import { PAGE } from '@/static';
+import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
+import { PAGE } from '@/domain/static/static';
 import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
 
 import { FilterPopover } from '@/components/FilterPopover';

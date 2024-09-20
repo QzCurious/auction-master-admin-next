@@ -3,10 +3,10 @@
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
-import { appendEntries } from '@/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
 import { z } from 'zod';
 
-import { type RECORD_STATUS, type RECORD_TYPE } from '../static-configs.data';
+import { type RECORD_STATUS, type RECORD_TYPE } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   type: z.number().array().optional(),

@@ -5,10 +5,11 @@ import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { AdminGetConsignor, type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary, type RecordSummary } from '@/api/backend/reports/GetRecordsSummary';
-import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
-import { getUser } from '@/api/getToken';
-import { parseSearchParams } from '@/helper/parseSearchParams';
-import { currencySign, DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE } from '@/static';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { RECORD_STATUS, RECORD_TYPE } from '@/domain/static/static-config-mappers';
+import { getUser } from '@/domain/auth/getToken';
+import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { currencySign, DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { Chip, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -17,19 +18,17 @@ import { Box, Stack } from '@mui/system';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
 
-import { config } from '@/config';
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import EmptyTableRow from '@/components/EmptyTableRow';
-import RedirectAuthError from '@/components/RedirectAuthError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import CopyButton from '../../../components/CopyButton';
 import Filters from './Filters';
 import { ReviewSubmitPaymentButtons } from './ReviewSubmitPaymentButtons';
 import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
 
-export const metadata = { title: `交易紀錄 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `交易紀錄 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
   searchParams: Record<string, string | string[] | undefined>;

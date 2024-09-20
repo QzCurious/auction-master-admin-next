@@ -2,9 +2,9 @@
 
 import { useSearchParams } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
+import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
-import { currencySign } from '@/static';
+import { currencySign } from '@/domain/static/static';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Checkbox, Link } from '@mui/material';
 import Box from '@mui/material/Box';

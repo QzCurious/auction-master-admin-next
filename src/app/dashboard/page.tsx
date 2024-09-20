@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { GetBackendConfigs } from '@/api/backend/GetConfigs';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { toPercent } from '@/static';
+import { SITE_NAME, toPercent } from '@/domain/static/static';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -11,15 +11,14 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
 
-import { config } from '@/config';
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import lineIcon from './LINE_icon.png';
 import ReportsChart from './ReportsChart';
 
-export const metadata = { title: `Overview | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `Overview | ${SITE_NAME}` } satisfies Metadata;
 
 export default async function Page() {
   const configsRes = await GetBackendConfigs();

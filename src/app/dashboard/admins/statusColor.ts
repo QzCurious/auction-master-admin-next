@@ -1,4 +1,4 @@
-import { ADMIN_STATUS } from '@/api/backend/static-configs.data';
+import { ADMIN_STATUS } from '@/domain/static/static-config-mappers';
 
 export const statusColor = (status: ADMIN_STATUS['value']) => {
   switch (status) {

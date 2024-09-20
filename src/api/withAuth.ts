@@ -1,5 +1,5 @@
 import { type apiClient, type ApiClientResponse } from './apiClient';
-import { getToken } from './getToken';
+import { getToken } from '../domain/auth/getToken';
 
 export function withAuth(_apiClient: typeof apiClient) {
   const middleware = async function <Data, ErrorCode extends string = never>(

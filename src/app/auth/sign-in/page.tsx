@@ -1,17 +1,16 @@
-import * as React from 'react';
 import type { Metadata } from 'next';
 import RouterLink from 'next/link';
+import { SITE_NAME } from '@/domain/static/static';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { config } from '@/config';
 import { paths } from '@/paths';
 import { DynamicLogo } from '@/components/core/logo';
 
 import { SignInForm } from './Form';
 
-export const metadata = { title: `登入 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `登入 | ${SITE_NAME}` } satisfies Metadata;
 
 export default function Page() {
   return (

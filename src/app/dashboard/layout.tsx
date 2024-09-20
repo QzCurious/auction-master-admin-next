@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { GetAdminPermissions } from '@/api/backend/rbac/GetAdminPermissions';
-import { getUser } from '@/api/getToken';
+import { getUser } from '@/domain/auth/getToken';
 import { PermissionsContextProvider } from '@/domain/permission/PermissionsContext';
-import { UserContextProvider } from '@/domain/user/UserContext';
+import { UserContextProvider } from '@/domain/auth/UserContext';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
 import { MainNav } from '@/components/dashboard/layout/main-nav';
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import SideNavMenu from '../SideNavMenu';
 

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
-import { PAGE } from '@/static';
+import { PAGE } from '@/domain/static/static';
 import { useQuery } from '@tanstack/react-query';
 import { type z } from 'zod';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTransition } from 'react';
-import refreshTokenAction from '@/api/refreshTokenAction';
+import refreshTokenAction from '@/domain/auth/refreshTokenAction';
 import { Button } from '@mui/material';
 
 export default function RetryButton() {

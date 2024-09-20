@@ -1,6 +1,6 @@
 'use client';
 
-import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
+import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 
 import { FlowGraph } from '@/components/FlowGraph';
 
@@ -81,7 +81,7 @@ export default function Page() {
       flow={flow as any}
       startId={'InitStatus' as AUCTION_ITEM_STATUS['key']}
       getMessage={(status) => AUCTION_ITEM_STATUS.get('key', status as AUCTION_ITEM_STATUS['key']).message}
-      getValue={(status) => AUCTION_ITEM_STATUS.enum(status as any)}
+      getValue={(status) => AUCTION_ITEM_STATUS.enum(status as any) as any}
     />
   );
 }

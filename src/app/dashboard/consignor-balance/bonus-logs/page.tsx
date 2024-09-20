@@ -2,9 +2,9 @@ import { type Metadata } from 'next';
 import Link from 'next/link';
 import { AdminGetBonusLogs, type BonusLogs } from '@/api/backend/bonuses/AdminGetBonusLogs';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
-import { BONUS_ACTION } from '@/api/backend/static-configs.data';
-import { parseSearchParams } from '@/helper/parseSearchParams';
-import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE } from '@/static';
+import { BONUS_ACTION } from '@/domain/static/static-config-mappers';
+import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import { Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -12,16 +12,15 @@ import { Box, Stack } from '@mui/system';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
 
-import { config } from '@/config';
 import EmptyTableRow from '@/components/EmptyTableRow';
-import RedirectAuthError from '@/components/RedirectAuthError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import Filters from './Filters';
 import { fixRange, SearchParamsSchema } from './SearchParamsSchema';
 
-export const metadata = { title: `紅利紀錄 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `紅利紀錄 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
   searchParams: Record<string, string | string[] | undefined>;

@@ -1,5 +1,5 @@
-import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/static-configs.data';
-import { PaginationSchema } from '@/static';
+import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
+import { PaginationSchema } from '@/domain/static/static';
 import * as R from 'remeda';
 import { z } from 'zod';
 

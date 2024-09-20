@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { UpdateAuctionItem } from '@/api/backend/auction-items/UpdateAuctionItem';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
-import { currencySign } from '@/static';
+import { currencySign } from '@/domain/static/static';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
 import {

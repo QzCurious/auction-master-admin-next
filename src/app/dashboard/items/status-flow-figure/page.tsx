@@ -1,6 +1,6 @@
 'use client';
 
-import { ITEM_STATUS } from '@/api/backend/static-configs.data';
+import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { StatusFlow } from '@/StatusFlow';
 
 import { FlowGraph } from '@/components/FlowGraph';
@@ -17,7 +17,7 @@ export default function Page() {
       flow={flow as any}
       startId={'SubmitAppraisalStatus' as ITEM_STATUS['key']}
       getMessage={(status) => ITEM_STATUS.get('key', status as ITEM_STATUS['key']).message}
-      getValue={(status) => ITEM_STATUS.enum(status as any)}
+      getValue={(status) => ITEM_STATUS.enum(status as any) as any}
     />
   );
 }

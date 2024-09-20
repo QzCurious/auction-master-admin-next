@@ -1,19 +1,19 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { GetRoles } from '@/api/backend/rbac/GetRoles';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { SITE_NAME } from '@/domain/static/static';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
-import { config } from '@/config';
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { RoleTable } from './RoleTable';
 
-export const metadata = { title: `角色列表 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `角色列表 | ${SITE_NAME}` } satisfies Metadata;
 
 export default async function Page() {
   return (

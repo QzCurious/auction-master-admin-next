@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { WORKER_TYPE } from '@/api/backend/static-configs.data';
+import { WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { CreateWorker } from '@/api/backend/workers/CreateWorker';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {

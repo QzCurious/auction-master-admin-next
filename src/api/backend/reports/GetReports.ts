@@ -3,7 +3,7 @@
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
-import { appendEntries } from '@/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
 import { z } from 'zod';
 
 const ReqSchema = z.object({

@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react';
 import Link from 'next/link';
-import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/static-configs.data';
+import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { type Worker } from '@/api/backend/workers/GetWorkers';
 import { SetWorkerCookie } from '@/api/backend/workers/SetWorkerCookie';
 import { ToggleActivateWorker } from '@/api/backend/workers/ToggleActivateWorker';

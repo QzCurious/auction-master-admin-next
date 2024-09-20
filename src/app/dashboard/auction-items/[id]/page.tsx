@@ -2,18 +2,16 @@ import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers';
-import { Link } from '@mui/material';
+import { SITE_NAME } from '@/domain/static/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 
-import { config } from '@/config';
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { AuctionItemTable } from '../AuctionItemTable';
 
-export const metadata = { title: `日拍競標商品 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `日拍競標商品 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
   params: { id: string };

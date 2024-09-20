@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { type ITEM_STATUS, type ITEM_TYPE } from './api/backend/static-configs.data';
+import { type ITEM_STATUS, type ITEM_TYPE } from './domain/static/static-config-mappers';
 
 type Adjudicator = 'admin' | 'consignor' | 'system';
 
@@ -22,7 +22,7 @@ type Step = {
 export class StatusFlow {
   // 要從 flowchart 的 root 依序排到 leaf; happy path 要排在 next 的最前面
   // https://github.com/win30221/auction-master/blob/v2/service/usecase/status_tree.go#L61-L286
-  static flow = {
+  static flow: Record<ITEM_STATUS['key'], Step> = {
     SubmitAppraisalStatus: {
       allowTypes: [
         'AppraisableAuctionItemType',
@@ -185,7 +185,7 @@ export class StatusFlow {
       status: 'CompanyReclaimedStatus',
       nexts: [],
     },
-  } satisfies Record<ITEM_STATUS['key'], Step>;
+  };
 
   static makeActionMap<T extends Adjudicator>(
     adjudicator: T,
@@ -224,7 +224,7 @@ export class StatusFlow {
       })),
       from,
       to,
-      (step) => type === null || this.flow[step.value].allowTypes.some((t) => t === type)
+      (step) => type === null || !!this.flow[step.value].allowTypes?.some((t) => t === type)
     );
 
     if (!withFuture) return path;
@@ -237,7 +237,7 @@ export class StatusFlow {
       const last = path[path.length - 1];
       const step = this.flow[last];
       const notYetVisited = step.nexts.filter((s) => !path.includes(s));
-      const happyNext = notYetVisited.find((s) => type === null || this.flow[s].allowTypes.some((t) => t === type));
+      const happyNext = notYetVisited.find((s) => type === null || !!this.flow[s].allowTypes?.some((t) => t === type));
       if (!happyNext) break;
       path.push(happyNext);
     }

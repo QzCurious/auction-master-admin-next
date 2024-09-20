@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { WALLET_ACTION } from '@/api/backend/static-configs.data';
+import { WALLET_ACTION } from '@/domain/static/static-config-mappers';
 import { Box, Chip, FormControl, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { addMonths, closestTo, isValid, subMonths } from 'date-fns';

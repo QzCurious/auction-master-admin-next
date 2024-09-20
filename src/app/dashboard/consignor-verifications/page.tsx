@@ -1,19 +1,18 @@
 import type { Metadata } from 'next';
 import { AdminGetConsignorVerifications } from '@/api/backend/consignor/AdminGetConsignorVerifications';
-import { CONSIGNOR_VERIFICATION_STATUS } from '@/api/backend/static-configs.data';
-import { parseSearchParams } from '@/helper/parseSearchParams';
-import { PAGE, ROWS_PER_PAGE } from '@/static';
+import { CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
+import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { config } from '@/config';
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ConsignorVerificationTable } from './ConsignorVerificationTable';
 import { SearchParamsSchema } from './SearchParamsSchema';
 
-export const metadata = { title: `身份驗證列表 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `身份驗證列表 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
   searchParams: Record<string, string | string[] | undefined>;

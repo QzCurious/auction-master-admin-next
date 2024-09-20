@@ -2,7 +2,7 @@
 
 import { BidAuctionItem } from '@/api/backend/auction-items/BidAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { currencySign } from '@/static';
+import { currencySign } from '@/domain/static/static';
 import {
   Button,
   FormControl,

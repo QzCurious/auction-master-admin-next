@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { type ITEM_STATUS, type ITEM_TYPE } from '../static-configs.data';
+import { type ITEM_STATUS, type ITEM_TYPE } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   consignorID: z.coerce.number().optional(),

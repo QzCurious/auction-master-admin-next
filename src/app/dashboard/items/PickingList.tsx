@@ -5,15 +5,15 @@ import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { GetBackendConfigsQueryOptions } from '@/api/backend/GetConfigs.query';
 import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetail.query';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
-import { currencySign, DATE_FORMAT } from '@/static';
+import { currencySign, DATE_FORMAT } from '@/domain/static/static';
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Skeleton, Typography } from '@mui/material';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { atom, useAtomValue } from 'jotai';
 import { atomWithReducer } from 'jotai/utils';
 
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 export const pickingTypeAtom = atom<'shipping' | 'fee' | null>(null);
 export const pickedItemIdsReducerAtom = atomWithReducer(

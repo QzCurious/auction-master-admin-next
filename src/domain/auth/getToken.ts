@@ -1,17 +1,17 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { cookieConfigs } from '@/static';
+import { CookieConfigs } from "./CookieConfigs";
 import { jwtDecode } from 'jwt-decode';
 
-import { AdminRefreshToken } from './AdminRefreshToken';
-import { type JwtPayload } from './JwtPayload';
+import { AdminRefreshToken } from '../../api/AdminRefreshToken';
+import { type JwtPayload } from '../../api/JwtPayload';
 
 let sessionRefreshing: ReturnType<typeof AdminRefreshToken> | null = null;
 
 export async function getToken({ force }: { force?: boolean } = { force: false }) {
   // no token
-  const token = cookies().get(cookieConfigs.token.name);
+  const token = cookies().get(CookieConfigs.token.name);
   if (!token?.value) {
     return { token: null, res: null } as const;
   }
@@ -23,7 +23,7 @@ export async function getToken({ force }: { force?: boolean } = { force: false }
     return { token: token.value, res: null } as const;
   }
 
-  const refreshToken = cookies().get(cookieConfigs.refreshToken.name);
+  const refreshToken = cookies().get(CookieConfigs.refreshToken.name);
   if (!refreshToken?.value) {
     throw new Error('BUG: Token expired without refresh token');
   }

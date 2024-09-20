@@ -1,9 +1,9 @@
 import { cookies } from 'next/headers';
 import { redirect, RedirectType } from 'next/navigation';
-import { cookieConfigs } from '@/static';
+import { CookieConfigs } from "@/domain/auth/CookieConfigs";
 
 export async function GET() {
-  cookies().delete(cookieConfigs.token.name);
-  cookies().delete(cookieConfigs.refreshToken.name);
+  cookies().delete(CookieConfigs.token.name);
+  cookies().delete(CookieConfigs.refreshToken.name);
   redirect('/auth/sign-in', RedirectType.replace);
 }

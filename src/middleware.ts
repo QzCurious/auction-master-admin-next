@@ -1,26 +1,26 @@
 import { cookies } from 'next/headers';
 import { NextResponse, type NextRequest } from 'next/server';
-import { getToken } from '@/api/getToken';
+import { getToken } from '@/domain/auth/getToken';
 
-import { cookieConfigs } from './static';
+import { CookieConfigs } from "./domain/auth/CookieConfigs";
 
 export async function middleware(request: NextRequest) {
   // refresh token and set cookie
   const response = NextResponse.next();
-  const token = cookies().get(cookieConfigs.token.name)?.value;
+  const token = cookies().get(CookieConfigs.token.name)?.value;
   const { token: newToken, res } = await getToken();
 
   if (!newToken) {
     console.log('middleware: refresh token error', res);
-    response.cookies.delete(cookieConfigs.token.name);
-    response.cookies.delete(cookieConfigs.refreshToken.name);
+    response.cookies.delete(CookieConfigs.token.name);
+    response.cookies.delete(CookieConfigs.refreshToken.name);
     const goto = request.nextUrl.pathname === '/' ? '/dashboard' : request.nextUrl.pathname + request.nextUrl.search;
     return Response.redirect(new URL(`/auth/sign-in?goto=${goto}`, request.url));
   }
 
   if (token !== newToken) {
     console.log('middleware: new token set');
-    response.cookies.set(cookieConfigs.token.name, newToken, cookieConfigs.token.opts());
+    response.cookies.set(CookieConfigs.token.name, newToken, CookieConfigs.token.opts());
   }
   return response;
 }

@@ -2,18 +2,18 @@ import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
 import { GetWorker } from '@/api/backend/workers/GetWorker';
+import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Box, Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Stack } from '@mui/system';
 
-import { config } from '@/config';
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { WorkerForm } from './WorkerForm';
 
-export const metadata = { title: `編輯物品 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `編輯物品 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
   params: { id: string };

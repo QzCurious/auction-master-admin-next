@@ -1,15 +1,15 @@
 'use client';
 
-import { RECORD_STATUS, RECORD_TYPE } from '@/api/backend/static-configs.data';
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { RECORD_STATUS, RECORD_TYPE } from '@/domain/static/static-config-mappers';
 import { Box, Chip, FormControl, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { addMonths, closestTo, isValid, subMonths } from 'date-fns';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
 import { type z } from 'zod';
 
 import { ConsignorSelect } from '@/components/ConsignorSelect';
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 
 import { MAX_MONTHS, validRange, type SearchParamsSchema } from './SearchParamsSchema';
 

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { cookieConfigs } from '@/static';
+import { CookieConfigs } from "./CookieConfigs";
 
 import { getToken } from './getToken';
 
@@ -10,7 +10,7 @@ export default async function refreshTokenAction() {
   const { token, res } = await getToken({ force: true });
 
   if (token) {
-    cookies().set(cookieConfigs.token.name, token, cookieConfigs.token.opts());
+    cookies().set(CookieConfigs.token.name, token, CookieConfigs.token.opts());
     revalidatePath('/', 'layout');
     return;
   }

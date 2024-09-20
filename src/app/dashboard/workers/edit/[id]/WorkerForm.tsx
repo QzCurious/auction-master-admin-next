@@ -1,11 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { WORKER_STATUS, WORKER_TYPE } from '@/api/backend/static-configs.data';
+import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { type Worker } from '@/api/backend/workers/GetWorker';
 import { UpdateWorker } from '@/api/backend/workers/UpdateWorker';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
-import { getDirtyFields } from '@/helper/getDirtyFields';
+import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';

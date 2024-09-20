@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { GetBackendConfigsQueryOptions } from '@/api/backend/GetConfigs.query';
 import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetail.query';
 import { ItemReturning } from '@/api/backend/items/ItemReturning';
-import { SHIPMENT_TYPE } from '@/api/backend/static-configs.data';
-import { currencySign } from '@/static';
+import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
+import { currencySign } from '@/domain/static/static';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -27,8 +27,8 @@ import { Controller, useForm } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ListItemSkeleton, pickedItemIdsReducerAtom, PickedListItem } from './PickingList';
 import { type SearchParamsSchema } from './SearchParamsSchema';

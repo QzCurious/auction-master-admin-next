@@ -2,7 +2,7 @@
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { type AUCTION_ITEM_STATUS } from '../static-configs.data';
+import { type AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 
 export interface AuctionItem {
   id: number;

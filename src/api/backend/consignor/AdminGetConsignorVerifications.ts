@@ -1,12 +1,12 @@
 'use server';
 
-import { appendEntries } from '@/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type CONSIGNOR_VERIFICATION_STATUS } from '../static-configs.data';
+import { type CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   account: z.string().optional(),

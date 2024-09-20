@@ -1,21 +1,20 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { GetAdmins } from '@/api/backend/admins/GetAdmins';
-import { parseSearchParams } from '@/helper/parseSearchParams';
-import { PAGE, ROWS_PER_PAGE } from '@/static';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { Button, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
-import { config } from '@/config';
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { AdminTable } from './AdminTable';
 import { SearchParamsSchema } from './SearchParamsSchema';
 
-export const metadata = { title: `管理員列表 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `管理員列表 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
   searchParams: Record<string, string | string[] | undefined>;

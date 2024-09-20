@@ -2,13 +2,13 @@
 
 import { revalidateTag } from 'next/cache';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
-import { appendEntries } from '@/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
 import * as R from 'remeda';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { SHIPMENT_TYPE } from '../static-configs.data';
+import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   consignorID: z.number(),

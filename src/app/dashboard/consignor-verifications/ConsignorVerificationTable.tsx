@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 import { useState, useTransition } from 'react';
-import { CONSIGNOR_VERIFICATION_STATUS } from '@/api/backend/static-configs.data';
+import { CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
 import { type ConsignorVerification } from '@/api/backend/consignor/AdminGetConsignorVerifications';
 import { HandleConsignorVerification } from '@/api/backend/consignor/HandleConsignorVerification';
-import { DATE_FORMAT } from '@/static';
+import { DATE_FORMAT } from '@/domain/static/static';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import {
   Button,

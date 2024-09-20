@@ -1,19 +1,18 @@
 import { type Metadata } from 'next';
 import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
-import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
 import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers';
-import { parseSearchParams } from '@/helper/parseSearchParams';
-import { PAGE, ROWS_PER_PAGE } from '@/static';
+import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
+import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Provider } from 'jotai';
 
-import { config } from '@/config';
 import AutoRefreshPage from '@/components/AutoRefreshPage';
-import RedirectAuthError from '@/components/RedirectAuthError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import RemoveSearchBtn from '@/components/RemoveSearchBtn';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { AuctionItemTable } from './AuctionItemTable';
 import { ConsignorFilter } from './ConsignorFilter';
@@ -22,7 +21,7 @@ import { PickForShipping, PickForShippingButtons } from './PickForShipping';
 import { SearchParamsSchema } from './SearchParamsSchema';
 import { StatusFilter } from './StatusFilter';
 
-export const metadata = { title: `日拍競標商品列表 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `日拍競標商品列表 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
   searchParams: Record<string, string | string[] | undefined>;

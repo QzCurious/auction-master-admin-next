@@ -2,7 +2,7 @@
 
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { ToggleActivateAuctionItem } from '@/api/backend/auction-items/ToggleActivateAuctionItem';
-import { AUCTION_ITEM_STATUS } from '@/api/backend/static-configs.data';
+import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { Button } from '@mui/material';
 import { useSnackbar } from 'notistack';
 

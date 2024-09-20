@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { type GetReports, type Report } from '@/api/backend/reports/GetReports';
 import { GetReportsQueryOptions } from '@/api/backend/reports/GetReports.query';
-import { currencySign, DATE_FORMAT } from '@/static';
+import { currencySign, DATE_FORMAT } from '@/domain/static/static';
 import { Card, CardContent, CircularProgress, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { DateTimePicker } from '@mui/x-date-pickers';
@@ -21,8 +21,8 @@ import {
 import { addMonths, closestTo, format, startOfDay, subDays, subHours, subMonths } from 'date-fns';
 import { Line } from 'react-chartjs-2';
 
-import RedirectAuthError from '@/components/RedirectAuthError';
-import WithoutPermissionsError from '@/components/WithoutPermissionsError/WithoutPermissionsError';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 Chart.register(CategoryScale, Legend, Tooltip, CategoryScale, LinearScale, LineController, LineElement, PointElement);
 

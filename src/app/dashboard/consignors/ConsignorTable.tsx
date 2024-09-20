@@ -3,8 +3,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
-import { CONSIGNOR_STATUS } from '@/api/backend/static-configs.data';
-import { currencySign, toPercent } from '@/static';
+import { CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
+import { currencySign, toPercent } from '@/domain/static/static';
 import EditIcon from '@mui/icons-material/Edit';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { Chip, TableContainer } from '@mui/material';

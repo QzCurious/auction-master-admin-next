@@ -3,11 +3,11 @@
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
-import { appendEntries } from '@/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
 import { z } from 'zod';
 
 import { type Role } from '../rbac/GetRoles';
-import { type ADMIN_STATUS } from '../static-configs.data';
+import { type ADMIN_STATUS } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   limit: z.number().min(1).default(10),

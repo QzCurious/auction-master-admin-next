@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { DeleteAdmin } from '@/api/backend/admins/DeleteAdmin';
 import { type Admin } from '@/api/backend/admins/GetAdmins';
-import { ADMIN_STATUS } from '@/api/backend/static-configs.data';
+import { ADMIN_STATUS } from '@/domain/static/static-config-mappers';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Chip, TableContainer } from '@mui/material';

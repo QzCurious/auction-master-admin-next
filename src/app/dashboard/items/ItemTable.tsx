@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { type Item } from '@/api/backend/items/GetItemsAndDetails';
-import { ITEM_STATUS } from '@/api/backend/static-configs.data';
+import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Checkbox, Chip, Grid } from '@mui/material';
 import Box from '@mui/material/Box';

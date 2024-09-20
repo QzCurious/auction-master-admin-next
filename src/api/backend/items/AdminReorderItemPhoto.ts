@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { appendEntries } from '@/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';

@@ -1,14 +1,14 @@
 import * as React from 'react';
 import type { Metadata } from 'next';
+import { SITE_NAME } from '@/domain/static/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { config } from '@/config';
 import { UpdatePasswordForm } from '@/components/dashboard/settings/update-password-form';
 
 // import { Notifications } from '@/components/dashboard/settings/notifications';
 
-export const metadata = { title: `設定 | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `設定 | ${SITE_NAME}` } satisfies Metadata;
 
 export default function Page(): React.JSX.Element {
   return (

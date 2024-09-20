@@ -1,14 +1,14 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { appendEntries } from '@/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
 import * as R from 'remeda';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { ITEM_TYPE } from '../static-configs.data';
+import { ITEM_TYPE } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z
   .object({
