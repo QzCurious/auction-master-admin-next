@@ -58,8 +58,14 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                   <TableCell>出品帳號</TableCell>
                   <TableCell>盯標帳號</TableCell>
                   <TableCell>出價資訊</TableCell>
-                  <TableCell>當前金額</TableCell>
-                  <TableCell>期望金額</TableCell>
+                </>
+              )}
+
+              <TableCell>當前金額</TableCell>
+              <TableCell>期望金額</TableCell>
+
+              {!isPicking && (
+                <>
                   <TableCell>系統出價</TableCell>
                   <TableCell>狀態</TableCell>
                   <TableCell>操作</TableCell>
@@ -175,12 +181,18 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                         ))}
                       </a>
                     </TableCell>
-                    <TableCell sx={{ textAlign: 'right' }}>
-                      <Box color={row.currentPrice >= row.reservePrice ? 'success.main' : 'error.main'}>
-                        {row.currentPrice.toLocaleString()}
-                      </Box>
-                    </TableCell>
-                    <TableCell sx={{ textAlign: 'right' }}>{row.reservePrice.toLocaleString()}</TableCell>
+                  </>
+                )}
+
+                <TableCell sx={{ textAlign: 'right' }}>
+                  <Box color={row.currentPrice >= row.reservePrice ? 'success.main' : 'error.main'}>
+                    {row.currentPrice.toLocaleString()}
+                  </Box>
+                </TableCell>
+                <TableCell sx={{ textAlign: 'right' }}>{row.reservePrice.toLocaleString()}</TableCell>
+
+                {!isPicking && (
+                  <>
                     <TableCell sx={{ textAlign: 'right' }}>{row.highestPrice.toLocaleString()}</TableCell>
                     <TableCell
                       sx={{ whiteSpace: 'nowrap' }}
