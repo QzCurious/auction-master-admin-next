@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { DeleteRole } from '@/api/backend/rbac/DeleteRole';
 import { type Role } from '@/api/backend/rbac/GetRoles';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -25,8 +26,8 @@ import Typography from '@mui/material/Typography';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
+import EmptyTableRow from '@/components/EmptyTableRow';
 
 interface CustomersTableProps {
   rows: Role[];
@@ -51,6 +52,7 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
               </TableRow>
             </TableHead>
             <TableBody>
+              {rows.length === 0 && <EmptyTableRow />}
               {rows
                 .filter((row) => {
                   const searchRole = searchParams.get('role');
