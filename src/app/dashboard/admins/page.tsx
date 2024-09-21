@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { GetAdmins } from '@/api/backend/admins/GetAdmins';
-import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { Button, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { AdminTable } from './AdminTable';
 import { SearchParamsSchema } from './SearchParamsSchema';
@@ -40,9 +40,11 @@ export default async function Page(pageProps: PageProps) {
         </HavePermissionsOnly>
       </Stack>
 
-      <section>
-        <Table {...pageProps} />
-      </section>
+      <PermissionsGuard permissions={['GetAdmins']}>
+        <section>
+          <Table {...pageProps} />
+        </section>
+      </PermissionsGuard>
     </Stack>
   );
 }

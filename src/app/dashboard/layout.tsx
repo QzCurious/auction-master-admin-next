@@ -83,7 +83,7 @@ export default async function Layout({ children }: LayoutProps) {
 
             <main>
               <Container maxWidth="xl" sx={{ py: '24px' }}>
-                {children}
+                {permissionsRes.data ? children : <WithoutPermissionsError permissions={['GetAdminPermissions']} />}
               </Container>
             </main>
           </Box>

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { DeleteAdmin } from '@/api/backend/admins/DeleteAdmin';
 import { type Admin } from '@/api/backend/admins/GetAdmins';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { ADMIN_STATUS } from '@/domain/static/static-config-mappers';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -22,8 +24,6 @@ import TableRow from '@mui/material/TableRow';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
-import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
@@ -86,7 +86,7 @@ export function AdminTable({ rows, count }: AdminTableProps) {
                             component={Link}
                             href={`/dashboard/roles/edit/${role}`}
                             onClick={(e) => {
-                              if (!havePermissions(['GetAdmin', 'GetPermissions'])) {
+                              if (!havePermissions(['GetPermissions', 'GetRolePermissions'])) {
                                 e.preventDefault();
                               }
                             }}
@@ -101,7 +101,7 @@ export function AdminTable({ rows, count }: AdminTableProps) {
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        <HavePermissionsOnly permissions={['GetAdmin', 'GetConfigs', 'GetRoles']}>
+                        <HavePermissionsOnly permissions={['GetAdmin']}>
                           <IconButton LinkComponent={Link} href={`/dashboard/admins/edit/${row.id}`}>
                             <EditIcon />
                           </IconButton>
@@ -127,7 +127,6 @@ export function AdminTable({ rows, count }: AdminTableProps) {
 function DeleteBtn({ row }: { row: Admin }) {
   const popupState = usePopupState({
     variant: 'popover',
-    popupId: 'demoPopover',
   });
   const { enqueueSnackbar } = useSnackbar();
 

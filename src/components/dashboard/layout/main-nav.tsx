@@ -1,13 +1,14 @@
 'use client';
 
-import * as React from 'react';
-import { useContext, useState } from 'react';
-import RouterLink from 'next/link';
 import SideNavMenu from '@/app/SideNavMenu';
 import { logout } from '@/domain/auth/logout';
 import refreshTokenAction from '@/domain/auth/refreshTokenAction';
 import { UserContext } from '@/domain/auth/UserContext';
-import { Drawer } from '@mui/material';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { PERMISSION_MAP } from '@/domain/permission/permissions.data';
+import { PermissionsContext } from '@/domain/permission/PermissionsContext';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
+import { Button, Drawer } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -21,8 +22,12 @@ import Typography from '@mui/material/Typography';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { SignOut as SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
+import copy from 'copy-to-clipboard';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
+import RouterLink from 'next/link';
 import { useSnackbar } from 'notistack';
+import * as React from 'react';
+import { useContext, useState } from 'react';
 
 export function MainNav() {
   const user = useContext(UserContext);
@@ -91,7 +96,9 @@ export function MainNav() {
               <SideNavMenu />
             </Drawer>
           </Stack>
+
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+            {process.env.NODE_ENV === 'development' && <LogPermissionsButton />}
             {/* <Tooltip title="Contacts">
               <IconButton>
                 <UsersIcon />
@@ -120,12 +127,14 @@ export function MainNav() {
         </Box>
         <Divider />
         <MenuList disablePadding sx={{ p: '8px', '& .MuiMenuItem-root': { borderRadius: 1 } }}>
-          <MenuItem component={RouterLink} href="/dashboard/settings" onClick={() => popupState.open()}>
-            <ListItemIcon>
-              <GearSixIcon fontSize="var(--icon-fontSize-md)" />
-            </ListItemIcon>
-            設定
-          </MenuItem>
+          <HavePermissionsOnly permissions={['UpdateAdminPassword']}>
+            <MenuItem component={RouterLink} href="/dashboard/settings" onClick={() => popupState.open()}>
+              <ListItemIcon>
+                <GearSixIcon fontSize="var(--icon-fontSize-md)" />
+              </ListItemIcon>
+              設定
+            </MenuItem>
+          </HavePermissionsOnly>
           {/* <MenuItem component={RouterLink} href={paths.dashboard.account} onClick={onClose}>
           <ListItemIcon>
             <UserIcon fontSize="var(--icon-fontSize-md)" />
@@ -159,5 +168,32 @@ export function MainNav() {
         </MenuList>
       </Popover>
     </React.Fragment>
+  );
+}
+
+function LogPermissionsButton() {
+  const permissions = useContext(PermissionsContext);
+  const havePermissions = useHavePermissions();
+
+  return (
+    <Stack direction="row" alignItems="center" spacing={2}>
+      {!havePermissions(['GetAdminPermissions']) && (
+        <Typography component="p" color="gray">
+          至少勾一下
+          <Typography
+            color="primary"
+            component="span"
+            sx={{ cursor: 'pointer' }}
+            onClick={() => copy(PERMISSION_MAP.GetAdminPermissions.description)}
+          >
+            {PERMISSION_MAP.GetAdminPermissions.description}
+          </Typography>
+          吧
+        </Typography>
+      )}
+      <Button type="button" variant="outlined" size="small" onClick={() => console.log(permissions)}>
+        Log Permissions
+      </Button>
+    </Stack>
   );
 }

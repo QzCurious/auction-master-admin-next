@@ -3,16 +3,16 @@ import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
 import { GetAdmin } from '@/api/backend/admins/GetAdmin';
 import { GetRoles } from '@/api/backend/rbac/GetRoles';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { havePermissions, PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Stack } from '@mui/system';
 
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
-
-import AdminForm from '../../AdminForm';
+import EditAdminForm from './EditAdminForm';
 
 export const metadata = { title: `編輯管理員 | ${SITE_NAME}` } satisfies Metadata;
 
@@ -32,7 +32,9 @@ async function Page(pageProps: PageProps) {
         編輯管理員
       </Typography>
 
-      <Form {...pageProps} />
+      <PermissionsGuard permissions={['GetAdmin']}>
+        <Form {...pageProps} />
+      </PermissionsGuard>
     </>
   );
 }
@@ -40,13 +42,16 @@ async function Page(pageProps: PageProps) {
 export default Page;
 
 async function Form({ params }: PageProps) {
-  const [adminRes, rolesRes] = await Promise.all([GetAdmin(parseInt(params.id)), GetRoles()]);
+  const [adminRes, rolesRes] = await Promise.all([
+    GetAdmin(parseInt(params.id)),
+    (await havePermissions(['GetRoles'])) ? GetRoles() : undefined,
+  ]);
 
-  if (adminRes.error === '1001' || rolesRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAdmin', 'GetRoles']} />;
+  if (adminRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['GetAdmin']} />;
   }
 
-  if (adminRes.error === '1003' || rolesRes.error === '1003') {
+  if (adminRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
@@ -54,5 +59,5 @@ async function Form({ params }: PageProps) {
     notFound();
   }
 
-  return <AdminForm admin={adminRes.data} roles={rolesRes.data} />;
+  return <EditAdminForm admin={adminRes.data} roles={rolesRes?.data ?? undefined} />;
 }

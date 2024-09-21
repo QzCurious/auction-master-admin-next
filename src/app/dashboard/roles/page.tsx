@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { GetRoles } from '@/api/backend/rbac/GetRoles';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { RoleTable } from './RoleTable';
 
@@ -35,9 +35,11 @@ export default async function Page() {
         </HavePermissionsOnly>
       </Stack>
 
-      <section>
-        <Table />
-      </section>
+      <PermissionsGuard permissions={['GetRoles']}>
+        <section>
+          <Table />
+        </section>
+      </PermissionsGuard>
     </Stack>
   );
 }

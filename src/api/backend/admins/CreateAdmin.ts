@@ -10,11 +10,14 @@ import { z } from 'zod';
 const ReqSchema = z.object({
   account: z.string(),
   password: z.string(),
+  status: z.number(),
 });
 
 type Data = 'Success';
 
-type ErrorCode = never;
+type ErrorCode =
+  // create admin error
+  '1501';
 
 export async function CreateAdmin(payload: z.input<typeof ReqSchema>) {
   throwIfInvalid(payload, ReqSchema);

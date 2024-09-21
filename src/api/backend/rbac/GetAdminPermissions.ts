@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/named
+import { cache } from 'react';
 import { apiClient } from '@/api/apiClient';
 import { withAuth } from '@/api/withAuth';
 import { type PermissionKey } from '@/domain/permission/types';
@@ -10,7 +12,7 @@ type Data = Permissions;
 
 type ErrorCode = never;
 
-export async function GetAdminPermissions(account: Admin['account']) {
+async function GetAdminPermissions(account: Admin['account']) {
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/permissions/${account}`, {
     method: 'GET',
     next: {
@@ -20,3 +22,7 @@ export async function GetAdminPermissions(account: Admin['account']) {
 
   return res;
 }
+
+const CachedGetAdminPermissions = cache(GetAdminPermissions);
+
+export { CachedGetAdminPermissions as GetAdminPermissions };

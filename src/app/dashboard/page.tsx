@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { GetConfigs } from '@/api/backend/GetConfigs';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { havePermissions } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME, toPercent } from '@/domain/static/static';
@@ -22,6 +23,10 @@ import ReportsChart from './ReportsChart';
 export const metadata = { title: `Overview | ${SITE_NAME}` } satisfies Metadata;
 
 export default async function Page() {
+  if (!(await havePermissions(['GetConfigs']))) {
+    return <WithoutPermissionsError permissions={['GetConfigs']} />;
+  }
+
   const configsRes = await GetConfigs();
 
   if (configsRes.error === '1001') {

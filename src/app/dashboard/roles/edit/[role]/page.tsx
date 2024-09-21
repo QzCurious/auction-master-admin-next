@@ -2,16 +2,16 @@ import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { GetPermissions } from '@/api/backend/rbac/GetPermissions';
 import { GetRolePermissions } from '@/api/backend/rbac/GetRolePermissions';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Stack } from '@mui/system';
 
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
-
-import RoleForm from '../../RoleForm';
+import EditRoleForm from './EditRoleForm';
 
 export const metadata = { title: `編輯角色 | ${SITE_NAME}` } satisfies Metadata;
 
@@ -31,7 +31,9 @@ async function Page(pageProps: PageProps) {
         編輯角色權限
       </Typography>
 
-      <Form {...pageProps} />
+      <PermissionsGuard permissions={['GetPermissions', 'GetRolePermissions']}>
+        <Form {...pageProps} />
+      </PermissionsGuard>
     </>
   );
 }
@@ -49,7 +51,7 @@ async function Form({ params }: PageProps) {
   }
 
   return (
-    <RoleForm
+    <EditRoleForm
       permissionGroups={permissionsRes.data}
       role={decodeURI(params.role)}
       rolePermissions={rolesPermissionsRes.data}
