@@ -23,18 +23,20 @@ type ConfigObj =
       message: string;
     };
 
-function createMapper<T extends ConfigObj>(data: readonly T[]) {
+function createMapper<T extends readonly ConfigObj[]>(data: T) {
   const indexByKey = createMapFromTuple(data, 'key');
   const indexByValue = createMapFromTuple(data, 'value');
 
-  function get<K extends 'key' | 'value'>(key: K, value: T[K]): T {
+  function get<K extends 'key' | 'value'>(key: K, value: T[number][K]): T[number] {
     if (key === 'key') {
       return indexByKey[value] as any;
     }
     return indexByValue[value] as any;
   }
 
-  function getEnum<K extends T['key'] | T['value']>(index: K): K extends T['key'] ? T['value'] : T['key'] {
+  function getEnum<K extends T[number]['key'] | T[number]['value']>(
+    index: K
+  ): K extends T[number]['key'] ? T[number]['value'] : T[number]['key'] {
     if (index in indexByKey) {
       return indexByKey[index].value as any;
     }

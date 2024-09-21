@@ -47,6 +47,11 @@ export const CONFIGS_DATA = {
       message: '售出物品',
       value: 1000,
     },
+    {
+      key: 'BonusCompanyPurchasedItemAction',
+      message: '公司買回',
+      value: 1001,
+    },
   ],
   itemType: [
     {
