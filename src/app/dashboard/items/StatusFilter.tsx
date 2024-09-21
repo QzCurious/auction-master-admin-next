@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { type StatusCount } from '@/api/backend/items/GetItemsAndDetails';
 import { PAGE } from '@/domain/static/static';
 import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
-import { StatusFlow } from '@/StatusFlow';
+import { StatusFlow } from '@/domain/static/StatusFlow';
 import { Badge, Box, Chip, colors, MenuItem, Select, Typography } from '@mui/material';
 import * as R from 'remeda';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
-import { StatusFlow } from '@/StatusFlow';
+import { StatusFlow } from '@/domain/static/StatusFlow';
 
 import { FlowGraph } from '@/components/FlowGraph';
 

@@ -6,12 +6,12 @@ import { useRouter } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
-import { ITEM_STATUS, ITEM_TYPE } from '@/domain/static/static-config-mappers';
+import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
-import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { currencySign } from '@/domain/static/static';
-import { StatusFlow } from '@/StatusFlow';
+import { ITEM_STATUS, ITEM_TYPE } from '@/domain/static/static-config-mappers';
+import { StatusFlow } from '@/domain/static/StatusFlow';
 import { zodResolver } from '@hookform/resolvers/zod';
 import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
@@ -472,7 +472,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                   }}
                   InputProps={{
                     readOnly:
-                      !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['shippingCostsWithinJapan'] }]),
+                      !canUpdate ||
+                      !havePermissions([{ key: 'AdminUpdateItem', fields: ['shippingCostsWithinJapan'] }]),
                     startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                   }}
                 />
@@ -522,7 +523,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
                   InputProps={{
-                    readOnly: !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['volumetricWeight'] }]),
+                    readOnly:
+                      !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['volumetricWeight'] }]),
                     endAdornment: <InputAdornment position="end">g</InputAdornment>,
                   }}
                 />

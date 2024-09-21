@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { type ITEM_STATUS, type ITEM_TYPE } from './domain/static/static-config-mappers';
+import { type ITEM_STATUS, type ITEM_TYPE } from './static-config-mappers';
 
 type Adjudicator = 'admin' | 'consignor' | 'system';
 
