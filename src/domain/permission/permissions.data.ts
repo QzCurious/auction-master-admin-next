@@ -304,18 +304,18 @@ export const PERMISSIONS_DATA = [
         description: '取得日拍競標商品成交預覽',
       },
       {
-        key: 'DealAuctionItem',
-        url: '/auction-master/backend/auction-items/:id/deal',
-        method: 'POST',
-        fields: ['*'],
-        description: '日拍競標商品成交',
-      },
-      {
         key: 'ShippingAuctionItem',
         url: '/auction-master/backend/auction-items/shipping',
         method: 'POST',
         fields: ['*'],
         description: '日拍競標商品出貨',
+      },
+      {
+        key: 'CompanyPurchased',
+        url: '/auction-master/backend/auction-items/:id/company-purchased',
+        method: 'POST',
+        fields: ['*'],
+        description: '公司買回物品',
       },
       {
         key: 'CancelAuctionItem',

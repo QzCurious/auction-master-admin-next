@@ -2,9 +2,10 @@
 
 import { useSearchParams } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign } from '@/domain/static/static';
+import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Checkbox, Link } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -21,12 +22,12 @@ import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { useAtom } from 'jotai';
 import * as R from 'remeda';
 
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import { CountdownTime } from '@/components/CountdownTime';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
 import BidPopover from './BidPopover';
+import CompanyPurchasedButton from './CompanyPurchasedButton';
 import EditDialog from './EditDialog';
 import { pickedItemIdsReducerAtom } from './PickingList';
 import StopWatchButton from './StopWatchButton';
@@ -198,7 +199,15 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                           </HavePermissionsOnly>
                         </Stack>
                       ) : (
-                        <div>{AUCTION_ITEM_STATUS.get('value', row.status).message}</div>
+                        <Stack alignItems="center" spacing={1}>
+                          <div>{AUCTION_ITEM_STATUS.get('value', row.status).message}</div>
+                          {row.status === AUCTION_ITEM_STATUS.enum('ClosedStatus') &&
+                            row.closedPrice < row.reservePrice && (
+                              <HavePermissionsOnly permissions={['CompanyPurchased']}>
+                                <CompanyPurchasedButton auctionItem={row} />
+                              </HavePermissionsOnly>
+                            )}
+                        </Stack>
                       )}
                     </TableCell>
                     <TableCell>
