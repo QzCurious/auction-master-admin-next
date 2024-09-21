@@ -23,7 +23,7 @@ export function useHavePermissions() {
         if (!(p.key in userPermissions)) {
           return false;
         }
-        return p.fields.every((f) => userPermissions[p.key].fields.includes(f));
+        return p.fields.every((f) => userPermissions[p.key]?.fields.includes(f));
       });
     },
     [userPermissions]

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { GetBackendConfigsQueryOptions } from '@/api/backend/GetConfigs.query';
+import { GetConfigsQueryOptions } from '@/api/backend/GetConfigs.query';
 import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetail.query';
 import { ItemReturning } from '@/api/backend/items/ItemReturning';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
@@ -143,7 +143,7 @@ function ReturnItemsForm() {
     resolver: zodResolver(Schema),
   });
 
-  const configsRes = useQuery(GetBackendConfigsQueryOptions());
+  const configsRes = useQuery(GetConfigsQueryOptions());
   if (configsRes.error) return null;
   if (configsRes.isPending) return null;
   if (configsRes.data?.error === '1001') return <WithoutPermissionsError permissions={['GetConfigs']} />;

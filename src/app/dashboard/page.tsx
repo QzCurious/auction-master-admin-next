@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { GetBackendConfigs } from '@/api/backend/GetConfigs';
+import { GetConfigs } from '@/api/backend/GetConfigs';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
@@ -22,7 +22,7 @@ import ReportsChart from './ReportsChart';
 export const metadata = { title: `Overview | ${SITE_NAME}` } satisfies Metadata;
 
 export default async function Page() {
-  const configsRes = await GetBackendConfigs();
+  const configsRes = await GetConfigs();
 
   if (configsRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetConfigs']} />;

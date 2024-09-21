@@ -35,7 +35,7 @@ interface Data extends Configs {}
 
 type ErrorCode = never;
 
-export async function GetBackendConfigs() {
+export async function GetConfigs() {
   const res = await withAuth(apiClient)<Data, ErrorCode>('/configs', {
     method: 'GET',
     next: {

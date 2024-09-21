@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
-import { GetBackendConfigsQueryOptions } from '@/api/backend/GetConfigs.query';
+import { GetConfigsQueryOptions } from '@/api/backend/GetConfigs.query';
 import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetail.query';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { currencySign, DATE_FORMAT } from '@/domain/static/static';
@@ -81,7 +81,7 @@ export function ListItemSkeleton() {
 }
 
 export function PickedListItem({ item }: { item: Item }) {
-  const configsRes = useQuery(GetBackendConfigsQueryOptions());
+  const configsRes = useQuery(GetConfigsQueryOptions());
   if (configsRes.error) return null;
   if (configsRes.isPending) return null;
   if (configsRes.data?.error === '1001') return <WithoutPermissionsError permissions={['GetConfigs']} />;

@@ -1,10 +1,10 @@
 import { type QueryOptions } from '@tanstack/react-query';
 
-import { GetBackendConfigs } from './GetConfigs';
+import { GetConfigs } from './GetConfigs';
 
-export function GetBackendConfigsQueryOptions(...args: Parameters<typeof GetBackendConfigs>) {
+export function GetConfigsQueryOptions(...args: Parameters<typeof GetConfigs>) {
   return {
     queryKey: ['configs', ...args],
-    queryFn: () => GetBackendConfigs(...args),
+    queryFn: () => GetConfigs(...args),
   } satisfies QueryOptions;
 }

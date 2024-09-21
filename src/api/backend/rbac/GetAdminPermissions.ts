@@ -4,7 +4,7 @@ import { type PermissionKey } from '@/domain/permission/types';
 
 import { type Admin } from '../admins/GetAdmins';
 
-export type Permissions = Record<PermissionKey, { fields: Array<string> }>;
+export type Permissions = Partial<Record<PermissionKey, { fields: Array<string> }>>;
 
 type Data = Permissions;
 

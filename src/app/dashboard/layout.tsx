@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { GetAdminPermissions } from '@/api/backend/rbac/GetAdminPermissions';
 import { getUser } from '@/domain/auth/getToken';
-import { PermissionsContextProvider } from '@/domain/permission/PermissionsContext';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { UserContextProvider } from '@/domain/auth/UserContext';
+import { PermissionsContextProvider } from '@/domain/permission/PermissionsContext';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
 import { MainNav } from '@/components/dashboard/layout/main-nav';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import SideNavMenu from '../SideNavMenu';
 
@@ -23,16 +23,10 @@ export default async function Layout({ children }: LayoutProps) {
     return <RedirectAuthError />;
   }
   const permissionsRes = await GetAdminPermissions(user.account);
-  if (permissionsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAdminPermissions']} />;
-  }
-  if (permissionsRes.error === '1003') {
-    return <RedirectAuthError />;
-  }
 
   return (
     <UserContextProvider user={user}>
-      <PermissionsContextProvider permissions={permissionsRes.data}>
+      <PermissionsContextProvider permissions={permissionsRes.data ?? {}}>
         <GlobalStyles
           styles={{
             body: {
