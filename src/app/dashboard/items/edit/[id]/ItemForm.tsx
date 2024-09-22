@@ -15,6 +15,7 @@ import { StatusFlow } from '@/domain/static/StatusFlow';
 import { zodResolver } from '@hookform/resolvers/zod';
 import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
+import SimCardDownloadOutlinedIcon from '@mui/icons-material/SimCardDownloadOutlined';
 import { Button, Grid, IconButton, InputAdornment, InputLabel, Link, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
@@ -540,6 +541,20 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
             <Box sx={{ display: 'flex', alignItems: 'center', height: 0, mb: -0.5 }}>
               <IconButton size="small" type="button" onClick={() => copy(quillRef.current?.getSemanticHTML() ?? '')}>
                 <IntegrationInstructionsOutlinedIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                size="small"
+                type="button"
+                onClick={() => {
+                  if (!quillRef.current) return;
+                  const range = quillRef.current.getSelection();
+                  const index = range?.index ?? quillRef.current.getLength();
+                  for (let i = item.photos.length - 1; i >= 0; i--) {
+                    quillRef.current.insertEmbed(index, 'image', item.photos[i].photo);
+                  }
+                }}
+              >
+                <SimCardDownloadOutlinedIcon fontSize="small" />
               </IconButton>
             </Box>
           </Stack>

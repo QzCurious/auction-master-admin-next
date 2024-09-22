@@ -174,7 +174,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
           </Box>
         )}
 
-        <Box ref={containerRef} position="relative" sx={{ overflowX: 'auto' }}>
+        <Box ref={containerRef} position="relative" py={1} sx={{ overflowX: 'auto' }}>
           <Stack direction="row" mt={1} mx={-1}>
             {fields.map((field, i) => (
               <Controller
@@ -196,7 +196,10 @@ export default function PhotoListSection({ item }: { item: Item }) {
                       borderRightWidth: onto === refs.current[i] && side === 'right' ? 2 : 0,
                     }}
                   >
-                    <Box component="article" sx={{ backgroundColor: colors.grey[100], position: 'relative' }}>
+                    <Box
+                      component="article"
+                      sx={{ backgroundColor: colors.grey[100], position: 'relative', borderRadius: 1 }}
+                    >
                       <Link
                         style={{ position: 'absolute', inset: 0 }}
                         href={field.value instanceof File ? createUrl(field.value) : field.value.photo}
@@ -205,6 +208,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
                       <Box
                         component="img"
                         sx={{
+                          display: 'block',
                           width: 320,
                           aspectRatio: '16/10',
                           pointerEvents: 'none',
