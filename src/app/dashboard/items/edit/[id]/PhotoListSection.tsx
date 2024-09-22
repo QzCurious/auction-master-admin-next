@@ -6,6 +6,7 @@ import { AdminDeleteItemPhoto } from '@/api/backend/items/AdminDeleteItemPhoto';
 import { AdminReorderItemPhoto } from '@/api/backend/items/AdminReorderItemPhoto';
 import { AdminUpsertItemPhoto } from '@/api/backend/items/AdminUpsertItemPhoto';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useObjectURL } from '@/helper/useObjectURL';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -21,8 +22,6 @@ import { useGesture } from '@use-gesture/react';
 import { useMotionValue } from 'framer-motion';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 
 const PhotoListSchema = z.object({
   photos: z
@@ -147,6 +146,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
           id="file-upload"
           name="file-upload"
           type="file"
+          accept="image/png, image/jpeg, image/jpg"
           hidden
           multiple
           onChange={async (e) => {
