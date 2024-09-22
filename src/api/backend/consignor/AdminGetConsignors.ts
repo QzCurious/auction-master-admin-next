@@ -1,12 +1,12 @@
 'use server';
 
 import { appendEntries } from '@/domain/crud/appendEntries';
+import { type CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   fuzzyNickname: z.string().optional(),
@@ -26,7 +26,7 @@ export interface Consignor {
   commissionBonusRate: number;
   name: string;
   identification: string;
-  gender: number;
+  gender: 1 | 2;
   birthday: string;
   city: string;
   district: string;

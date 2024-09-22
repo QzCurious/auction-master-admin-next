@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
-import { CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
+import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHandleNoPermissions } from '@/domain/permission/useHandleNoPermissions';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
-import { getDirtyFields } from '@/domain/crud/getDirtyFields';
+import { database } from '@/domain/static/address.data';
+import { CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { Button, Chip, Grid, InputAdornment, InputLabel, Link, MenuItem, Select, TextField } from '@mui/material';
@@ -19,6 +20,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography/Typography';
+import { DatePicker } from '@mui/x-date-pickers';
 import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
@@ -37,16 +39,20 @@ interface ConsignorFromProps {
 
 const FormSchema = z
   .object({
-    nickname: z.string().min(1, '必填'),
-    status: z.number().refine(R.isIncludedIn(CONSIGNOR_STATUS.data.map((item) => item.value)), { message: '必填' }),
-    name: z.string(),
-    identification: z.string(),
-    phone: z.string(),
-    bankCode: z.string(),
-    bankAccount: z.string(),
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
     commissionBonusRate: z.coerce.number().min(0).max(100),
+    name: z.string().min(1, { message: '必填' }),
+    identification: z.string().min(1, { message: '必填' }),
+    gender: z.coerce.number().refine((v) => v === 1 || v === 2, { message: '必填' }),
+    birthday: z.coerce.date({ message: '必填' }),
+    city: z.string().min(1, { message: '必填' }),
+    district: z.string().min(1, { message: '必填' }),
+    streetAddress: z.string().min(1, { message: '必填' }),
+    phone: z.string({ message: '必填' }),
+    bankCode: z.string({ message: '必填' }),
+    bankAccount: z.string({ message: '必填' }),
+    status: z.number().refine(R.isIncludedIn(CONSIGNOR_STATUS.data.map((item) => item.value)), { message: '必填' }),
   })
   .refine((data) => (!data.password ? true : data.password === data.confirmPassword), {
     message: '請重新確認新密碼',
@@ -58,21 +64,27 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
   const [showPassword, setShowPassword] = useState<boolean>();
   const {
     control,
+    watch,
     handleSubmit,
     formState: { isSubmitting, dirtyFields, defaultValues },
     getValues,
+    setValue,
   } = useForm<z.output<typeof FormSchema>>({
     values: {
-      nickname: consignor.nickname,
-      status: consignor.status,
-      name: consignor.name,
-      identification: consignor.identification,
-      phone: consignor.phone,
-      bankCode: consignor.bankCode,
-      bankAccount: consignor.bankAccount,
       password: '',
       confirmPassword: '',
       commissionBonusRate: BigNumber(consignor.commissionBonusRate).multipliedBy(100).toNumber(),
+      name: consignor.name,
+      identification: consignor.identification,
+      gender: consignor.gender,
+      birthday: new Date(consignor.birthday),
+      city: consignor.city,
+      district: consignor.district,
+      streetAddress: consignor.streetAddress,
+      phone: consignor.phone,
+      bankCode: consignor.bankCode,
+      bankAccount: consignor.bankAccount,
+      status: consignor.status,
     },
     resolver: zodResolver(FormSchema),
   });
@@ -146,6 +158,58 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
 
           <Grid container spacing={3} sx={{ mt: 0 }}>
             <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="大師幣"
+                type="text"
+                InputProps={{
+                  readOnly: true,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        LinkComponent={Link}
+                        size="small"
+                        color="primary"
+                        href={`/dashboard/consignor-balance/wallet-logs?consignorID=${consignor.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <LaunchOutlinedIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                value={consignor.walletBalance.toLocaleString()}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="紅利"
+                type="text"
+                InputProps={{
+                  readOnly: true,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        LinkComponent={Link}
+                        size="small"
+                        color="primary"
+                        href={`/dashboard/consignor-balance/bonus-logs?consignorID=${consignor.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <LaunchOutlinedIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                value={consignor.bonusBalance.toLocaleString()}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <TextField
                   InputProps={{ readOnly: true }}
@@ -197,24 +261,15 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <Controller
-                control={control}
-                name="nickname"
-                render={({ field, fieldState }) => (
-                  <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField
-                      {...field}
-                      label="暱稱"
-                      type="text"
-                      fullWidth
-                      InputProps={{
-                        readOnly: !havePermissions([{ key: 'AdminUpdateConsignor', fields: ['nickname'] }]),
-                      }}
-                    />
-                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                  </FormControl>
-                )}
-              />
+              <FormControl fullWidth>
+                <TextField
+                  value={consignor.nickname}
+                  label="暱稱"
+                  type="text"
+                  fullWidth
+                  InputProps={{ readOnly: true }}
+                />
+              </FormControl>
             </Grid>
 
             <Grid item xs={12} sm={6}>
@@ -320,58 +375,6 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
             </HavePermissionsOnly>
 
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="大師幣"
-                type="text"
-                InputProps={{
-                  readOnly: true,
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        LinkComponent={Link}
-                        size="small"
-                        color="primary"
-                        href={`/dashboard/consignor-balance/wallet-logs?consignorID=${consignor.id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <LaunchOutlinedIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                value={consignor.walletBalance.toLocaleString()}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="紅利"
-                type="text"
-                InputProps={{
-                  readOnly: true,
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        LinkComponent={Link}
-                        size="small"
-                        color="primary"
-                        href={`/dashboard/consignor-balance/bonus-logs?consignorID=${consignor.id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <LaunchOutlinedIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                value={consignor.bonusBalance.toLocaleString()}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
               <Controller
                 control={control}
                 name="name"
@@ -392,7 +395,46 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
               />
             </Grid>
 
-            <Grid item xs />
+            <Grid item xs={12} sm={6}>
+              <Controller
+                control={control}
+                name="gender"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth>
+                    <InputLabel>性別</InputLabel>
+                    <Select
+                      label="性別"
+                      type="text"
+                      {...field}
+                      readOnly={!havePermissions([{ key: 'AdminUpdateConsignor', fields: ['gender'] }])}
+                      fullWidth
+                    >
+                      <MenuItem value={1}>男</MenuItem>
+                      <MenuItem value={2}>女</MenuItem>
+                    </Select>
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Controller
+                control={control}
+                name="birthday"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <DatePicker
+                      {...field}
+                      label="生日"
+                      format="yyyy/MM/dd"
+                      readOnly={!havePermissions([{ key: 'AdminUpdateConsignor', fields: ['birthday'] }])}
+                    />
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
 
             <Grid item xs={12} sm={6}>
               <Controller
@@ -435,6 +477,88 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
                 )}
               />
             </Grid>
+
+            <Grid item xs />
+
+            <Grid item xs={12} sm={6}>
+              <Controller
+                control={control}
+                name="city"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth>
+                    <InputLabel>縣市</InputLabel>
+                    <Select
+                      label="縣市"
+                      type="text"
+                      {...field}
+                      onChange={(v) => {
+                        field.onChange(v);
+                        setValue('district', '');
+                      }}
+                      readOnly={!havePermissions([{ key: 'AdminUpdateConsignor', fields: ['city'] }])}
+                      fullWidth
+                    >
+                      {Object.keys(database).map((v) => (
+                        <MenuItem key={v} value={v}>
+                          {v}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Controller
+                control={control}
+                name="district"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <InputLabel>區域</InputLabel>
+                    <Select
+                      label="區域"
+                      type="text"
+                      {...field}
+                      readOnly={!havePermissions([{ key: 'AdminUpdateConsignor', fields: ['district'] }])}
+                      fullWidth
+                    >
+                      {watch('city') &&
+                        Object.keys(database[watch('city') as keyof typeof database]).map((v) => (
+                          <MenuItem key={v} value={v}>
+                            {v}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Controller
+                control={control}
+                name="streetAddress"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <TextField
+                      {...field}
+                      label="地址"
+                      type="text"
+                      fullWidth
+                      InputProps={{
+                        readOnly: !havePermissions([{ key: 'AdminUpdateConsignor', fields: ['streetAddress'] }]),
+                      }}
+                    />
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
+
+            <Grid item xs />
 
             <Grid item xs={12} sm={6}>
               <Controller

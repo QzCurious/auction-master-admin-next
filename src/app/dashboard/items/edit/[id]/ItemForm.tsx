@@ -41,7 +41,6 @@ interface ItemFromProps {
 export type FormSchemaType = z.output<typeof FormSchema>;
 const FormSchema = z
   .object({
-    consignorID: z.number(),
     type: z.number().refine(R.isIncludedIn([0, ...ITEM_TYPE.data.map((item) => item.value)])),
     isNew: z.coerce.boolean(),
     name: z.string().min(1, '必填'),
@@ -79,7 +78,6 @@ const FormSchema = z
 export function ItemFormProvider({ item, children }: { item: Item; children: React.ReactNode }) {
   const form = useForm<z.input<typeof FormSchema>>({
     values: {
-      consignorID: item.consignorID,
       type: item.type,
       isNew: item.isNew,
       name: item.name,
@@ -465,7 +463,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
               <FormControl fullWidth error={!!fieldState.error}>
                 <TextField
                   {...field}
-                  label="日本運費"
+                  label="日本國內運費"
                   type="number"
                   fullWidth
                   onChange={(e) => {

@@ -1,8 +1,9 @@
 'use server';
 
+import { type CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
+
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { type CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
 
 export interface Consignor {
   id: number;
@@ -13,7 +14,7 @@ export interface Consignor {
   commissionBonusRate: number;
   name: string;
   identification: string;
-  gender: number;
+  gender: 1 | 2;
   birthday: string;
   city: string;
   district: string;
