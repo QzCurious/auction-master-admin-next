@@ -1,7 +1,7 @@
 'use client';
 
-import type React from 'react';
-import { useRef } from 'react';
+import React, { useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
@@ -25,12 +25,12 @@ import { DatePicker } from '@mui/x-date-pickers';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import type Quill from 'quill/core';
-import { Delta } from 'quill/core';
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import QuillTextEditor from '@/components/QuillTextEditor/QuillTextEditor';
+const QuillTextEditor = dynamic(() => import('@/components/QuillTextEditor/QuillTextEditor'), { ssr: false });
+const emptyDelta = [{ insert: '\n' }];
 
 interface ItemFromProps {
   item: Item;
@@ -82,7 +82,7 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
       type: item.type,
       isNew: item.isNew,
       name: item.name,
-      description: item.description ? item.description : JSON.stringify(new Delta().insert('\n').ops),
+      description: item.description ? item.description : JSON.stringify(emptyDelta),
       directPurchasePrice: item.directPurchasePrice,
       minEstimatedPrice: item.minEstimatedPrice,
       maxEstimatedPrice: item.maxEstimatedPrice,
@@ -550,9 +550,9 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
                 <QuillTextEditor
-                  ref={quillRef}
+                  quillRef={quillRef}
                   readOnly={!canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['description'] }])}
-                  defaultValue={new Delta({ ops: JSON.parse(field.value) })}
+                  defaultValue={field.value}
                   onTextChange={(delta, oldDelta) => field.onChange(JSON.stringify(oldDelta.compose(delta).ops))}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
