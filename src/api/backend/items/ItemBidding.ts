@@ -15,8 +15,10 @@ const ReqSchema = z.object({
 type Data = 'Success';
 
 type ErrorCode =
+  // worker id does not exist
+  | '1020'
   // auction item not closed
-  '1025';
+  | '1025';
 
 export async function ItemBidding(id: number, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);

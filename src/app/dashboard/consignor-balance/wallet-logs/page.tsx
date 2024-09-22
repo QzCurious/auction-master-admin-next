@@ -7,6 +7,8 @@ import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { RangeFilter } from '@/domain/crud/RangeFilter';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { WALLET_ACTION } from '@/domain/static/static-config-mappers';
@@ -39,9 +41,11 @@ interface PageProps {
 
 export default async function Page(pageProps: PageProps) {
   return (
-    <section>
-      <Content {...pageProps} />
-    </section>
+    <PermissionsGuard permissions={['AdminGetWalletLogs']}>
+      <section>
+        <Content {...pageProps} />
+      </section>
+    </PermissionsGuard>
   );
 }
 
@@ -85,7 +89,9 @@ async function Content({ searchParams }: PageProps) {
             <Table sx={{ minWidth: '800px' }}>
               <TableHead>
                 <TableRow sx={{ whiteSpace: 'nowrap' }}>
-                  <TableCell>寄售人</TableCell>
+                  <HavePermissionsOnly permissions={['AdminGetConsignor']}>
+                    <TableCell>寄售人</TableCell>
+                  </HavePermissionsOnly>
                   <TableCell>操作</TableCell>
                   <TableCell>異動額</TableCell>
                   <TableCell>餘額</TableCell>
@@ -96,9 +102,11 @@ async function Content({ searchParams }: PageProps) {
                 {walletLogsRes.data.walletLogs.length === 0 && <EmptyTableRow />}
                 {walletLogsRes.data.walletLogs.map((row) => (
                   <TableRow hover key={row.id}>
-                    <TableCell>
-                      <ConsignorInfo consignorID={row.consignorID} />
-                    </TableCell>
+                    <HavePermissionsOnly permissions={['AdminGetConsignor']}>
+                      <TableCell>
+                        <ConsignorInfo consignorID={row.consignorID} />
+                      </TableCell>
+                    </HavePermissionsOnly>
                     <TableCell
                       title={
                         process.env.NODE_ENV === 'development'

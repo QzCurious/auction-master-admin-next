@@ -499,6 +499,10 @@ function ReadyStatusHandleButtons({ item }: { item: Item }) {
             setError('');
             if (!auctionID) return;
             const res = await ItemBidding(item.id, { auctionID });
+            if (res.error === '1020') {
+              setError('沒有啟用中的盯標帳號');
+              return;
+            }
             if (res.error === '1025') {
               setError('日拍ID不能重複');
               return;

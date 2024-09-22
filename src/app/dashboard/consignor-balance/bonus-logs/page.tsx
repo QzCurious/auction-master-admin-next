@@ -7,13 +7,23 @@ import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { RangeFilter } from '@/domain/crud/RangeFilter';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { BONUS_ACTION } from '@/domain/static/static-config-mappers';
-import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
-import { Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
+import { TableContainer } from '@mui/material';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import { Box, Stack } from '@mui/system';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
 
@@ -31,9 +41,11 @@ interface PageProps {
 
 export default async function Page(pageProps: PageProps) {
   return (
-    <section>
-      <Content {...pageProps} />
-    </section>
+    <PermissionsGuard permissions={['AdminGetBonusLogs']}>
+      <section>
+        <Content {...pageProps} />
+      </section>
+    </PermissionsGuard>
   );
 }
 
@@ -76,7 +88,9 @@ async function Content({ searchParams }: PageProps) {
             <Table sx={{ minWidth: '800px' }}>
               <TableHead>
                 <TableRow sx={{ whiteSpace: 'nowrap' }}>
-                  <TableCell>寄售人</TableCell>
+                  <HavePermissionsOnly permissions={['AdminGetConsignor']}>
+                    <TableCell>寄售人</TableCell>
+                  </HavePermissionsOnly>
                   <TableCell>操作</TableCell>
                   <TableCell>異動額</TableCell>
                   <TableCell>餘額</TableCell>
@@ -87,9 +101,11 @@ async function Content({ searchParams }: PageProps) {
                 {bonusLogsRes.data.bonusLogs.length === 0 && <EmptyTableRow />}
                 {bonusLogsRes.data.bonusLogs.map((row) => (
                   <TableRow hover key={row.id}>
-                    <TableCell>
-                      <ConsignorInfo consignorID={row.consignorID} />
-                    </TableCell>
+                    <HavePermissionsOnly permissions={['AdminGetConsignor']}>
+                      <TableCell>
+                        <ConsignorInfo consignorID={row.consignorID} />
+                      </TableCell>
+                    </HavePermissionsOnly>
                     <TableCell
                       title={
                         process.env.NODE_ENV === 'development'
@@ -135,11 +151,18 @@ async function ConsignorInfo({ consignorID }: { consignorID: BonusLogs['consigno
   }
 
   return (
-    <Stack whiteSpace="nowrap" direction="row" spacing={0.5}>
+    <>
       {res.data.nickname}
-      <Link href={`/dashboard/consignors?consignorID=${consignorID}`} target="_blank" rel="noreferrer">
-        <OpenInNewOutlinedIcon fontSize="small" />
-      </Link>
-    </Stack>
+      <IconButton
+        LinkComponent={Link}
+        size="small"
+        color="primary"
+        href={`/dashboard/consignors?consignorID=${consignorID}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <LaunchOutlinedIcon fontSize="small" />
+      </IconButton>
+    </>
   );
 }
