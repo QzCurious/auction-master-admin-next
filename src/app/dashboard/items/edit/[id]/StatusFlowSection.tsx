@@ -16,7 +16,7 @@ import { ITEM_STATUS, ITEM_TYPE } from '@/domain/static/static-config-mappers';
 import { StatusFlow } from '@/domain/static/StatusFlow';
 import { useUntil } from '@/helper/useUntil';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Button, Chip, colors, IconButton, InputLabel, Link, MenuItem, Select, TextField } from '@mui/material';
+import { Button, Chip, IconButton, InputLabel, Link, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -47,7 +47,6 @@ export default function StatusFlowSection({ item }: { item: Item }) {
   return (
     <Card
       sx={{
-        py: 2,
         px: 3,
         position: 'relative',
         minWidth: 'fit-content',
@@ -113,14 +112,6 @@ export default function StatusFlowSection({ item }: { item: Item }) {
         <StatusFlowUI item={item} />
       </Box>
     </Card>
-  );
-}
-
-function NotImplemented() {
-  return (
-    <Box sx={{ color: colors.grey[600], bgcolor: colors.grey[100], px: 2, py: 0.5 }}>
-      <Typography variant="body2">尚未實作</Typography>
-    </Box>
   );
 }
 

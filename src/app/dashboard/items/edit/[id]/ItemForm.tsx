@@ -35,7 +35,7 @@ const emptyDelta = [{ insert: '\n' }];
 
 interface ItemFromProps {
   item: Item;
-  consignor: Consignor;
+  consignor?: Consignor;
 }
 
 export type FormSchemaType = z.output<typeof FormSchema>;
@@ -112,7 +112,6 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
   const canUpdate =
-    havePermissions(['AdminUpdateItem']) &&
     item.status !== ITEM_STATUS.enum('BiddingStatus') &&
     // 判斷是否為最後一個狀態
     !Object.values(StatusFlow.flow)
@@ -164,21 +163,7 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
           </Button>
         )}
 
-        {/* {isDirty && (
-          <Button
-            type="button"
-            color="secondary"
-            variant="text"
-            onClick={() => {
-              if (defaultValues?.description) {
-                quillRef.current?.setContents(new Delta({ ops: JSON.parse(defaultValues.description) }));
-              }
-            }}
-          >
-            重設
-          </Button>
-        )} */}
-        {canUpdate && (
+        {havePermissions(['AdminUpdateItem']) && canUpdate && (
           <Button type="submit" variant="contained" disabled={isSubmitting}>
             送出
           </Button>
@@ -186,8 +171,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
       </Stack>
 
       <Grid container spacing={3} sx={{ mt: 0 }}>
-        <Grid item xs={12} sm={6}>
-          <HavePermissionsOnly permissions={['AdminGetConsignor']}>
+        {consignor && (
+          <Grid item xs={12} sm={6}>
             <TextField
               value={consignor.nickname}
               inputProps={{ readOnly: true }}
@@ -211,8 +196,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
               type="text"
               fullWidth
             />
-          </HavePermissionsOnly>
-        </Grid>
+          </Grid>
+        )}
 
         <Grid item xs={12} sm={6}>
           <Controller
@@ -239,6 +224,8 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
             )}
           />
         </Grid>
+
+        {!consignor && <Grid item xs />}
 
         <Grid item xs={12} sm={6}>
           <Controller
@@ -540,20 +527,22 @@ export function ItemForm({ item, consignor }: ItemFromProps) {
               <IconButton size="small" type="button" onClick={() => copy(quillRef.current?.getSemanticHTML() ?? '')}>
                 <IntegrationInstructionsOutlinedIcon fontSize="small" />
               </IconButton>
-              <IconButton
-                size="small"
-                type="button"
-                onClick={() => {
-                  if (!quillRef.current) return;
-                  const range = quillRef.current.getSelection();
-                  const index = range?.index ?? quillRef.current.getLength();
-                  for (let i = item.photos.length - 1; i >= 0; i--) {
-                    quillRef.current.insertEmbed(index, 'image', item.photos[i].photo);
-                  }
-                }}
-              >
-                <SimCardDownloadOutlinedIcon fontSize="small" />
-              </IconButton>
+              <HavePermissionsOnly permissions={[{ key: 'AdminUpdateItem', fields: ['description'] }]}>
+                <IconButton
+                  size="small"
+                  type="button"
+                  onClick={() => {
+                    if (!quillRef.current) return;
+                    const range = quillRef.current.getSelection();
+                    const index = range?.index ?? quillRef.current.getLength();
+                    for (let i = item.photos.length - 1; i >= 0; i--) {
+                      quillRef.current.insertEmbed(index, 'image', item.photos[i].photo);
+                    }
+                  }}
+                >
+                  <SimCardDownloadOutlinedIcon fontSize="small" />
+                </IconButton>
+              </HavePermissionsOnly>
             </Box>
           </Stack>
 

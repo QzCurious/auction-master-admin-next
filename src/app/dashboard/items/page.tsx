@@ -1,17 +1,19 @@
 import type { Metadata } from 'next';
 import { GetItemsAndDetails } from '@/api/backend/items/GetItemsAndDetails';
-import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
+import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
 import { Provider } from 'jotai';
 
 import AutoRefreshPage from '@/components/AutoRefreshPage';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ConsignorFilter } from '../../../domain/crud/ConsignorFilter';
 import { ItemTable } from './ItemTable';
@@ -36,22 +38,15 @@ export default async function Page(pageProps: PageProps) {
 
           <Stack direction="row" spacing={1}>
             {/* <DirectIdInput /> */}
-
-            {/* <Button
-              LinkComponent={Link}
-              href="/dashboard/items/create"
-              startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
-              variant="contained"
-            >
-              新增
-            </Button> */}
           </Stack>
         </Stack>
       </Stack>
 
-      <section>
-        <Content {...pageProps} />
-      </section>
+      <PermissionsGuard permissions={['GetItemsAndDetails']}>
+        <section>
+          <Content {...pageProps} />
+        </section>
+      </PermissionsGuard>
     </Stack>
   );
 }
@@ -95,7 +90,10 @@ async function Content({ searchParams }: PageProps) {
             )}
 
             <Box mx="auto" />
-            <PickForReturnButtons picking={query.picking} stage={query.stage} />
+
+            <HavePermissionsOnly permissions={['AdminGetConsignor', 'AdminGetConsignors', 'ItemReturning']}>
+              <PickForReturnButtons picking={query.picking} stage={query.stage} />
+            </HavePermissionsOnly>
           </Stack>
 
           {query.picking === 'return' && !query.consignorID ? (

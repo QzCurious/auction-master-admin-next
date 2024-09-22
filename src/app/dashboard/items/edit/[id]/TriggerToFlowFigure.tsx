@@ -2,6 +2,7 @@
 
 import { useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { visuallyHidden } from '@mui/utils';
 
 interface UseMultiClickOptions {
   clicks: number;
@@ -52,7 +53,7 @@ export default function TriggerToFlowFigure() {
         },
       })}
     >
-      hidden
+      <span style={visuallyHidden}>hidden</span>
     </button>
   );
 }

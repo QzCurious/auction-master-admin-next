@@ -3,14 +3,14 @@ import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { GetItemAndDetails } from '@/api/backend/items/GetItemAndDetails';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { havePermissions, PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Box, Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Stack } from '@mui/system';
-
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ItemForm, ItemFormProvider } from './ItemForm';
 import PhotoListSection from './PhotoListSection';
@@ -36,7 +36,9 @@ async function Page(pageProps: PageProps) {
         編輯物品
       </Typography>
 
-      <Content {...pageProps} />
+      <PermissionsGuard permissions={['GetItemAndDetails']}>
+        <Content {...pageProps} />
+      </PermissionsGuard>
     </>
   );
 }
@@ -58,15 +60,9 @@ async function Content({ params }: PageProps) {
     notFound();
   }
 
-  const consignorRes = await AdminGetConsignor(itemRes.data.consignorID);
-
-  if (consignorRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
-  }
-
-  if (consignorRes.error === '1003') {
-    return <RedirectAuthError />;
-  }
+  const consignorRes = (await havePermissions(['AdminGetConsignor']))
+    ? await AdminGetConsignor(itemRes.data.consignorID)
+    : undefined;
 
   return (
     <>
@@ -77,7 +73,7 @@ async function Content({ params }: PageProps) {
       <Box mt={4}>
         <ItemFormProvider item={itemRes.data}>
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
-            <ItemForm item={itemRes.data} consignor={consignorRes.data} />
+            <ItemForm item={itemRes.data} consignor={consignorRes?.data ?? undefined} />
             <StatusFlowSection item={itemRes.data} />
           </Stack>
         </ItemFormProvider>
