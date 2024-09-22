@@ -2,16 +2,16 @@ import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Stack } from '@mui/system';
 
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
-
-import ConsignorForm from '../../ConsignorForm';
+import EditConsignorForm from './EditConsignorForm';
 
 export const metadata = { title: `編輯管寄售人 | ${SITE_NAME}` } satisfies Metadata;
 
@@ -31,7 +31,9 @@ async function Page(pageProps: PageProps) {
         編輯寄售人
       </Typography>
 
-      <Form {...pageProps} />
+      <PermissionsGuard permissions={['AdminGetConsignor']}>
+        <Form {...pageProps} />
+      </PermissionsGuard>
     </>
   );
 }
@@ -53,5 +55,5 @@ async function Form({ params }: PageProps) {
     notFound();
   }
 
-  return <ConsignorForm consignor={consignorRes.data} />;
+  return <EditConsignorForm consignor={consignorRes.data} />;
 }

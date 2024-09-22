@@ -36,7 +36,7 @@ interface AuctionItemTableProps {
   rows: AuctionItem[];
   count: number;
 
-  activationWorkers: Worker[];
+  activationWorkers?: Worker[];
 }
 
 export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItemTableProps) {
@@ -230,9 +230,11 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                         AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
                       ]) && (
                         <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
-                          <HavePermissionsOnly permissions={['UpdateAuctionItem']}>
-                            <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
-                          </HavePermissionsOnly>
+                          {activationWorkers && (
+                            <HavePermissionsOnly permissions={['UpdateAuctionItem']}>
+                              <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
+                            </HavePermissionsOnly>
+                          )}
                           <HavePermissionsOnly permissions={['BidAuctionItem']}>
                             <BidPopover auctionItem={row} />
                           </HavePermissionsOnly>

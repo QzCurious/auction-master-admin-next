@@ -3,8 +3,9 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
-import { CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign, toPercent } from '@/domain/static/static';
+import { CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
 import EditIcon from '@mui/icons-material/Edit';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { Chip, TableContainer } from '@mui/material';
@@ -19,7 +20,6 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
@@ -126,7 +126,7 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        <HavePermissionsOnly permissions={['AdminUpdateConsignor']}>
+                        <HavePermissionsOnly permissions={['AdminGetConsignor']}>
                           <IconButton LinkComponent={Link} href={`/dashboard/consignors/edit/${row.id}`}>
                             <EditIcon />
                           </IconButton>

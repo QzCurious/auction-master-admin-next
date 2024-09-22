@@ -4,13 +4,13 @@ import { AdminGetConsignors } from '@/api/backend/consignor/AdminGetConsignors';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { havePermissions, PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
-
-import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 
 import { ConsignorTable } from './ConsignorTable';
 import { SearchParamsSchema } from './SearchParamsSchema';
@@ -30,15 +30,20 @@ export default async function Page(pageProps: PageProps) {
         </Stack>
       </Stack>
 
-      <section>
-        <Table {...pageProps} />
-      </section>
+      <PermissionsGuard permissions={['AdminGetConsignors']}>
+        <section>
+          <Table {...pageProps} />
+        </section>
+      </PermissionsGuard>
     </Stack>
   );
 }
 
 async function Table({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
+  if (filters.consignorID && !(await havePermissions(['AdminGetConsignor']))) {
+    return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
+  }
 
   const [consignorsRes, consignorRes] = await Promise.all([
     !filters.consignorID

@@ -4,6 +4,8 @@ import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { havePermissions } from '@/domain/permission/havePermissions.server';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
@@ -13,7 +15,6 @@ import Typography from '@mui/material/Typography';
 import { Provider } from 'jotai';
 
 import AutoRefreshPage from '@/components/AutoRefreshPage';
-import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 
 import { AuctionItemTable } from './AuctionItemTable';
 import { PickForFeePaid } from './PickForFeePaid';
@@ -70,14 +71,14 @@ async function Content({ searchParams }: PageProps) {
       limit: filters[ROWS_PER_PAGE],
       offset: filters[PAGE] * filters[ROWS_PER_PAGE],
     }),
-    GetActivationWorkers(),
+    (await havePermissions(['GetActivationWorkers'])) ? GetActivationWorkers() : undefined,
   ]);
 
-  if (auctionItemsRes.error === '1001' || activeWorkersRes.error === '1001') {
+  if (auctionItemsRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetAuctionItems', 'GetActivationWorkers']} />;
   }
 
-  if (auctionItemsRes.error === '1003' || activeWorkersRes.error === '1003') {
+  if (auctionItemsRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
@@ -104,7 +105,7 @@ async function Content({ searchParams }: PageProps) {
           <AuctionItemTable
             rows={auctionItemsRes.data.auctionItems}
             count={auctionItemsRes.data.count}
-            activationWorkers={activeWorkersRes.data}
+            activationWorkers={activeWorkersRes?.data ?? undefined}
           />
         </Stack>
 

@@ -6,7 +6,6 @@ import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { useHandleNoPermissions } from '@/domain/permission/useHandleNoPermissions';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { database } from '@/domain/static/address.data';
 import { CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
@@ -31,9 +30,9 @@ import { Controller, useForm } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
 
-import { statusColor } from './statusColor';
+import { statusColor } from '../../statusColor';
 
-interface ConsignorFromProps {
+interface EditConsignorFromProps {
   consignor: Consignor;
 }
 
@@ -59,7 +58,7 @@ const FormSchema = z
     path: ['confirmPassword'],
   });
 
-export default function ConsignorForm({ consignor }: ConsignorFromProps) {
+export default function EditConsignorForm({ consignor }: EditConsignorFromProps) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>();
   const {
@@ -89,7 +88,6 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
     resolver: zodResolver(FormSchema),
   });
   const { enqueueSnackbar } = useSnackbar();
-  const handleNoPermissions = useHandleNoPermissions();
   const havePermissions = useHavePermissions();
 
   return (
@@ -131,30 +129,25 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
               </Button>
             )}
 
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={isSubmitting}
-              onClick={consignor ? handleNoPermissions(['UpdateAdmin']) : handleNoPermissions(['CreateAdmin'])}
-            >
-              送出
-            </Button>
+            <HavePermissionsOnly permissions={['AdminUpdateConsignor']}>
+              <Button type="submit" variant="contained" disabled={isSubmitting}>
+                送出
+              </Button>
+            </HavePermissionsOnly>
           </Stack>
 
-          {consignor && (
-            <Stack direction="row" spacing={3}>
-              <HavePermissionsOnly permissions={['GetItemsAndDetails']}>
-                <Link href={`/dashboard/items?consignorID=${consignor.id}`} target="_blank" rel="noreferrer">
-                  <StackSimple /> 寄售人物品
-                </Link>
-              </HavePermissionsOnly>
-              <HavePermissionsOnly permissions={['GetAuctionItems']}>
-                <Link href={`/dashboard/auction-items?consignorID=${consignor.id}`} target="_blank" rel="noreferrer">
-                  <Gavel /> 寄售人日拍商品
-                </Link>
-              </HavePermissionsOnly>
-            </Stack>
-          )}
+          <Stack direction="row" spacing={3}>
+            <HavePermissionsOnly permissions={['GetItemsAndDetails']}>
+              <Link href={`/dashboard/items?consignorID=${consignor.id}`} target="_blank" rel="noreferrer">
+                <StackSimple /> 寄售人物品
+              </Link>
+            </HavePermissionsOnly>
+            <HavePermissionsOnly permissions={['GetAuctionItems']}>
+              <Link href={`/dashboard/auction-items?consignorID=${consignor.id}`} target="_blank" rel="noreferrer">
+                <Gavel /> 寄售人日拍商品
+              </Link>
+            </HavePermissionsOnly>
+          </Stack>
 
           <Grid container spacing={3} sx={{ mt: 0 }}>
             <Grid item xs={12} sm={6}>
@@ -165,18 +158,20 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
                 InputProps={{
                   readOnly: true,
                   endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        LinkComponent={Link}
-                        size="small"
-                        color="primary"
-                        href={`/dashboard/consignor-balance/wallet-logs?consignorID=${consignor.id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <LaunchOutlinedIcon />
-                      </IconButton>
-                    </InputAdornment>
+                    <HavePermissionsOnly permissions={['AdminGetWalletLogs']}>
+                      <InputAdornment position="end">
+                        <IconButton
+                          LinkComponent={Link}
+                          size="small"
+                          color="primary"
+                          href={`/dashboard/consignor-balance/wallet-logs?consignorID=${consignor.id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <LaunchOutlinedIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    </HavePermissionsOnly>
                   ),
                 }}
                 value={consignor.walletBalance.toLocaleString()}
@@ -191,18 +186,20 @@ export default function ConsignorForm({ consignor }: ConsignorFromProps) {
                 InputProps={{
                   readOnly: true,
                   endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        LinkComponent={Link}
-                        size="small"
-                        color="primary"
-                        href={`/dashboard/consignor-balance/bonus-logs?consignorID=${consignor.id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <LaunchOutlinedIcon />
-                      </IconButton>
-                    </InputAdornment>
+                    <HavePermissionsOnly permissions={['AdminGetBonusLogs']}>
+                      <InputAdornment position="end">
+                        <IconButton
+                          LinkComponent={Link}
+                          size="small"
+                          color="primary"
+                          href={`/dashboard/consignor-balance/bonus-logs?consignorID=${consignor.id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <LaunchOutlinedIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    </HavePermissionsOnly>
                   ),
                 }}
                 value={consignor.bonusBalance.toLocaleString()}
