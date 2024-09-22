@@ -76,8 +76,8 @@ function QuillTextEditor({
               container: [
                 [{ header: [1, 2, 3, false] }],
                 ['bold', 'italic', 'underline'], // toggled buttons
-                // ['link'],
-                ['link', 'image'],
+                ['link'],
+                // ['link', 'image'],
 
                 [{ list: 'ordered' }, { list: 'bullet' }],
                 [{ indent: '-1' }, { indent: '+1' }], // outdent/indent
@@ -86,34 +86,34 @@ function QuillTextEditor({
 
                 ['clean'], // remove formatting button
               ],
-              handlers: {
-                image: () => {
-                  const input = document.createElement('input');
-                  input.setAttribute('type', 'file');
-                  input.setAttribute('accept', 'image/*');
-                  input.click();
+              // handlers: {
+              //   image: () => {
+              //     const input = document.createElement('input');
+              //     input.setAttribute('type', 'file');
+              //     input.setAttribute('accept', 'image/*');
+              //     input.click();
 
-                  input.onchange = async () => {
-                    const file = input.files ? input.files[0] : null;
-                    if (file) {
-                      const formData = new FormData();
-                      formData.append('image', file);
+              //     input.onchange = async () => {
+              //       const file = input.files ? input.files[0] : null;
+              //       if (file) {
+              //         const formData = new FormData();
+              //         formData.append('image', file);
 
-                      const res = await fetch('http://172.234.95.57:3001/upload', {
-                        method: 'POST',
-                        body: formData,
-                      });
+              //         const res = await fetch('http://172.234.95.57:3001/upload', {
+              //           method: 'POST',
+              //           body: formData,
+              //         });
 
-                      const url = await res.text();
+              //         const url = await res.text();
 
-                      const range = quill.getSelection();
-                      if (range) {
-                        quill.insertEmbed(range.index, 'image', url);
-                      }
-                    }
-                  };
-                },
-              },
+              //         const range = quill.getSelection();
+              //         if (range) {
+              //           quill.insertEmbed(range.index, 'image', url);
+              //         }
+              //       }
+              //     };
+              //   },
+              // },
             },
       },
       theme: 'snow',
