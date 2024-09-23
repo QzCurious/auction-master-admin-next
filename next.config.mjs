@@ -19,6 +19,7 @@ export default async function (phase, { defaultConfig }) {
 
     org: 'auction-master',
     project: 'auction-master-admin',
+    telemetry: false,
 
     // Only print logs for uploading source maps in CI
     silent: !process.env.CI,

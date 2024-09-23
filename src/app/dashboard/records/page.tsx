@@ -1,16 +1,14 @@
-import { type Metadata } from 'next';
-import { redirect } from 'next/navigation';
 import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { AdminGetConsignor, type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary, type RecordSummary } from '@/api/backend/reports/GetRecordsSummary';
-import { getUser } from '@/domain/auth/getToken';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { RangeFilter } from '@/domain/crud/RangeFilter';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { currencySign, DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
@@ -22,6 +20,7 @@ import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
+import { type Metadata } from 'next';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
@@ -49,9 +48,11 @@ export default async function Page(pageProps: PageProps) {
         </Stack>
       </Stack>
 
-      <section>
-        <Content {...pageProps} />
-      </section>
+      <PermissionsGuard permissions={['GetRecords', 'GetRecordsSummary']}>
+        <section>
+          <Content {...pageProps} />
+        </section>
+      </PermissionsGuard>
     </Stack>
   );
 }
@@ -59,10 +60,6 @@ export default async function Page(pageProps: PageProps) {
 async function Content({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
   const { startAt, endAt } = fixRange(filters.startAt, filters.endAt);
-  const user = await getUser();
-  if (!user) {
-    redirect('/auth/sign-in');
-  }
 
   const [summaryRes, recordsRes] = await Promise.all([
     GetRecordsSummary({
@@ -140,21 +137,23 @@ async function Content({ searchParams }: PageProps) {
                                     </Typography>
                                   );
                                 return (
-                                  <Box>
-                                    <ConsignorBankInfo consignorID={row.consignorID} />
-                                    <ReviewSubmitPaymentButtons recordId={row.id} />
-                                    <span>
-                                      請
-                                      <Typography component="span" variant="body2" color="primary">
-                                        完成匯款
-                                      </Typography>
-                                      後再執行
-                                      <Typography component="span" variant="body2" color="primary">
-                                        確認付款
-                                      </Typography>
-                                      操作
-                                    </span>
-                                  </Box>
+                                  <HavePermissionsOnly permissions={['AdminGetConsignor', 'RecordPaymentReview']}>
+                                    <Box>
+                                      <ConsignorBankInfo consignorID={row.consignorID} />
+                                      <ReviewSubmitPaymentButtons recordId={row.id} />
+                                      <span>
+                                        請
+                                        <Typography component="span" variant="body2" color="primary">
+                                          完成匯款
+                                        </Typography>
+                                        後再執行
+                                        <Typography component="span" variant="body2" color="primary">
+                                          確認付款
+                                        </Typography>
+                                        操作
+                                      </span>
+                                    </Box>
+                                  </HavePermissionsOnly>
                                 );
                               case RECORD_TYPE.enum('PayAuctionItemCancellationFeeType'):
                                 if (row.auctionItemID == null)
@@ -164,21 +163,23 @@ async function Content({ searchParams }: PageProps) {
                                     </Typography>
                                   );
                                 return (
-                                  <Box>
-                                    <AuctionItemInfo auctionItemId={row.auctionItemID} />
-                                    <ReviewSubmitPaymentButtons recordId={row.id} />
-                                    <span>
-                                      請先確認商品
-                                      <Typography component="span" variant="body2" color="primary">
-                                        已下架
-                                      </Typography>
-                                      後再執行
-                                      <Typography component="span" variant="body2" color="primary">
-                                        確認付款
-                                      </Typography>
-                                      操作
-                                    </span>
-                                  </Box>
+                                  <HavePermissionsOnly permissions={['GetAuctionItem', 'RecordPaymentReview']}>
+                                    <Box>
+                                      <AuctionItemInfo auctionItemId={row.auctionItemID} />
+                                      <ReviewSubmitPaymentButtons recordId={row.id} />
+                                      <span>
+                                        請先確認商品
+                                        <Typography component="span" variant="body2" color="primary">
+                                          已下架
+                                        </Typography>
+                                        後再執行
+                                        <Typography component="span" variant="body2" color="primary">
+                                          確認付款
+                                        </Typography>
+                                        操作
+                                      </span>
+                                    </Box>
+                                  </HavePermissionsOnly>
                                 );
                               case RECORD_TYPE.enum('PayYahooAuctionFeeType'):
                                 if (row.auctionItemID == null)
@@ -188,21 +189,23 @@ async function Content({ searchParams }: PageProps) {
                                     </Typography>
                                   );
                                 return (
-                                  <Box>
-                                    <AuctionItemInfo auctionItemId={row.auctionItemID} />
-                                    <ReviewSubmitPaymentButtons recordId={row.id} />
-                                    <span>
-                                      請先確認商品
-                                      <Typography component="span" variant="body2" color="primary">
-                                        已上架
-                                      </Typography>
-                                      後再執行
-                                      <Typography component="span" variant="body2" color="primary">
-                                        確認付款
-                                      </Typography>
-                                      操作
-                                    </span>
-                                  </Box>
+                                  <HavePermissionsOnly permissions={['GetAuctionItem', 'RecordPaymentReview']}>
+                                    <Box>
+                                      <AuctionItemInfo auctionItemId={row.auctionItemID} />
+                                      <ReviewSubmitPaymentButtons recordId={row.id} />
+                                      <span>
+                                        請先確認商品
+                                        <Typography component="span" variant="body2" color="primary">
+                                          已上架
+                                        </Typography>
+                                        後再執行
+                                        <Typography component="span" variant="body2" color="primary">
+                                          確認付款
+                                        </Typography>
+                                        操作
+                                      </span>
+                                    </Box>
+                                  </HavePermissionsOnly>
                                 );
                               case RECORD_TYPE.enum('PayReturnItemFeeType'):
                                 if (row.spaceFee == null || row.shippingCost == null)
@@ -212,21 +215,23 @@ async function Content({ searchParams }: PageProps) {
                                     </Typography>
                                   );
                                 return (
-                                  <Box>
-                                    <ReviewSubmitPaymentButtons recordId={row.id} />
-                                    <span>
-                                      請確認
-                                      <Typography component="span" variant="body2" color="primary">
-                                        收到匯款 {currencySign('TWD')}
-                                        {(row.spaceFee + row.shippingCost).toLocaleString()}
-                                      </Typography>
-                                      後再執行
-                                      <Typography component="span" variant="body2" color="primary">
-                                        確認付款
-                                      </Typography>
-                                      操作
-                                    </span>
-                                  </Box>
+                                  <HavePermissionsOnly permissions={['RecordPaymentReview']}>
+                                    <Box>
+                                      <ReviewSubmitPaymentButtons recordId={row.id} />
+                                      <span>
+                                        請確認
+                                        <Typography component="span" variant="body2" color="primary">
+                                          收到匯款 {currencySign('TWD')}
+                                          {(row.spaceFee + row.shippingCost).toLocaleString()}
+                                        </Typography>
+                                        後再執行
+                                        <Typography component="span" variant="body2" color="primary">
+                                          確認付款
+                                        </Typography>
+                                        操作
+                                      </span>
+                                    </Box>
+                                  </HavePermissionsOnly>
                                 );
                               case RECORD_TYPE.enum('PaySpaceFeeType'):
                                 if (row.spaceFee == null)
@@ -236,21 +241,23 @@ async function Content({ searchParams }: PageProps) {
                                     </Typography>
                                   );
                                 return (
-                                  <Box>
-                                    <ReviewSubmitPaymentButtons recordId={row.id} />
-                                    <span>
-                                      請確認
-                                      <Typography component="span" variant="body2" color="primary">
-                                        收到匯款 {currencySign('TWD')}
-                                        {row.spaceFee.toLocaleString()}
-                                      </Typography>
-                                      後再執行
-                                      <Typography component="span" variant="body2" color="primary">
-                                        確認付款
-                                      </Typography>
-                                      操作
-                                    </span>
-                                  </Box>
+                                  <HavePermissionsOnly permissions={['RecordPaymentReview']}>
+                                    <Box>
+                                      <ReviewSubmitPaymentButtons recordId={row.id} />
+                                      <span>
+                                        請確認
+                                        <Typography component="span" variant="body2" color="primary">
+                                          收到匯款 {currencySign('TWD')}
+                                          {row.spaceFee.toLocaleString()}
+                                        </Typography>
+                                        後再執行
+                                        <Typography component="span" variant="body2" color="primary">
+                                          確認付款
+                                        </Typography>
+                                        操作
+                                      </span>
+                                    </Box>
+                                  </HavePermissionsOnly>
                                 );
 
                               default:

@@ -4,6 +4,7 @@ import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { RangeFilter } from '@/domain/crud/RangeFilter';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
@@ -32,9 +33,11 @@ export default async function Page(pageProps: PageProps) {
         </Stack>
       </Stack>
 
-      <section>
-        <Content {...pageProps} />
-      </section>
+      <PermissionsGuard permissions={['GetShippings']}>
+        <section>
+          <Content {...pageProps} />
+        </section>
+      </PermissionsGuard>
     </Stack>
   );
 }
@@ -68,18 +71,9 @@ async function Content({ searchParams }: PageProps) {
   return (
     <Stack spacing={3}>
       <Stack direction="row" flexWrap="wrap" gap={2}>
-        {filters['pick-for-shipping'] ? (
-          <>
-            <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} />
-            <RemoveSearchBtn<keyof typeof filters> fields={['startAt', 'endAt']} />
-          </>
-        ) : (
-          <>
-            <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} />
-            <StatusFilter selected={filters.status} />
-            <RemoveSearchBtn<keyof typeof filters> fields={['startAt', 'endAt', 'status']} />
-          </>
-        )}
+        <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} />
+        <StatusFilter selected={filters.status} />
+        <RemoveSearchBtn<keyof typeof filters> fields={['startAt', 'endAt', 'status']} />
 
         <Box mx="auto" />
       </Stack>

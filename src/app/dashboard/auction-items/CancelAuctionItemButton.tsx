@@ -7,6 +7,9 @@ import { useSnackbar } from 'notistack';
 
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
+/**
+ * @deprecated marked as unused
+ */
 export default function CancelAuctionItemButton({ auctionItemId }: { auctionItemId: AuctionItem['id'] }) {
   const popupState = usePopupState({
     variant: 'popover',

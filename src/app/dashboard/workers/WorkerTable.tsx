@@ -2,10 +2,11 @@
 
 import { useTransition } from 'react';
 import Link from 'next/link';
-import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { type Worker } from '@/api/backend/workers/GetWorkers';
 import { SetWorkerCookie } from '@/api/backend/workers/SetWorkerCookie';
 import { ToggleActivateWorker } from '@/api/backend/workers/ToggleActivateWorker';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import CookieOutlinedIcon from '@mui/icons-material/CookieOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -35,7 +36,6 @@ import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state
 import { enqueueSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
@@ -101,7 +101,11 @@ export function WorkerTable({ rows, count }: WorkerTableProps) {
                           未登入
                         </div>
                       )}
-                      {row.type === 'Watcher' && <CookieInputPopover row={row} />}
+                      {row.type === 'Watcher' && (
+                        <HavePermissionsOnly permissions={['SetWorkerCookie']}>
+                          <CookieInputPopover row={row} />
+                        </HavePermissionsOnly>
+                      )}
                     </Stack>
                   </TableCell>
                   <TableCell>{WORKER_TYPE.get('value', row.type).message}</TableCell>
@@ -119,7 +123,7 @@ export function WorkerTable({ rows, count }: WorkerTableProps) {
                   </TableCell>
                   <TableCell>
                     <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                      <HavePermissionsOnly permissions={['UpdateWorker']}>
+                      <HavePermissionsOnly permissions={['GetWorker']}>
                         <IconButton LinkComponent={Link} href={`/dashboard/workers/edit/${row.id}`}>
                           <EditIcon />
                         </IconButton>

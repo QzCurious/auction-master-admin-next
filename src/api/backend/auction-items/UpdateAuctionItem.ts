@@ -9,11 +9,13 @@ import { z } from 'zod';
 
 import { type AuctionItem } from './GetAuctionItems';
 
-const ReqSchema = z.object({
-  watcherID: z.number(),
-  sellerID: z.number(),
-  reservePrice: z.number(),
-});
+const ReqSchema = z
+  .object({
+    watcherID: z.number(),
+    sellerID: z.number(),
+    reservePrice: z.number(),
+  })
+  .partial();
 
 type Data = 'Success';
 

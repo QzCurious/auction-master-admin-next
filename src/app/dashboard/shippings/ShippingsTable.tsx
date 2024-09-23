@@ -3,10 +3,9 @@
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
-import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign, DATE_TIME_FORMAT } from '@/domain/static/static';
-import CropFreeOutlinedIcon from '@mui/icons-material/CropFreeOutlined';
-import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
+import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
 import {
   Button,
   Chip,
@@ -31,12 +30,12 @@ import TableRow from '@mui/material/TableRow';
 import { MapPin } from '@phosphor-icons/react/dist/csr/MapPin';
 import { Phone } from '@phosphor-icons/react/dist/csr/Phone';
 import { Tag } from '@phosphor-icons/react/dist/csr/Tag';
+import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { format } from 'date-fns';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { enqueueSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import CopyButton from '@/components/CopyButton';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
@@ -96,33 +95,30 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                                 sx={{ p: 1, position: 'relative', maxWidth: '300px', border: '1px solid #eee' }}
                                 elevation={8}
                               >
-                                <Stack
-                                  direction="row"
-                                  spacing={1}
+                                <Box
                                   sx={{
                                     position: 'absolute',
                                     borderRadius: 1,
                                     top: 0,
                                     right: 0,
-                                    p: 1,
-                                    pb: 0,
+                                    py: 0.5,
+                                    px: 1,
                                     bgcolor: 'white',
                                   }}
                                 >
-                                  <Link href={item.photos?.[0]?.photo} target="_blank" rel="noreferrer">
-                                    <CropFreeOutlinedIcon />
-                                  </Link>
-                                  <HavePermissionsOnly permissions={['GetItemAndDetails', 'AdminGetConsignor']}>
+                                  <HavePermissionsOnly permissions={['GetItemAndDetails']}>
                                     <Link href={`/dashboard/items/edit/${item.id}`} target="_blank" rel="noreferrer">
-                                      <OpenInNewOutlinedIcon />
+                                      <Gavel /> 物品
                                     </Link>
                                   </HavePermissionsOnly>
-                                </Stack>
-                                <img
-                                  src={item.photos?.[0]?.photo}
-                                  style={{ display: 'block', maxWidth: '100%' }}
-                                  alt=""
-                                />
+                                </Box>
+                                <a href={item.photos?.[0]?.photo} target="_blank" rel="noreferrer">
+                                  <img
+                                    src={item.photos?.[0]?.photo}
+                                    style={{ display: 'block', maxWidth: '100%' }}
+                                    alt=""
+                                  />
+                                </a>
                                 <Typography>{item.name}</Typography>
                               </Paper>
                             </Popover>

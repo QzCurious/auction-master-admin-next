@@ -12,7 +12,6 @@ import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 export default function DeleteDialog({ worker }: { worker: Worker }) {
   const popupState = usePopupState({
     variant: 'popover',
-    popupId: 'demoPopover',
   });
   const { enqueueSnackbar } = useSnackbar();
 

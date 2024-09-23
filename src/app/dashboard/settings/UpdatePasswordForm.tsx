@@ -3,8 +3,8 @@
 import * as React from 'react';
 import { useContext, useState } from 'react';
 import { UpdateAdminPassword } from '@/api/backend/admins/UpdateAdminPassword';
-import { useHandleNoPermissions } from '@/domain/permission/useHandleNoPermissions';
 import { UserContext } from '@/domain/auth/UserContext';
+import { useHandleNoPermissions } from '@/domain/permission/useHandleNoPermissions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, TextField } from '@mui/material';
 import Card from '@mui/material/Card';

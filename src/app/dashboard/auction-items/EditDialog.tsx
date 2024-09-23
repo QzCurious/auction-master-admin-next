@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { UpdateAuctionItem } from '@/api/backend/auction-items/UpdateAuctionItem';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
+import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { currencySign } from '@/domain/static/static';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
@@ -40,29 +41,20 @@ export default function EditDialog({
   auctionItem: AuctionItem;
   activationWorkers: Worker[];
 }) {
-  const defaultValues = useMemo(
-    () => ({
-      watcherID: auctionItem.watcherID,
-      sellerID: auctionItem.sellerID,
-      reservePrice: auctionItem.reservePrice,
-    }),
-    [auctionItem]
-  );
   const [open, setOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting },
-    reset,
+    formState: { isSubmitting, dirtyFields },
   } = useForm<z.output<typeof Schema>>({
-    defaultValues,
+    values: {
+      watcherID: auctionItem.watcherID,
+      sellerID: auctionItem.sellerID,
+      reservePrice: auctionItem.reservePrice,
+    },
     resolver: zodResolver(Schema),
   });
-
-  useEffect(() => {
-    reset(defaultValues);
-  }, [defaultValues, reset]);
 
   const sellerWorker = activationWorkers.filter((w) => w.type === 'Seller');
   const watcherWorker = activationWorkers.filter((w) => w.type === 'Watcher');
@@ -75,7 +67,10 @@ export default function EditDialog({
       <Dialog open={open} onClose={() => setOpen(false)} closeAfterTransition>
         <form
           onSubmit={handleSubmit(async (data) => {
-            const res = await UpdateAuctionItem(auctionItem.id, { ...data });
+            const dirtyValues = getDirtyFields(data, dirtyFields);
+            if (Object.keys(dirtyValues).length === 0) return;
+
+            const res = await UpdateAuctionItem(auctionItem.id, dirtyValues);
             if (res.error) {
               enqueueSnackbar(res.error, { variant: 'error' });
               return;

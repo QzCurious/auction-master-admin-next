@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { GetWorkers } from '@/api/backend/workers/GetWorkers';
-import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import CreateDialog from './CreateDialog';
 import { SearchParamsSchema } from './SearchParamsSchema';
@@ -37,9 +37,11 @@ export default async function Page(pageProps: PageProps) {
         </Stack>
       </Stack>
 
-      <section>
-        <Content {...pageProps} />
-      </section>
+      <PermissionsGuard permissions={['GetWorkers']}>
+        <section>
+          <Content {...pageProps} />
+        </section>
+      </PermissionsGuard>
     </Stack>
   );
 }

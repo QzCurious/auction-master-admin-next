@@ -80,18 +80,20 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                               {currencySign('JPY')}
                               {row.walletBalance.toLocaleString()}
                             </td>
-                            <td width={0}>
-                              <IconButton
-                                LinkComponent={Link}
-                                size="small"
-                                color="primary"
-                                href={`/dashboard/consignor-balance/wallet-logs?consignorID=${row.id}`}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <LaunchOutlinedIcon fontSize="small" />
-                              </IconButton>
-                            </td>
+                            <HavePermissionsOnly permissions={['AdminGetWalletLogs']}>
+                              <td width={0}>
+                                <IconButton
+                                  LinkComponent={Link}
+                                  size="small"
+                                  color="primary"
+                                  href={`/dashboard/consignor-balance/wallet-logs?consignorID=${row.id}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  <LaunchOutlinedIcon fontSize="small" />
+                                </IconButton>
+                              </td>
+                            </HavePermissionsOnly>
                           </tr>
                           <tr>
                             <td width={0}>紅利</td>
@@ -99,18 +101,20 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                               {currencySign('JPY')}
                               {row.bonusBalance.toLocaleString()}
                             </td>
-                            <td width={0}>
-                              <IconButton
-                                LinkComponent={Link}
-                                size="small"
-                                color="primary"
-                                href={`/dashboard/consignor-balance/bonus-logs?consignorID=${row.id}`}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <LaunchOutlinedIcon fontSize="small" />
-                              </IconButton>
-                            </td>
+                            <HavePermissionsOnly permissions={['AdminGetBonusLogs']}>
+                              <td width={0}>
+                                <IconButton
+                                  LinkComponent={Link}
+                                  size="small"
+                                  color="primary"
+                                  href={`/dashboard/consignor-balance/bonus-logs?consignorID=${row.id}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  <LaunchOutlinedIcon fontSize="small" />
+                                </IconButton>
+                              </td>
+                            </HavePermissionsOnly>
                           </tr>
                         </tbody>
                       </table>

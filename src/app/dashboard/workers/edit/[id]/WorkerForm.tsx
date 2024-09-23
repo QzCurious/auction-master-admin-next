@@ -1,11 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { type Worker } from '@/api/backend/workers/GetWorker';
 import { UpdateWorker } from '@/api/backend/workers/UpdateWorker';
-import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
+import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -106,9 +107,11 @@ export function WorkerForm({ worker }: WorkerFromProps) {
             重設
           </Button>
         )} */}
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
-          送出
-        </Button>
+        <HavePermissionsOnly permissions={['UpdateWorker']}>
+          <Button type="submit" variant="contained" disabled={isSubmitting}>
+            送出
+          </Button>
+        </HavePermissionsOnly>
       </Stack>
 
       <Grid container spacing={3} sx={{ mt: 0 }}>

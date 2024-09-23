@@ -5,7 +5,8 @@ import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
-import { havePermissions } from '@/domain/permission/havePermissions.server';
+import { havePermissions, PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
@@ -39,9 +40,11 @@ export default async function Page(pageProps: PageProps) {
         </Stack>
       </Stack>
 
-      <section>
-        <Content {...pageProps} />
-      </section>
+      <PermissionsGuard permissions={['GetAuctionItems']}>
+        <section>
+          <Content {...pageProps} />
+        </section>
+      </PermissionsGuard>
     </Stack>
   );
 }
@@ -75,7 +78,7 @@ async function Content({ searchParams }: PageProps) {
   ]);
 
   if (auctionItemsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAuctionItems', 'GetActivationWorkers']} />;
+    return <WithoutPermissionsError permissions={['GetAuctionItems']} />;
   }
 
   if (auctionItemsRes.error === '1003') {
@@ -96,7 +99,9 @@ async function Content({ searchParams }: PageProps) {
             )}
 
             <Box mx="auto" />
-            <PickForShippingButtons picking={filters.picking} stage={filters.stage} />
+            <HavePermissionsOnly permissions={['GetAuctionItem', 'ShippingAuctionItem']}>
+              <PickForShippingButtons picking={filters.picking} stage={filters.stage} />
+            </HavePermissionsOnly>
             {/* TODO
               <PickForFeePaidButtons picking={filters.picking} stage={filters.stage} />
             */}
