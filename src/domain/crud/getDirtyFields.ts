@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { type FieldNamesMarkedBoolean, type FieldValues } from 'react-hook-form';
 import { isArray } from 'remeda';
 

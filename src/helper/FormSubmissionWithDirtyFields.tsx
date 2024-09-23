@@ -26,6 +26,7 @@ export function FormSubmissionWithDirtyFields<
         : never,
     dirtyFields: FormState<TFieldValues>['dirtyFields'],
     event?: React.BaseSyntheticEvent
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   ) => unknown | Promise<unknown>;
   onInvalid?: SubmitErrorHandler<TFieldValues>;
 }) {

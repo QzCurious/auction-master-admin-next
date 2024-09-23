@@ -140,6 +140,7 @@ function QuillTextEditor({
     });
 
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       (_quillRef.current as any) = null;
       if (typeof quillRef === 'function') quillRef(null);
       if (quillRef && typeof quillRef === 'object') quillRef.current = null;
@@ -151,7 +152,7 @@ function QuillTextEditor({
     if (_quillRef) _quillRef?.current?.enable(!readOnly);
   }, [readOnly]);
 
-  return <div ref={containerRef}></div>;
+  return <div ref={containerRef} />;
 }
 
 export default QuillTextEditor;

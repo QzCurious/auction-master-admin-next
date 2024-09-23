@@ -56,8 +56,6 @@ async function Content({ params: { id } }: PageProps) {
 
   return (
     <Stack spacing={3}>
-      <Stack direction="row" flexWrap="wrap" gap={2}></Stack>
-
       <AuctionItemTable rows={[auctionItemRes.data]} count={1} activationWorkers={activeWorkersRes.data} />
     </Stack>
   );
