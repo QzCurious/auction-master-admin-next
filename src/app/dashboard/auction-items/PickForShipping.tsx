@@ -4,8 +4,10 @@ import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
 import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
-import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { currencySign } from '@/domain/static/static';
+import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -25,9 +27,6 @@ import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
-
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ListItemSkeleton, pickedItemIdsReducerAtom, PickedListItem } from './PickingList';
 import { type SearchParamsSchema } from './SearchParamsSchema';
@@ -113,7 +112,7 @@ export function PickForShipping({ picking, stage }: Pick<z.output<typeof SearchP
 }
 
 const Schema = z.object({
-  shippingCostsWithinJapan: z.number({ message: '必填' }).min(0).array(),
+  // shippingCostsWithinJapan: z.number({ message: '必填' }).min(0).array(),
   address: z.string().min(1, { message: '必填' }),
   recipientName: z.string().min(1, { message: '必填' }),
   phone: z.string().min(1, { message: '必填' }),
@@ -137,7 +136,7 @@ function ShippingForm() {
       address: '',
       recipientName: '',
       phone: '',
-      shippingCostsWithinJapan: [],
+      // shippingCostsWithinJapan: [],
     },
     resolver: zodResolver(Schema),
   });
@@ -150,7 +149,7 @@ function ShippingForm() {
   }
 
   const queries = auctionItemQueries.filter((q) => !q.isError);
-  const shippingCostsWithinJapan = watch('shippingCostsWithinJapan');
+  // const shippingCostsWithinJapan = watch('shippingCostsWithinJapan');
 
   return (
     <Stack
@@ -161,7 +160,7 @@ function ShippingForm() {
           ...data,
           shipmentType: SHIPMENT_TYPE.enum('AddressShipmentType'),
           auctionItemIDs: pickedItemIds,
-          shippingCostsWithinJapan: R.sum(data.shippingCostsWithinJapan),
+          // shippingCostsWithinJapan: R.sum(data.shippingCostsWithinJapan),
         });
 
         if (res.error) {
@@ -180,7 +179,7 @@ function ShippingForm() {
         {queries.map((item, i) => (
           <React.Fragment key={pickedItemIds[i]}>
             {item.isPending ? <ListItemSkeleton /> : <PickedListItem item={item.data.data!} />}
-            <Controller
+            {/* <Controller
               control={control}
               name={`shippingCostsWithinJapan.${i}`}
               render={({ field, fieldState }) => (
@@ -202,7 +201,7 @@ function ShippingForm() {
                   {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                 </FormControl>
               )}
-            />
+            /> */}
             <Divider variant="middle" component="li" sx={{ mt: 2 }} />
           </React.Fragment>
         ))}
@@ -245,14 +244,15 @@ function ShippingForm() {
 
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="body1">
-            共 {auctionItemQueries.length} 筆, 運費總計 {currencySign('JPY')}
+            共 {auctionItemQueries.length} 筆
+            {/* , 運費總計 {currencySign('JPY')}
             {(() => {
               const sum = R.sum(shippingCostsWithinJapan.map((v) => v || 0));
               if (Number.isNaN(sum)) {
                 return 0;
               }
               return sum.toLocaleString();
-            })()}
+            })()} */}
           </Typography>
 
           <Button type="submit" variant="contained" disabled={isSubmitting}>

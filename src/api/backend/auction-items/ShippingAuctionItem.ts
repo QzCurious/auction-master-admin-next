@@ -15,7 +15,6 @@ const ReqSchema = z.discriminatedUnion('shipmentType', [
     address: z.string(),
     recipientName: z.string(),
     phone: z.string(),
-    shippingCostsWithinJapan: z.number(),
   }),
   z.object({
     shipmentType: z.literal(SHIPMENT_TYPE.enum('SevenElevenShipmentType')),
@@ -24,7 +23,6 @@ const ReqSchema = z.discriminatedUnion('shipmentType', [
     storeName: z.string(),
     recipientName: z.string(),
     phone: z.string(),
-    shippingCostsWithinJapan: z.number(),
   }),
   z.object({
     shipmentType: z.literal(SHIPMENT_TYPE.enum('FamilyShipmentType')),
@@ -33,7 +31,6 @@ const ReqSchema = z.discriminatedUnion('shipmentType', [
     storeName: z.string(),
     recipientName: z.string(),
     phone: z.string(),
-    shippingCostsWithinJapan: z.number(),
   }),
 ]);
 
