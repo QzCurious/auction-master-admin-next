@@ -6,7 +6,6 @@ import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAucti
 import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
-import { currencySign } from '@/domain/static/static';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -15,7 +14,6 @@ import {
   Drawer,
   FormControl,
   FormHelperText,
-  InputAdornment,
   List,
   Stack,
   TextField,
@@ -25,7 +23,6 @@ import { useQueries } from '@tanstack/react-query';
 import { useAtom, useAtomValue } from 'jotai';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
-import * as R from 'remeda';
 import { z } from 'zod';
 
 import { ListItemSkeleton, pickedItemIdsReducerAtom, PickedListItem } from './PickingList';

@@ -1,6 +1,9 @@
 import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { AdminGetConsignor, type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
+import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
+import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
+import { GetItemAndDetails } from '@/api/backend/items/GetItemAndDetails';
+import { type Item } from '@/api/backend/items/GetItemsAndDetails';
 import { GetRecords } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary, type RecordSummary } from '@/api/backend/reports/GetRecordsSummary';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
@@ -14,10 +17,13 @@ import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError
 import { currencySign, DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { RECORD_STATUS, RECORD_TYPE } from '@/domain/static/static-config-mappers';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
-import { Chip, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Chip, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography/Typography';
-import { Box, Stack } from '@mui/system';
+import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
 import { type Metadata } from 'next';
@@ -121,6 +127,11 @@ async function Content({ searchParams }: PageProps) {
                       title={process.env.NODE_ENV === 'development' ? `${row.type} ${RECORD_TYPE.enum(row.type)}` : ''}
                     >
                       {RECORD_TYPE.get('value', row.type).message}
+                      <Stack direction="row" spacing={0.5}>
+                        <HavePermissionsOnly permissions={['GetItemAndDetails']}>
+                          {row.itemIDs?.map((itemID) => <ItemLink key={itemID} itemID={itemID} />)}
+                        </HavePermissionsOnly>
+                      </Stack>
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={3} alignItems="center">
@@ -155,8 +166,9 @@ async function Content({ searchParams }: PageProps) {
                                     </Box>
                                   </HavePermissionsOnly>
                                 );
-                              case RECORD_TYPE.enum('PayAuctionItemCancellationFeeType'):
-                                if (row.auctionItemID == null)
+                              case RECORD_TYPE.enum('PayAuctionItemCancellationFeeType'): {
+                                const auctionItemID = row.auctionItemIDs?.[0];
+                                if (!auctionItemID)
                                   return (
                                     <Typography color="error">
                                       發生錯誤，請聯繫開發人員(#{row.id} missing auctionItemID)
@@ -165,7 +177,7 @@ async function Content({ searchParams }: PageProps) {
                                 return (
                                   <HavePermissionsOnly permissions={['GetAuctionItem', 'RecordPaymentReview']}>
                                     <Box>
-                                      <AuctionItemInfo auctionItemId={row.auctionItemID} />
+                                      <AuctionItemInfo auctionItemId={auctionItemID} />
                                       <ReviewSubmitPaymentButtons recordId={row.id} />
                                       <span>
                                         請先確認商品
@@ -181,8 +193,10 @@ async function Content({ searchParams }: PageProps) {
                                     </Box>
                                   </HavePermissionsOnly>
                                 );
-                              case RECORD_TYPE.enum('PayYahooAuctionFeeType'):
-                                if (row.auctionItemID == null)
+                              }
+                              case RECORD_TYPE.enum('PayYahooAuctionFeeType'): {
+                                const auctionItemID = row.auctionItemIDs?.[0];
+                                if (!auctionItemID)
                                   return (
                                     <Typography color="error">
                                       發生錯誤，請聯繫開發人員(#{row.id} missing auctionItemID)
@@ -191,7 +205,7 @@ async function Content({ searchParams }: PageProps) {
                                 return (
                                   <HavePermissionsOnly permissions={['GetAuctionItem', 'RecordPaymentReview']}>
                                     <Box>
-                                      <AuctionItemInfo auctionItemId={row.auctionItemID} />
+                                      <AuctionItemInfo auctionItemId={auctionItemID} />
                                       <ReviewSubmitPaymentButtons recordId={row.id} />
                                       <span>
                                         請先確認商品
@@ -207,6 +221,7 @@ async function Content({ searchParams }: PageProps) {
                                     </Box>
                                   </HavePermissionsOnly>
                                 );
+                              }
                               case RECORD_TYPE.enum('PayReturnItemFeeType'):
                                 if (row.spaceFee == null || row.shippingCost == null)
                                   return (
@@ -742,5 +757,18 @@ async function ConsignorBankInfo({ consignorID }: { consignorID: Consignor['id']
         <CopyButton text={consignorRes.data.bankAccount} />
       </p>
     </div>
+  );
+}
+
+async function ItemLink({ itemID }: { itemID: Item['id'] }) {
+  const itemRes = await GetItemAndDetails(itemID);
+  if (!itemRes.data) return null;
+
+  return (
+    <HavePermissionsOnly permissions={['GetItemAndDetails']}>
+      <Link href={`/dashboard/items/edit/${itemID}`} target="_blank" rel="noreferrer">
+        <StackSimple /> {itemRes.data.name}
+      </Link>
+    </HavePermissionsOnly>
   );
 }
