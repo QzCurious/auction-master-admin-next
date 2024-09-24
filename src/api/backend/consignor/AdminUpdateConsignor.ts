@@ -22,6 +22,7 @@ const ReqSchema = z
     district: z.string().min(1),
     streetAddress: z.string().min(1),
     phone: z.string().min(1),
+    beneficiaryName: z.string().min(1),
     bankCode: z.string().min(1),
     bankAccount: z.string().min(1),
     status: z.number().refine(R.isIncludedIn(CONSIGNOR_STATUS.data.map((item) => item.value))),

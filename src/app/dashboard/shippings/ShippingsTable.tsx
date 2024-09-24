@@ -277,7 +277,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
 
                   {row.status === SHIPPING_STATUS.enum('ShippedStatus') &&
                     row.auctionItems.every((item) => item.shippingCostsWithinJapan) && (
-                      <HavePermissionsOnly permissions={['Shipped']}>
+                      <HavePermissionsOnly permissions={['ShippingClosed']}>
                         <PopupState variant="popover">
                           {(popupState) => (
                             <>

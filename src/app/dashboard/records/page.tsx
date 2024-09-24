@@ -358,6 +358,12 @@ async function Content({ searchParams }: PageProps) {
                                 <TableCell>{row.bankAccount}</TableCell>
                               </TableRow>
                             )}
+                            {row.beneficiaryName != null && (
+                              <TableRow>
+                                <TableCell>戶名</TableCell>
+                                <TableCell>{row.beneficiaryName}</TableCell>
+                              </TableRow>
+                            )}
                             {row.closedPrice != null && (
                               <TableRow>
                                 <TableCell>結標金額</TableCell>

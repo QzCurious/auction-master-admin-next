@@ -32,6 +32,7 @@ export interface Consignor {
   district: string;
   streetAddress: string;
   phone: string;
+  beneficiaryName: string | null;
   bankCode: string;
   bankAccount: string;
   status: CONSIGNOR_STATUS['value'];

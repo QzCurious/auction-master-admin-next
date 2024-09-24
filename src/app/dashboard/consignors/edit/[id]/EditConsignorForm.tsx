@@ -48,9 +48,10 @@ const FormSchema = z
     city: z.string().min(1, { message: '必填' }),
     district: z.string().min(1, { message: '必填' }),
     streetAddress: z.string().min(1, { message: '必填' }),
-    phone: z.string({ message: '必填' }),
-    bankCode: z.string({ message: '必填' }),
-    bankAccount: z.string({ message: '必填' }),
+    phone: z.string().min(1, { message: '必填' }),
+    beneficiaryName: z.string().min(1, { message: '必填' }),
+    bankCode: z.string().min(1, { message: '必填' }),
+    bankAccount: z.string().min(1, { message: '必填' }),
     status: z.number().refine(R.isIncludedIn(CONSIGNOR_STATUS.data.map((item) => item.value)), { message: '必填' }),
   })
   .refine((data) => (!data.password ? true : data.password === data.confirmPassword), {
@@ -81,6 +82,7 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
       district: consignor.district,
       streetAddress: consignor.streetAddress,
       phone: consignor.phone,
+      beneficiaryName: consignor.beneficiaryName ?? '',
       bankCode: consignor.bankCode,
       bankAccount: consignor.bankAccount,
       status: consignor.status,
@@ -591,6 +593,27 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
                       fullWidth
                       InputProps={{
                         readOnly: !havePermissions([{ key: 'AdminUpdateConsignor', fields: ['bankAccount'] }]),
+                      }}
+                    />
+                    {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Controller
+                control={control}
+                name="beneficiaryName"
+                render={({ field, fieldState }) => (
+                  <FormControl fullWidth error={!!fieldState.error}>
+                    <TextField
+                      {...field}
+                      label="戶名"
+                      type="text"
+                      fullWidth
+                      InputProps={{
+                        readOnly: !havePermissions([{ key: 'AdminUpdateConsignor', fields: ['beneficiaryName'] }]),
                       }}
                     />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}

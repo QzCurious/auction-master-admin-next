@@ -2,10 +2,11 @@
 
 import * as React from 'react';
 import { useState, useTransition } from 'react';
-import { CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
 import { type ConsignorVerification } from '@/api/backend/consignor/AdminGetConsignorVerifications';
 import { HandleConsignorVerification } from '@/api/backend/consignor/HandleConsignorVerification';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { DATE_FORMAT } from '@/domain/static/static';
+import { CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import {
   Button,
@@ -30,7 +31,6 @@ import TableRow from '@mui/material/TableRow';
 import { format } from 'date-fns';
 import { useSnackbar } from 'notistack';
 
-import { HavePermissionsOnly } from "@/domain/permission/HavePermissionsOnly";
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
@@ -161,6 +161,16 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
                 type="text"
                 InputProps={{ readOnly: true }}
                 value={`(${consignorVerification.bankCode}) ${consignorVerification.bankAccount}`}
+                fullWidth
+              />
+            </FormControl>
+
+            <FormControl fullWidth>
+              <TextField
+                label="戶名"
+                type="text"
+                InputProps={{ readOnly: true }}
+                value={consignorVerification.beneficiaryName}
                 fullWidth
               />
             </FormControl>

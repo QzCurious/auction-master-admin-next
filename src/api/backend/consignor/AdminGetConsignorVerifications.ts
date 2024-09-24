@@ -1,12 +1,12 @@
 'use server';
 
 import { appendEntries } from '@/domain/crud/appendEntries';
+import { type CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   account: z.string().optional(),
@@ -19,7 +19,8 @@ const ReqSchema = z.object({
 
 export interface ConsignorVerification {
   id: number;
-  nickname: string;
+  consignorID: number;
+  photo: string;
   name: string;
   identification: string;
   gender: number;
@@ -27,12 +28,14 @@ export interface ConsignorVerification {
   city: string;
   district: string;
   streetAddress: string;
-  photo: string;
   phone: string;
+  beneficiaryName: string;
   bankCode: string;
   bankAccount: string;
   status: CONSIGNOR_VERIFICATION_STATUS['value'];
   createdAt: string;
+  updatedAt: string;
+  nickname: string;
 }
 
 interface Data {

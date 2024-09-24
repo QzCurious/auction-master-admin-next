@@ -32,6 +32,7 @@ export interface Record {
   jpyWithdrawal?: number;
   withdrawal?: number;
   withdrawalTransferFee?: number;
+  beneficiaryName?: string;
   bankCode?: string;
   bankAccount?: string;
   closedPrice?: number;
