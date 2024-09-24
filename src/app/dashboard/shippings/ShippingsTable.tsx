@@ -1,8 +1,11 @@
 'use client';
 
+import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
+import { UpdateAuctionItem } from '@/api/backend/auction-items/UpdateAuctionItem';
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
+import { ShippingClosed } from '@/api/backend/shippings/ShippingClosed';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign, DATE_TIME_FORMAT } from '@/domain/static/static';
 import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
@@ -11,6 +14,7 @@ import {
   Chip,
   FormControl,
   FormHelperText,
+  IconButton,
   InputAdornment,
   Link,
   Paper,
@@ -31,6 +35,7 @@ import { MapPin } from '@phosphor-icons/react/dist/csr/MapPin';
 import { Phone } from '@phosphor-icons/react/dist/csr/Phone';
 import { Tag } from '@phosphor-icons/react/dist/csr/Tag';
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
+import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { format } from 'date-fns';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { enqueueSnackbar } from 'notistack';
@@ -57,6 +62,7 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
             <TableRow sx={{ whiteSpace: 'nowrap' }}>
               <TableCell>寄件類別</TableCell>
               <TableCell>物品</TableCell>
+              <TableCell>日拍商品</TableCell>
               <TableCell>收貨人</TableCell>
               <TableCell>狀態</TableCell>
               <TableCell>建立時間</TableCell>
@@ -74,18 +80,17 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                       <PopupState key={item.id} variant="popper">
                         {(popupState) => (
                           <>
-                            <Stack direction="row" spacing={0.5} alignItems="center">
-                              <Tag weight="fill" color="#666" />
-                              <Link
-                                {...bindTrigger(popupState)}
-                                sx={{
-                                  cursor: 'pointer',
-                                  textDecoration: popupState.isOpen ? 'underline' : undefined,
-                                }}
-                              >
-                                {item.warehouseID || '無倉庫編號'}
-                              </Link>
-                            </Stack>
+                            <Link
+                              {...bindTrigger(popupState)}
+                              sx={{
+                                whiteSpace: 'nowrap',
+                                cursor: 'pointer',
+                                textDecoration: popupState.isOpen ? 'underline' : undefined,
+                              }}
+                            >
+                              <StackSimple style={{ transform: 'translateY(2px)' }} />{' '}
+                              {item.warehouseID || '無倉庫編號'}
+                            </Link>
 
                             <Popover
                               {...bindPopover(popupState)}
@@ -130,15 +135,80 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                 </TableCell>
 
                 <TableCell>
+                  <Stack minWidth={220}>
+                    {row.auctionItems.map((auctionItem) => (
+                      <PopupState key={auctionItem.id} variant="popper">
+                        {(popupState) => (
+                          <>
+                            <span>
+                              <Link
+                                {...bindTrigger(popupState)}
+                                sx={{
+                                  cursor: 'pointer',
+                                  textDecoration: popupState.isOpen ? 'underline' : undefined,
+                                }}
+                              >
+                                <Gavel /> {auctionItem.name}{' '}
+                              </Link>
+                              {row.status === SHIPPING_STATUS.enum('ShippedStatus') &&
+                                !auctionItem.shippingCostsWithinJapan && (
+                                  <HavePermissionsOnly permissions={['UpdateAuctionItem']}>
+                                    <MarkShippingCostsWithinJapanPopover auctionItem={auctionItem} />
+                                  </HavePermissionsOnly>
+                                )}
+                            </span>
+
+                            <Popover
+                              {...bindPopover(popupState)}
+                              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                              <Paper
+                                sx={{ p: 1, position: 'relative', maxWidth: '300px', border: '1px solid #eee' }}
+                                elevation={8}
+                              >
+                                <Box
+                                  sx={{
+                                    position: 'absolute',
+                                    borderRadius: 1,
+                                    top: 0,
+                                    right: 0,
+                                    py: 0.5,
+                                    px: 1,
+                                    bgcolor: 'white',
+                                  }}
+                                >
+                                  <HavePermissionsOnly permissions={['GetAuctionItem']}>
+                                    <Link
+                                      href={`/dashboard/auction-items/${auctionItem.id}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                    >
+                                      <Gavel /> 日拍商品
+                                    </Link>
+                                  </HavePermissionsOnly>
+                                </Box>
+                                <a href={auctionItem.photo} target="_blank" rel="noreferrer">
+                                  <img src={auctionItem.photo} style={{ display: 'block', maxWidth: '100%' }} alt="" />
+                                </a>
+                              </Paper>
+                            </Popover>
+                          </>
+                        )}
+                      </PopupState>
+                    ))}
+                  </Stack>
+                </TableCell>
+
+                <TableCell>
                   {row.recipientName}
 
                   <Stack direction="row" spacing={0.5} alignItems="center">
-                    <Phone weight="fill" color="#666" />
+                    <Phone weight="fill" color="#666" style={{ flexShrink: 0 }} />
                     {row.phone}
                   </Stack>
 
                   <Stack direction="row" spacing={0.5} alignItems="center">
-                    <MapPin weight="fill" color="#c00" />
+                    <MapPin weight="fill" color="#c00" style={{ flexShrink: 0 }} />
                     {row.address}
                   </Stack>
                 </TableCell>
@@ -152,26 +222,78 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                 </TableCell>
 
                 <TableCell sx={{ whiteSpace: 'nowrap' }}>{format(row.createdAt, DATE_TIME_FORMAT)}</TableCell>
-                <TableCell>
-                  <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                    {row.status === SHIPPING_STATUS.enum('SubmitAppraisalStatus') && (
-                      <HavePermissionsOnly permissions={['ProcessingShipping']}>
+                <TableCell
+                  title={
+                    process.env.NODE_ENV === 'development'
+                      ? `${row.actionType} ${ACTION_TYPE.enum(row.actionType)}`
+                      : undefined
+                  }
+                >
+                  {!!row.shipmentTrackingNumber && (
+                    <Stack mb={1}>
+                      <Typography variant="body2" color="GrayText">
+                        出貨單號
+                      </Typography>
+                      <Typography variant="body2">
+                        {row.shipmentTrackingNumber}
+                        <CopyButton text={row.shipmentTrackingNumber} />
+                      </Typography>
+                    </Stack>
+                  )}
+
+                  {row.status === SHIPPING_STATUS.enum('SubmitAppraisalStatus') && (
+                    <HavePermissionsOnly permissions={['ProcessingShipping']}>
+                      <PopupState variant="popover">
+                        {(popupState) => (
+                          <>
+                            <Button type="button" variant="outlined" size="small" {...bindTrigger(popupState)}>
+                              開始理貨
+                            </Button>
+                            <DoubleCheckPopover
+                              {...bindPopover(popupState)}
+                              title="標示為理貨中"
+                              onConfirm={async () => {
+                                const res = await ProcessingShipping(row.id);
+                                if (res.error) {
+                                  enqueueSnackbar(res.error, { variant: 'error' });
+                                  return;
+                                }
+                                enqueueSnackbar('已標示為理貨中', { variant: 'success' });
+                                popupState.close();
+                              }}
+                              onCancel={popupState.close}
+                            />
+                          </>
+                        )}
+                      </PopupState>
+                    </HavePermissionsOnly>
+                  )}
+
+                  {row.status === SHIPPING_STATUS.enum('ProcessingStatus') && (
+                    <HavePermissionsOnly permissions={['Shipped']}>
+                      <ShippedPopover row={row} />
+                    </HavePermissionsOnly>
+                  )}
+
+                  {row.status === SHIPPING_STATUS.enum('ShippedStatus') &&
+                    row.auctionItems.every((item) => item.shippingCostsWithinJapan) && (
+                      <HavePermissionsOnly permissions={['Shipped']}>
                         <PopupState variant="popover">
                           {(popupState) => (
                             <>
                               <Button type="button" variant="outlined" size="small" {...bindTrigger(popupState)}>
-                                開始理貨
+                                結束出貨
                               </Button>
                               <DoubleCheckPopover
                                 {...bindPopover(popupState)}
-                                title="標示為理貨中"
+                                title="標示為出貨已結束"
                                 onConfirm={async () => {
-                                  const res = await ProcessingShipping(row.id);
+                                  const res = await ShippingClosed(row.id);
                                   if (res.error) {
                                     enqueueSnackbar(res.error, { variant: 'error' });
                                     return;
                                   }
-                                  enqueueSnackbar('已標示為理貨中', { variant: 'success' });
+                                  enqueueSnackbar('已標示為出貨已結束', { variant: 'success' });
                                   popupState.close();
                                 }}
                                 onCancel={popupState.close}
@@ -181,25 +303,6 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                         </PopupState>
                       </HavePermissionsOnly>
                     )}
-
-                    {row.status === SHIPPING_STATUS.enum('ProcessingStatus') && (
-                      <HavePermissionsOnly permissions={['Shipped']}>
-                        <ShippedPopover row={row} />
-                      </HavePermissionsOnly>
-                    )}
-
-                    {row.status === SHIPPING_STATUS.enum('ShippedStatus') && !!row.shipmentTrackingNumber && (
-                      <div>
-                        <Typography variant="body2" color="GrayText">
-                          出貨單號
-                        </Typography>
-                        <Typography variant="body2">
-                          {row.shipmentTrackingNumber}
-                          <CopyButton text={row.shipmentTrackingNumber} />
-                        </Typography>
-                      </div>
-                    )}
-                  </Stack>
                 </TableCell>
               </TableRow>
             ))}
@@ -209,6 +312,93 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
       <Divider />
       <SearchParamsPagination count={count} />
     </Card>
+  );
+}
+
+function MarkShippingCostsWithinJapanPopover({ auctionItem }: { auctionItem: AuctionItem }) {
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm({
+    defaultValues: {
+      shippingCostsWithinJapan: '' as unknown as number,
+    },
+  });
+
+  return (
+    <PopupState variant="popover">
+      {(popupState) => (
+        <>
+          <IconButton type="button" size="small" {...bindTrigger(popupState)}>
+            <Tag />
+          </IconButton>
+          <Popover
+            {...bindPopover(popupState)}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+          >
+            <Box
+              component="form"
+              sx={{ p: '16px 20px' }}
+              onSubmit={handleSubmit(async (data) => {
+                const res = await UpdateAuctionItem(auctionItem.id, data);
+
+                if (res.error) {
+                  enqueueSnackbar(res.error, { variant: 'error' });
+                  return;
+                }
+                enqueueSnackbar('已更新日本國內運費', { variant: 'success' });
+                popupState.close();
+              })}
+            >
+              <Typography variant="subtitle1">更新日本國內運費</Typography>
+              <Stack spacing={1.5} mt={2}>
+                <Controller
+                  control={control}
+                  name="shippingCostsWithinJapan"
+                  rules={{ required: '必填' }}
+                  render={({ field, fieldState }) => (
+                    <FormControl fullWidth error={!!fieldState.error}>
+                      <TextField
+                        {...field}
+                        size="small"
+                        label="日本國內運費"
+                        fullWidth
+                        type="number"
+                        onChange={(e) => {
+                          field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                        }}
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
+                        }}
+                        inputProps={{ min: 0 }}
+                      />
+                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                    </FormControl>
+                  )}
+                />
+              </Stack>
+
+              <Stack direction="row" mt={1.5} gap={2} justifyContent="end">
+                <Button type="button" variant="outlined" size="small" color="error" onClick={popupState.close}>
+                  取消
+                </Button>
+                <Button type="submit" disabled={isSubmitting} variant="contained" size="small">
+                  確定
+                </Button>
+              </Stack>
+            </Box>
+          </Popover>
+        </>
+      )}
+    </PopupState>
   );
 }
 
@@ -228,17 +418,7 @@ function ShippedPopover({ row }: { row: Shipping }) {
     <PopupState variant="popover">
       {(popupState) => (
         <>
-          <Button
-            type="button"
-            variant="contained"
-            size="small"
-            {...bindTrigger(popupState)}
-            title={
-              process.env.NODE_ENV === 'development'
-                ? `${row.actionType} ${ACTION_TYPE.enum(row.actionType)}`
-                : undefined
-            }
-          >
+          <Button type="button" variant="contained" size="small" {...bindTrigger(popupState)}>
             已寄出
           </Button>
           <Popover

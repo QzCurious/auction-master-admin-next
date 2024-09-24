@@ -15,6 +15,7 @@ const options = [
   SHIPPING_STATUS.data[2],
   SHIPPING_STATUS.data[3],
   SHIPPING_STATUS.data[4],
+  SHIPPING_STATUS.data[5],
 ] as const;
 options.length satisfies typeof SHIPPING_STATUS.data.length;
 

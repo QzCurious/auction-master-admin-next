@@ -2,12 +2,12 @@ import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { GetActivationWorkers } from '@/api/backend/workers/GetActivationWorkers';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { havePermissions, PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { AuctionItemTable } from '../AuctionItemTable';
 
@@ -28,9 +28,11 @@ export default async function Page(pageProps: PageProps) {
         </Stack>
       </Stack>
 
-      <section>
-        <Content {...pageProps} />
-      </section>
+      <PermissionsGuard permissions={['GetAuctionItem']}>
+        <section>
+          <Content {...pageProps} />
+        </section>
+      </PermissionsGuard>
     </Stack>
   );
 }
@@ -40,23 +42,30 @@ async function Content({ params: { id } }: PageProps) {
     notFound();
   }
 
-  const [auctionItemRes, activeWorkersRes] = await Promise.all([GetAuctionItem(Number(id)), GetActivationWorkers()]);
+  const [auctionItemRes, activeWorkersRes] = await Promise.all([
+    GetAuctionItem(Number(id)),
+    (await havePermissions(['GetActivationWorkers'])) ? GetActivationWorkers() : undefined,
+  ]);
 
   if (auctionItemRes.error === '21') {
     notFound();
   }
 
-  if (auctionItemRes.error === '1001' || activeWorkersRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAuctionItems', 'GetActivationWorkers']} />;
+  if (auctionItemRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['GetAuctionItems']} />;
   }
 
-  if (auctionItemRes.error === '1003' || activeWorkersRes.error === '1003') {
+  if (auctionItemRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
   return (
     <Stack spacing={3}>
-      <AuctionItemTable rows={[auctionItemRes.data]} count={1} activationWorkers={activeWorkersRes.data} />
+      <AuctionItemTable
+        rows={[auctionItemRes.data]}
+        count={1}
+        activationWorkers={activeWorkersRes?.data ?? undefined}
+      />
     </Stack>
   );
 }

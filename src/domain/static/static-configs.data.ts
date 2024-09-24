@@ -309,6 +309,11 @@ export const CONFIGS_DATA = {
       value: 4,
     },
     {
+      key: 'ClosedStatus',
+      message: '已結束',
+      value: 10,
+    },
+    {
       key: 'CanceledStatus',
       message: '取消',
       value: 99,

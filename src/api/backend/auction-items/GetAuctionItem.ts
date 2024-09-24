@@ -1,8 +1,9 @@
 'use server';
 
+import { type AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
+
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { type AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 
 export interface AuctionItem {
   id: number;
@@ -18,6 +19,7 @@ export interface AuctionItem {
   highestPrice: number;
   closeAt: string;
   closedPrice: number;
+  shippingCostsWithinJapan: number;
   status: AUCTION_ITEM_STATUS['value'];
   createdAt: string;
   updatedAt: string;

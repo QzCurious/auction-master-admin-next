@@ -30,12 +30,12 @@ export interface Shipping {
   recipientName: string;
   phone: string;
   shipmentTrackingNumber?: string;
-  shippingCostsWithinJapan: number;
   status: SHIPPING_STATUS['value'];
   createdAt: string;
   updatedAt: string;
   items: Array<Item>;
   auctionItems: Array<AuctionItem>;
+  internationalShippingCosts?: number;
 }
 
 interface Data {

@@ -11,9 +11,20 @@ import { type AuctionItem } from './GetAuctionItems';
 
 const ReqSchema = z
   .object({
-    watcherID: z.number(),
+    consignorID: z.number(),
+    itemID: z.number(),
     sellerID: z.number(),
+    watcherID: z.number(),
+    auctionID: z.number(),
+    name: z.string(),
+    photo: z.string(),
     reservePrice: z.number(),
+    currentPrice: z.number(),
+    highestPrice: z.number(),
+    closeAt: z.coerce.date(),
+    closedPrice: z.number(),
+    shippingCostsWithinJapan: z.number(),
+    status: z.coerce.number(),
   })
   .partial();
 
