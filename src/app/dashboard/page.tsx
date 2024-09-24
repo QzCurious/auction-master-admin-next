@@ -8,6 +8,7 @@ import { havePermissions } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME, toPercent } from '@/domain/static/static';
+import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -56,9 +57,40 @@ export default async function Page() {
           value={toPercent(configsRes.data.defaultCommissionBonusRate)}
         />
       </Grid>
+      <Grid lg={3} sm={6} xs={12}>
+        <TotalProfit
+          sx={{ height: '100%' }}
+          title="提領手續費"
+          value={configsRes.data.withdrawalTransferFee.toLocaleString()}
+        />
+      </Grid>
 
       <Grid lg={3} sm={6} xs={12}>
-        <Card>
+        <Card sx={{ height: '100%' }}>
+          <CardContent>
+            <Link href={configsRes.data.lineURL} target="_blank" style={{ textDecoration: 'none' }}>
+              <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+                <Stack spacing={1}>
+                  <Typography color="text.secondary" sx={{}}>
+                    收款帳號
+                  </Typography>
+                  <Typography variant="body1" color="black" sx={{ whiteSpace: 'nowrap' }}>
+                    {configsRes.data.bankName}
+                    <br />
+                    {configsRes.data.bankCode} {configsRes.data.bankAccount}
+                  </Typography>
+                </Stack>
+                <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
+                  <AccountBalanceOutlinedIcon />
+                </Avatar>
+              </Stack>
+            </Link>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      <Grid lg={3} sm={6} xs={12}>
+        <Card sx={{ height: '100%' }}>
           <CardContent>
             <Link href={configsRes.data.lineURL} target="_blank" style={{ textDecoration: 'none' }}>
               <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>

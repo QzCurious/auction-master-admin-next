@@ -10,6 +10,10 @@ export interface Configs {
   auctionItemCancellationFee: number;
   costPerSpace: number;
   lineURL: string;
+  withdrawalTransferFee: number;
+  bankName: string;
+  bankCode: string;
+  bankAccount: string;
   shippingInfo: {
     company: {
       address: string;
@@ -44,4 +48,15 @@ export async function GetConfigs() {
   });
 
   return res;
+}
+
+// eslint-disable-next-line no-lone-blocks
+{
+  // eslint-disable-next-line no-lone-blocks
+  {
+    const s = (
+      new URL('https://line.me/R/ti/p/@qij2136z?oat_content=url&ts=06231825').pathname.match(/@.*$/g)
+    );
+    console.log(s);
+  }
 }
