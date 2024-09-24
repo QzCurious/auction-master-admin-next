@@ -7,6 +7,8 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
+import { type AuctionItem } from '../auction-items/GetAuctionItems';
+import { type Item } from '../items/GetItemsAndDetails';
 
 const ReqSchema = z.object({
   status: z.coerce.number().array().optional(),
@@ -23,73 +25,17 @@ export interface Shipping {
   actionType: ACTION_TYPE['value'];
   shipmentType: SHIPMENT_TYPE['value'];
   itemIDs: Array<number>;
+  auctionItemIDs: Array<number>;
   address: string;
   recipientName: string;
   phone: string;
-  shipmentTrackingNumber: string | null;
+  shipmentTrackingNumber?: string;
+  shippingCostsWithinJapan: number;
   status: SHIPPING_STATUS['value'];
   createdAt: string;
   updatedAt: string;
   items: Array<Item>;
   auctionItems: Array<AuctionItem>;
-}
-
-interface Item {
-  id: number;
-  consignorID: number;
-  type: number;
-  isNew: boolean;
-  name: string;
-  description: string;
-  directPurchasePrice: number;
-  minEstimatedPrice: number;
-  maxEstimatedPrice: number;
-  reservePrice: number;
-  expireAt: string;
-  warehouseID: string;
-  space: number;
-  grossWeight: number;
-  volumetricWeight: number;
-  status: number;
-  createdAt: string;
-  updatedAt: string;
-  nickname: string;
-  photos: Array<{
-    sorted: number;
-    photo: string;
-    createdAt: string;
-    updatedAt: string;
-  }>;
-  pastStatuses: {
-    '1': string;
-    '11': string;
-    '14': string;
-    '21': string;
-    '24': string;
-    '25': string;
-    '26': string;
-    '27': string;
-    '3': string;
-  };
-}
-
-interface AuctionItem {
-  id: number;
-  consignorID: number;
-  itemID: number;
-  sellerID: number;
-  watcherID: number;
-  auctionID: string;
-  name: string;
-  photo: string;
-  reservePrice: number;
-  currentPrice: number;
-  highestPrice: number;
-  closeAt: string;
-  closedPrice: number;
-  status: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
 interface Data {

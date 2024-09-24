@@ -26,7 +26,7 @@ export interface Item {
   minEstimatedPrice: number;
   maxEstimatedPrice: number;
   reservePrice: number;
-  expireAt: string | null;
+  expireAt?: string;
   warehouseID: string;
   space: number;
   shippingCostsWithinJapan: number;
