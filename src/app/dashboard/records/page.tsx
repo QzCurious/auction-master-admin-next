@@ -1,3 +1,4 @@
+import { type Metadata } from 'next';
 import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
@@ -26,7 +27,6 @@ import Typography from '@mui/material/Typography/Typography';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
-import { type Metadata } from 'next';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
@@ -759,6 +759,9 @@ async function ConsignorBankInfo({ consignorID }: { consignorID: Consignor['id']
   return (
     <div>
       <p>
+        銀行戶名: {consignorRes.data.beneficiaryName}
+        <CopyButton text={consignorRes.data.beneficiaryName ?? ''} />
+        <br />
         銀行帳戶: ({consignorRes.data.bankCode}) {consignorRes.data.bankAccount}
         <CopyButton text={consignorRes.data.bankAccount} />
       </p>
