@@ -167,7 +167,7 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
 
             <FormControl fullWidth>
               <TextField
-                label="戶名"
+                label="銀行戶名"
                 type="text"
                 InputProps={{ readOnly: true }}
                 value={consignorVerification.beneficiaryName}

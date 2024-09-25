@@ -609,7 +609,7 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
                   <FormControl fullWidth error={!!fieldState.error}>
                     <TextField
                       {...field}
-                      label="戶名"
+                      label="銀行戶名"
                       type="text"
                       fullWidth
                       InputProps={{

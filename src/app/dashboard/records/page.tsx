@@ -360,7 +360,7 @@ async function Content({ searchParams }: PageProps) {
                             )}
                             {row.beneficiaryName != null && (
                               <TableRow>
-                                <TableCell>戶名</TableCell>
+                                <TableCell>銀行戶名</TableCell>
                                 <TableCell>{row.beneficiaryName}</TableCell>
                               </TableRow>
                             )}
