@@ -44,7 +44,7 @@ export interface AuctionItem {
     bidAmount: number;
     quantity: number;
     lastBidAt: string;
-  }>;
+  }> | null;
   recordID: string;
 }
 

@@ -142,7 +142,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     <TableCell>
                       <Box
                         sx={{
-                          fontWeight: row.bidders.some((bidder) => bidder.account === row.watcherName)
+                          fontWeight: row.bidders?.some((bidder) => bidder.account === row.watcherName)
                             ? 'bold'
                             : undefined,
                         }}
@@ -157,7 +157,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                         target="_blank"
                         rel="noreferrer"
                       >
-                        {row.bidders.map((bidder) => (
+                        {row.bidders?.map((bidder) => (
                           <Stack
                             key={`${bidder.account}-${bidder.lastBidAt}`}
                             direction="row"
