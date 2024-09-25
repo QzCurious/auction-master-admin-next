@@ -52,7 +52,7 @@ interface Data extends Item {}
 type ErrorCode = never;
 
 export async function GetItemAndDetails(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items/${id}`, {
     method: 'GET',
     next: { tags: ['items'] },
   });

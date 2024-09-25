@@ -21,7 +21,7 @@ export async function DeleteRoleForAdmin(account: string, payload: z.input<typeo
   const query = new URLSearchParams();
   appendEntries(query, payload);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/account/${account}/roles?${query.toString()}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/admins/account/${account}/roles?${query.toString()}`, {
     method: 'DELETE',
   });
 

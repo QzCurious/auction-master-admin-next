@@ -21,7 +21,7 @@ export async function CancelAuctionItem(payload: z.input<typeof ReqSchema>) {
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items/cancellation`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/cancellation`, {
     method: 'POST',
     body: urlencoded,
   });

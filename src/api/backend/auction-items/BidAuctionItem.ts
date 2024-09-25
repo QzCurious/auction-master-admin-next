@@ -25,7 +25,7 @@ export async function BidAuctionItem(id: AuctionItem['id'], payload: z.input<typ
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items/${id}/bid`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/${id}/bid`, {
     method: 'POST',
     body: urlencoded,
   });

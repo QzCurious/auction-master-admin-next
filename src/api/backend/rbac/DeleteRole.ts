@@ -9,7 +9,7 @@ type Data = 'Success';
 type ErrorCode = never;
 
 export async function DeleteRole(role: string) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/roles/${role}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/roles/${role}`, {
     method: 'DELETE',
   });
 

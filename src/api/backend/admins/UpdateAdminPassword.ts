@@ -25,7 +25,7 @@ export async function UpdateAdminPassword(id: number, payload: z.input<typeof Re
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/${id}/password`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/admins/${id}/password`, {
     method: 'PATCH',
     body: urlencoded,
   });

@@ -23,7 +23,7 @@ export async function AdminRefreshToken(payload: z.input<typeof ReqSchema>) {
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, { refreshToken });
 
-  const res = await apiClient<Data, ErrorCode>('/session/refresh', {
+  const res = await apiClient<Data, ErrorCode>('/backend/session/refresh', {
     method: 'POST',
     body: urlencoded,
     headers: {

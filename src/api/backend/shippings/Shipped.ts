@@ -24,7 +24,7 @@ export async function Shipped(id: Shipping['id'], payload: z.input<typeof ReqSch
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/shippings/${id}/shipped`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/shippings/${id}/shipped`, {
     method: 'POST',
     body: urlencoded,
   });

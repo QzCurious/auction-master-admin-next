@@ -43,7 +43,7 @@ type ErrorCode = never;
 export async function ShippingAuctionItem(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items/shipping`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/shipping`, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {

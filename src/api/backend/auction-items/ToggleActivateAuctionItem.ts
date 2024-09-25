@@ -11,7 +11,7 @@ type Data = 'Success';
 type ErrorCode = never;
 
 export async function ToggleActivateAuctionItem(id: AuctionItem['id'], status: AuctionItem['status']) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items/${id}/${status}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/${id}/${status}`, {
     method: 'PATCH',
   });
 

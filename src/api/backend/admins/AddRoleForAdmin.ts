@@ -21,7 +21,7 @@ export async function AddRoleForAdmin(account: string, payload: z.input<typeof R
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/account/${account}/roles`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/admins/account/${account}/roles`, {
     method: 'POST',
     body: urlencoded,
   });

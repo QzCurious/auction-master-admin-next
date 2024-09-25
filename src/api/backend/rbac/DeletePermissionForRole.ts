@@ -29,7 +29,7 @@ export async function DeletePermissionForRole(payload: z.input<typeof ReqSchema>
   const query = new URLSearchParams();
   appendEntries(query, { role: data.role, permissionKey: permissions });
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/permissions?${query.toString()}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/permissions?${query.toString()}`, {
     method: 'DELETE',
   });
 

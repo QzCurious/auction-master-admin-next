@@ -13,7 +13,7 @@ type ErrorCode =
   '1401';
 
 export async function SetWorkerCookie(id: Worker['id'], cookiesJsonString: string) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/workers/${id}/cookie`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/workers/${id}/cookie`, {
     method: 'POST',
     body: cookiesJsonString,
     headers: {

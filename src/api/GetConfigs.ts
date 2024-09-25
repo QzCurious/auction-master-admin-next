@@ -1,7 +1,6 @@
 'use server';
 
 import { apiClient } from '@/api/apiClient';
-import { withAuth } from '@/api/withAuth';
 
 export interface Configs {
   yahooAuctionFeeRate: number;
@@ -40,7 +39,7 @@ interface Data extends Configs {}
 type ErrorCode = never;
 
 export async function GetConfigs() {
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/configs', {
+  const res = await apiClient<Data, ErrorCode>('/configs', {
     method: 'GET',
     next: {
       tags: ['config'],
@@ -48,15 +47,4 @@ export async function GetConfigs() {
   });
 
   return res;
-}
-
-// eslint-disable-next-line no-lone-blocks
-{
-  // eslint-disable-next-line no-lone-blocks
-  {
-    const s = (
-      new URL('https://line.me/R/ti/p/@qij2136z?oat_content=url&ts=06231825').pathname.match(/@.*$/g)
-    );
-    console.log(s);
-  }
 }

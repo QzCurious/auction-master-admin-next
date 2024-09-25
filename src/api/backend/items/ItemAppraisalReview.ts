@@ -24,7 +24,7 @@ export async function ItemAppraisalReview(id: number, payload: z.input<typeof Re
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/review`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items/${id}/review`, {
     method: 'POST',
     body: urlencoded,
   });

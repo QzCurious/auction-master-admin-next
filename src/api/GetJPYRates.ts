@@ -11,7 +11,7 @@ interface Data {
 type ErrorCode = never;
 
 export async function GetJPYRates() {
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/jpy-rates', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/jpy-rates', {
     method: 'GET',
     next: { tags: ['jpy-rates'] },
   });

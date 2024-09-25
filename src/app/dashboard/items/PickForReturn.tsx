@@ -2,11 +2,13 @@
 
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { GetConfigsQueryOptions } from '@/api/backend/GetConfigs.query';
 import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetail.query';
 import { ItemReturning } from '@/api/backend/items/ItemReturning';
-import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
+import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { currencySign } from '@/domain/static/static';
+import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -26,9 +28,6 @@ import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import * as R from 'remeda';
 import { z } from 'zod';
-
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 
 import { ListItemSkeleton, pickedItemIdsReducerAtom, PickedListItem } from './PickingList';
 import { type SearchParamsSchema } from './SearchParamsSchema';
@@ -146,8 +145,6 @@ function ReturnItemsForm() {
   const configsRes = useQuery(GetConfigsQueryOptions());
   if (configsRes.error) return null;
   if (configsRes.isPending) return null;
-  if (configsRes.data?.error === '1001') return <WithoutPermissionsError permissions={['GetConfigs']} />;
-  if (configsRes.data?.error === '1003') return <RedirectAuthError />;
 
   if (itemQueries.some((q) => q.data?.error === '1001')) {
     return <WithoutPermissionsError permissions={['GetItemAndDetails']} />;

@@ -27,7 +27,7 @@ type Data = Array<Worker>;
 type ErrorCode = never;
 
 export async function GetActivationWorkers() {
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/workers/activation', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/workers/activation', {
     method: 'GET',
     next: { tags: ['workers'] },
   });

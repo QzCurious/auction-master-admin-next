@@ -10,7 +10,7 @@ type Data = 'Success';
 type ErrorCode = never;
 
 export async function ItemAppraiserConfirmed(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/appraiser-confirmed`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items/${id}/appraiser-confirmed`, {
     method: 'POST',
   });
 

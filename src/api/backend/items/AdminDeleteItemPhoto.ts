@@ -10,7 +10,7 @@ type ErrorCode = never
 
 export async function AdminDeleteItemPhoto(id: number, sorted: number) {
   const res = await withAuth(apiClient)<Data, ErrorCode>(
-    `/items/${id}/photos/${sorted}`,
+    `/backend/items/${id}/photos/${sorted}`,
     {
       method: 'DELETE',
     },

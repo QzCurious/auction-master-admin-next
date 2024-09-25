@@ -13,7 +13,7 @@ type Data = Array<Role>;
 type ErrorCode = never;
 
 export async function GetRoles() {
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/roles', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/roles', {
     method: 'GET',
     next: {
       tags: ['roles'],

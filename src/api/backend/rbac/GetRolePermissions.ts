@@ -14,7 +14,7 @@ type Data = RolePermissions;
 type ErrorCode = never;
 
 export async function GetRolePermissions(role: Role['role']) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/roles/${role}/permissions`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/roles/${role}/permissions`, {
     method: 'GET',
     next: {
       tags: ['roles'],

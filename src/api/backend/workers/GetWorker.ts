@@ -33,7 +33,7 @@ type Data = Worker;
 type ErrorCode = never;
 
 export async function GetWorker(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/workers/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/workers/${id}`, {
     method: 'GET',
     next: { tags: ['workers'] },
   });

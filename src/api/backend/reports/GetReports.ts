@@ -48,7 +48,7 @@ export async function GetReports(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/reports?${query}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/reports?${query}`, {
     method: 'GET',
     next: {
       tags: ['reports'],

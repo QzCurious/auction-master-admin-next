@@ -51,7 +51,7 @@ export async function AdminGetConsignorVerifications(payload: z.input<typeof Req
   const query = new URLSearchParams();
   appendEntries(query, parsed);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/consignors/verifications?${query}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/consignors/verifications?${query}`, {
     method: 'GET',
     next: { tags: ['consignorsVerifications'] },
   });

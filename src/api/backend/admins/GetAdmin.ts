@@ -21,7 +21,7 @@ interface Data extends Admin {}
 type ErrorCode = never;
 
 export async function GetAdmin(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/admins/${id}`, {
     method: 'GET',
     next: {
       tags: ['admins'],

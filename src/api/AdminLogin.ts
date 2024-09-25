@@ -35,7 +35,7 @@ export async function AdminLogin(payload: z.input<typeof ReqSchema>) {
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await apiClient<Data, ErrorCode>('/session', {
+  const res = await apiClient<Data, ErrorCode>('/backend/session', {
     method: 'POST',
     body: urlencoded,
   });

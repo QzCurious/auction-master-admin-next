@@ -24,7 +24,7 @@ export async function CreateRole(payload: z.input<typeof ReqSchema>) {
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/roles', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/roles', {
     method: 'POST',
     body: urlencoded,
   });

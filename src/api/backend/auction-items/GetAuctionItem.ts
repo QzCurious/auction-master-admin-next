@@ -43,7 +43,7 @@ type ErrorCode =
   '21';
 
 export async function GetAuctionItem(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/${id}`, {
     method: 'GET',
     next: { tags: ['auction-items'] },
   });

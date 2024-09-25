@@ -61,7 +61,7 @@ export async function GetAuctionItems(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items?${query}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items?${query}`, {
     method: 'GET',
     next: { tags: ['auction-items'] },
   });

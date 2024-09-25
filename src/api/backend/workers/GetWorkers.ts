@@ -48,7 +48,7 @@ export async function GetWorkers(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/workers?${query}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/workers?${query}`, {
     method: 'GET',
     next: { tags: ['workers'] },
   });

@@ -42,7 +42,7 @@ export async function AdminGetWalletLogs(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/wallets/logs?${query}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/wallets/logs?${query}`, {
     method: 'GET',
     next: { tags: ['wallets'] },
   });

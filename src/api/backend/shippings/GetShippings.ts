@@ -52,7 +52,7 @@ export async function GetShippings(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/shippings?${query}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/shippings?${query}`, {
     method: 'GET',
     next: { tags: ['shippings'] },
   });

@@ -23,7 +23,7 @@ type ErrorCode = never;
 export async function AddPermissionForRole(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/permissions', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/permissions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),

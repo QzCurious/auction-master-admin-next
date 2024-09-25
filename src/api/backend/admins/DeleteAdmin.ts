@@ -9,7 +9,7 @@ type Data = 'Success';
 type ErrorCode = never;
 
 export async function DeleteAdmin(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/admins/${id}`, {
     method: 'DELETE',
   });
 

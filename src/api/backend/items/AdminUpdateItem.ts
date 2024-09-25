@@ -43,7 +43,7 @@ export async function AdminUpdateItem(id: number, payload: z.input<typeof ReqSch
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items/${id}`, {
     method: 'PATCH',
     body: urlencoded,
   });

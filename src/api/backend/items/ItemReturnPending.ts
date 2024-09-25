@@ -10,7 +10,7 @@ type Data = 'Success';
 type ErrorCode = never;
 
 export async function ItemReturnPending(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/return-pending`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items/${id}/return-pending`, {
     method: 'POST',
   });
 

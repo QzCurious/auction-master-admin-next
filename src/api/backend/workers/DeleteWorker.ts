@@ -11,7 +11,7 @@ type Data = 'Success';
 type ErrorCode = never;
 
 export async function DeleteWorker(id: Worker['id']) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/workers/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/workers/${id}`, {
     method: 'DELETE',
   });
 

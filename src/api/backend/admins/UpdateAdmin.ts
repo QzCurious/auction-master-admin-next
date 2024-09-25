@@ -27,7 +27,7 @@ export async function UpdateAdmin(id: number, payload: z.input<typeof ReqSchema>
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/admins/${id}`, {
     method: 'PATCH',
     body: urlencoded,
   });

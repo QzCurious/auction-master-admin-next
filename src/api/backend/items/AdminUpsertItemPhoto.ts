@@ -16,7 +16,7 @@ export async function AdminUpsertItemPhoto(id: number, formData: FormData) {
     throw new Error('photo and sorted should have the same length')
   }
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/photos`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items/${id}/photos`, {
     method: 'POST',
     body: formData,
   })

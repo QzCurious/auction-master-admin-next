@@ -21,7 +21,7 @@ export async function AuctionItemConsignorFeePaid(payload: z.input<typeof ReqSch
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, parsed);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items/consignor-fee-paid`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/consignor-fee-paid`, {
     method: 'POST',
     body: urlencoded,
   });

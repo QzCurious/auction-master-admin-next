@@ -23,7 +23,7 @@ export async function RecordPaymentReview(id: Record['id'], payload: z.input<typ
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/reports/records/${id}/review`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/reports/records/${id}/review`, {
     method: 'POST',
     body: urlencoded,
   });

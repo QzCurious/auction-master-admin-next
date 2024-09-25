@@ -42,7 +42,7 @@ export async function AdminGetBonusLogs(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/bonuses/logs?${query}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/bonuses/logs?${query}`, {
     method: 'GET',
     next: { tags: ['bonus'] },
   });

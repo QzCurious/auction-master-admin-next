@@ -67,7 +67,7 @@ export async function GetItemsAndDetails(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items?${query}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items?${query}`, {
     method: 'GET',
     next: { tags: ['items'] },
   });

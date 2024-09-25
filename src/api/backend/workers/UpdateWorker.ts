@@ -34,7 +34,7 @@ export async function UpdateWorker(id: number, payload: z.input<typeof ReqSchema
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/workers/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/workers/${id}`, {
     method: 'PATCH',
     body: urlencoded,
   });

@@ -22,7 +22,7 @@ export async function CreateWorker(payload: z.input<typeof ReqSchema>) {
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/workers', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/workers', {
     method: 'POST',
     body: urlencoded,
   });

@@ -11,7 +11,7 @@ type Data = 'Success';
 type ErrorCode = never;
 
 export async function ProcessingShipping(id: Shipping['id']) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/shippings/${id}/processing`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/shippings/${id}/processing`, {
     method: 'POST',
   });
 

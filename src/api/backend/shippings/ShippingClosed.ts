@@ -11,7 +11,7 @@ type Data = 'Success';
 type ErrorCode = never;
 
 export async function ShippingClosed(id: Shipping['id']) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/shippings/${id}/closed`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/shippings/${id}/closed`, {
     method: 'POST',
   });
 

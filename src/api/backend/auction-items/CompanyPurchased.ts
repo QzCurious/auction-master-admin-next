@@ -11,7 +11,7 @@ type Data = 'Success';
 type ErrorCode = never;
 
 export async function CompanyPurchased(id: AuctionItem['id']) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/auction-items/${id}/company-purchased`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/${id}/company-purchased`, {
     method: 'POST',
   });
 

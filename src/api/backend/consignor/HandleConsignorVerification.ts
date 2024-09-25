@@ -35,7 +35,7 @@ export async function HandleConsignorVerification(id: number, action: 'approve' 
     return res;
   }
 
-  const res = await withAuth(apiClient)<Data, RejectErrorCode>(`/consignors/verifications/${id}/${action}`, {
+  const res = await withAuth(apiClient)<Data, RejectErrorCode>(`/backend/consignors/verifications/${id}/${action}`, {
     method: 'POST',
   });
 

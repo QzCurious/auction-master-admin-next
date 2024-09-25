@@ -20,7 +20,7 @@ type Data = Array<PermissionGroup>;
 type ErrorCode = never;
 
 export async function GetPermissions() {
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/permissions', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/permissions', {
     method: 'GET',
   });
 

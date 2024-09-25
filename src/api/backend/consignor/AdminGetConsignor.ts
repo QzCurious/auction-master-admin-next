@@ -35,7 +35,7 @@ interface Data extends Consignor {}
 type ErrorCode = never;
 
 export async function AdminGetConsignor(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/consignors/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/consignors/${id}`, {
     method: 'GET',
     next: { tags: ['consignors'] },
   });

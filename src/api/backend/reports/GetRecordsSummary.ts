@@ -46,7 +46,7 @@ export async function GetRecordsSummary(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/reports/records/summary?${query}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/reports/records/summary?${query}`, {
     method: 'GET',
     next: {
       tags: ['records'],

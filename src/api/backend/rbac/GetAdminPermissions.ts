@@ -13,7 +13,7 @@ type Data = Permissions;
 type ErrorCode = never;
 
 async function GetAdminPermissions(account: Admin['account']) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/permissions/${account}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/permissions/${account}`, {
     method: 'GET',
     next: {
       tags: ['roles', 'admins'],

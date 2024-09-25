@@ -25,7 +25,7 @@ export async function CreateAdmin(payload: z.input<typeof ReqSchema>) {
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, payload);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/admins', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/admins', {
     method: 'POST',
     body: urlencoded,
   });

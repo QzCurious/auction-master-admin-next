@@ -32,7 +32,7 @@ export async function ItemReturning(payload: z.output<typeof ReqSchema>) {
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/items/returning', {
+  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/items/returning', {
     method: 'POST',
     body: urlencoded,
   });

@@ -23,7 +23,7 @@ export async function AdminReorderItemPhoto(id: number, payload: z.input<typeof 
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/photos`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items/${id}/photos`, {
     method: 'PATCH',
     body: urlencoded,
   });

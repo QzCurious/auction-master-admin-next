@@ -37,7 +37,7 @@ export async function GetAdmins(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/admins?${query.toString()}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/admins?${query.toString()}`, {
     method: 'GET',
     next: {
       tags: ['admins'],

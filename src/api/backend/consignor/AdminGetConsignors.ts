@@ -55,7 +55,7 @@ export async function AdminGetConsignors(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/consignors?${query}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/consignors?${query}`, {
     method: 'GET',
     next: { tags: ['consignors'] },
   });

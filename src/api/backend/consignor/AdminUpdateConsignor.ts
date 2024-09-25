@@ -39,7 +39,7 @@ export async function AdminUpdateConsignor(id: number, payload: z.input<typeof R
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/consignors/${id}`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/consignors/${id}`, {
     method: 'PATCH',
     body: urlencoded,
   });

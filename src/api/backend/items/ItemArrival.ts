@@ -10,7 +10,7 @@ type Data = 'Success';
 type ErrorCode = never;
 
 export async function ItemArrival(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/items/${id}/arrival`, {
+  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items/${id}/arrival`, {
     method: 'POST',
   });
 
