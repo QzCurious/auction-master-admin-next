@@ -9,6 +9,8 @@ import { ShippingClosed } from '@/api/backend/shippings/ShippingClosed';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign, DATE_TIME_FORMAT } from '@/domain/static/static';
 import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
+import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined';
+import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import {
   Button,
   Chip,
@@ -61,10 +63,10 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
           <TableHead>
             <TableRow sx={{ whiteSpace: 'nowrap' }}>
               <TableCell>寄件類別</TableCell>
-              <TableCell>物品</TableCell>
-              <TableCell>日拍商品</TableCell>
+              <TableCell>貨品</TableCell>
               <TableCell>收貨人</TableCell>
               <TableCell>狀態</TableCell>
+              <TableCell>備註</TableCell>
               <TableCell>建立時間</TableCell>
               <TableCell>操作 / 出貨單號</TableCell>
             </TableRow>
@@ -75,128 +77,164 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
               <TableRow hover key={row.id}>
                 <TableCell>{SHIPMENT_TYPE.get('value', row.shipmentType).message}</TableCell>
                 <TableCell>
-                  <Stack>
-                    {row.items.map((item) => (
-                      <PopupState key={item.id} variant="popper">
-                        {(popupState) => (
-                          <>
-                            <Link
-                              {...bindTrigger(popupState)}
-                              sx={{
-                                whiteSpace: 'nowrap',
-                                cursor: 'pointer',
-                                textDecoration: popupState.isOpen ? 'underline' : undefined,
-                              }}
-                            >
-                              <StackSimple style={{ transform: 'translateY(2px)' }} />{' '}
+                  <table>
+                    <tbody>
+                      {row.items.map((item) => (
+                        <tr key={item.id}>
+                          <td style={{ paddingRight: 2 }}>
+                            <Stack direction="row" alignItems="center" sx={{ whiteSpace: 'nowrap' }}>
+                              <LabelOutlinedIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                               {item.warehouseID || '無倉庫編號'}
-                            </Link>
-
-                            <Popover
-                              {...bindPopover(popupState)}
-                              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            >
-                              <Paper
-                                sx={{ p: 1, position: 'relative', maxWidth: '300px', border: '1px solid #eee' }}
-                                elevation={8}
-                              >
-                                <Box
-                                  sx={{
-                                    position: 'absolute',
-                                    borderRadius: 1,
-                                    top: 0,
-                                    right: 0,
-                                    py: 0.5,
-                                    px: 1,
-                                    bgcolor: 'white',
-                                  }}
-                                >
-                                  <HavePermissionsOnly permissions={['GetItemAndDetails']}>
-                                    <Link href={`/dashboard/items/edit/${item.id}`} target="_blank" rel="noreferrer">
-                                      <Gavel /> 物品
-                                    </Link>
-                                  </HavePermissionsOnly>
-                                </Box>
-                                <a href={item.photos?.[0]?.photo} target="_blank" rel="noreferrer">
-                                  <img
-                                    src={item.photos?.[0]?.photo}
-                                    style={{ display: 'block', maxWidth: '100%' }}
-                                    alt=""
-                                  />
-                                </a>
-                                <Typography>{item.name}</Typography>
-                              </Paper>
-                            </Popover>
-                          </>
-                        )}
-                      </PopupState>
-                    ))}
-                  </Stack>
-                </TableCell>
-
-                <TableCell>
-                  <Stack minWidth={220}>
-                    {row.auctionItems.map((auctionItem) => (
-                      <PopupState key={auctionItem.id} variant="popper">
-                        {(popupState) => (
-                          <>
-                            <span>
-                              <Link
-                                {...bindTrigger(popupState)}
-                                sx={{
-                                  cursor: 'pointer',
-                                  textDecoration: popupState.isOpen ? 'underline' : undefined,
-                                }}
-                              >
-                                <Gavel /> {auctionItem.name}{' '}
-                              </Link>
-                              {row.status === SHIPPING_STATUS.enum('ShippedStatus') &&
-                                !auctionItem.shippingCostsWithinJapan && (
-                                  <HavePermissionsOnly permissions={['UpdateAuctionItem']}>
-                                    <MarkShippingCostsWithinJapanPopover auctionItem={auctionItem} />
-                                  </HavePermissionsOnly>
-                                )}
-                            </span>
-
-                            <Popover
-                              {...bindPopover(popupState)}
-                              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            >
-                              <Paper
-                                sx={{ p: 1, position: 'relative', maxWidth: '300px', border: '1px solid #eee' }}
-                                elevation={8}
-                              >
-                                <Box
-                                  sx={{
-                                    position: 'absolute',
-                                    borderRadius: 1,
-                                    top: 0,
-                                    right: 0,
-                                    py: 0.5,
-                                    px: 1,
-                                    bgcolor: 'white',
-                                  }}
-                                >
-                                  <HavePermissionsOnly permissions={['GetAuctionItem']}>
-                                    <Link
-                                      href={`/dashboard/auction-items/${auctionItem.id}`}
-                                      target="_blank"
-                                      rel="noreferrer"
+                            </Stack>
+                          </td>
+                          <td style={{ padding: 0 }}>
+                            <PopupState key={item.id} variant="popper">
+                              {(popupState) => (
+                                <>
+                                  <IconButton {...bindTrigger(popupState)} size="small" color="primary" sx={{ p: 0.5 }}>
+                                    <StackSimple />
+                                  </IconButton>
+                                  <Popover
+                                    {...bindPopover(popupState)}
+                                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                  >
+                                    <Paper
+                                      sx={{ p: 1, position: 'relative', maxWidth: '300px', border: '1px solid #eee' }}
+                                      elevation={8}
                                     >
-                                      <Gavel /> 日拍商品
-                                    </Link>
-                                  </HavePermissionsOnly>
-                                </Box>
-                                <a href={auctionItem.photo} target="_blank" rel="noreferrer">
-                                  <img src={auctionItem.photo} style={{ display: 'block', maxWidth: '100%' }} alt="" />
-                                </a>
-                              </Paper>
-                            </Popover>
-                          </>
-                        )}
-                      </PopupState>
-                    ))}
-                  </Stack>
+                                      <HavePermissionsOnly permissions={['GetItemAndDetails']}>
+                                        <Box
+                                          sx={{
+                                            position: 'absolute',
+                                            borderRadius: 1,
+                                            top: 0,
+                                            right: 0,
+                                            bgcolor: 'white',
+                                          }}
+                                        >
+                                          <IconButton
+                                            LinkComponent={Link}
+                                            color="primary"
+                                            href={`/dashboard/items/edit/${item.id}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                          >
+                                            <LaunchOutlinedIcon fontSize="small" />
+                                          </IconButton>
+                                        </Box>
+                                      </HavePermissionsOnly>
+                                      <a href={item.photos?.[0]?.photo} target="_blank" rel="noreferrer">
+                                        <img
+                                          src={item.photos?.[0]?.photo}
+                                          style={{ display: 'block', maxWidth: '100%' }}
+                                          alt=""
+                                        />
+                                      </a>
+                                      <Typography variant="body2" mt={0.5}>
+                                        {item.name}
+                                      </Typography>
+                                    </Paper>
+                                  </Popover>
+                                </>
+                              )}
+                            </PopupState>
+                          </td>
+
+                          {(function iife() {
+                            const auctionItem = row.auctionItems.find((auctionItem) => auctionItem.itemID === item.id);
+                            if (!auctionItem) return;
+                            return (
+                              <>
+                                <PopupState key={auctionItem.id} variant="popper">
+                                  {(popupState) => (
+                                    <td style={{ padding: 0 }}>
+                                      <span>
+                                        <IconButton
+                                          {...bindTrigger(popupState)}
+                                          size="small"
+                                          color="primary"
+                                          sx={{ p: 0.5 }}
+                                        >
+                                          <Gavel />
+                                        </IconButton>
+                                      </span>
+
+                                      <Popover
+                                        {...bindPopover(popupState)}
+                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                      >
+                                        <Paper
+                                          sx={{
+                                            p: 1,
+                                            position: 'relative',
+                                            maxWidth: '300px',
+                                            border: '1px solid #eee',
+                                          }}
+                                          elevation={8}
+                                        >
+                                          <Box
+                                            sx={{
+                                              position: 'absolute',
+                                              borderRadius: 1,
+                                              top: 0,
+                                              right: 0,
+                                              py: 0.5,
+                                              px: 1,
+                                              bgcolor: 'white',
+                                            }}
+                                          >
+                                            <HavePermissionsOnly permissions={['GetAuctionItem']}>
+                                              <Box
+                                                sx={{
+                                                  position: 'absolute',
+                                                  borderRadius: 1,
+                                                  top: 0,
+                                                  right: 0,
+                                                  bgcolor: 'white',
+                                                }}
+                                              >
+                                                <IconButton
+                                                  LinkComponent={Link}
+                                                  color="primary"
+                                                  href={`/dashboard/auction-items/${auctionItem.id}`}
+                                                  target="_blank"
+                                                  rel="noreferrer"
+                                                >
+                                                  <LaunchOutlinedIcon fontSize="small" />
+                                                </IconButton>
+                                              </Box>
+                                            </HavePermissionsOnly>
+                                          </Box>
+                                          <a href={auctionItem.photo} target="_blank" rel="noreferrer">
+                                            <img
+                                              src={auctionItem.photo}
+                                              style={{ display: 'block', maxWidth: '100%' }}
+                                              alt=""
+                                            />
+                                          </a>
+                                          <Typography variant="body2" mt={0.5}>
+                                            {auctionItem.name}
+                                          </Typography>
+                                        </Paper>
+                                      </Popover>
+                                    </td>
+                                  )}
+                                </PopupState>
+                                <td style={{ padding: 0 }}>
+                                  {row.status === SHIPPING_STATUS.enum('ShippedStatus') &&
+                                    !auctionItem.shippingCostsWithinJapan && (
+                                      <HavePermissionsOnly permissions={['UpdateAuctionItem']}>
+                                        <MarkShippingCostsWithinJapanPopover auctionItem={auctionItem} />
+                                      </HavePermissionsOnly>
+                                    )}
+                                </td>
+                              </>
+                            );
+                          })()}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </TableCell>
 
                 <TableCell>
@@ -219,6 +257,10 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                     variant="outlined"
                     color={statusColor(row.status)}
                   />
+                </TableCell>
+
+                <TableCell>
+                  <Box sx={{ whiteSpace: 'pre-wrap' }}>{row.remark}</Box>
                 </TableCell>
 
                 <TableCell sx={{ whiteSpace: 'nowrap' }}>{format(row.createdAt, DATE_TIME_FORMAT)}</TableCell>
@@ -330,7 +372,7 @@ function MarkShippingCostsWithinJapanPopover({ auctionItem }: { auctionItem: Auc
     <PopupState variant="popover">
       {(popupState) => (
         <>
-          <IconButton type="button" size="small" {...bindTrigger(popupState)}>
+          <IconButton type="button" color="primary" size="small" {...bindTrigger(popupState)}>
             <Tag />
           </IconButton>
           <Popover

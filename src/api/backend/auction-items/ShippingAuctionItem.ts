@@ -4,9 +4,8 @@ import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
-import { z } from 'zod';
-
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
+import { z } from 'zod';
 
 const ReqSchema = z.discriminatedUnion('shipmentType', [
   z.object({
@@ -15,6 +14,7 @@ const ReqSchema = z.discriminatedUnion('shipmentType', [
     address: z.string(),
     recipientName: z.string(),
     phone: z.string(),
+    remark: z.string().optional(),
   }),
   z.object({
     shipmentType: z.literal(SHIPMENT_TYPE.enum('SevenElevenShipmentType')),
@@ -23,6 +23,7 @@ const ReqSchema = z.discriminatedUnion('shipmentType', [
     storeName: z.string(),
     recipientName: z.string(),
     phone: z.string(),
+    remark: z.string().optional(),
   }),
   z.object({
     shipmentType: z.literal(SHIPMENT_TYPE.enum('FamilyShipmentType')),
@@ -31,6 +32,7 @@ const ReqSchema = z.discriminatedUnion('shipmentType', [
     storeName: z.string(),
     recipientName: z.string(),
     phone: z.string(),
+    remark: z.string().optional(),
   }),
 ]);
 

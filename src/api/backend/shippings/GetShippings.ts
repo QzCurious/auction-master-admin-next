@@ -30,6 +30,7 @@ export interface Shipping {
   recipientName: string;
   phone: string;
   shipmentTrackingNumber?: string;
+  remark?: string;
   status: SHIPPING_STATUS['value'];
   createdAt: string;
   updatedAt: string;

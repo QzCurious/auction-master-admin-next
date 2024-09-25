@@ -113,6 +113,7 @@ const Schema = z.object({
   address: z.string().min(1, { message: '必填' }),
   recipientName: z.string().min(1, { message: '必填' }),
   phone: z.string().min(1, { message: '必填' }),
+  remark: z.string(),
 });
 function ShippingForm() {
   const router = useRouter();
@@ -133,6 +134,7 @@ function ShippingForm() {
       address: '',
       recipientName: '',
       phone: '',
+      remark: '',
       // shippingCostsWithinJapan: [],
     },
     resolver: zodResolver(Schema),
@@ -233,6 +235,17 @@ function ShippingForm() {
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
                 <TextField {...field} size="small" label="收貨人電話" fullWidth />
+                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+              </FormControl>
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="remark"
+            render={({ field, fieldState }) => (
+              <FormControl fullWidth error={!!fieldState.error}>
+                <TextField {...field} size="small" label="備註" fullWidth multiline minRows={2} maxRows={6} />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
