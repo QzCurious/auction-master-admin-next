@@ -30,7 +30,10 @@ interface CreateAdminFromProps {
 
 const FormSchema = z
   .object({
-    account: z.string().min(1, '必填'),
+    account: z
+      .string()
+      .min(1, '必填')
+      .regex(/^[0-9a-zA-Z_.-]+$/, { message: '只能包含數字、英文字母及 _ . - 符號' }),
     status: z.number().refine(R.isIncludedIn(ADMIN_STATUS.data.map((item) => item.value))),
     password: z.string().min(1, '必填'),
     confirmPassword: z.string().min(1, '必填'),
