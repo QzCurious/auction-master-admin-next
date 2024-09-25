@@ -18,8 +18,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const Schema = z.object({
-  account: z.string().min(1, { message: 'Account is required' }),
-  password: z.string().min(1, { message: 'Password is required' }),
+  account: z.string().min(1, { message: '必填' }),
+  password: z.string().min(1, { message: '必填' }),
 });
 
 export function SignInForm() {
