@@ -33,7 +33,7 @@ import { z } from 'zod';
 const QuillTextEditor = dynamic(() => import('@/components/QuillTextEditor/QuillTextEditor'), { ssr: false });
 const emptyDelta = [{ insert: '\n' }];
 
-interface ItemFromProps {
+interface EditItemFromProps {
   item: Item;
   consignor?: Consignor;
 }
@@ -99,7 +99,7 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
   return <FormProvider {...form}>{children}</FormProvider>;
 }
 
-export function ItemForm({ item, consignor }: ItemFromProps) {
+export function EditItemForm({ item, consignor }: EditItemFromProps) {
   const router = useRouter();
   const {
     watch,

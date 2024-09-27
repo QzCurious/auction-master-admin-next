@@ -9,7 +9,7 @@ import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
-import { Stack } from '@mui/system';
+import { Box, Stack } from '@mui/system';
 
 import EditRoleForm from './EditRoleForm';
 
@@ -32,7 +32,7 @@ async function Page(pageProps: PageProps) {
       </Typography>
 
       <PermissionsGuard permissions={['GetPermissions', 'GetRolePermissions']}>
-        <Form {...pageProps} />
+        <Content {...pageProps} />
       </PermissionsGuard>
     </>
   );
@@ -40,7 +40,7 @@ async function Page(pageProps: PageProps) {
 
 export default Page;
 
-async function Form({ params }: PageProps) {
+async function Content({ params }: PageProps) {
   const [permissionsRes, rolesPermissionsRes] = await Promise.all([GetPermissions(), GetRolePermissions(params.role)]);
   if (permissionsRes.error === '1001' || rolesPermissionsRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetPermissions', 'GetRolePermissions']} />;
@@ -51,10 +51,12 @@ async function Form({ params }: PageProps) {
   }
 
   return (
-    <EditRoleForm
-      permissionGroups={permissionsRes.data}
-      role={decodeURI(params.role)}
-      rolePermissions={rolesPermissionsRes.data}
-    />
+    <Box mt={4}>
+      <EditRoleForm
+        permissionGroups={permissionsRes.data}
+        role={decodeURI(params.role)}
+        rolePermissions={rolesPermissionsRes.data}
+      />
+    </Box>
   );
 }

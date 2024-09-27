@@ -12,7 +12,7 @@ import { Box, Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Stack } from '@mui/system';
 
-import { ItemForm, ItemFormProvider } from './ItemForm';
+import { EditItemForm, ItemFormProvider } from './EditItemForm';
 import PhotoListSection from './PhotoListSection';
 import StatusFlowSection from './StatusFlowSection';
 
@@ -73,7 +73,7 @@ async function Content({ params }: PageProps) {
       <Box mt={4}>
         <ItemFormProvider item={itemRes.data}>
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
-            <ItemForm item={itemRes.data} consignor={consignorRes?.data ?? undefined} />
+            <EditItemForm item={itemRes.data} consignor={consignorRes?.data ?? undefined} />
             <StatusFlowSection item={itemRes.data} />
           </Stack>
         </ItemFormProvider>

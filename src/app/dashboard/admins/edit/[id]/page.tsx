@@ -10,7 +10,7 @@ import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
-import { Stack } from '@mui/system';
+import { Box, Stack } from '@mui/system';
 
 import EditAdminForm from './EditAdminForm';
 
@@ -33,7 +33,7 @@ async function Page(pageProps: PageProps) {
       </Typography>
 
       <PermissionsGuard permissions={['GetAdmin']}>
-        <Form {...pageProps} />
+        <Content {...pageProps} />
       </PermissionsGuard>
     </>
   );
@@ -41,7 +41,7 @@ async function Page(pageProps: PageProps) {
 
 export default Page;
 
-async function Form({ params }: PageProps) {
+async function Content({ params }: PageProps) {
   const [adminRes, rolesRes] = await Promise.all([
     GetAdmin(parseInt(params.id)),
     (await havePermissions(['GetRoles'])) ? GetRoles() : undefined,
@@ -59,5 +59,9 @@ async function Form({ params }: PageProps) {
     notFound();
   }
 
-  return <EditAdminForm admin={adminRes.data} roles={rolesRes?.data ?? undefined} />;
+  return (
+    <Box mt={4}>
+      <EditAdminForm admin={adminRes.data} roles={rolesRes?.data ?? undefined} />
+    </Box>
+  );
 }

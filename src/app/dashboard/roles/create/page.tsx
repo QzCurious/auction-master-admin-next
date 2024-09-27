@@ -6,7 +6,7 @@ import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
-import { Stack } from '@mui/system';
+import { Box, Stack } from '@mui/system';
 
 import CreateRoleForm from './CreateRoleForm';
 
@@ -25,7 +25,7 @@ async function Page() {
       </Typography>
 
       <PermissionsGuard permissions={['CreateRole']}>
-        <Form />
+        <Content />
       </PermissionsGuard>
     </>
   );
@@ -33,10 +33,14 @@ async function Page() {
 
 export default Page;
 
-async function Form() {
+async function Content() {
   const [permissionsRes] = await Promise.all([
     (await havePermissions(['GetPermissions'])) ? GetPermissions() : undefined,
   ]);
 
-  return <CreateRoleForm permissionGroups={permissionsRes?.data ?? undefined} />;
+  return (
+    <Box mt={4}>
+      <CreateRoleForm permissionGroups={permissionsRes?.data ?? undefined} />
+    </Box>
+  );
 }

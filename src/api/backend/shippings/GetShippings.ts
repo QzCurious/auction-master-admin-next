@@ -7,8 +7,8 @@ import { z } from 'zod';
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type AuctionItem } from '../auction-items/GetAuctionItems';
-import { type Item } from '../items/GetItemsAndDetails';
+import { type AuctionItem } from '../auction-items/GetAuctionItem';
+import { type Item } from '../items/GetItemAndDetails';
 
 const ReqSchema = z.object({
   status: z.coerce.number().array().optional(),
@@ -27,16 +27,18 @@ export interface Shipping {
   itemIDs: Array<number>;
   auctionItemIDs: Array<number>;
   address: string;
+  storeNumber?: string;
+  storeName?: string;
   recipientName: string;
   phone: string;
   shipmentTrackingNumber?: string;
+  internationalShippingCosts?: number;
   remark?: string;
   status: SHIPPING_STATUS['value'];
   createdAt: string;
   updatedAt: string;
   items: Array<Item>;
   auctionItems: Array<AuctionItem>;
-  internationalShippingCosts?: number;
 }
 
 interface Data {

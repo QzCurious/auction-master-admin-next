@@ -6,7 +6,7 @@ import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
-import { Stack } from '@mui/system';
+import { Box, Stack } from '@mui/system';
 
 import CreateAdminForm from './CreateAdminForm';
 
@@ -24,15 +24,19 @@ async function Page() {
         新增管理員
       </Typography>
 
-      <Form />
+      <Content />
     </>
   );
 }
 
 export default Page;
 
-async function Form() {
+async function Content() {
   const [rolesRes] = await Promise.all([(await havePermissions(['GetRoles'])) ? GetRoles() : undefined]);
 
-  return <CreateAdminForm roles={rolesRes?.data ?? undefined} />;
+  return (
+    <Box mt={4}>
+      <CreateAdminForm roles={rolesRes?.data ?? undefined} />
+    </Box>
+  );
 }

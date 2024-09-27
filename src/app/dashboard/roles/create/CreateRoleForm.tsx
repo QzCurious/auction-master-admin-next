@@ -93,7 +93,7 @@ export default function CreateRoleForm({ permissionGroups }: CreateRoleFromProps
           router.push('/dashboard/roles');
         }}
       >
-        <Card sx={{ mt: 4 }}>
+        <Card>
           <CardHeader title="角色資訊" subheader="管理角色名稱及該角色的簡介描述" />
           <Divider />
           <CardContent>

@@ -9,11 +9,11 @@ import { ShippingClosed } from '@/api/backend/shippings/ShippingClosed';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign, DATE_TIME_FORMAT } from '@/domain/static/static';
 import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
+import EditIcon from '@mui/icons-material/Edit';
 import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import {
   Button,
-  Chip,
   FormControl,
   FormHelperText,
   IconButton,
@@ -37,25 +37,28 @@ import { MapPin } from '@phosphor-icons/react/dist/csr/MapPin';
 import { Phone } from '@phosphor-icons/react/dist/csr/Phone';
 import { Tag } from '@phosphor-icons/react/dist/csr/Tag';
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
+import { Notepad } from '@phosphor-icons/react/dist/ssr/Notepad';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { format } from 'date-fns';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { enqueueSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
+import { type z } from 'zod';
 
 import CopyButton from '@/components/CopyButton';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
-import { statusColor } from './statusColor';
+import { type SearchParamsSchema } from './SearchParamsSchema';
 
 interface ShippingsTableProps {
+  query: z.output<typeof SearchParamsSchema>;
   rows: Shipping[];
   count: number;
 }
 
-export function ShippingsTable({ rows, count }: ShippingsTableProps) {
+export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
@@ -66,9 +69,12 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
               <TableCell>貨品</TableCell>
               <TableCell>收貨人</TableCell>
               <TableCell>狀態</TableCell>
-              <TableCell>備註</TableCell>
               <TableCell>建立時間</TableCell>
-              <TableCell>操作 / 出貨單號</TableCell>
+              {(query.status.includes(SHIPPING_STATUS.enum('ShippedStatus')) ||
+                query.status.includes(SHIPPING_STATUS.enum('ClosedStatus'))) && (
+                <TableCell sx={{ width: 0 }}>出貨單</TableCell>
+              )}
+              <TableCell>操作</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -258,90 +264,27 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                 </TableCell>
 
                 <TableCell>
-                  <Chip
-                    label={SHIPPING_STATUS.get('value', row.status).message}
-                    variant="outlined"
-                    color={statusColor(row.status)}
-                  />
-                </TableCell>
+                  <Stack alignItems="center" spacing={1} sx={{ whiteSpace: 'nowrap' }}>
+                    <Typography variant="body2">{SHIPPING_STATUS.get('value', row.status).message}</Typography>
 
-                <TableCell>
-                  <Box sx={{ whiteSpace: 'pre-wrap' }}>{row.remark}</Box>
-                </TableCell>
-
-                <TableCell sx={{ whiteSpace: 'nowrap' }}>{format(row.createdAt, DATE_TIME_FORMAT)}</TableCell>
-                <TableCell
-                  title={
-                    process.env.NODE_ENV === 'development'
-                      ? `${row.actionType} ${ACTION_TYPE.enum(row.actionType)}`
-                      : undefined
-                  }
-                >
-                  {!!row.shipmentTrackingNumber && (
-                    <Stack mb={1}>
-                      <Typography variant="body2" color="GrayText">
-                        出貨單號
-                      </Typography>
-                      <Typography variant="body2">
-                        {row.shipmentTrackingNumber}
-                        <CopyButton text={row.shipmentTrackingNumber} />
-                      </Typography>
-                    </Stack>
-                  )}
-
-                  {row.status === SHIPPING_STATUS.enum('SubmitAppraisalStatus') && (
-                    <HavePermissionsOnly permissions={['ProcessingShipping']}>
-                      <PopupState variant="popover">
-                        {(popupState) => (
-                          <>
-                            <Button type="button" variant="outlined" size="small" {...bindTrigger(popupState)}>
-                              開始理貨
-                            </Button>
-                            <DoubleCheckPopover
-                              {...bindPopover(popupState)}
-                              title="標示為理貨中"
-                              onConfirm={async () => {
-                                const res = await ProcessingShipping(row.id);
-                                if (res.error) {
-                                  enqueueSnackbar(res.error, { variant: 'error' });
-                                  return;
-                                }
-                                enqueueSnackbar('已標示為理貨中', { variant: 'success' });
-                                popupState.close();
-                              }}
-                              onCancel={popupState.close}
-                            />
-                          </>
-                        )}
-                      </PopupState>
-                    </HavePermissionsOnly>
-                  )}
-
-                  {row.status === SHIPPING_STATUS.enum('ProcessingStatus') && (
-                    <HavePermissionsOnly permissions={['Shipped']}>
-                      <ShippedPopover row={row} />
-                    </HavePermissionsOnly>
-                  )}
-
-                  {row.status === SHIPPING_STATUS.enum('ShippedStatus') &&
-                    row.auctionItems.every((item) => item.shippingCostsWithinJapan) && (
-                      <HavePermissionsOnly permissions={['ShippingClosed']}>
+                    {row.status === SHIPPING_STATUS.enum('SubmitAppraisalStatus') && (
+                      <HavePermissionsOnly permissions={['ProcessingShipping']}>
                         <PopupState variant="popover">
                           {(popupState) => (
                             <>
                               <Button type="button" variant="outlined" size="small" {...bindTrigger(popupState)}>
-                                結束出貨
+                                開始理貨
                               </Button>
                               <DoubleCheckPopover
                                 {...bindPopover(popupState)}
-                                title="標示為出貨已結束"
+                                title="標示為理貨中"
                                 onConfirm={async () => {
-                                  const res = await ShippingClosed(row.id);
+                                  const res = await ProcessingShipping(row.id);
                                   if (res.error) {
                                     enqueueSnackbar(res.error, { variant: 'error' });
                                     return;
                                   }
-                                  enqueueSnackbar('已標示為出貨已結束', { variant: 'success' });
+                                  enqueueSnackbar('已標示為理貨中', { variant: 'success' });
                                   popupState.close();
                                 }}
                                 onCancel={popupState.close}
@@ -351,6 +294,97 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                         </PopupState>
                       </HavePermissionsOnly>
                     )}
+
+                    {row.status === SHIPPING_STATUS.enum('ProcessingStatus') && (
+                      <HavePermissionsOnly permissions={['Shipped']}>
+                        <ShippedPopover row={row} />
+                      </HavePermissionsOnly>
+                    )}
+
+                    {row.status === SHIPPING_STATUS.enum('ShippedStatus') &&
+                      row.auctionItems.every((item) => item.shippingCostsWithinJapan) && (
+                        <HavePermissionsOnly permissions={['ShippingClosed']}>
+                          <PopupState variant="popover">
+                            {(popupState) => (
+                              <>
+                                <Button type="button" variant="outlined" size="small" {...bindTrigger(popupState)}>
+                                  結束出貨
+                                </Button>
+                                <DoubleCheckPopover
+                                  {...bindPopover(popupState)}
+                                  title="標示為出貨已結束"
+                                  onConfirm={async () => {
+                                    const res = await ShippingClosed(row.id);
+                                    if (res.error) {
+                                      enqueueSnackbar(res.error, { variant: 'error' });
+                                      return;
+                                    }
+                                    enqueueSnackbar('已標示為出貨已結束', { variant: 'success' });
+                                    popupState.close();
+                                  }}
+                                  onCancel={popupState.close}
+                                />
+                              </>
+                            )}
+                          </PopupState>
+                        </HavePermissionsOnly>
+                      )}
+                  </Stack>
+                </TableCell>
+
+                <TableCell sx={{ whiteSpace: 'nowrap' }}>{format(row.createdAt, DATE_TIME_FORMAT)}</TableCell>
+
+                {(query.status.includes(SHIPPING_STATUS.enum('ShippedStatus')) ||
+                  query.status.includes(SHIPPING_STATUS.enum('ClosedStatus'))) && (
+                  <TableCell>
+                    <table style={{ whiteSpace: 'nowrap', width: '100%' }}>
+                      <tbody>
+                        {row.shipmentTrackingNumber != null && (
+                          <tr>
+                            <td style={{ paddingRight: 8 }}>
+                              <Typography variant="body2" color="GrayText">
+                                出貨單號
+                              </Typography>
+                            </td>
+                            <td style={{ textAlign: 'right' }}>
+                              <Typography variant="body2">
+                                {row.shipmentTrackingNumber}
+                                <CopyButton text={row.shipmentTrackingNumber} />
+                              </Typography>
+                            </td>
+                          </tr>
+                        )}
+                        {row.actionType === ACTION_TYPE.enum('YahooDispatchActionType') &&
+                          row.internationalShippingCosts != null && (
+                            <tr>
+                              <td>
+                                <Typography variant="body2" color="GrayText">
+                                  國際運費
+                                </Typography>
+                              </td>
+                              <td style={{ textAlign: 'right' }}>
+                                <Typography variant="body2">
+                                  {currencySign('TWD')}
+                                  {row.internationalShippingCosts}
+                                </Typography>
+                              </td>
+                            </tr>
+                          )}
+                      </tbody>
+                    </table>
+                  </TableCell>
+                )}
+
+                <TableCell>
+                  <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
+                    <HavePermissionsOnly permissions={['GetShipping']}>
+                      <IconButton LinkComponent={Link} href={`/dashboard/shippings/edit/${row.id}`}>
+                        <EditIcon />
+                      </IconButton>
+                    </HavePermissionsOnly>
+
+                    <RemarkPopover row={row} />
+                  </Stack>
                 </TableCell>
               </TableRow>
             ))}
@@ -406,7 +440,7 @@ function MarkShippingCostsWithinJapanPopover({ auctionItem }: { auctionItem: Auc
                 popupState.close();
               })}
             >
-              <Typography variant="subtitle1">更新日本國內運費</Typography>
+              <Typography variant="subtitle1">填寫日本國內運費</Typography>
               <Stack spacing={1.5} mt={2}>
                 <Controller
                   control={control}
@@ -537,7 +571,7 @@ function ShippedPopover({ row }: { row: Shipping }) {
                   rules={{ required: '必填' }}
                   render={({ field, fieldState }) => (
                     <FormControl fullWidth error={!!fieldState.error}>
-                      <TextField {...field} size="small" label="出貨單號碼" fullWidth type="text" />
+                      <TextField {...field} size="small" label="出貨單號" fullWidth type="text" />
                       {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                     </FormControl>
                   )}
@@ -552,6 +586,48 @@ function ShippedPopover({ row }: { row: Shipping }) {
                   確定
                 </Button>
               </Stack>
+            </Box>
+          </Popover>
+        </>
+      )}
+    </PopupState>
+  );
+}
+
+function RemarkPopover({ row }: { row: Shipping }) {
+  return (
+    <PopupState variant="popover">
+      {(popupState) => (
+        <>
+          <IconButton type="button" {...bindTrigger(popupState)}>
+            <Notepad />
+          </IconButton>
+          <Popover
+            {...bindPopover(popupState)}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+          >
+            <Box component="form" sx={{ p: '16px 20px' }}>
+              <Typography variant="subtitle1" color="GrayText">
+                備註
+              </Typography>
+              <FormControl>
+                <TextField
+                  value={row.remark}
+                  InputProps={{ readOnly: true }}
+                  size="small"
+                  fullWidth
+                  multiline
+                  minRows={2}
+                  maxRows={6}
+                />
+              </FormControl>
             </Box>
           </Popover>
         </>

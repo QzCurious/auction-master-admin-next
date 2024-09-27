@@ -1,19 +1,9 @@
 'use server';
 
 import { type ITEM_STATUS, type ITEM_TYPE } from '@/domain/static/static-config-mappers';
-import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-
-const ReqSchema = z.object({
-  consignorID: z.coerce.number().optional(),
-  status: z.coerce.number().optional(),
-  sort: z.string().optional(),
-  order: z.enum(['asc', 'desc']).optional(),
-  limit: z.coerce.number().default(10),
-  offset: z.coerce.number().default(0),
-});
 
 export interface Item {
   id: number;

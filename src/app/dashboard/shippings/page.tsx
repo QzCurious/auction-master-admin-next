@@ -43,20 +43,20 @@ export default async function Page(pageProps: PageProps) {
 }
 
 async function Content({ searchParams }: PageProps) {
-  const filters = parseSearchParams(SearchParamsSchema, searchParams);
-  const { startAt, endAt } = fixRange(filters.startAt, filters.endAt);
+  const query = parseSearchParams(SearchParamsSchema, searchParams);
+  const { startAt, endAt } = fixRange(query.startAt, query.endAt);
 
   const [ShippingsRes] = await Promise.all([
     GetShippings({
-      status: filters.status.length
-        ? filters.status
+      status: query.status.length
+        ? query.status
         : [SHIPPING_STATUS.enum('SubmitAppraisalStatus'), SHIPPING_STATUS.enum('ProcessingStatus')],
       endAt,
       startAt,
       sort: 'createdAt',
       order: 'desc',
-      limit: filters[ROWS_PER_PAGE],
-      offset: filters[PAGE] * filters[ROWS_PER_PAGE],
+      limit: query[ROWS_PER_PAGE],
+      offset: query[PAGE] * query[ROWS_PER_PAGE],
     }),
   ]);
 
@@ -71,14 +71,14 @@ async function Content({ searchParams }: PageProps) {
   return (
     <Stack spacing={3}>
       <Stack direction="row" flexWrap="wrap" gap={2}>
-        <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} />
-        <StatusFilter selected={filters.status} />
-        <RemoveSearchBtn<keyof typeof filters> fields={['startAt', 'endAt', 'status']} />
+        <RangeFilter startAt={query.startAt} endAt={query.endAt} within={{ months: MAX_MONTHS }} />
+        <StatusFilter selected={query.status} />
+        <RemoveSearchBtn<keyof typeof query> fields={['startAt', 'endAt', 'status']} />
 
         <Box mx="auto" />
       </Stack>
 
-      <ShippingsTable rows={ShippingsRes.data.shippings} count={ShippingsRes.data.count} />
+      <ShippingsTable query={query} rows={ShippingsRes.data.shippings} count={ShippingsRes.data.count} />
     </Stack>
   );
 }

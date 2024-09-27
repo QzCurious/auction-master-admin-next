@@ -31,7 +31,7 @@ import { useFormContext } from 'react-hook-form';
 
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
-import { type FormSchemaType } from './ItemForm';
+import { type FormSchemaType } from './EditItemForm';
 import TriggerToFlowFigure from './TriggerToFlowFigure';
 
 export default function StatusFlowSection({ item }: { item: Item }) {

@@ -102,7 +102,7 @@ export default function EditAdminForm({ admin, roles }: EditAdminFromProps) {
         (err) => console.log(err)
       )}
     >
-      <Stack rowGap={3} sx={{ mt: 4 }}>
+      <Stack rowGap={3}>
         <Card sx={{ py: 2, px: 3 }}>
           <Stack direction="row" columnGap={2}>
             <Typography variant="h6">管理員資訊</Typography>

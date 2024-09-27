@@ -1,7 +1,7 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
-import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
+import { GetShipping } from '@/api/backend/shippings/GetShipping';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
@@ -11,9 +11,9 @@ import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
 
-import EditConsignorForm from './EditConsignorForm';
+import { EditShippingForm, ItemFormProvider } from './EditShippingForm';
 
-export const metadata = { title: `編輯管寄售人 | ${SITE_NAME}` } satisfies Metadata;
+export const metadata = { title: `編輯出貨 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
   params: { id: string };
@@ -22,16 +22,18 @@ interface PageProps {
 async function Page(pageProps: PageProps) {
   return (
     <>
-      <Link component={RouterLink} href="/dashboard/consignors">
-        <Stack direction="row" alignItems="center" columnGap={1}>
-          <ArrowBackIcon /> 回到寄售人列表
-        </Stack>
-      </Link>
+      <Stack alignItems="start">
+        <Link component={RouterLink} href="/dashboard/shippings">
+          <Stack direction="row" alignItems="center" columnGap={1}>
+            <ArrowBackIcon /> 回到出貨列表
+          </Stack>
+        </Link>
+      </Stack>
       <Typography variant="h4" sx={{ mt: 3 }}>
-        編輯寄售人
+        編輯出貨
       </Typography>
 
-      <PermissionsGuard permissions={['AdminGetConsignor']}>
+      <PermissionsGuard permissions={['GetShipping']}>
         <Content {...pageProps} />
       </PermissionsGuard>
     </>
@@ -41,23 +43,25 @@ async function Page(pageProps: PageProps) {
 export default Page;
 
 async function Content({ params }: PageProps) {
-  const [consignorRes] = await Promise.all([AdminGetConsignor(parseInt(params.id))]);
+  const shippingRes = await GetShipping(params.id);
 
-  if (consignorRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
+  if (shippingRes.error === '1001') {
+    return <WithoutPermissionsError permissions={['GetShipping']} />;
   }
 
-  if (consignorRes.error === '1003') {
+  if (shippingRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
-  if (!consignorRes.data) {
+  if (!shippingRes.data) {
     notFound();
   }
 
   return (
     <Box mt={4}>
-      <EditConsignorForm consignor={consignorRes.data} />
+      <ItemFormProvider shipping={shippingRes.data}>
+        <EditShippingForm shipping={shippingRes.data} />
+      </ItemFormProvider>
     </Box>
   );
 }

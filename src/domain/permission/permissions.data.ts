@@ -529,6 +529,13 @@ export const PERMISSIONS_DATA = [
         description: '取得出貨列表',
       },
       {
+        key: 'GetShipping',
+        url: '/auction-master/backend/shippings/:id',
+        method: 'GET',
+        fields: ['*'],
+        description: '取得出貨單',
+      },
+      {
         key: 'UpdateShipping',
         url: '/auction-master/backend/shippings/:id',
         method: 'PATCH',
