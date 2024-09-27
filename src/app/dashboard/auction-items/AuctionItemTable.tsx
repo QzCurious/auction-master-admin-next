@@ -142,8 +142,8 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     <TableCell>
                       <Box
                         sx={{
-                          fontWeight: row.bidders?.some((bidder) => bidder.account === row.watcherName)
-                            ? 'bold'
+                          color: row.bidders?.some((bidder) => bidder.account === row.watcherName)
+                            ? 'primary.main'
                             : undefined,
                         }}
                       >
@@ -157,21 +157,18 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                         target="_blank"
                         rel="noreferrer"
                       >
-                        {row.bidders?.map((bidder) => (
+                        {row.bidders?.slice(0, 5)?.map((bidder) => (
                           <Stack
                             key={`${bidder.account}-${bidder.lastBidAt}`}
                             direction="row"
                             spacing={1}
-                            sx={{ whiteSpace: 'nowrap' }}
+                            sx={{
+                              whiteSpace: 'nowrap',
+                              color: bidder.account === row.watcherName ? 'primary.main' : undefined,
+                            }}
                           >
                             <span>
-                              <Box
-                                component="span"
-                                sx={{ fontWeight: bidder.account === row.watcherName ? 'bold' : undefined }}
-                              >
-                                {bidder.account}
-                              </Box>{' '}
-                              / 評價: {bidder.rating}{' '}
+                              {bidder.account} / 評價: {bidder.rating}
                             </span>
                             <span style={{ marginLeft: 'auto' }}>
                               {currencySign('JPY')}
