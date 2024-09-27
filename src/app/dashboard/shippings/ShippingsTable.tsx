@@ -212,9 +212,15 @@ export function ShippingsTable({ rows, count }: ShippingsTableProps) {
                                               alt=""
                                             />
                                           </a>
-                                          <Typography variant="body2" mt={0.5}>
-                                            {auctionItem.name}
-                                          </Typography>
+                                          <Link
+                                            href={`https://page.auctions.yahoo.co.jp/jp/auction/${auctionItem.auctionID}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                          >
+                                            <Typography variant="body2" mt={0.5}>
+                                              {auctionItem.name}
+                                            </Typography>
+                                          </Link>
                                         </Paper>
                                       </Popover>
                                     </td>
