@@ -27,7 +27,7 @@ export async function HandleConsignorVerification(
 ): Promise<ApiClientResponse<'Success', '1001' | '1003' | ApproveErrorCode>>;
 export async function HandleConsignorVerification(id: number, action: 'approve' | 'reject') {
   if (action === 'approve') {
-    const res = await withAuth(apiClient)<Data, ApproveErrorCode>(`/consignors/verifications/${id}/${action}`, {
+    const res = await withAuth(apiClient)<Data, ApproveErrorCode>(`/backend/consignors/verifications/${id}/${action}`, {
       method: 'POST',
     });
 
