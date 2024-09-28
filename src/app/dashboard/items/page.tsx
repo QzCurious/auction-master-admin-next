@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
 import { Provider } from 'jotai';
 
-import AutoRefreshPage from '@/components/AutoRefreshPage';
+import { AutoRefreshEffect } from '@/helper/useAutoRefresh';
 
 import { ConsignorFilter } from '../../../domain/crud/ConsignorFilter';
 import { ItemTable } from './ItemTable';
@@ -78,33 +78,32 @@ async function Content({ searchParams }: PageProps) {
 
   return (
     <Provider>
-      <AutoRefreshPage ms={10_000}>
-        <Stack spacing={3}>
-          <Stack direction="row" flexWrap="wrap" gap={2}>
-            <ConsignorFilter consignorID={query.consignorID} />
-            {!query.picking && (
-              <>
-                <StatusFilter selected={query.status} statusCount={itemsRes.data.statusCounts} />
-                <RemoveSearchBtn<keyof typeof query> fields={['consignorID', 'status']} />
-              </>
-            )}
-
-            <Box mx="auto" />
-
-            <HavePermissionsOnly permissions={['AdminGetConsignor', 'AdminGetConsignors', 'ItemReturning']}>
-              <PickForReturnButtons picking={query.picking} stage={query.stage} />
-            </HavePermissionsOnly>
-          </Stack>
-
-          {query.picking === 'return' && !query.consignorID ? (
-            '退貨請先鎖定寄售人'
-          ) : (
-            <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} query={query} />
+      <AutoRefreshEffect ms={10_000} />
+      <Stack spacing={3}>
+        <Stack direction="row" flexWrap="wrap" gap={2}>
+          <ConsignorFilter consignorID={query.consignorID} />
+          {!query.picking && (
+            <>
+              <StatusFilter selected={query.status} statusCount={itemsRes.data.statusCounts} />
+              <RemoveSearchBtn<keyof typeof query> fields={['consignorID', 'status']} />
+            </>
           )}
+
+          <Box mx="auto" />
+
+          <HavePermissionsOnly permissions={['AdminGetConsignor', 'AdminGetConsignors', 'ItemReturning']}>
+            <PickForReturnButtons picking={query.picking} stage={query.stage} />
+          </HavePermissionsOnly>
         </Stack>
 
-        <PickForReturn picking={query.picking} stage={query.stage} />
-      </AutoRefreshPage>
+        {query.picking === 'return' && !query.consignorID ? (
+          '退貨請先鎖定寄售人'
+        ) : (
+          <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} query={query} />
+        )}
+      </Stack>
+
+      <PickForReturn picking={query.picking} stage={query.stage} />
     </Provider>
   );
 }

@@ -15,7 +15,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Provider } from 'jotai';
 
-import AutoRefreshPage from '@/components/AutoRefreshPage';
+import { AutoRefreshEffect } from '@/helper/useAutoRefresh';
 
 import { AuctionItemTable } from './AuctionItemTable';
 import { PickForFeePaid } from './PickForFeePaid';
@@ -87,36 +87,35 @@ async function Content({ searchParams }: PageProps) {
 
   return (
     <Provider>
-      <AutoRefreshPage ms={10_000}>
-        <Stack spacing={3}>
-          <Stack direction="row" flexWrap="wrap" gap={2}>
-            <ConsignorFilter consignorID={filters.consignorID} />
-            {!filters.picking && (
-              <>
-                <StatusFilter selected={filters.status} />
-                <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'status']} />
-              </>
-            )}
+      <AutoRefreshEffect ms={10_000} />
+      <Stack spacing={3}>
+        <Stack direction="row" flexWrap="wrap" gap={2}>
+          <ConsignorFilter consignorID={filters.consignorID} />
+          {!filters.picking && (
+            <>
+              <StatusFilter selected={filters.status} />
+              <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'status']} />
+            </>
+          )}
 
-            <Box mx="auto" />
-            <HavePermissionsOnly permissions={['GetAuctionItem', 'ShippingAuctionItem']}>
-              <PickForShippingButtons picking={filters.picking} stage={filters.stage} />
-            </HavePermissionsOnly>
-            {/* TODO
+          <Box mx="auto" />
+          <HavePermissionsOnly permissions={['GetAuctionItem', 'ShippingAuctionItem']}>
+            <PickForShippingButtons picking={filters.picking} stage={filters.stage} />
+          </HavePermissionsOnly>
+          {/* TODO
               <PickForFeePaidButtons picking={filters.picking} stage={filters.stage} />
             */}
-          </Stack>
-
-          <AuctionItemTable
-            rows={auctionItemsRes.data.auctionItems}
-            count={auctionItemsRes.data.count}
-            activationWorkers={activeWorkersRes?.data ?? undefined}
-          />
         </Stack>
 
-        <PickForShipping picking={filters.picking} stage={filters.stage} />
-        <PickForFeePaid picking={filters.picking} stage={filters.stage} />
-      </AutoRefreshPage>
+        <AuctionItemTable
+          rows={auctionItemsRes.data.auctionItems}
+          count={auctionItemsRes.data.count}
+          activationWorkers={activeWorkersRes?.data ?? undefined}
+        />
+      </Stack>
+
+      <PickForShipping picking={filters.picking} stage={filters.stage} />
+      <PickForFeePaid picking={filters.picking} stage={filters.stage} />
     </Provider>
   );
 }
