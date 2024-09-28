@@ -18,7 +18,8 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
+import PopupState from 'material-ui-popup-state';
+import { bindPopover, bindTrigger } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
 
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
@@ -30,6 +31,7 @@ interface CustomersTableProps {
 
 export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
   const searchParams = useSearchParams();
+  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <Card>
@@ -68,7 +70,30 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
                             </IconButton>
                           </HavePermissionsOnly>
                           <HavePermissionsOnly permissions={['DeleteRole']}>
-                            <DeleteBtn row={row} />
+                            <PopupState variant="popover">
+                              {(popupState) => (
+                                <>
+                                  <IconButton {...bindTrigger(popupState)}>
+                                    <DeleteIcon />
+                                  </IconButton>
+                                  <DoubleCheckPopover
+                                    {...bindPopover(popupState)}
+                                    title="刪除角色"
+                                    description={`您確定要刪除 ${row.role} 嗎?`}
+                                    onConfirm={async () => {
+                                      const res = await DeleteRole(row.role);
+                                      if (res.error) {
+                                        enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
+                                        return;
+                                      }
+                                      enqueueSnackbar(`已刪除角色 ${row.role}`, { variant: 'success' });
+                                      popupState.close();
+                                    }}
+                                    onCancel={popupState.close}
+                                  />
+                                </>
+                              )}
+                            </PopupState>
                           </HavePermissionsOnly>
                         </Stack>
                       </TableCell>
@@ -80,35 +105,5 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
         </TableContainer>
       </Box>
     </Card>
-  );
-}
-
-function DeleteBtn({ row }: { row: Role }) {
-  const popupState = usePopupState({
-    variant: 'popover',
-  });
-  const { enqueueSnackbar } = useSnackbar();
-
-  return (
-    <>
-      <IconButton {...bindTrigger(popupState)}>
-        <DeleteIcon />
-      </IconButton>
-      <DoubleCheckPopover
-        {...bindPopover(popupState)}
-        title="刪除角色"
-        description={`您確定要刪除 ${row.role} 嗎?`}
-        onConfirm={async () => {
-          const res = await DeleteRole(row.role);
-          if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
-            return;
-          }
-          enqueueSnackbar(`已刪除角色 ${row.role}`, { variant: 'success' });
-          popupState.close();
-        }}
-        onCancel={popupState.close}
-      />
-    </>
   );
 }

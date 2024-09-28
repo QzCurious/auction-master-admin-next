@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { UpdateAuctionItem } from '@/api/backend/auction-items/UpdateAuctionItem';
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
@@ -16,18 +17,17 @@ import {
   Button,
   FormControl,
   FormHelperText,
-  IconButton,
   InputAdornment,
-  Link,
   Paper,
   Popover,
-  Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -40,7 +40,8 @@ import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { Notepad } from '@phosphor-icons/react/dist/ssr/Notepad';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { format } from 'date-fns';
-import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
+import PopupState from 'material-ui-popup-state';
+import { bindPopover, bindTrigger } from 'material-ui-popup-state/hooks';
 import { enqueueSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 import { type z } from 'zod';

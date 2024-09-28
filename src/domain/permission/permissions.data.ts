@@ -291,6 +291,13 @@ export const PERMISSIONS_DATA = [
         description: '修改日拍競標商品狀態',
       },
       {
+        key: 'DeleteAuctionItem',
+        url: '/auction-master/backend/auction-items/:id',
+        method: 'DELETE',
+        fields: ['*'],
+        description: '刪除日拍競標商品',
+      },
+      {
         key: 'AuctionItemDealPreview',
         url: '/auction-master/backend/auction-items/:id/deal/preview',
         method: 'GET',

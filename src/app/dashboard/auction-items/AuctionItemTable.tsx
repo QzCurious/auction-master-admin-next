@@ -1,17 +1,20 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { DeleteAuctionItem } from '@/api/backend/auction-items/DeleteAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
+import DeleteIcon from '@mui/icons-material/Delete';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Checkbox, Link } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -20,9 +23,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { useAtom } from 'jotai';
+import PopupState from 'material-ui-popup-state';
+import { bindPopover, bindTrigger } from 'material-ui-popup-state/hooks';
+import { enqueueSnackbar } from 'notistack';
 import * as R from 'remeda';
 
 import { CountdownTime } from '@/components/CountdownTime';
+import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
@@ -237,6 +244,32 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                           </HavePermissionsOnly>
                         </Stack>
                       )}
+
+                      <HavePermissionsOnly permissions={['DeleteAuctionItem']}>
+                        <PopupState variant="popover">
+                          {(popupState) => (
+                            <>
+                              <IconButton {...bindTrigger(popupState)}>
+                                <DeleteIcon />
+                              </IconButton>
+                              <DoubleCheckPopover
+                                {...bindPopover(popupState)}
+                                title="刪除日拍競標商品"
+                                onConfirm={async () => {
+                                  const res = await DeleteAuctionItem(row.id);
+                                  if (res.error) {
+                                    enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
+                                    return;
+                                  }
+                                  enqueueSnackbar(`已刪除日拍競標商品`, { variant: 'success' });
+                                  popupState.close();
+                                }}
+                                onCancel={popupState.close}
+                              />
+                            </>
+                          )}
+                        </PopupState>
+                      </HavePermissionsOnly>
                     </TableCell>
                   </>
                 )}
