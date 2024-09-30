@@ -223,6 +223,11 @@ export const CONFIGS_DATA = {
       message: '寄售人已付手續費',
       value: 23,
     },
+    {
+      key: 'NoBidsPlacedStatus',
+      message: '無人下標',
+      value: 24,
+    },
   ],
   consignorStatus: [
     {
