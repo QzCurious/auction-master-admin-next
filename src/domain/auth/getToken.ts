@@ -1,13 +1,13 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { CookieConfigs } from "./CookieConfigs";
 import { jwtDecode } from 'jwt-decode';
 
 import { AdminRefreshToken } from '../../api/AdminRefreshToken';
 import { type JwtPayload } from '../../api/JwtPayload';
+import { CookieConfigs } from './CookieConfigs';
 
-let sessionRefreshing: ReturnType<typeof AdminRefreshToken> | null = null;
+const tokenRefreshingMap = new Map<string, ReturnType<typeof AdminRefreshToken>>();
 
 export async function getToken({ force }: { force?: boolean } = { force: false }) {
   // no token
@@ -28,12 +28,14 @@ export async function getToken({ force }: { force?: boolean } = { force: false }
     throw new Error('BUG: Token expired without refresh token');
   }
 
-  if (!sessionRefreshing) {
-    sessionRefreshing = AdminRefreshToken({ token: token.value, refreshToken: refreshToken.value });
+  let refreshing = tokenRefreshingMap.get(token.value);
+  if (!refreshing) {
+    refreshing = AdminRefreshToken({ token: token.value, refreshToken: refreshToken.value });
+    tokenRefreshingMap.set(token.value, refreshing);
   }
 
-  const res = await sessionRefreshing;
-  sessionRefreshing = null;
+  const res = await refreshing;
+  tokenRefreshingMap.delete(token.value);
 
   // 1003 refresh token expired
   if (!res.data) {
