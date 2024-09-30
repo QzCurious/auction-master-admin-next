@@ -52,7 +52,7 @@ const FormSchema = z
     }
   });
 
-export function ItemFormProvider({ shipping, children }: { shipping: Shipping; children: React.ReactNode }) {
+export function ShippingFormProvider({ shipping, children }: { shipping: Shipping; children: React.ReactNode }) {
   const form = useForm<z.input<typeof FormSchema>>({
     values: {
       actionType: shipping.actionType,
@@ -283,10 +283,10 @@ export function EditShippingForm({ shipping }: EditShippingFromProps) {
             name="itemIDs"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
-                <InputLabel>日拍商品</InputLabel>
+                <InputLabel>日拍競標商品</InputLabel>
                 <Select
                   {...field}
-                  label="日拍商品"
+                  label="日拍競標商品"
                   fullWidth
                   multiple
                   readOnly

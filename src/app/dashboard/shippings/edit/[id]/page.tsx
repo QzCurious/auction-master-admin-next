@@ -11,7 +11,7 @@ import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
 
-import { EditShippingForm, ItemFormProvider } from './EditShippingForm';
+import { EditShippingForm, ShippingFormProvider } from './EditShippingForm';
 
 export const metadata = { title: `編輯出貨 | ${SITE_NAME}` } satisfies Metadata;
 
@@ -59,9 +59,9 @@ async function Content({ params }: PageProps) {
 
   return (
     <Box mt={4}>
-      <ItemFormProvider shipping={shippingRes.data}>
+      <ShippingFormProvider shipping={shippingRes.data}>
         <EditShippingForm shipping={shippingRes.data} />
-      </ItemFormProvider>
+      </ShippingFormProvider>
     </Box>
   );
 }

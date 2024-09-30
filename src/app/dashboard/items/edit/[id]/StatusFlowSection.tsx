@@ -267,8 +267,8 @@ function StatusFlowUI({ item }: { item: Item }) {
     ConsignorConfirmedStatus: <ReadyStatusHandleButtons item={item} />,
     BiddingStatus: (
       <HavePermissionsOnly permissions={['GetAuctionItem']}>
-        <Link href={`/dashboard/auction-items/${item.auctionItemID}`} target="_blank" rel="noreferrer">
-          <Gavel /> 日拍商品
+        <Link href={`/dashboard/auction-items/edit/${item.auctionItemID}`} target="_blank" rel="noreferrer">
+          <Gavel /> 日拍競標商品
         </Link>
       </HavePermissionsOnly>
     ),

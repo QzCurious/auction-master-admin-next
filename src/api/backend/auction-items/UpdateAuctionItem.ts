@@ -15,7 +15,7 @@ const ReqSchema = z
     itemID: z.number(),
     sellerID: z.number(),
     watcherID: z.number(),
-    auctionID: z.number(),
+    auctionID: z.string(),
     name: z.string(),
     photo: z.string(),
     reservePrice: z.number(),

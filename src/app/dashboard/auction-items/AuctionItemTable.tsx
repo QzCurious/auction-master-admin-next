@@ -8,6 +8,7 @@ import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Checkbox, Link } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -35,7 +36,6 @@ import { SearchParamsPagination } from '@/components/SearchParamsPagination';
 
 import BidPopover from './BidPopover';
 import CompanyPurchasedButton from './CompanyPurchasedButton';
-import EditDialog from './EditDialog';
 import { pickedItemIdsReducerAtom } from './PickingList';
 import StopWatchButton from './StopWatchButton';
 
@@ -227,49 +227,52 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                       )}
                     </TableCell>
                     <TableCell>
-                      {R.isIncludedIn(row.status, [
-                        AUCTION_ITEM_STATUS.enum('InitStatus'),
-                        AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
-                        AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
-                        AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
-                      ]) && (
-                        <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
-                          {activationWorkers && (
-                            <HavePermissionsOnly permissions={['UpdateAuctionItem']}>
-                              <EditDialog auctionItem={row} activationWorkers={activationWorkers} />
+                      <Stack direction="row" spacing={0.5}>
+                        {R.isIncludedIn(row.status, [
+                          AUCTION_ITEM_STATUS.enum('InitStatus'),
+                          AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
+                          AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
+                          AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
+                        ]) && (
+                          <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
+                            <HavePermissionsOnly permissions={['BidAuctionItem']}>
+                              <BidPopover auctionItem={row} />
                             </HavePermissionsOnly>
-                          )}
-                          <HavePermissionsOnly permissions={['BidAuctionItem']}>
-                            <BidPopover auctionItem={row} />
-                          </HavePermissionsOnly>
-                        </Stack>
-                      )}
+                          </Stack>
+                        )}
 
-                      <HavePermissionsOnly permissions={['DeleteAuctionItem']}>
-                        <PopupState variant="popover">
-                          {(popupState) => (
-                            <>
-                              <IconButton {...bindTrigger(popupState)}>
-                                <DeleteIcon />
-                              </IconButton>
-                              <DoubleCheckPopover
-                                {...bindPopover(popupState)}
-                                title="刪除日拍競標商品"
-                                onConfirm={async () => {
-                                  const res = await DeleteAuctionItem(row.id);
-                                  if (res.error) {
-                                    enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
-                                    return;
-                                  }
-                                  enqueueSnackbar(`已刪除日拍競標商品`, { variant: 'success' });
-                                  popupState.close();
-                                }}
-                                onCancel={popupState.close}
-                              />
-                            </>
-                          )}
-                        </PopupState>
-                      </HavePermissionsOnly>
+                        <HavePermissionsOnly permissions={['GetAuctionItem']}>
+                          <IconButton LinkComponent={Link} href={`/dashboard/auction-items/edit/${row.id}`}>
+                            <EditIcon />
+                          </IconButton>
+                        </HavePermissionsOnly>
+
+                        <HavePermissionsOnly permissions={['DeleteAuctionItem']}>
+                          <PopupState variant="popover">
+                            {(popupState) => (
+                              <>
+                                <IconButton {...bindTrigger(popupState)}>
+                                  <DeleteIcon />
+                                </IconButton>
+                                <DoubleCheckPopover
+                                  {...bindPopover(popupState)}
+                                  title="刪除日拍競標商品"
+                                  onConfirm={async () => {
+                                    const res = await DeleteAuctionItem(row.id);
+                                    if (res.error) {
+                                      enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
+                                      return;
+                                    }
+                                    enqueueSnackbar(`已刪除日拍競標商品`, { variant: 'success' });
+                                    popupState.close();
+                                  }}
+                                  onCancel={popupState.close}
+                                />
+                              </>
+                            )}
+                          </PopupState>
+                        </HavePermissionsOnly>
+                      </Stack>
                     </TableCell>
                   </>
                 )}
