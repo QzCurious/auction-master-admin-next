@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useRef, useState, useTransition } from 'react';
+import Link from 'next/link';
 import { AdminDeleteItemPhoto } from '@/api/backend/items/AdminDeleteItemPhoto';
 import { AdminReorderItemPhoto } from '@/api/backend/items/AdminReorderItemPhoto';
 import { AdminUpsertItemPhoto } from '@/api/backend/items/AdminUpsertItemPhoto';
@@ -17,8 +19,6 @@ import { Box, Stack } from '@mui/system';
 import { visuallyHidden } from '@mui/utils';
 import { useGesture } from '@use-gesture/react';
 import { useMotionValue } from 'framer-motion';
-import Link from 'next/link';
-import { useEffect, useRef, useState, useTransition } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -35,9 +35,10 @@ const PhotoListSchema = z.object({
 });
 
 export default function PhotoListSection({ item }: { item: Item }) {
+  const LIMIT = 10;
   const theme = useTheme();
   const { control } = useForm<z.input<typeof PhotoListSchema>>({
-    defaultValues: {
+    values: {
       photos: item.photos ?? [],
     },
     resolver: zodResolver(PhotoListSchema),
@@ -113,6 +114,9 @@ export default function PhotoListSection({ item }: { item: Item }) {
       <Stack direction="row" columnGap={2}>
         <Typography variant="h6">
           物品照片{' '}
+          <Typography component="span" variant="body2">
+            {fields.length}/{LIMIT}{' '}
+          </Typography>
           <Typography component="span" variant="body2" color="GrayText">
             (自動儲存)
           </Typography>
@@ -136,9 +140,11 @@ export default function PhotoListSection({ item }: { item: Item }) {
           </>
         )}
         <HavePermissionsOnly permissions={['AdminUpsertItemPhoto']}>
-          <Button type="button" variant="contained" onClick={() => document.getElementById('file-upload')?.click()}>
-            新增
-          </Button>
+          {item.photos.length < LIMIT && (
+            <Button type="button" variant="contained" onClick={() => document.getElementById('file-upload')?.click()}>
+              新增
+            </Button>
+          )}
         </HavePermissionsOnly>
 
         <input
@@ -152,15 +158,15 @@ export default function PhotoListSection({ item }: { item: Item }) {
             const files = e.target.files;
             if (!files) return;
             const formData = new FormData();
-            for (let i = 0; i < files.length; i++) {
+            for (let i = 0; i < files.length && i < LIMIT - item.photos.length; i++) {
               formData.append('photo', files[i]);
               formData.append('sorted', `${i + item.photos.length + 1}`);
             }
             startTransition(async () => {
               await AdminUpsertItemPhoto(item.id, formData);
-              for (const f of Array.from(files)) {
-                append(f);
-              }
+              // for (const f of Array.from(files)) {
+              //   append(f);
+              // }
             });
           }}
         />
