@@ -2,9 +2,13 @@ import { cookies } from 'next/headers';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getToken } from '@/domain/auth/getToken';
 
-import { CookieConfigs } from "./domain/auth/CookieConfigs";
+import { CookieConfigs } from './domain/auth/CookieConfigs';
 
 export async function middleware(request: NextRequest) {
+  if (process.env.NEXT_PUBLIC_IS_MAINTENANCE && request.nextUrl.pathname !== '/maintenance') {
+    return NextResponse.redirect(new URL('/maintenance', request.url));
+  }
+
   // refresh token and set cookie
   const response = NextResponse.next();
   const token = cookies().get(CookieConfigs.token.name)?.value;
