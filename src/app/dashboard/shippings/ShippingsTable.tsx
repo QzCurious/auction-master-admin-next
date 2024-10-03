@@ -203,7 +203,7 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
                                                 <IconButton
                                                   LinkComponent={Link}
                                                   color="primary"
-                                                  href={`/dashboard/auction-items/${auctionItem.id}`}
+                                                  href={`/dashboard/auction-items/edit/${auctionItem.id}`}
                                                   target="_blank"
                                                   rel="noreferrer"
                                                 >
@@ -234,12 +234,11 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
                                   )}
                                 </PopupState>
                                 <td style={{ padding: 0 }}>
-                                  {row.status === SHIPPING_STATUS.enum('ShippedStatus') &&
-                                    !auctionItem.shippingCostsWithinJapan && (
-                                      <HavePermissionsOnly permissions={['UpdateAuctionItem']}>
-                                        <MarkShippingCostsWithinJapanPopover auctionItem={auctionItem} />
-                                      </HavePermissionsOnly>
-                                    )}
+                                  {row.status === SHIPPING_STATUS.enum('ShippedStatus') && (
+                                    <HavePermissionsOnly permissions={['UpdateAuctionItem']}>
+                                      <MarkShippingCostsWithinJapanPopover auctionItem={auctionItem} />
+                                    </HavePermissionsOnly>
+                                  )}
                                 </td>
                               </>
                             );
@@ -404,8 +403,8 @@ function MarkShippingCostsWithinJapanPopover({ auctionItem }: { auctionItem: Auc
     handleSubmit,
     formState: { isSubmitting },
   } = useForm({
-    defaultValues: {
-      shippingCostsWithinJapan: '' as unknown as number,
+    values: {
+      shippingCostsWithinJapan: auctionItem.shippingCostsWithinJapan,
     },
   });
 
@@ -413,9 +412,15 @@ function MarkShippingCostsWithinJapanPopover({ auctionItem }: { auctionItem: Auc
     <PopupState variant="popover">
       {(popupState) => (
         <>
-          <IconButton type="button" color="primary" size="small" {...bindTrigger(popupState)}>
-            <Tag />
-          </IconButton>
+          <Stack direction="row" alignItems="center">
+            <IconButton type="button" color="primary" size="small" {...bindTrigger(popupState)}>
+              <Tag />
+            </IconButton>
+            <Typography color="primary.main">
+              {currencySign('JPY')}
+              {auctionItem.shippingCostsWithinJapan.toLocaleString()}
+            </Typography>
+          </Stack>
           <Popover
             {...bindPopover(popupState)}
             anchorOrigin={{
@@ -441,7 +446,7 @@ function MarkShippingCostsWithinJapanPopover({ auctionItem }: { auctionItem: Auc
                 popupState.close();
               })}
             >
-              <Typography variant="subtitle1">填寫日本國內運費</Typography>
+              <Typography variant="subtitle1">修改日本國內運費</Typography>
               <Stack spacing={1.5} mt={2}>
                 <Controller
                   control={control}
