@@ -14,6 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import {
+  Alert,
   Button,
   FormControl,
   FormHelperText,
@@ -301,34 +302,40 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
                       </HavePermissionsOnly>
                     )}
 
-                    {row.status === SHIPPING_STATUS.enum('ShippedStatus') &&
-                      row.auctionItems.every((item) => item.shippingCostsWithinJapan) && (
-                        <HavePermissionsOnly permissions={['ShippingClosed']}>
-                          <PopupState variant="popover">
-                            {(popupState) => (
-                              <>
-                                <Button type="button" variant="outlined" size="small" {...bindTrigger(popupState)}>
-                                  結束出貨
-                                </Button>
-                                <DoubleCheckPopover
-                                  {...bindPopover(popupState)}
-                                  title="標示為出貨已結束"
-                                  onConfirm={async () => {
-                                    const res = await ShippingClosed(row.id);
-                                    if (res.error) {
-                                      enqueueSnackbar(res.error, { variant: 'error' });
-                                      return;
-                                    }
-                                    enqueueSnackbar('已標示為出貨已結束', { variant: 'success' });
-                                    popupState.close();
-                                  }}
-                                  onCancel={popupState.close}
-                                />
-                              </>
-                            )}
-                          </PopupState>
-                        </HavePermissionsOnly>
-                      )}
+                    {row.status === SHIPPING_STATUS.enum('ShippedStatus') && (
+                      <HavePermissionsOnly permissions={['ShippingClosed']}>
+                        <PopupState variant="popover">
+                          {(popupState) => (
+                            <>
+                              <Button type="button" variant="outlined" size="small" {...bindTrigger(popupState)}>
+                                結束出貨
+                              </Button>
+                              <DoubleCheckPopover
+                                {...bindPopover(popupState)}
+                                title="標示為出貨已結束"
+                                description={
+                                  row.auctionItems.some((item) => !item.shippingCostsWithinJapan) && (
+                                    <Alert severity="warning" sx={{ my: 1 }}>
+                                      部分日拍競標商品日本國內運費為 0
+                                    </Alert>
+                                  )
+                                }
+                                onConfirm={async () => {
+                                  const res = await ShippingClosed(row.id);
+                                  if (res.error) {
+                                    enqueueSnackbar(res.error, { variant: 'error' });
+                                    return;
+                                  }
+                                  enqueueSnackbar('已標示為出貨已結束', { variant: 'success' });
+                                  popupState.close();
+                                }}
+                                onCancel={popupState.close}
+                              />
+                            </>
+                          )}
+                        </PopupState>
+                      </HavePermissionsOnly>
+                    )}
                   </Stack>
                 </TableCell>
 
