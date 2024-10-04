@@ -4,10 +4,9 @@ import { revalidateTag } from 'next/cache';
 import { apiClient } from '@/api/apiClient';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { withAuth } from '@/api/withAuth';
+import { WORKER_STATUS } from '@/domain/static/static-config-mappers';
 import * as R from 'remeda';
 import { z } from 'zod';
-
-import { WORKER_STATUS } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   status: z.coerce.number().refine(R.isIncludedIn(WORKER_STATUS.data.map((item) => item.value))),

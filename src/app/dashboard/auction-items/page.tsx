@@ -10,12 +10,11 @@ import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
+import { AutoRefreshEffect } from '@/helper/useAutoRefresh';
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Provider } from 'jotai';
-
-import { AutoRefreshEffect } from '@/helper/useAutoRefresh';
 
 import { AuctionItemTable } from './AuctionItemTable';
 import { PickForFeePaid } from './PickForFeePaid';

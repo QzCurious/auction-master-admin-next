@@ -9,10 +9,7 @@ import { FilterPopover } from '@/components/FilterPopover';
 
 const FIELD = 'action';
 
-const options = [
-  BONUS_ACTION.data[0],
-  BONUS_ACTION.data[1],
-] as const;
+const options = [BONUS_ACTION.data[0], BONUS_ACTION.data[1]] as const;
 options.length satisfies typeof BONUS_ACTION.data.length;
 
 interface StatusFilterProps {

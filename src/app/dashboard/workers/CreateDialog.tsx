@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { CreateWorker } from '@/api/backend/workers/CreateWorker';
+import { WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,

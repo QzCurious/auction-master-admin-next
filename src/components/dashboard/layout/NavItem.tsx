@@ -2,12 +2,12 @@
 
 import RouterLink from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-import type { NavItemConfig } from '@/components/dashboard/layout/nav';
 import { isNavItemActive } from '@/components/dashboard/layout/is-nav-item-active';
-import { useHavePermissions } from '@/domain/permission/useHavePermissions';
+import type { NavItemConfig } from '@/components/dashboard/layout/nav';
 
 interface NavItemProps extends Omit<NavItemConfig, 'items'> {}
 

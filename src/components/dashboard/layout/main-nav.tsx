@@ -1,5 +1,8 @@
 'use client';
 
+import * as React from 'react';
+import { useContext, useState } from 'react';
+import RouterLink from 'next/link';
 import SideNavMenu from '@/app/SideNavMenu';
 import { logout } from '@/domain/auth/logout';
 import refreshTokenAction from '@/domain/auth/refreshTokenAction';
@@ -24,10 +27,7 @@ import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { SignOut as SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
 import copy from 'copy-to-clipboard';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
-import RouterLink from 'next/link';
 import { useSnackbar } from 'notistack';
-import * as React from 'react';
-import { useContext, useState } from 'react';
 
 export function MainNav() {
   const user = useContext(UserContext);

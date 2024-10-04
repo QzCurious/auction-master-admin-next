@@ -2,13 +2,13 @@
 
 import { revalidateTag } from 'next/cache';
 import { appendEntries } from '@/domain/crud/appendEntries';
+import { ITEM_TYPE } from '@/domain/static/static-config-mappers';
 import * as R from 'remeda';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { ITEM_TYPE } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z
   .object({

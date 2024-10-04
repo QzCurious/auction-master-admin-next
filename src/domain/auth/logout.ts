@@ -1,9 +1,10 @@
 'use server';
 
-import { CookieConfigs } from "./CookieConfigs";
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+
+import { CookieConfigs } from './CookieConfigs';
 
 export async function logout() {
   cookies().delete(CookieConfigs.token.name);

@@ -1,12 +1,12 @@
 'use server';
 
 import { appendEntries } from '@/domain/crud/appendEntries';
+import { type WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type WORKER_TYPE } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   type: z.string().array().optional(),

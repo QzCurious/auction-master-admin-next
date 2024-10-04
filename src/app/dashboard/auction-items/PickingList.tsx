@@ -3,19 +3,21 @@
 import React from 'react';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { currencySign } from '@/domain/static/static';
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Skeleton, Typography } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
 import { atom, useAtomValue } from 'jotai';
 import { atomWithReducer } from 'jotai/utils';
 
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
-
 export const pickingTypeAtom = atom<'shipping' | 'fee' | null>(null);
 export const pickedItemIdsReducerAtom = atomWithReducer(
   [],
-  (prev: Array<AuctionItem['auctionId']>, action: { type: 'toggle'; id: AuctionItem['auctionId'] } | { type: 'clear' }) => {
+  (
+    prev: Array<AuctionItem['auctionId']>,
+    action: { type: 'toggle'; id: AuctionItem['auctionId'] } | { type: 'clear' }
+  ) => {
     switch (action.type) {
       case 'toggle':
         return prev.includes(action.id) ? prev.filter((id) => id !== action.id) : [...prev, action.id];

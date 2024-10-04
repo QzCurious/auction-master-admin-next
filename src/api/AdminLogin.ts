@@ -2,8 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { CookieConfigs } from '@/domain/auth/CookieConfigs';
 import { appendEntries } from '@/domain/crud/appendEntries';
-import { CookieConfigs } from "@/domain/auth/CookieConfigs";
 import { z } from 'zod';
 
 import { apiClient } from './apiClient';

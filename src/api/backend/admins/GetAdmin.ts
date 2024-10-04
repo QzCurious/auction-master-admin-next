@@ -2,9 +2,9 @@
 
 import { apiClient } from '@/api/apiClient';
 import { withAuth } from '@/api/withAuth';
+import { type ADMIN_STATUS } from '@/domain/static/static-config-mappers';
 
 import { type Role } from '../rbac/GetRoles';
-import { type ADMIN_STATUS } from '@/domain/static/static-config-mappers';
 
 export interface Admin {
   id: number;

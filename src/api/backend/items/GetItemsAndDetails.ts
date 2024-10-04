@@ -1,12 +1,12 @@
 'use server';
 
 import { appendEntries } from '@/domain/crud/appendEntries';
+import { type ITEM_STATUS, type ITEM_TYPE } from '@/domain/static/static-config-mappers';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type ITEM_STATUS, type ITEM_TYPE } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   consignorId: z.coerce.number().optional(),

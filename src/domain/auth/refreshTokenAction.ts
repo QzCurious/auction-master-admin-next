@@ -2,8 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { CookieConfigs } from "./CookieConfigs";
 
+import { CookieConfigs } from './CookieConfigs';
 import { getToken } from './getToken';
 
 export default async function refreshTokenAction() {

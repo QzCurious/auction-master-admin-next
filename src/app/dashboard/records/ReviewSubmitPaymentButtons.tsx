@@ -53,7 +53,7 @@ function RejectPaymentButton({ recordId }: { recordId: Record['id'] }) {
       <DoubleCheckPopover
         {...bindPopover(popupState)}
         title="取消付款"
-        description='將此交易標示為取消付款'
+        description="將此交易標示為取消付款"
         onConfirm={async () => {
           const res = await RecordPaymentReview(recordId, { action: 'reject' });
           if (res.error) {

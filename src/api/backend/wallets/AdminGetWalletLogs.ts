@@ -1,12 +1,12 @@
 'use server';
 
 import { appendEntries } from '@/domain/crud/appendEntries';
+import { type WALLET_ACTION } from '@/domain/static/static-config-mappers';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
-import { type WALLET_ACTION } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   consignorId: z.coerce.number().optional(),

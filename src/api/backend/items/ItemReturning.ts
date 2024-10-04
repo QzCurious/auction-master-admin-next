@@ -3,12 +3,12 @@
 import { revalidateTag } from 'next/cache';
 import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
 import { appendEntries } from '@/domain/crud/appendEntries';
+import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 import * as R from 'remeda';
 import { z } from 'zod';
 
 import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
-import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
   consignorId: z.number(),

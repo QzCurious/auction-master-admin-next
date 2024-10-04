@@ -37,7 +37,10 @@ export default function StopWatchButton({ auctionItem }: { auctionItem: AuctionI
       size="small"
       variant="outlined"
       onClick={async () => {
-        const res = await ToggleActivateAuctionItem(auctionItem.auctionId, AUCTION_ITEM_STATUS.enum('StopBiddingStatus'));
+        const res = await ToggleActivateAuctionItem(
+          auctionItem.auctionId,
+          AUCTION_ITEM_STATUS.enum('StopBiddingStatus')
+        );
         if (res.error) {
           enqueueSnackbar(res.error, { variant: 'error' });
           return;
