@@ -267,7 +267,7 @@ function StatusFlowUI({ item }: { item: Item }) {
     ConsignorConfirmedStatus: <ReadyStatusHandleButtons item={item} />,
     BiddingStatus: (
       <HavePermissionsOnly permissions={['GetAuctionItem']}>
-        <Link href={`/dashboard/auction-items/edit/${item.auctionItemID}`} target="_blank" rel="noreferrer">
+        <Link href={`/dashboard/auction-items/edit/${item.auctionId}`} target="_blank" rel="noreferrer">
           <Gavel /> 日拍競標商品
         </Link>
       </HavePermissionsOnly>
@@ -464,7 +464,7 @@ function ApproveBtn({
 
 function ReadyStatusHandleButtons({ item }: { item: Item }) {
   const { enqueueSnackbar } = useSnackbar();
-  const [auctionID, setAuctionID] = useState('');
+  const [auctionId, setAuctionId] = useState('');
   const [error, setError] = useState('');
   const expired = useUntil(item.expireAt, { onFalsy: false });
 
@@ -476,8 +476,8 @@ function ReadyStatusHandleButtons({ item }: { item: Item }) {
             size="small"
             label="日拍物品代碼"
             disabled={expired}
-            value={auctionID}
-            onChange={(e) => setAuctionID(e.target.value)}
+            value={auctionId}
+            onChange={(e) => setAuctionId(e.target.value)}
           />
           {error && <FormHelperText>{error}</FormHelperText>}
           {expired && <FormHelperText>物品已過期，須等寄售人繳留倉費</FormHelperText>}
@@ -488,14 +488,14 @@ function ReadyStatusHandleButtons({ item }: { item: Item }) {
           disabled={expired}
           onConfirm={async () => {
             setError('');
-            if (!auctionID) return;
-            const res = await ItemBidding(item.id, { auctionID });
+            if (!auctionId) return;
+            const res = await ItemBidding(item.id, { auctionId });
             if (res.error === '1020') {
               setError('沒有啟用中的盯標帳號');
               return;
             }
             if (res.error === '1025') {
-              setError('日拍ID不能重複');
+              setError('日拍Id不能重複');
               return;
             }
             if (res.error) {

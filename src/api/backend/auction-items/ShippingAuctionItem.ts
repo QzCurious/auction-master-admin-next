@@ -10,7 +10,7 @@ import { z } from 'zod';
 const ReqSchema = z.discriminatedUnion('shipmentType', [
   z.object({
     shipmentType: z.literal(SHIPMENT_TYPE.enum('AddressShipmentType')),
-    auctionItemIDs: z.array(z.number()),
+    auctionIds: z.array(z.string()),
     address: z.string(),
     recipientName: z.string(),
     phone: z.string(),
@@ -18,7 +18,7 @@ const ReqSchema = z.discriminatedUnion('shipmentType', [
   }),
   z.object({
     shipmentType: z.literal(SHIPMENT_TYPE.enum('SevenElevenShipmentType')),
-    auctionItemIDs: z.array(z.number()),
+    auctionIds: z.array(z.string()),
     storeNumber: z.string(),
     storeName: z.string(),
     recipientName: z.string(),
@@ -27,7 +27,7 @@ const ReqSchema = z.discriminatedUnion('shipmentType', [
   }),
   z.object({
     shipmentType: z.literal(SHIPMENT_TYPE.enum('FamilyShipmentType')),
-    auctionItemIDs: z.array(z.number()),
+    auctionIds: z.array(z.string()),
     storeNumber: z.string(),
     storeName: z.string(),
     recipientName: z.string(),

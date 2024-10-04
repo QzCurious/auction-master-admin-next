@@ -9,7 +9,7 @@ import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
 
 const ReqSchema = z.object({
-  auctionID: z.string(),
+  auctionId: z.string(),
 });
 
 type Data = 'Success';

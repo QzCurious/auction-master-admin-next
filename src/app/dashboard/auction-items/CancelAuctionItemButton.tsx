@@ -10,7 +10,7 @@ import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 /**
  * @deprecated marked as unused
  */
-export default function CancelAuctionItemButton({ auctionItemId }: { auctionItemId: AuctionItem['id'] }) {
+export default function CancelAuctionItemButton({ auctionId }: { auctionId: AuctionItem['auctionId'] }) {
   const popupState = usePopupState({
     variant: 'popover',
   });
@@ -35,7 +35,7 @@ export default function CancelAuctionItemButton({ auctionItemId }: { auctionItem
         title="將商品標示為下架"
         onConfirm={() => {
           startTransition(async () => {
-            const res = await CancelAuctionItem({ id: auctionItemId });
+            const res = await CancelAuctionItem({ auctionId });
 
             if (res.error) {
               enqueueSnackbar(res.error, { variant: 'error' });

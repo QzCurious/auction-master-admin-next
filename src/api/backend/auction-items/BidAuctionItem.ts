@@ -19,7 +19,7 @@ type ErrorCode =
   // yahoo jp bid error
   '1401';
 
-export async function BidAuctionItem(id: AuctionItem['id'], payload: z.input<typeof ReqSchema>) {
+export async function BidAuctionItem(id: AuctionItem['auctionId'], payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const urlencoded = new URLSearchParams();

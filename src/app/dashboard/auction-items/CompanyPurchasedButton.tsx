@@ -23,7 +23,7 @@ export default function CompanyPurchasedButton({ auctionItem }: { auctionItem: A
         {...bindPopover(popupState)}
         title="確認公司買回"
         onConfirm={async () => {
-          const res = await CompanyPurchased(auctionItem.id);
+          const res = await CompanyPurchased(auctionItem.auctionId);
           if (res.error) {
             enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
             return;

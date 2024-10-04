@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetail.query';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
@@ -17,7 +16,7 @@ import { atomWithReducer } from 'jotai/utils';
 export const pickingTypeAtom = atom<'shipping' | 'fee' | null>(null);
 export const pickedItemIdsReducerAtom = atomWithReducer(
   [],
-  (prev: Array<AuctionItem['id']>, action: { type: 'toggle'; id: AuctionItem['id'] } | { type: 'clear' }) => {
+  (prev: Array<Item['id']>, action: { type: 'toggle'; id: Item['id'] } | { type: 'clear' }) => {
     switch (action.type) {
       case 'toggle':
         return prev.includes(action.id) ? prev.filter((id) => id !== action.id) : [...prev, action.id];

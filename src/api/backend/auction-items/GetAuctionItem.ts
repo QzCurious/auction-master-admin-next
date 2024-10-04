@@ -6,12 +6,11 @@ import { apiClient } from '../../apiClient';
 import { withAuth } from '../../withAuth';
 
 export interface AuctionItem {
-  id: number;
-  consignorID: number;
-  itemID: number;
-  sellerID: number;
-  watcherID: number;
-  auctionID: string;
+  auctionId: string;
+  consignorId: number;
+  itemId: number;
+  sellerId: number;
+  watcherId: number;
   name: string;
   photo: string;
   reservePrice: number;
@@ -33,7 +32,7 @@ export interface AuctionItem {
     quantity: number;
     lastBidAt: string;
   }>;
-  recordID: string;
+  recordId: string;
 }
 
 type Data = AuctionItem;
@@ -42,7 +41,7 @@ type ErrorCode =
   // get auction item error
   '21';
 
-export async function GetAuctionItem(id: number) {
+export async function GetAuctionItem(id: AuctionItem['auctionId']) {
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/${id}`, {
     method: 'GET',
     next: { tags: ['auction-items'] },

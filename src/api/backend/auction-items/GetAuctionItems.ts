@@ -9,7 +9,7 @@ import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
 
 const ReqSchema = z.object({
-  consignorID: z.coerce.number().optional(),
+  consignorId: z.coerce.number().optional(),
   status: z.coerce.number().array().optional(),
   sort: z.string().optional(),
   order: z.enum(['asc', 'desc']).optional(),
@@ -18,12 +18,11 @@ const ReqSchema = z.object({
 });
 
 export interface AuctionItem {
-  id: number;
-  consignorID: number;
-  itemID: number;
-  sellerID: number;
-  watcherID: number;
-  auctionID: string;
+  auctionId: string;
+  consignorId: number;
+  itemId: number;
+  sellerId: number;
+  watcherId: number;
   name: string;
   photo: string;
   reservePrice: number;
@@ -31,7 +30,6 @@ export interface AuctionItem {
   highestPrice: number;
   closeAt: string;
   closedPrice: number;
-  shippingCostsWithinJapan: number;
   status: AUCTION_ITEM_STATUS['value'];
   createdAt: string;
   updatedAt: string;
@@ -45,7 +43,7 @@ export interface AuctionItem {
     quantity: number;
     lastBidAt: string;
   }> | null;
-  recordID: string;
+  recordId: string;
 }
 
 interface Data {

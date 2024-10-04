@@ -62,7 +62,7 @@ async function Content({ searchParams }: PageProps) {
       })(),
       limit: query[ROWS_PER_PAGE],
       offset: query[PAGE] * query[ROWS_PER_PAGE],
-      consignorID: query.consignorID,
+      consignorId: query.consignorId,
       sort: 'createdAt',
       order: 'desc',
     }),
@@ -81,11 +81,11 @@ async function Content({ searchParams }: PageProps) {
       <AutoRefreshEffect ms={10_000} />
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
-          <ConsignorFilter consignorID={query.consignorID} />
+          <ConsignorFilter consignorId={query.consignorId} />
           {!query.picking && (
             <>
               <StatusFilter selected={query.status} statusCount={itemsRes.data.statusCounts} />
-              <RemoveSearchBtn<keyof typeof query> fields={['consignorID', 'status']} />
+              <RemoveSearchBtn<keyof typeof query> fields={['consignorId', 'status']} />
             </>
           )}
 
@@ -96,7 +96,7 @@ async function Content({ searchParams }: PageProps) {
           </HavePermissionsOnly>
         </Stack>
 
-        {query.picking === 'return' && !query.consignorID ? (
+        {query.picking === 'return' && !query.consignorId ? (
           '退貨請先鎖定寄售人'
         ) : (
           <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} query={query} />

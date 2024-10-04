@@ -61,7 +61,7 @@ async function Content({ params }: PageProps) {
   }
 
   const consignorRes = (await havePermissions(['AdminGetConsignor']))
-    ? await AdminGetConsignor(itemRes.data.consignorID)
+    ? await AdminGetConsignor(itemRes.data.consignorId)
     : undefined;
 
   return (

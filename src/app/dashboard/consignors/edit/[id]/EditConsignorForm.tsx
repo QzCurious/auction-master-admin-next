@@ -140,12 +140,12 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
 
           <Stack direction="row" spacing={3}>
             <HavePermissionsOnly permissions={['GetItemsAndDetails']}>
-              <Link href={`/dashboard/items?consignorID=${consignor.id}`} target="_blank" rel="noreferrer">
+              <Link href={`/dashboard/items?consignorId=${consignor.id}`} target="_blank" rel="noreferrer">
                 <StackSimple /> 寄售人物品
               </Link>
             </HavePermissionsOnly>
             <HavePermissionsOnly permissions={['GetAuctionItems']}>
-              <Link href={`/dashboard/auction-items?consignorID=${consignor.id}`} target="_blank" rel="noreferrer">
+              <Link href={`/dashboard/auction-items?consignorId=${consignor.id}`} target="_blank" rel="noreferrer">
                 <Gavel /> 寄售人日拍商品
               </Link>
             </HavePermissionsOnly>
@@ -166,7 +166,7 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
                           LinkComponent={Link}
                           size="small"
                           color="primary"
-                          href={`/dashboard/consignor-balance/wallet-logs?consignorID=${consignor.id}`}
+                          href={`/dashboard/consignor-balance/wallet-logs?consignorId=${consignor.id}`}
                           target="_blank"
                           rel="noreferrer"
                         >
@@ -194,7 +194,7 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
                           LinkComponent={Link}
                           size="small"
                           color="primary"
-                          href={`/dashboard/consignor-balance/bonus-logs?consignorID=${consignor.id}`}
+                          href={`/dashboard/consignor-balance/bonus-logs?consignorId=${consignor.id}`}
                           target="_blank"
                           rel="noreferrer"
                         >

@@ -54,7 +54,7 @@ async function Content({ searchParams }: PageProps) {
   const { startAt, endAt } = fixRange(filters.startAt, filters.endAt);
   const [bonusLogsRes] = await Promise.all([
     AdminGetBonusLogs({
-      consignorID: filters.consignorID,
+      consignorId: filters.consignorId,
       action: filters.action,
       endAt,
       startAt,
@@ -77,10 +77,10 @@ async function Content({ searchParams }: PageProps) {
     <Provider>
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
-          <ConsignorFilter consignorID={filters.consignorID} />
+          <ConsignorFilter consignorId={filters.consignorId} />
           <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} />
           <ActionFilter selected={filters.action} />
-          <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'startAt', 'endAt', 'action']} />
+          <RemoveSearchBtn<keyof typeof filters> fields={['consignorId', 'startAt', 'endAt', 'action']} />
         </Stack>
 
         <Card>
@@ -103,7 +103,7 @@ async function Content({ searchParams }: PageProps) {
                   <TableRow hover key={row.id}>
                     <HavePermissionsOnly permissions={['AdminGetConsignor']}>
                       <TableCell>
-                        <ConsignorInfo consignorID={row.consignorID} />
+                        <ConsignorInfo consignorId={row.consignorId} />
                       </TableCell>
                     </HavePermissionsOnly>
                     <TableCell
@@ -140,8 +140,8 @@ async function Content({ searchParams }: PageProps) {
   );
 }
 
-async function ConsignorInfo({ consignorID }: { consignorID: BonusLogs['consignorID'] }) {
-  const res = await AdminGetConsignor(consignorID);
+async function ConsignorInfo({ consignorId }: { consignorId: BonusLogs['consignorId'] }) {
+  const res = await AdminGetConsignor(consignorId);
 
   if (res.error === '1001') {
     return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
@@ -157,7 +157,7 @@ async function ConsignorInfo({ consignorID }: { consignorID: BonusLogs['consigno
         LinkComponent={Link}
         size="small"
         color="primary"
-        href={`/dashboard/consignors?consignorID=${consignorID}`}
+        href={`/dashboard/consignors?consignorId=${consignorId}`}
         target="_blank"
         rel="noreferrer"
       >

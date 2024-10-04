@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 const ReqSchema = z.object({
   type: z.number().array().optional(),
-  consignorID: z.number().optional(),
+  consignorId: z.number().optional(),
   status: z.number().array().optional(),
   startAt: z.date().optional(),
   endAt: z.date().optional(),

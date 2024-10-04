@@ -129,7 +129,7 @@ function FeeForm() {
       onSubmit={(e) => {
         e.preventDefault();
         startTransition(async () => {
-          const res = await AuctionItemConsignorFeePaid({ id: pickedItemIds });
+          const res = await AuctionItemConsignorFeePaid({ auctionId: pickedItemIds });
 
           if (res.error) {
             enqueueSnackbar(res.error, { variant: 'error' });

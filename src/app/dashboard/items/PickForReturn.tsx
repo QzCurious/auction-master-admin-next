@@ -167,8 +167,8 @@ function ReturnItemsForm() {
             address: data.address,
             phone: data.phone,
             recipientName: data.recipientName,
-            itemID: pickedItemIds,
-            consignorID: Number(searchParams.get('consignorID')),
+            itemId: pickedItemIds,
+            consignorId: Number(searchParams.get('consignorId')),
             shippingCosts: shippingCostsWithinJapan,
           });
 
@@ -178,7 +178,7 @@ function ReturnItemsForm() {
           }
 
           const newSearchParams = new URLSearchParams(searchParams);
-          newSearchParams.delete('consignorID');
+          newSearchParams.delete('consignorId');
           newSearchParams.delete('picking');
           newSearchParams.delete('stage');
           router.replace(`?${newSearchParams}`);

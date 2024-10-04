@@ -14,7 +14,7 @@ const ReqSchema = z
     actionType: z.number(),
     shipmentType: z.number(),
     itemIDs: z.array(z.number()),
-    auctionItemIDs: z.array(z.number()),
+    auctionIds: z.array(z.string()),
     address: z.string().min(1),
     storeNumber: z.string().min(1),
     storeName: z.string().min(1),

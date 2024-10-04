@@ -54,7 +54,7 @@ async function Content({ searchParams }: PageProps) {
 
   const [auctionItemsRes, activeWorkersRes] = await Promise.all([
     GetAuctionItems({
-      consignorID: filters.consignorID,
+      consignorId: filters.consignorId,
       status: (() => {
         if (filters.picking === 'shipping') return [AUCTION_ITEM_STATUS.enum('ClosedStatus')];
         if (filters.picking === 'fee') return [AUCTION_ITEM_STATUS.enum('AwaitingConsignorPayFeeStatus')];
@@ -90,11 +90,11 @@ async function Content({ searchParams }: PageProps) {
       <AutoRefreshEffect ms={10_000} />
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
-          <ConsignorFilter consignorID={filters.consignorID} />
+          <ConsignorFilter consignorId={filters.consignorId} />
           {!filters.picking && (
             <>
               <StatusFilter selected={filters.status} />
-              <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'status']} />
+              <RemoveSearchBtn<keyof typeof filters> fields={['consignorId', 'status']} />
             </>
           )}
 

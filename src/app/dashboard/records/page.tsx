@@ -69,14 +69,14 @@ async function Content({ searchParams }: PageProps) {
 
   const [summaryRes, recordsRes] = await Promise.all([
     GetRecordsSummary({
-      consignorID: filters.consignorID,
+      consignorId: filters.consignorId,
       type: filters.type,
       status: filters.status,
       endAt,
       startAt,
     }),
     GetRecords({
-      consignorID: filters.consignorID,
+      consignorId: filters.consignorId,
       type: filters.type,
       endAt,
       startAt,
@@ -100,11 +100,11 @@ async function Content({ searchParams }: PageProps) {
     <Provider>
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
-          <ConsignorFilter consignorID={filters.consignorID} />
+          <ConsignorFilter consignorId={filters.consignorId} />
           <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} />
           <TypeFilter selected={filters.type} />
           <StatusFilter selected={filters.status} />
-          <RemoveSearchBtn<keyof typeof filters> fields={['consignorID', 'startAt', 'endAt', 'type', 'status']} />
+          <RemoveSearchBtn<keyof typeof filters> fields={['consignorId', 'startAt', 'endAt', 'type', 'status']} />
         </Stack>
 
         <ReportSummeryTable summary={summaryRes.data} />
@@ -129,7 +129,7 @@ async function Content({ searchParams }: PageProps) {
                       {RECORD_TYPE.get('value', row.type).message}
                       <Stack direction="row" spacing={0.5}>
                         <HavePermissionsOnly permissions={['GetItemAndDetails']}>
-                          {row.itemIDs?.map((itemID) => <ItemLink key={itemID} itemID={itemID} />)}
+                          {row.itemIDs?.map((itemId) => <ItemLink key={itemId} itemId={itemId} />)}
                         </HavePermissionsOnly>
                       </Stack>
                     </TableCell>
@@ -141,16 +141,24 @@ async function Content({ searchParams }: PageProps) {
                           (function iife() {
                             switch (row.type) {
                               case RECORD_TYPE.enum('WithdrawalType'):
-                                if (row.consignorID == null)
+                                if (row.consignorId == null)
                                   return (
                                     <Typography color="error">
-                                      發生錯誤，請聯繫開發人員(#{row.id} missing consignorID)
+                                      發生錯誤，請聯繫開發人員(#{row.id} missing consignorId)
                                     </Typography>
                                   );
                                 return (
                                   <HavePermissionsOnly permissions={['AdminGetConsignor', 'RecordPaymentReview']}>
                                     <Box>
-                                      <ConsignorBankInfo consignorID={row.consignorID} />
+                                      <p>
+                                        <ConsignorBankInfo consignorId={row.consignorId} />
+                                        <br />
+                                        匯款金額:{' '}
+                                        <Typography component="span" variant="body2" color="primary">
+                                          {currencySign('TWD')}
+                                          {row.withdrawal}
+                                        </Typography>
+                                      </p>
                                       <ReviewSubmitPaymentButtons recordId={row.id} />
                                       <span>
                                         請
@@ -167,17 +175,17 @@ async function Content({ searchParams }: PageProps) {
                                   </HavePermissionsOnly>
                                 );
                               case RECORD_TYPE.enum('PayAuctionItemCancellationFeeType'): {
-                                const auctionItemID = row.auctionItemIDs?.[0];
-                                if (!auctionItemID)
+                                const auctionId = row.auctionIds?.[0];
+                                if (!auctionId)
                                   return (
                                     <Typography color="error">
-                                      發生錯誤，請聯繫開發人員(#{row.id} missing auctionItemID)
+                                      發生錯誤，請聯繫開發人員(#{row.id} missing auctionId)
                                     </Typography>
                                   );
                                 return (
                                   <HavePermissionsOnly permissions={['GetAuctionItem', 'RecordPaymentReview']}>
                                     <Box>
-                                      <AuctionItemInfo auctionItemId={auctionItemID} />
+                                      <AuctionItemInfo auctionId={auctionId} />
                                       <ReviewSubmitPaymentButtons recordId={row.id} />
                                       <span>
                                         請先確認商品
@@ -195,17 +203,17 @@ async function Content({ searchParams }: PageProps) {
                                 );
                               }
                               case RECORD_TYPE.enum('PayYahooAuctionFeeType'): {
-                                const auctionItemID = row.auctionItemIDs?.[0];
-                                if (!auctionItemID)
+                                const auctionId = row.auctionIds?.[0];
+                                if (!auctionId)
                                   return (
                                     <Typography color="error">
-                                      發生錯誤，請聯繫開發人員(#{row.id} missing auctionItemID)
+                                      發生錯誤，請聯繫開發人員(#{row.id} missing auctionId)
                                     </Typography>
                                   );
                                 return (
                                   <HavePermissionsOnly permissions={['GetAuctionItem', 'RecordPaymentReview']}>
                                     <Box>
-                                      <AuctionItemInfo auctionItemId={auctionItemID} />
+                                      <AuctionItemInfo auctionId={auctionId} />
                                       <ReviewSubmitPaymentButtons recordId={row.id} />
                                       <span>
                                         請先確認商品
@@ -288,18 +296,18 @@ async function Content({ searchParams }: PageProps) {
                           <TableBody
                             sx={{ '& td:nth-child(1)': { width: 0 }, '& td:nth-child(2)': { textAlign: 'end' } }}
                           >
-                            {!!row.consignorID && !!row.consignorNickname && (
+                            {!!row.consignorId && !!row.consignorNickname && (
                               <TableRow>
                                 <TableCell>寄售人</TableCell>
                                 <TableCell
-                                  title={process.env.NODE_ENV === 'development' ? row.consignorID.toString() : ''}
+                                  title={process.env.NODE_ENV === 'development' ? row.consignorId.toString() : ''}
                                 >
                                   {row.consignorNickname}
                                   <HavePermissionsOnly permissions={['AdminGetConsignor']}>
                                     <IconButton
                                       size="small"
                                       color="primary"
-                                      href={`/dashboard/consignors/edit/${row.consignorID}`}
+                                      href={`/dashboard/consignors/edit/${row.consignorId}`}
                                       target="_blank"
                                       rel="noreferrer"
                                     >
@@ -713,8 +721,8 @@ function ReportSummeryTable({ summary }: { summary: RecordSummary }) {
   );
 }
 
-async function AuctionItemInfo({ auctionItemId }: { auctionItemId: AuctionItem['id'] }) {
-  const [auctionItemRes] = await Promise.all([GetAuctionItem(auctionItemId)]);
+async function AuctionItemInfo({ auctionId }: { auctionId: AuctionItem['auctionId'] }) {
+  const [auctionItemRes] = await Promise.all([GetAuctionItem(auctionId)]);
 
   if (auctionItemRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
@@ -734,19 +742,19 @@ async function AuctionItemInfo({ auctionItemId }: { auctionItemId: AuctionItem['
       <p>
         商品編號:{' '}
         <a
-          href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${auctionItemRes.data.auctionID}`}
+          href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aId=${auctionItemRes.data.auctionId}`}
           target="_blank"
           rel="noreferrer"
         >
-          {auctionItemRes.data.auctionID}
+          {auctionItemRes.data.auctionId}
         </a>
       </p>
     </div>
   );
 }
 
-async function ConsignorBankInfo({ consignorID }: { consignorID: Consignor['id'] }) {
-  const [consignorRes] = await Promise.all([AdminGetConsignor(consignorID)]);
+async function ConsignorBankInfo({ consignorId }: { consignorId: Consignor['id'] }) {
+  const [consignorRes] = await Promise.all([AdminGetConsignor(consignorId)]);
 
   if (consignorRes.error === '1001') {
     return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
@@ -757,25 +765,23 @@ async function ConsignorBankInfo({ consignorID }: { consignorID: Consignor['id']
   }
 
   return (
-    <div>
-      <p>
-        銀行戶名: {consignorRes.data.beneficiaryName}
-        <CopyButton text={consignorRes.data.beneficiaryName ?? ''} />
-        <br />
-        銀行帳戶: ({consignorRes.data.bankCode}) {consignorRes.data.bankAccount}
-        <CopyButton text={consignorRes.data.bankAccount} />
-      </p>
-    </div>
+    <>
+      銀行戶名: {consignorRes.data.beneficiaryName}
+      <CopyButton text={consignorRes.data.beneficiaryName ?? ''} />
+      <br />
+      銀行帳戶: ({consignorRes.data.bankCode}) {consignorRes.data.bankAccount}
+      <CopyButton text={consignorRes.data.bankAccount} />
+    </>
   );
 }
 
-async function ItemLink({ itemID }: { itemID: Item['id'] }) {
-  const itemRes = await GetItemAndDetails(itemID);
+async function ItemLink({ itemId }: { itemId: Item['id'] }) {
+  const itemRes = await GetItemAndDetails(itemId);
   if (!itemRes.data) return null;
 
   return (
     <HavePermissionsOnly permissions={['GetItemAndDetails']}>
-      <Link href={`/dashboard/items/edit/${itemID}`} target="_blank" rel="noreferrer">
+      <Link href={`/dashboard/items/edit/${itemId}`} target="_blank" rel="noreferrer">
         <StackSimple /> {itemRes.data.name}
       </Link>
     </HavePermissionsOnly>

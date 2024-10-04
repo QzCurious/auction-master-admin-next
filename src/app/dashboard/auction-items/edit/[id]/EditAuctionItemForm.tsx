@@ -39,11 +39,11 @@ interface EditAuctionItemFromProps {
 
 export type FormSchemaType = z.output<typeof FormSchema>;
 const FormSchema = z.object({
-  consignorID: z.number(),
-  itemID: z.number(),
-  sellerID: z.number(),
-  watcherID: z.number(),
-  auctionID: z.string(),
+  consignorId: z.number(),
+  itemId: z.number(),
+  sellerId: z.number(),
+  watcherId: z.number(),
+  auctionId: z.string(),
 
   name: z.string(),
   // photo: z.string(),
@@ -52,7 +52,6 @@ const FormSchema = z.object({
   highestPrice: z.number(),
   closeAt: z.coerce.date(),
   closedPrice: z.number(),
-  shippingCostsWithinJapan: z.number(),
   status: z.coerce.number(),
 });
 
@@ -65,11 +64,11 @@ export function AuctionItemFormProvider({
 }) {
   const form = useForm<z.input<typeof FormSchema>>({
     values: {
-      consignorID: auctionItem.consignorID,
-      itemID: auctionItem.itemID,
-      sellerID: auctionItem.sellerID,
-      watcherID: auctionItem.watcherID,
-      auctionID: auctionItem.auctionID,
+      consignorId: auctionItem.consignorId,
+      itemId: auctionItem.itemId,
+      sellerId: auctionItem.sellerId,
+      watcherId: auctionItem.watcherId,
+      auctionId: auctionItem.auctionId,
 
       name: auctionItem.name,
       // photo: auctionItem.photo,
@@ -78,7 +77,6 @@ export function AuctionItemFormProvider({
       highestPrice: auctionItem.highestPrice,
       closeAt: new Date(auctionItem.closeAt),
       closedPrice: auctionItem.closedPrice,
-      shippingCostsWithinJapan: auctionItem.shippingCostsWithinJapan,
       status: auctionItem.status,
     },
     resolver: zodResolver(FormSchema),
@@ -118,7 +116,7 @@ export function EditAuctionItemForm({
           const dirtyValues = getDirtyFields(data, dirtyFields);
           if (Object.keys(dirtyValues).length === 0) return;
 
-          const res = await UpdateAuctionItem(auctionItem.id, {
+          const res = await UpdateAuctionItem(auctionItem.auctionId, {
             ...dirtyValues,
           });
 
@@ -166,7 +164,7 @@ export function EditAuctionItemForm({
           <Grid item xs={12} sm={6}>
             <Controller
               control={control}
-              name="consignorID"
+              name="consignorId"
               render={({ field, fieldState }) => (
                 <FormControl fullWidth error={!!fieldState.error}>
                   <TextField
@@ -177,14 +175,14 @@ export function EditAuctionItemForm({
                     fullWidth
                     InputProps={{
                       readOnly: true,
-                      // readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['consignorID'] }]),
+                      // readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['consignorId'] }]),
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton
                             LinkComponent={Link}
                             size="small"
                             color="primary"
-                            href={`/dashboard/consignor/${consignor.id}/edit`}
+                            href={`/dashboard/consignor/edit/${consignor.id}`}
                             target="_blank"
                             rel="noreferrer"
                           >
@@ -205,7 +203,7 @@ export function EditAuctionItemForm({
           <Grid item xs={12} sm={6}>
             <Controller
               control={control}
-              name="itemID"
+              name="itemId"
               render={({ field, fieldState }) => (
                 <FormControl fullWidth error={!!fieldState.error}>
                   <TextField
@@ -216,7 +214,7 @@ export function EditAuctionItemForm({
                     fullWidth
                     InputProps={{
                       readOnly: true,
-                      // readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['itemID'] }]),
+                      // readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['itemId'] }]),
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton
@@ -244,7 +242,7 @@ export function EditAuctionItemForm({
           <Grid item xs={12} sm={6}>
             <Controller
               control={control}
-              name="sellerID"
+              name="sellerId"
               render={({ field, fieldState }) => (
                 <FormControl fullWidth error={!!fieldState.error}>
                   <InputLabel>出品帳號</InputLabel>
@@ -253,21 +251,23 @@ export function EditAuctionItemForm({
                     value={field.value || ''}
                     label="出品帳號"
                     fullWidth
-                    sx={{ '&>.MuiSvgIcon-root': { transform: 'translateX(-3rem)' } }}
-                    readOnly={!canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['sellerID'] }])}
+                    sx={{ '&>.MuiSvgIcon-root': { transform: field.value ? 'translateX(-3rem)' : undefined } }}
+                    readOnly={!canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['sellerId'] }])}
                     endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          LinkComponent={Link}
-                          size="small"
-                          color="primary"
-                          href={`/dashboard/workers/edit/${field.value}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <LaunchOutlinedIcon />
-                        </IconButton>
-                      </InputAdornment>
+                      !!field.value && (
+                        <InputAdornment position="end">
+                          <IconButton
+                            LinkComponent={Link}
+                            size="small"
+                            color="primary"
+                            href={`/dashboard/workers/edit/${field.value}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <LaunchOutlinedIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      )
                     }
                   >
                     {sellers?.length === 0 && <MenuItem disabled>無可用帳號</MenuItem>}
@@ -288,7 +288,7 @@ export function EditAuctionItemForm({
           <Grid item xs={12} sm={6}>
             <Controller
               control={control}
-              name="watcherID"
+              name="watcherId"
               render={({ field, fieldState }) => (
                 <FormControl fullWidth error={!!fieldState.error}>
                   <InputLabel>盯標帳號</InputLabel>
@@ -297,21 +297,23 @@ export function EditAuctionItemForm({
                     value={field.value || ''}
                     label="盯標帳號"
                     fullWidth
-                    sx={{ '&>.MuiSvgIcon-root': { transform: 'translateX(-3rem)' } }}
-                    readOnly={!canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['watcherID'] }])}
+                    sx={{ '&>.MuiSvgIcon-root': { transform: field.value ? 'translateX(-3rem)' : undefined } }}
+                    readOnly={!canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['watcherId'] }])}
                     endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          LinkComponent={Link}
-                          size="small"
-                          color="primary"
-                          href={`/dashboard/workers/edit/${field.value}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <LaunchOutlinedIcon />
-                        </IconButton>
-                      </InputAdornment>
+                      !!field.value && (
+                        <InputAdornment position="end">
+                          <IconButton
+                            LinkComponent={Link}
+                            size="small"
+                            color="primary"
+                            href={`/dashboard/workers/edit/${field.value}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <LaunchOutlinedIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      )
                     }
                   >
                     {watchers?.length === 0 && <MenuItem disabled>無可用帳號</MenuItem>}
@@ -331,7 +333,7 @@ export function EditAuctionItemForm({
         <Grid item xs={12} sm={6}>
           <Controller
             control={control}
-            name="auctionID"
+            name="auctionId"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
                 <TextField
@@ -340,7 +342,7 @@ export function EditAuctionItemForm({
                   type="text"
                   fullWidth
                   InputProps={{
-                    readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['auctionID'] }]),
+                    readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['auctionId'] }]),
                   }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
@@ -484,33 +486,6 @@ export function EditAuctionItemForm({
                   InputProps={{
                     readOnly: true,
                     // readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['closedPrice'] }]),
-                    startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
-                  }}
-                />
-                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-              </FormControl>
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <Controller
-            control={control}
-            name="shippingCostsWithinJapan"
-            render={({ field, fieldState }) => (
-              <FormControl fullWidth error={!!fieldState.error}>
-                <TextField
-                  {...field}
-                  label="日本國內運費"
-                  type="number"
-                  fullWidth
-                  onChange={(e) => {
-                    field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
-                  }}
-                  InputProps={{
-                    readOnly:
-                      !canUpdate ||
-                      !havePermissions([{ key: 'UpdateAuctionItem', fields: ['shippingCostsWithinJapan'] }]),
                     startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                   }}
                 />

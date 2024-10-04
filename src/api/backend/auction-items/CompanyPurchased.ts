@@ -10,7 +10,7 @@ type Data = 'Success';
 
 type ErrorCode = never;
 
-export async function CompanyPurchased(id: AuctionItem['id']) {
+export async function CompanyPurchased(id: AuctionItem['auctionId']) {
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/${id}/company-purchased`, {
     method: 'POST',
   });

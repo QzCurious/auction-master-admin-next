@@ -8,7 +8,7 @@ import { appendEntries } from '@/domain/crud/appendEntries';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
-  id: z.number(),
+  auctionId: z.string(),
 });
 
 type Data = 'Success';

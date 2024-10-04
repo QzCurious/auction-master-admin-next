@@ -29,8 +29,8 @@ const FormSchema = z
   .object({
     actionType: z.number().refine(R.isIncludedIn(ACTION_TYPE.data.map((item) => item.value))),
     shipmentType: z.number().refine(R.isIncludedIn(SHIPMENT_TYPE.data.map((item) => item.value))),
-    itemIDs: z.array(z.number()),
-    auctionItemIDs: z.array(z.number()),
+    // itemIDs: z.array(z.number()),
+    // auctionIds: z.array(z.string()),
     address: z.string().min(1, '必填'),
     storeNumber: z.string(),
     storeName: z.string(),
@@ -57,8 +57,8 @@ export function ShippingFormProvider({ shipping, children }: { shipping: Shippin
     values: {
       actionType: shipping.actionType,
       shipmentType: shipping.shipmentType,
-      itemIDs: shipping.itemIDs,
-      auctionItemIDs: shipping.auctionItemIDs,
+      // itemIDs: shipping.itemIDs,
+      // auctionIds: shipping.auctionIds,
       address: shipping.address,
       storeNumber: shipping.storeNumber ?? '',
       storeName: shipping.storeName ?? '',
@@ -98,35 +98,40 @@ export function EditShippingForm({ shipping }: EditShippingFromProps) {
     <Card
       sx={{ py: 2, px: 3 }}
       component="form"
-      onSubmit={handleSubmit(async (data) => {
-        const dirtyValues = getDirtyFields(data, dirtyFields);
-        if (Object.keys(dirtyValues).length === 0) return;
+      onSubmit={handleSubmit(
+        async (data) => {
+          const dirtyValues = getDirtyFields(data, dirtyFields);
+          if (Object.keys(dirtyValues).length === 0) return;
 
-        if (shipping.shipmentTrackingNumber != null && dirtyValues.shipmentTrackingNumber === '') {
-          setError('shipmentTrackingNumber', { message: '必填' });
-          return;
-        }
-        if (shipping.internationalShippingCosts != null && dirtyValues.internationalShippingCosts === '') {
-          setError('internationalShippingCosts', { message: '必填' });
-          return;
-        }
+          if (shipping.shipmentTrackingNumber != null && dirtyValues.shipmentTrackingNumber === '') {
+            setError('shipmentTrackingNumber', { message: '必填' });
+            return;
+          }
+          if (shipping.internationalShippingCosts != null && dirtyValues.internationalShippingCosts === '') {
+            setError('internationalShippingCosts', { message: '必填' });
+            return;
+          }
 
-        const res = await UpdateShipping(shipping.id, {
-          ...dirtyValues,
-          internationalShippingCosts:
-            dirtyValues.internationalShippingCosts === '' ? undefined : dirtyValues.internationalShippingCosts,
-        });
+          const res = await UpdateShipping(shipping.id, {
+            ...dirtyValues,
+            internationalShippingCosts:
+              dirtyValues.internationalShippingCosts === '' ? undefined : dirtyValues.internationalShippingCosts,
+          });
 
-        if (res.error) {
-          enqueueSnackbar(res.error, { variant: 'error' });
-          return;
-        }
-        enqueueSnackbar('更新成功', { variant: 'success' });
+          if (res.error) {
+            enqueueSnackbar(res.error, { variant: 'error' });
+            return;
+          }
+          enqueueSnackbar('更新成功', { variant: 'success' });
 
-        if (process.env.NODE_ENV !== 'development') {
-          router.push('/dashboard/shippings');
+          if (process.env.NODE_ENV !== 'development') {
+            router.push('/dashboard/shippings');
+          }
+        },
+        (err) => {
+          console.log(err);
         }
-      })}
+      )}
     >
       <Stack direction="row" columnGap={2}>
         <Typography variant="h6">出貨資訊</Typography>

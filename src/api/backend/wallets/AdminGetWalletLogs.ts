@@ -9,7 +9,7 @@ import { withAuth } from '../../withAuth';
 import { type WALLET_ACTION } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
-  consignorID: z.coerce.number().optional(),
+  consignorId: z.coerce.number().optional(),
   action: z.coerce.number().array().optional(),
   startAt: z.coerce.date().optional(),
   endAt: z.coerce.date().optional(),
@@ -21,7 +21,7 @@ const ReqSchema = z.object({
 
 export interface WalletLogs {
   id: number;
-  consignorID: number;
+  consignorId: number;
   opCode: string;
   action: WALLET_ACTION['value'];
   previousBalance: number;

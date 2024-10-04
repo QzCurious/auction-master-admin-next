@@ -62,12 +62,12 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
   return (
     <Box sx={{ p: '16px 20px' }}>
       <Typography variant="subtitle1">立即下標</Typography>
-      <Typography color="text.secondary" variant="body2">
+      {/* <Typography color="text.secondary" variant="body2">
         立即下標並將商品加入日拍競標清單
-      </Typography>
+      </Typography> */}
       <form
         onSubmit={handleSubmit(async (data) => {
-          const res = await BidAuctionItem(auctionItem.id, {
+          const res = await BidAuctionItem(auctionItem.auctionId, {
             price: parseInt(data.price),
           });
           if (res.error) {

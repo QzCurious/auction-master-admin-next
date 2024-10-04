@@ -9,7 +9,7 @@ import { withAuth } from '../../withAuth';
 import { type ITEM_STATUS, type ITEM_TYPE } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
-  consignorID: z.coerce.number().optional(),
+  consignorId: z.coerce.number().optional(),
   status: z.coerce.number().array().optional(),
   sort: z.string().optional(),
   order: z.enum(['asc', 'desc']).optional(),
@@ -19,7 +19,7 @@ const ReqSchema = z.object({
 
 export interface Item {
   id: number;
-  consignorID: number;
+  consignorId: number;
   type: 0 | ITEM_TYPE['value'];
   isNew: boolean;
   name: string;
@@ -29,7 +29,7 @@ export interface Item {
   maxEstimatedPrice: number;
   reservePrice: number;
   expireAt: string | null;
-  warehouseID: string;
+  warehouseId: string;
   space: number;
   shippingCostsWithinJapan: number;
   grossWeight: number;
@@ -45,8 +45,8 @@ export interface Item {
     updatedAt: string;
   }>;
   pastStatuses?: { [k in ITEM_STATUS['value']]?: string };
-  auctionItemID?: number;
-  recordID?: string;
+  auctionId?: number;
+  recordId?: string;
 }
 
 export type StatusCount = {

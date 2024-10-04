@@ -25,7 +25,7 @@ export function fixRange(startAt?: Date, endAt?: Date) {
 }
 
 export const SearchParamsSchema = PaginationSchema.extend({
-  consignorID: z.coerce.number().optional(),
+  consignorId: z.coerce.number().optional(),
   startAt: z.coerce.date().optional(),
   endAt: z.coerce.date().optional(),
   action: z.coerce

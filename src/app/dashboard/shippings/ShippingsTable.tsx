@@ -1,8 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { UpdateAuctionItem } from '@/api/backend/auction-items/UpdateAuctionItem';
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
@@ -14,7 +12,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import {
-  Alert,
   Button,
   FormControl,
   FormHelperText,
@@ -36,7 +33,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { MapPin } from '@phosphor-icons/react/dist/csr/MapPin';
 import { Phone } from '@phosphor-icons/react/dist/csr/Phone';
-import { Tag } from '@phosphor-icons/react/dist/csr/Tag';
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { Notepad } from '@phosphor-icons/react/dist/ssr/Notepad';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
@@ -92,7 +88,7 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
                           <td style={{ paddingRight: 2 }}>
                             <Stack direction="row" alignItems="center" sx={{ whiteSpace: 'nowrap' }}>
                               <LabelOutlinedIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-                              {item.warehouseID || '無倉庫編號'}
+                              {item.warehouseId || '無倉庫編號'}
                             </Stack>
                           </td>
                           <td style={{ padding: 0 }}>
@@ -149,99 +145,90 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
                           </td>
 
                           {(function iife() {
-                            const auctionItem = row.auctionItems.find((auctionItem) => auctionItem.itemID === item.id);
+                            const auctionItem = row.auctionItems.find((auctionItem) => auctionItem.itemId === item.id);
                             if (!auctionItem) return;
                             return (
-                              <>
-                                <PopupState key={auctionItem.id} variant="popper">
-                                  {(popupState) => (
-                                    <td style={{ padding: 0 }}>
-                                      <span>
-                                        <IconButton
-                                          {...bindTrigger(popupState)}
-                                          size="small"
-                                          color="primary"
-                                          sx={{ p: 0.5 }}
-                                        >
-                                          <Gavel />
-                                        </IconButton>
-                                      </span>
-
-                                      <Popover
-                                        {...bindPopover(popupState)}
-                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                              <PopupState key={auctionItem.auctionId} variant="popper">
+                                {(popupState) => (
+                                  <td style={{ padding: 0 }}>
+                                    <span>
+                                      <IconButton
+                                        {...bindTrigger(popupState)}
+                                        size="small"
+                                        color="primary"
+                                        sx={{ p: 0.5 }}
                                       >
-                                        <Paper
+                                        <Gavel />
+                                      </IconButton>
+                                    </span>
+
+                                    <Popover
+                                      {...bindPopover(popupState)}
+                                      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                    >
+                                      <Paper
+                                        sx={{
+                                          p: 1,
+                                          position: 'relative',
+                                          maxWidth: '300px',
+                                          border: '1px solid #eee',
+                                        }}
+                                        elevation={8}
+                                      >
+                                        <Box
                                           sx={{
-                                            p: 1,
-                                            position: 'relative',
-                                            maxWidth: '300px',
-                                            border: '1px solid #eee',
+                                            position: 'absolute',
+                                            borderRadius: 1,
+                                            top: 0,
+                                            right: 0,
+                                            py: 0.5,
+                                            px: 1,
+                                            bgcolor: 'white',
                                           }}
-                                          elevation={8}
                                         >
-                                          <Box
-                                            sx={{
-                                              position: 'absolute',
-                                              borderRadius: 1,
-                                              top: 0,
-                                              right: 0,
-                                              py: 0.5,
-                                              px: 1,
-                                              bgcolor: 'white',
-                                            }}
-                                          >
-                                            <HavePermissionsOnly permissions={['GetAuctionItem']}>
-                                              <Box
-                                                sx={{
-                                                  position: 'absolute',
-                                                  borderRadius: 1,
-                                                  top: 0,
-                                                  right: 0,
-                                                  bgcolor: 'white',
-                                                }}
+                                          <HavePermissionsOnly permissions={['GetAuctionItem']}>
+                                            <Box
+                                              sx={{
+                                                position: 'absolute',
+                                                borderRadius: 1,
+                                                top: 0,
+                                                right: 0,
+                                                bgcolor: 'white',
+                                              }}
+                                            >
+                                              <IconButton
+                                                LinkComponent={Link}
+                                                color="primary"
+                                                href={`/dashboard/auction-items/edit/${auctionItem.auctionId}`}
+                                                target="_blank"
+                                                rel="noreferrer"
                                               >
-                                                <IconButton
-                                                  LinkComponent={Link}
-                                                  color="primary"
-                                                  href={`/dashboard/auction-items/edit/${auctionItem.id}`}
-                                                  target="_blank"
-                                                  rel="noreferrer"
-                                                >
-                                                  <LaunchOutlinedIcon fontSize="small" />
-                                                </IconButton>
-                                              </Box>
-                                            </HavePermissionsOnly>
-                                          </Box>
-                                          <a href={auctionItem.photo} target="_blank" rel="noreferrer">
-                                            <img
-                                              src={auctionItem.photo}
-                                              style={{ display: 'block', maxWidth: '100%' }}
-                                              alt=""
-                                            />
-                                          </a>
-                                          <Link
-                                            href={`https://page.auctions.yahoo.co.jp/jp/auction/${auctionItem.auctionID}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                          >
-                                            <Typography variant="body2" mt={0.5}>
-                                              {auctionItem.name}
-                                            </Typography>
-                                          </Link>
-                                        </Paper>
-                                      </Popover>
-                                    </td>
-                                  )}
-                                </PopupState>
-                                <td style={{ padding: 0 }}>
-                                  {row.status === SHIPPING_STATUS.enum('ShippedStatus') && (
-                                    <HavePermissionsOnly permissions={['UpdateAuctionItem']}>
-                                      <MarkShippingCostsWithinJapanPopover auctionItem={auctionItem} />
-                                    </HavePermissionsOnly>
-                                  )}
-                                </td>
-                              </>
+                                                <LaunchOutlinedIcon fontSize="small" />
+                                              </IconButton>
+                                            </Box>
+                                          </HavePermissionsOnly>
+                                        </Box>
+                                        <a href={auctionItem.photo} target="_blank" rel="noreferrer">
+                                          <img
+                                            src={auctionItem.photo}
+                                            style={{ display: 'block', maxWidth: '100%' }}
+                                            alt=""
+                                          />
+                                        </a>
+                                        <Link
+                                          href={`https://page.auctions.yahoo.co.jp/jp/auction/${auctionItem.auctionId}`}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                        >
+                                          <Typography variant="body2" mt={0.5}>
+                                            {auctionItem.name}
+                                          </Typography>
+                                        </Link>
+                                      </Paper>
+                                    </Popover>
+                                  </td>
+                                )}
+                              </PopupState>
                             );
                           })()}
                         </tr>
@@ -265,7 +252,7 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
                 </TableCell>
 
                 <TableCell>
-                  <Stack alignItems="center" spacing={1} sx={{ whiteSpace: 'nowrap' }}>
+                  <Stack alignItems="center" spacing={1} sx={{ whiteSpace: 'nowrap', width: 'fit-content' }}>
                     <Typography variant="body2">{SHIPPING_STATUS.get('value', row.status).message}</Typography>
 
                     {row.status === SHIPPING_STATUS.enum('SubmitAppraisalStatus') && (
@@ -304,36 +291,7 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
 
                     {row.status === SHIPPING_STATUS.enum('ShippedStatus') && (
                       <HavePermissionsOnly permissions={['ShippingClosed']}>
-                        <PopupState variant="popover">
-                          {(popupState) => (
-                            <>
-                              <Button type="button" variant="outlined" size="small" {...bindTrigger(popupState)}>
-                                結束出貨
-                              </Button>
-                              <DoubleCheckPopover
-                                {...bindPopover(popupState)}
-                                title="標示為出貨已結束"
-                                description={
-                                  row.auctionItems.some((item) => !item.shippingCostsWithinJapan) && (
-                                    <Alert severity="warning" sx={{ my: 1 }}>
-                                      部分日拍競標商品日本國內運費為 0
-                                    </Alert>
-                                  )
-                                }
-                                onConfirm={async () => {
-                                  const res = await ShippingClosed(row.id);
-                                  if (res.error) {
-                                    enqueueSnackbar(res.error, { variant: 'error' });
-                                    return;
-                                  }
-                                  enqueueSnackbar('已標示為出貨已結束', { variant: 'success' });
-                                  popupState.close();
-                                }}
-                                onCancel={popupState.close}
-                              />
-                            </>
-                          )}
-                        </PopupState>
+                        <ShippingClosedPopover row={row} />
                       </HavePermissionsOnly>
                     )}
                   </Stack>
@@ -401,99 +359,6 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
       <Divider />
       <SearchParamsPagination count={count} />
     </Card>
-  );
-}
-
-function MarkShippingCostsWithinJapanPopover({ auctionItem }: { auctionItem: AuctionItem }) {
-  const {
-    control,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = useForm({
-    values: {
-      shippingCostsWithinJapan: auctionItem.shippingCostsWithinJapan,
-    },
-  });
-
-  return (
-    <PopupState variant="popover">
-      {(popupState) => (
-        <>
-          <Stack direction="row" alignItems="center">
-            <IconButton type="button" color="primary" size="small" {...bindTrigger(popupState)}>
-              <Tag />
-            </IconButton>
-            <Typography color="primary.main">
-              {currencySign('JPY')}
-              {auctionItem.shippingCostsWithinJapan.toLocaleString()}
-            </Typography>
-          </Stack>
-          <Popover
-            {...bindPopover(popupState)}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-          >
-            <Box
-              component="form"
-              sx={{ p: '16px 20px' }}
-              onSubmit={handleSubmit(async (data) => {
-                const res = await UpdateAuctionItem(auctionItem.id, data);
-
-                if (res.error) {
-                  enqueueSnackbar(res.error, { variant: 'error' });
-                  return;
-                }
-                enqueueSnackbar('已更新日本國內運費', { variant: 'success' });
-                popupState.close();
-              })}
-            >
-              <Typography variant="subtitle1">修改日本國內運費</Typography>
-              <Stack spacing={1.5} mt={2}>
-                <Controller
-                  control={control}
-                  name="shippingCostsWithinJapan"
-                  rules={{ required: '必填' }}
-                  render={({ field, fieldState }) => (
-                    <FormControl fullWidth error={!!fieldState.error}>
-                      <TextField
-                        {...field}
-                        size="small"
-                        label="日本國內運費"
-                        fullWidth
-                        type="number"
-                        onChange={(e) => {
-                          field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
-                        }}
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
-                        }}
-                        inputProps={{ min: 0 }}
-                      />
-                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-                    </FormControl>
-                  )}
-                />
-              </Stack>
-
-              <Stack direction="row" mt={1.5} gap={2} justifyContent="end">
-                <Button type="button" variant="outlined" size="small" color="error" onClick={popupState.close}>
-                  取消
-                </Button>
-                <Button type="submit" disabled={isSubmitting} variant="contained" size="small">
-                  確定
-                </Button>
-              </Stack>
-            </Box>
-          </Popover>
-        </>
-      )}
-    </PopupState>
   );
 }
 
@@ -641,6 +506,93 @@ function RemarkPopover({ row }: { row: Shipping }) {
                   maxRows={6}
                 />
               </FormControl>
+            </Box>
+          </Popover>
+        </>
+      )}
+    </PopupState>
+  );
+}
+
+function ShippingClosedPopover({ row }: { row: Shipping }) {
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm({
+    defaultValues: {
+      shippingCostsWithinJapan: '' as unknown as number,
+    },
+  });
+
+  return (
+    <PopupState variant="popover">
+      {(popupState) => (
+        <>
+          <Button type="button" variant="outlined" size="small" {...bindTrigger(popupState)}>
+            結束出貨
+          </Button>
+
+          <Popover
+            {...bindPopover(popupState)}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+          >
+            <Box
+              component="form"
+              sx={{ p: '16px 20px' }}
+              onSubmit={handleSubmit(async (data) => {
+                const res = await ShippingClosed(row.id, data);
+                if (res.error) {
+                  enqueueSnackbar(res.error, { variant: 'error' });
+                  return;
+                }
+                enqueueSnackbar('已標示為出貨已結束', { variant: 'success' });
+                popupState.close();
+              })}
+            >
+              <Typography variant="subtitle1">標示為出貨已結束</Typography>
+              <Stack spacing={1.5} mt={2}>
+                <Controller
+                  name="shippingCostsWithinJapan"
+                  control={control}
+                  rules={{ required: '必填' }}
+                  render={({ field, fieldState }) => (
+                    <FormControl fullWidth error={!!fieldState.error}>
+                      <TextField
+                        {...field}
+                        size="small"
+                        label="日本國內運費"
+                        fullWidth
+                        type="number"
+                        onChange={(e) => {
+                          field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
+                        }}
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
+                        }}
+                        inputProps={{ min: 0 }}
+                      />
+                      {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                    </FormControl>
+                  )}
+                />
+              </Stack>
+
+              <Stack direction="row" mt={1.5} gap={2} justifyContent="end">
+                <Button type="button" variant="outlined" size="small" color="error" onClick={popupState.close}>
+                  取消
+                </Button>
+                <Button type="submit" disabled={isSubmitting} variant="contained" size="small">
+                  確定
+                </Button>
+              </Stack>
             </Box>
           </Popover>
         </>

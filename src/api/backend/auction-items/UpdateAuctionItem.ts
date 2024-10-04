@@ -11,11 +11,11 @@ import { type AuctionItem } from './GetAuctionItems';
 
 const ReqSchema = z
   .object({
-    consignorID: z.number(),
-    itemID: z.number(),
-    sellerID: z.number(),
-    watcherID: z.number(),
-    auctionID: z.string(),
+    auctionId: z.string(),
+    consignorId: z.number(),
+    itemId: z.number(),
+    sellerId: z.number(),
+    watcherId: z.number(),
     name: z.string(),
     photo: z.string(),
     reservePrice: z.number(),
@@ -32,7 +32,7 @@ type Data = 'Success';
 
 type ErrorCode = never;
 
-export async function UpdateAuctionItem(id: AuctionItem['id'], payload: z.input<typeof ReqSchema>) {
+export async function UpdateAuctionItem(id: AuctionItem['auctionId'], payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const urlencoded = new URLSearchParams();

@@ -48,11 +48,7 @@ async function Page(pageProps: PageProps) {
 export default Page;
 
 async function Content({ params }: PageProps) {
-  if (Number.isNaN(params.id)) {
-    notFound();
-  }
-
-  const auctionItemRes = await GetAuctionItem(Number(params.id));
+  const auctionItemRes = await GetAuctionItem(params.id);
 
   if (auctionItemRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
@@ -67,13 +63,13 @@ async function Content({ params }: PageProps) {
   }
 
   const [consignorRes, itemRes, sellerRes, watcherRes, sellersRes, watchersRes] = await Promise.all([
-    (await havePermissions(['AdminGetConsignor'])) ? AdminGetConsignor(auctionItemRes.data.consignorID) : undefined,
-    (await havePermissions(['GetItemAndDetails'])) ? GetItemAndDetails(auctionItemRes.data.itemID) : undefined,
-    (await havePermissions(['GetWorker'])) && auctionItemRes.data.sellerID
-      ? GetWorker(auctionItemRes.data.sellerID)
+    (await havePermissions(['AdminGetConsignor'])) ? AdminGetConsignor(auctionItemRes.data.consignorId) : undefined,
+    (await havePermissions(['GetItemAndDetails'])) ? GetItemAndDetails(auctionItemRes.data.itemId) : undefined,
+    (await havePermissions(['GetWorker'])) && auctionItemRes.data.sellerId
+      ? GetWorker(auctionItemRes.data.sellerId)
       : undefined,
-    (await havePermissions(['GetWorker'])) && auctionItemRes.data.watcherID
-      ? GetWorker(auctionItemRes.data.watcherID)
+    (await havePermissions(['GetWorker'])) && auctionItemRes.data.watcherId
+      ? GetWorker(auctionItemRes.data.watcherId)
       : undefined,
     (await havePermissions(['GetWorkers']))
       ? GetWorkers({ type: [WORKER_TYPE.enum('SellerType')], status: [WORKER_STATUS.enum('ActiveStatus')], limit: 100 })

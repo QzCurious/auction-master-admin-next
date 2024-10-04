@@ -12,7 +12,7 @@ import { ITEM_TYPE } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z
   .object({
-    consignorID: z.number(),
+    consignorId: z.number(),
     type: z.number().refine(R.isIncludedIn([0, ...ITEM_TYPE.data.map((item) => item.value)] as const)),
     isNew: z.boolean(),
     name: z.string().min(1),
@@ -22,7 +22,7 @@ const ReqSchema = z
     maxEstimatedPrice: z.number(),
     reservePrice: z.number().min(1),
     expireAt: z.date().nullable(),
-    warehouseID: z.string(),
+    warehouseId: z.string(),
     space: z.number(),
     shippingCostsWithinJapan: z.number(),
     grossWeight: z.number(),

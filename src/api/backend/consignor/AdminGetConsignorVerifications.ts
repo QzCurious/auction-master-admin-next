@@ -19,7 +19,7 @@ const ReqSchema = z.object({
 
 export interface ConsignorVerification {
   id: number;
-  consignorID: number;
+  consignorId: number;
   photo: string;
   name: string;
   identification: string;

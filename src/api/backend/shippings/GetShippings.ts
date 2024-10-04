@@ -25,7 +25,7 @@ export interface Shipping {
   actionType: ACTION_TYPE['value'];
   shipmentType: SHIPMENT_TYPE['value'];
   itemIDs: Array<number>;
-  auctionItemIDs: Array<number>;
+  auctionIds: Array<string>;
   address: string;
   storeNumber?: string;
   storeName?: string;

@@ -42,7 +42,7 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                 <TableCell>暱稱</TableCell>
                 <TableCell>手機</TableCell>
                 <TableCell>銀行帳號</TableCell>
-                <TableCell sx={{ width: 0 }}>大師幣/紅利</TableCell>
+                <TableCell sx={{ width: 0, whiteSpace: 'nowrap' }}>大師幣/紅利</TableCell>
                 <TableCell>回饋比例</TableCell>
                 <TableCell>狀態</TableCell>
                 <TableCell>操作</TableCell>
@@ -86,7 +86,7 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                                   LinkComponent={Link}
                                   size="small"
                                   color="primary"
-                                  href={`/dashboard/consignor-balance/wallet-logs?consignorID=${row.id}`}
+                                  href={`/dashboard/consignor-balance/wallet-logs?consignorId=${row.id}`}
                                   target="_blank"
                                   rel="noreferrer"
                                 >
@@ -107,7 +107,7 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
                                   LinkComponent={Link}
                                   size="small"
                                   color="primary"
-                                  href={`/dashboard/consignor-balance/bonus-logs?consignorID=${row.id}`}
+                                  href={`/dashboard/consignor-balance/bonus-logs?consignorId=${row.id}`}
                                   target="_blank"
                                   rel="noreferrer"
                                 >

@@ -11,9 +11,9 @@ import { withAuth } from '../../withAuth';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 
 const ReqSchema = z.object({
-  consignorID: z.number(),
+  consignorId: z.number(),
   shipmentType: z.number().refine(R.isIncludedIn(SHIPMENT_TYPE.data.map((item) => item.value))),
-  itemID: z.number().array(),
+  itemId: z.number().array(),
   address: z.string(),
   // storeNumber: z.string(),
   // storeName: z.string(),

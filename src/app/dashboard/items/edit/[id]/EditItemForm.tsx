@@ -50,7 +50,7 @@ const FormSchema = z
     maxEstimatedPrice: z.coerce.number().optional(),
     reservePrice: z.number().min(1, '必填'),
     expireAt: z.coerce.date().nullable(),
-    warehouseID: z.string(),
+    warehouseId: z.string(),
     space: z.number(),
     shippingCostsWithinJapan: z.number(),
     grossWeight: z.number(),
@@ -87,7 +87,7 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
       maxEstimatedPrice: item.maxEstimatedPrice,
       reservePrice: item.reservePrice,
       expireAt: item.expireAt ? new Date(item.expireAt) : null,
-      warehouseID: item.warehouseID,
+      warehouseId: item.warehouseId,
       space: item.space,
       shippingCostsWithinJapan: item.shippingCostsWithinJapan,
       grossWeight: item.grossWeight,
@@ -136,7 +136,7 @@ export function EditItemForm({ item, consignor }: EditItemFromProps) {
         const res = await AdminUpdateItem(item.id, dirtyValues);
 
         if (res.error === '1031') {
-          setError('warehouseID', { message: '倉庫編號已存在' });
+          setError('warehouseId', { message: '倉庫編號已存在' });
           return;
         }
         if (res.error) {
@@ -183,7 +183,7 @@ export function EditItemForm({ item, consignor }: EditItemFromProps) {
                       LinkComponent={Link}
                       size="small"
                       color="primary"
-                      href={`/dashboard/consignors?consignorID=${consignor.id}`}
+                      href={`/dashboard/consignors/edit/${consignor.id}`}
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -400,7 +400,7 @@ export function EditItemForm({ item, consignor }: EditItemFromProps) {
         <Grid item xs={12} sm={6}>
           <Controller
             control={control}
-            name="warehouseID"
+            name="warehouseId"
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
                 <TextField
@@ -409,7 +409,7 @@ export function EditItemForm({ item, consignor }: EditItemFromProps) {
                   type="text"
                   fullWidth
                   InputProps={{
-                    readOnly: !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['warehouseID'] }]),
+                    readOnly: !canUpdate || !havePermissions([{ key: 'AdminUpdateItem', fields: ['warehouseId'] }]),
                   }}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}

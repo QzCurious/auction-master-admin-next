@@ -41,12 +41,12 @@ export default async function Page(pageProps: PageProps) {
 
 async function Table({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
-  if (filters.consignorID && !(await havePermissions(['AdminGetConsignor']))) {
+  if (filters.consignorId && !(await havePermissions(['AdminGetConsignor']))) {
     return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
   }
 
   const [consignorsRes, consignorRes] = await Promise.all([
-    !filters.consignorID
+    !filters.consignorId
       ? AdminGetConsignors({
           sort: 'createdAt',
           order: 'desc',
@@ -54,7 +54,7 @@ async function Table({ searchParams }: PageProps) {
           offset: filters[PAGE] * filters[ROWS_PER_PAGE],
         })
       : null,
-    filters.consignorID ? AdminGetConsignor(filters.consignorID) : null,
+    filters.consignorId ? AdminGetConsignor(filters.consignorId) : null,
   ]);
 
   if (consignorsRes?.error === '1001' || consignorRes?.error === '1001') {
@@ -68,8 +68,8 @@ async function Table({ searchParams }: PageProps) {
   return (
     <Stack spacing={3}>
       <Stack direction="row" flexWrap="wrap" gap={2}>
-        <ConsignorFilter consignorID={filters.consignorID} />
-        <RemoveSearchBtn<keyof typeof filters> fields={['consignorID']} />
+        <ConsignorFilter consignorId={filters.consignorId} />
+        <RemoveSearchBtn<keyof typeof filters> fields={['consignorId']} />
 
         <Box mx="auto" />
       </Stack>

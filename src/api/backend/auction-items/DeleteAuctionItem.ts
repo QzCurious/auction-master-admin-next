@@ -10,7 +10,7 @@ type Data = 'Success';
 
 type ErrorCode = never;
 
-export async function DeleteAuctionItem(id: AuctionItem['id']) {
+export async function DeleteAuctionItem(id: AuctionItem['auctionId']) {
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/${id}`, {
     method: 'DELETE',
   });

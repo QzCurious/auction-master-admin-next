@@ -15,7 +15,7 @@ import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError
 export const pickingTypeAtom = atom<'shipping' | 'fee' | null>(null);
 export const pickedItemIdsReducerAtom = atomWithReducer(
   [],
-  (prev: Array<AuctionItem['id']>, action: { type: 'toggle'; id: AuctionItem['id'] } | { type: 'clear' }) => {
+  (prev: Array<AuctionItem['auctionId']>, action: { type: 'toggle'; id: AuctionItem['auctionId'] } | { type: 'clear' }) => {
     switch (action.type) {
       case 'toggle':
         return prev.includes(action.id) ? prev.filter((id) => id !== action.id) : [...prev, action.id];
@@ -90,10 +90,10 @@ export function PickedListItem({ item }: { item: AuctionItem }) {
           <ul>
             <li>
               <Typography color="GrayText" component="span">
-                日拍 ID:
+                日拍 Id:
               </Typography>{' '}
               <Typography sx={{ display: 'inline' }} component="span" color="text.primary">
-                {item.auctionID}
+                {item.auctionId}
               </Typography>
             </li>
             <li>

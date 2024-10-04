@@ -158,7 +158,7 @@ function ShippingForm() {
         const res = await ShippingAuctionItem({
           ...data,
           shipmentType: SHIPMENT_TYPE.enum('AddressShipmentType'),
-          auctionItemIDs: pickedItemIds,
+          auctionIds: pickedItemIds,
           // shippingCostsWithinJapan: R.sum(data.shippingCostsWithinJapan),
         });
 

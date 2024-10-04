@@ -10,16 +10,16 @@ import { useQuery } from '@tanstack/react-query';
 import { ConsignorSelect } from '@/components/ConsignorSelect';
 import { FilterPopover } from '@/components/FilterPopover';
 
-const FIELD = 'consignorID';
+const FIELD = 'consignorId';
 
-export function ConsignorFilter({ consignorID }: { consignorID?: Consignor['id'] }) {
+export function ConsignorFilter({ consignorId }: { consignorId?: Consignor['id'] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const havePermissions = useHavePermissions();
   const consignorQuery = useQuery({
-    queryFn: () => AdminGetConsignor(consignorID!),
-    queryKey: ['consignor', consignorID],
-    enabled: !!consignorID,
+    queryFn: () => AdminGetConsignor(consignorId!),
+    queryKey: ['consignor', consignorId],
+    enabled: !!consignorId,
   });
 
   if (!havePermissions(['AdminGetConsignor', 'AdminGetConsignors'])) {
@@ -29,7 +29,7 @@ export function ConsignorFilter({ consignorID }: { consignorID?: Consignor['id']
   return (
     <FilterPopover
       label="寄售人暱稱"
-      value={consignorID ? consignorQuery.data?.data?.nickname || '--' : null}
+      value={consignorId ? consignorQuery.data?.data?.nickname || '--' : null}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.delete(FIELD);
@@ -40,7 +40,7 @@ export function ConsignorFilter({ consignorID }: { consignorID?: Consignor['id']
         <ConsignorSelect
           textFieldProps={{ size: 'small' }}
           sx={{ width: 215 }}
-          value={consignorID ?? null}
+          value={consignorId ?? null}
           onChange={(id, consignor) => {
             const newSearchParams = new URLSearchParams(searchParams);
             newSearchParams.delete(PAGE);

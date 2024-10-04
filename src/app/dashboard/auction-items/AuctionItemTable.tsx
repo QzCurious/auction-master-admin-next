@@ -83,15 +83,15 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
           <TableBody>
             {rows.length === 0 && <EmptyTableRow />}
             {rows.map((row) => (
-              <TableRow hover key={row.id}>
+              <TableRow hover key={row.auctionId}>
                 {isPicking && (
                   <TableCell>
                     <Checkbox
-                      checked={pickedItemIds.includes(row.id)}
+                      checked={pickedItemIds.includes(row.auctionId)}
                       onChange={() =>
                         dispatch({
                           type: 'toggle',
-                          id: row.id,
+                          id: row.auctionId,
                         })
                       }
                     />
@@ -99,7 +99,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                 )}
                 <TableCell
                   sx={{ maxWidth: '200px' }}
-                  title={process.env.NODE_ENV === 'development' ? row.id.toString() : undefined}
+                  title={process.env.NODE_ENV === 'development' ? row.auctionId.toString() : undefined}
                 >
                   {row.photo ? (
                     <Box
@@ -127,7 +127,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                   )}
                   <Stack>
                     <HavePermissionsOnly permissions={['GetItemAndDetails']}>
-                      <Link href={`/dashboard/items/edit/${row.itemID}`} target="_blank" rel="noreferrer">
+                      <Link href={`/dashboard/items/edit/${row.itemId}`} target="_blank" rel="noreferrer">
                         <Gavel /> 物品
                       </Link>
                     </HavePermissionsOnly>
@@ -135,7 +135,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                 </TableCell>
                 <TableCell>
                   <Link
-                    href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${row.auctionID}`}
+                    href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aId=${row.auctionId}`}
                     target="_blank"
                     rel="noreferrer"
                     sx={{ color: 'inherit' }}
@@ -160,7 +160,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     <TableCell>
                       <a
                         style={{ textDecoration: 'none', color: 'inherit' }}
-                        href={`https://www.letao.com.tw/yahoojp/auctions/bid_history.php?aID=${row.auctionID}`}
+                        href={`https://www.letao.com.tw/yahoojp/auctions/bid_history.php?aId=${row.auctionId}`}
                         target="_blank"
                         rel="noreferrer"
                       >
@@ -242,7 +242,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                         )}
 
                         <HavePermissionsOnly permissions={['GetAuctionItem']}>
-                          <IconButton LinkComponent={Link} href={`/dashboard/auction-items/edit/${row.id}`}>
+                          <IconButton LinkComponent={Link} href={`/dashboard/auction-items/edit/${row.auctionId}`}>
                             <EditIcon />
                           </IconButton>
                         </HavePermissionsOnly>
@@ -258,7 +258,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                                   {...bindPopover(popupState)}
                                   title="刪除日拍競標商品"
                                   onConfirm={async () => {
-                                    const res = await DeleteAuctionItem(row.id);
+                                    const res = await DeleteAuctionItem(row.auctionId);
                                     if (res.error) {
                                       enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
                                       return;
