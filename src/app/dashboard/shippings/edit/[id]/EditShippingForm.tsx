@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
 import { type Shipping } from '@/api/backend/shippings/GetShipping';
 import { UpdateShipping } from '@/api/backend/shippings/UpdateShipping';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
@@ -15,7 +13,9 @@ import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
+import { useRouter } from 'next/navigation';
 import { useSnackbar } from 'notistack';
+import React from 'react';
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import { literal, z } from 'zod';
@@ -248,60 +248,6 @@ export function EditShippingForm({ shipping }: EditShippingFromProps) {
                       {type.message}
                     </MenuItem>
                   ))}
-                </Select>
-                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-              </FormControl>
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} display="none">
-          <Controller
-            control={control}
-            name="itemIDs"
-            render={({ field, fieldState }) => (
-              <FormControl fullWidth error={!!fieldState.error}>
-                <InputLabel>物品</InputLabel>
-                <Select
-                  {...field}
-                  label="物品"
-                  fullWidth
-                  multiple
-                  readOnly
-                  // readOnly={!canUpdate || !havePermissions([{ key: 'UpdateShipping', fields: ['itemIDs'] }])}
-                >
-                  {/* {ITEM_TYPE.data.map((type) => (
-                    <MenuItem key={type.value} value={type.value}>
-                      {type.message}
-                    </MenuItem>
-                  ))} */}
-                </Select>
-                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-              </FormControl>
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} display="none">
-          <Controller
-            control={control}
-            name="itemIDs"
-            render={({ field, fieldState }) => (
-              <FormControl fullWidth error={!!fieldState.error}>
-                <InputLabel>日拍競標商品</InputLabel>
-                <Select
-                  {...field}
-                  label="日拍競標商品"
-                  fullWidth
-                  multiple
-                  readOnly
-                  // readOnly={!canUpdate || !havePermissions([{ key: 'UpdateShipping', fields: ['itemIDs'] }])}
-                >
-                  {/* {ITEM_TYPE.data.map((type) => (
-                    <MenuItem key={type.value} value={type.value}>
-                      {type.message}
-                    </MenuItem>
-                  ))} */}
                 </Select>
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
