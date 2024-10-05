@@ -30,5 +30,5 @@ export function CountdownTime({ until }: { until: Date }) {
     return `${remain.hours} 時 ${remain.minutes ?? 0} 分`;
   }
 
-  return `${remain.minutes} 分 ${remain.seconds ?? 0} 秒`;
+  return `${remain.minutes ?? 0} 分 ${remain.seconds ?? 0} 秒`;
 }
