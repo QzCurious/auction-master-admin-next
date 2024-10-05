@@ -25,6 +25,7 @@ export function fixRange(startAt?: Date, endAt?: Date) {
 }
 
 export const SearchParamsSchema = PaginationSchema.extend({
+  auctionId: z.string().optional(),
   'pick-for-shipping': z.enum(['picking', 'checking']).optional().catch(undefined),
   status: z.coerce
     .number()

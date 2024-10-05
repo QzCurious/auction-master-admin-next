@@ -12,6 +12,7 @@ import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
+import { AuctionIdFilter } from './AuctionIdFilter';
 import { fixRange, MAX_MONTHS, SearchParamsSchema } from './SearchParamsSchema';
 import { ShippingsTable } from './ShippingsTable';
 import { StatusFilter } from './StatusFilter';
@@ -48,6 +49,7 @@ async function Content({ searchParams }: PageProps) {
 
   const [ShippingsRes] = await Promise.all([
     GetShippings({
+      auctionId: query.auctionId,
       status: query.status.length
         ? query.status
         : [SHIPPING_STATUS.enum('SubmitAppraisalStatus'), SHIPPING_STATUS.enum('ProcessingStatus')],
@@ -73,7 +75,8 @@ async function Content({ searchParams }: PageProps) {
       <Stack direction="row" flexWrap="wrap" gap={2}>
         <RangeFilter startAt={query.startAt} endAt={query.endAt} within={{ months: MAX_MONTHS }} />
         <StatusFilter selected={query.status} />
-        <RemoveSearchBtn<keyof typeof query> fields={['startAt', 'endAt', 'status']} />
+        <AuctionIdFilter value={query.auctionId} />
+        <RemoveSearchBtn<keyof typeof query> fields={['auctionId', 'startAt', 'endAt', 'status']} />
 
         <Box mx="auto" />
       </Stack>
