@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+import { useRouter } from 'next/navigation';
 import { type Shipping } from '@/api/backend/shippings/GetShipping';
 import { UpdateShipping } from '@/api/backend/shippings/UpdateShipping';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
@@ -13,12 +15,10 @@ import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography/Typography';
 import { Box, Stack } from '@mui/system';
-import { useRouter } from 'next/navigation';
 import { useSnackbar } from 'notistack';
-import React from 'react';
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
-import { literal, z } from 'zod';
+import { z } from 'zod';
 
 interface EditShippingFromProps {
   shipping: Shipping;
@@ -37,7 +37,7 @@ const FormSchema = z
     recipientName: z.string().min(1, '必填'),
     phone: z.string().min(1, '必填'),
     shipmentTrackingNumber: z.string(),
-    internationalShippingCosts: z.number().or(literal('')),
+    internationalShippingCosts: z.number().min(0, '不可為負數').int('請輸入整數').or(z.literal('')),
     remark: z.string(),
     status: z.number().refine(R.isIncludedIn(SHIPPING_STATUS.data.map((item) => item.value))),
   })

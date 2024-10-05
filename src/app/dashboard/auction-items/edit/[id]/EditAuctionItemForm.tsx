@@ -47,7 +47,7 @@ const FormSchema = z.object({
 
   name: z.string(),
   // photo: z.string(),
-  reservePrice: z.number(),
+  reservePrice: z.number().min(0, '不可為負數').int('請輸入整數'),
   currentPrice: z.number(),
   highestPrice: z.number(),
   closeAt: z.coerce.date(),

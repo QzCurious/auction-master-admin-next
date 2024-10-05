@@ -36,11 +36,34 @@ interface EditConsignorFromProps {
   consignor: Consignor;
 }
 
+const FormSchemaNotYetVerified = z
+  .object({
+    password: z.string().optional(),
+    confirmPassword: z.string().optional(),
+    commissionBonusRate: z.coerce.number().min(0, '不可為負數').max(100, '不可超過 100'),
+    name: z.string().min(1, { message: '必填' }),
+    identification: z.string().min(1, { message: '必填' }),
+    gender: z.coerce.number().refine((v) => v === 1 || v === 2, { message: '必填' }),
+    birthday: z.coerce.date({ message: '必填' }),
+    city: z.string().min(1, { message: '必填' }),
+    district: z.string().min(1, { message: '必填' }),
+    streetAddress: z.string().min(1, { message: '必填' }),
+    phone: z.string().min(1, { message: '必填' }),
+    beneficiaryName: z.string().min(1, { message: '必填' }),
+    bankCode: z.string().min(1, { message: '必填' }),
+    bankAccount: z.string().min(1, { message: '必填' }),
+    status: z.number().refine(R.isIncludedIn(CONSIGNOR_STATUS.data.map((item) => item.value)), { message: '必填' }),
+  })
+  .refine((data) => (!data.password ? true : data.password === data.confirmPassword), {
+    message: '請重新確認新密碼',
+    path: ['confirmPassword'],
+  });
+
 const FormSchema = z
   .object({
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
-    commissionBonusRate: z.coerce.number().min(0).max(100),
+    commissionBonusRate: z.coerce.number().min(0, '不可為負數').max(100, '不可超過 100'),
     name: z.string().min(1, { message: '必填' }),
     identification: z.string().min(1, { message: '必填' }),
     gender: z.coerce.number().refine((v) => v === 1 || v === 2, { message: '必填' }),
@@ -399,7 +422,7 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
                 control={control}
                 name="gender"
                 render={({ field, fieldState }) => (
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={!!fieldState.error}>
                     <InputLabel>性別</InputLabel>
                     <Select
                       label="性別"
@@ -484,7 +507,7 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
                 control={control}
                 name="city"
                 render={({ field, fieldState }) => (
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={!!fieldState.error}>
                     <InputLabel>縣市</InputLabel>
                     <Select
                       label="縣市"

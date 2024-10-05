@@ -8,6 +8,7 @@ import { ShippingClosed } from '@/api/backend/shippings/ShippingClosed';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign, DATE_TIME_FORMAT } from '@/domain/static/static';
 import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
+import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
 import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
@@ -41,7 +42,7 @@ import PopupState from 'material-ui-popup-state';
 import { bindPopover, bindTrigger } from 'material-ui-popup-state/hooks';
 import { enqueueSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
-import { type z } from 'zod';
+import { z } from 'zod';
 
 import CopyButton from '@/components/CopyButton';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
@@ -361,6 +362,10 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
   );
 }
 
+const ShippedFormSchema = z.object({
+  internationalShippingCosts: z.coerce.number().min(0, '不可為負數').int('請輸入整數').min(1, '必填'),
+  shipmentTrackingNumber: z.string().min(1, '必填'),
+});
 function ShippedPopover({ row }: { row: Shipping }) {
   const {
     control,
@@ -368,9 +373,10 @@ function ShippedPopover({ row }: { row: Shipping }) {
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
-      shipmentTrackingNumber: '',
       internationalShippingCosts: '' as unknown as number,
+      shipmentTrackingNumber: '',
     },
+    resolver: zodResolver(ShippedFormSchema),
   });
 
   return (
@@ -419,7 +425,6 @@ function ShippedPopover({ row }: { row: Shipping }) {
                   <Controller
                     name="internationalShippingCosts"
                     control={control}
-                    rules={{ required: '必填' }}
                     render={({ field, fieldState }) => (
                       <FormControl fullWidth error={!!fieldState.error}>
                         <TextField
@@ -434,7 +439,6 @@ function ShippedPopover({ row }: { row: Shipping }) {
                           InputProps={{
                             startAdornment: <InputAdornment position="start">{currencySign('TWD')}</InputAdornment>,
                           }}
-                          inputProps={{ min: 0 }}
                         />
                         {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                       </FormControl>
@@ -445,7 +449,6 @@ function ShippedPopover({ row }: { row: Shipping }) {
                 <Controller
                   name="shipmentTrackingNumber"
                   control={control}
-                  rules={{ required: '必填' }}
                   render={({ field, fieldState }) => (
                     <FormControl fullWidth error={!!fieldState.error}>
                       <TextField {...field} size="small" label="出貨單號" fullWidth type="text" />
@@ -513,6 +516,9 @@ function RemarkPopover({ row }: { row: Shipping }) {
   );
 }
 
+const ShippingClosedFormSchema = z.object({
+  shippingCostsWithinJapan: z.coerce.number().min(0, '不可為負數').int('請輸入整數').min(1, '必填'),
+});
 function ShippingClosedPopover({ row }: { row: Shipping }) {
   const {
     control,
@@ -522,6 +528,7 @@ function ShippingClosedPopover({ row }: { row: Shipping }) {
     defaultValues: {
       shippingCostsWithinJapan: '' as unknown as number,
     },
+    resolver: zodResolver(ShippingClosedFormSchema),
   });
 
   return (
@@ -561,7 +568,6 @@ function ShippingClosedPopover({ row }: { row: Shipping }) {
                 <Controller
                   name="shippingCostsWithinJapan"
                   control={control}
-                  rules={{ required: '必填' }}
                   render={({ field, fieldState }) => (
                     <FormControl fullWidth error={!!fieldState.error}>
                       <TextField

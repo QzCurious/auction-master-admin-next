@@ -495,7 +495,7 @@ function ReadyStatusHandleButtons({ item }: { item: Item }) {
               return;
             }
             if (res.error === '1025') {
-              setError('日拍Id不能重複');
+              setError('日拍物品代號不能重複');
               return;
             }
             if (res.error) {
