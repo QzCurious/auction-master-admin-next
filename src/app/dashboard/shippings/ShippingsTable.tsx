@@ -86,7 +86,7 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
                       {row.items.map((item) => (
                         <tr key={item.id}>
                           <td style={{ paddingRight: 2 }}>
-                            <Stack direction="row" alignItems="center" sx={{ whiteSpace: 'nowrap' }}>
+                            <Stack title="倉庫編號" direction="row" alignItems="center" sx={{ whiteSpace: 'nowrap' }}>
                               <LabelOutlinedIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                               {item.warehouseId || '無倉庫編號'}
                             </Stack>
@@ -151,16 +151,15 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
                               <PopupState key={auctionItem.auctionId} variant="popper">
                                 {(popupState) => (
                                   <td style={{ padding: 0 }}>
-                                    <span>
-                                      <IconButton
-                                        {...bindTrigger(popupState)}
-                                        size="small"
-                                        color="primary"
-                                        sx={{ p: 0.5 }}
-                                      >
-                                        <Gavel />
-                                      </IconButton>
-                                    </span>
+                                    <Button
+                                      {...bindTrigger(popupState)}
+                                      size="small"
+                                      color="primary"
+                                      sx={{ p: 0.5, columnGap: 0.5 }}
+                                    >
+                                      <Gavel fontSize="large" />
+                                      <span title="日拍物品代碼">{auctionItem.auctionId}</span>
+                                    </Button>
 
                                     <Popover
                                       {...bindPopover(popupState)}
