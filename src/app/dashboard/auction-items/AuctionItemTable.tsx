@@ -135,7 +135,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                 </TableCell>
                 <TableCell>
                   <Link
-                    href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aId=${row.auctionId}`}
+                    href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${row.auctionId}`}
                     target="_blank"
                     rel="noreferrer"
                     sx={{ color: 'inherit' }}
@@ -160,7 +160,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     <TableCell>
                       <a
                         style={{ textDecoration: 'none', color: 'inherit' }}
-                        href={`https://www.letao.com.tw/yahoojp/auctions/bid_history.php?aId=${row.auctionId}`}
+                        href={`https://www.letao.com.tw/yahoojp/auctions/bid_history.php?aID=${row.auctionId}`}
                         target="_blank"
                         rel="noreferrer"
                       >

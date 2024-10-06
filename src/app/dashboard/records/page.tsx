@@ -742,7 +742,7 @@ async function AuctionItemInfo({ auctionId }: { auctionId: AuctionItem['auctionI
       <p>
         商品編號:{' '}
         <a
-          href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aId=${auctionItemRes.data.auctionId}`}
+          href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${auctionItemRes.data.auctionId}`}
           target="_blank"
           rel="noreferrer"
         >
