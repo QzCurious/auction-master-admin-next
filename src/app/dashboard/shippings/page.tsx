@@ -52,7 +52,11 @@ async function Content({ searchParams }: PageProps) {
       auctionId: query.auctionId,
       status: query.status.length
         ? query.status
-        : [SHIPPING_STATUS.enum('SubmitAppraisalStatus'), SHIPPING_STATUS.enum('ProcessingStatus')],
+        : [
+            SHIPPING_STATUS.enum('SubmitAppraisalStatus'),
+            SHIPPING_STATUS.enum('ProcessingStatus'),
+            SHIPPING_STATUS.enum('ShippedStatus'),
+          ],
       endAt,
       startAt,
       sort: 'createdAt',
