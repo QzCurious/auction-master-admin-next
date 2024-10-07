@@ -1,4 +1,3 @@
-import { type Metadata } from 'next';
 import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
@@ -15,7 +14,15 @@ import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
-import { currencySign, DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
+import {
+  currencySign,
+  DATE_TIME_FORMAT,
+  letaoLink,
+  PAGE,
+  ROWS_PER_PAGE,
+  SITE_NAME,
+  yahooAuctionLink,
+} from '@/domain/static/static';
 import { RECORD_STATUS, RECORD_TYPE } from '@/domain/static/static-config-mappers';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { Chip, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
@@ -27,6 +34,7 @@ import Typography from '@mui/material/Typography/Typography';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
+import { type Metadata } from 'next';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
@@ -128,9 +136,9 @@ async function Content({ searchParams }: PageProps) {
                     >
                       {RECORD_TYPE.get('value', row.type).message}
                       <Stack direction="row" spacing={0.5}>
-                        <HavePermissionsOnly permissions={['GetItemAndDetails']}>
-                          {row.itemIds?.map((itemId) => <ItemLink key={itemId} itemId={itemId} />)}
-                        </HavePermissionsOnly>
+                        {row.auctionIds?.map((auctionId) => (
+                          <YahooAuctionItemLink key={auctionId} auctionId={auctionId} />
+                        ))}
                       </Stack>
                     </TableCell>
                     <TableCell>
@@ -741,11 +749,7 @@ async function AuctionItemInfo({ auctionId }: { auctionId: AuctionItem['auctionI
       {/* <p>出品帳號: {auctionItemRes.data.sellerName}</p> */}
       <p>
         商品編號:{' '}
-        <a
-          href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${auctionItemRes.data.auctionId}`}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a href={letaoLink(auctionItemRes.data.auctionId)} target="_blank" rel="noreferrer">
           {auctionItemRes.data.auctionId}
         </a>
       </p>
@@ -785,5 +789,16 @@ async function ItemLink({ itemId }: { itemId: Item['id'] }) {
         <StackSimple /> {itemRes.data.name}
       </Link>
     </HavePermissionsOnly>
+  );
+}
+
+async function YahooAuctionItemLink({ auctionId }: { auctionId: AuctionItem['auctionId'] }) {
+  const auctionItemRes = await GetAuctionItem(auctionId);
+  if (!auctionItemRes.data) return null;
+
+  return (
+    <Link href={yahooAuctionLink(auctionId)} target="_blank" rel="noreferrer">
+      {auctionItemRes.data.name}
+    </Link>
   );
 }

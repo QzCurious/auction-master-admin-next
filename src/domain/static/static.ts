@@ -1,3 +1,4 @@
+import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { z } from 'zod';
 
 export const SITE_NAME = '日拍大師後台';
@@ -30,4 +31,12 @@ export function currencySign(currency: Currency) {
     case 'TWD':
       return 'NT$';
   }
+}
+
+export function yahooAuctionLink(auctionId: AuctionItem['auctionId']) {
+  return `https://page.auctions.yahoo.co.jp/jp/auction/${auctionId}`;
+}
+
+export function letaoLink(auctionId: AuctionItem['auctionId']) {
+  return `https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${auctionId}`;
 }

@@ -5,7 +5,7 @@ import { DeleteAuctionItem } from '@/api/backend/auction-items/DeleteAuctionItem
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { currencySign } from '@/domain/static/static';
+import { currencySign, letaoLink } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -134,12 +134,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                   </Stack>
                 </TableCell>
                 <TableCell>
-                  <Link
-                    href={`https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${row.auctionId}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    sx={{ color: 'inherit' }}
-                  >
+                  <Link href={letaoLink(row.auctionId)} target="_blank" rel="noreferrer" sx={{ color: 'inherit' }}>
                     {row.name}
                   </Link>
                 </TableCell>
@@ -160,7 +155,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     <TableCell>
                       <a
                         style={{ textDecoration: 'none', color: 'inherit' }}
-                        href={`https://www.letao.com.tw/yahoojp/auctions/bid_history.php?aID=${row.auctionId}`}
+                        href={letaoLink(row.auctionId)}
                         target="_blank"
                         rel="noreferrer"
                       >

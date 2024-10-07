@@ -6,7 +6,7 @@ import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
 import { ShippingClosed } from '@/api/backend/shippings/ShippingClosed';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { currencySign, DATE_TIME_FORMAT } from '@/domain/static/static';
+import { currencySign, DATE_TIME_FORMAT, yahooAuctionLink } from '@/domain/static/static';
 import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
@@ -216,7 +216,7 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
                                           />
                                         </a>
                                         <Link
-                                          href={`https://page.auctions.yahoo.co.jp/jp/auction/${auctionItem.auctionId}`}
+                                          href={yahooAuctionLink(auctionItem.auctionId)}
                                           target="_blank"
                                           rel="noreferrer"
                                         >
