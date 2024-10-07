@@ -5,6 +5,7 @@ import { type Shipping } from '@/api/backend/shippings/GetShippings';
 import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
 import { ShippingClosed } from '@/api/backend/shippings/ShippingClosed';
+import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign, DATE_TIME_FORMAT, yahooAuctionLink } from '@/domain/static/static';
 import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
@@ -363,7 +364,7 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
 }
 
 const ShippedFormSchema = z.object({
-  internationalShippingCosts: z.coerce.number().min(0, '不可為負數').int('請輸入整數').min(1, '必填'),
+  internationalShippingCosts: z.coerce.number().min(0, '不可為負數').int('請輸入整數'),
   shipmentTrackingNumber: z.string().min(1, '必填'),
 });
 function ShippedPopover({ row }: { row: Shipping }) {
@@ -371,6 +372,7 @@ function ShippedPopover({ row }: { row: Shipping }) {
     control,
     handleSubmit,
     formState: { isSubmitting },
+    setError,
   } = useForm({
     defaultValues: {
       internationalShippingCosts: '' as unknown as number,
@@ -400,24 +402,37 @@ function ShippedPopover({ row }: { row: Shipping }) {
             <Box
               component="form"
               sx={{ p: '16px 20px' }}
-              onSubmit={handleSubmit(async (data) => {
-                const res = await Shipped(
-                  row.id,
-                  row.actionType === ACTION_TYPE.enum('YahooDispatchActionType')
-                    ? {
-                        internationalShippingCosts: data.internationalShippingCosts,
-                        shipmentTrackingNumber: data.shipmentTrackingNumber,
-                      }
-                    : { shipmentTrackingNumber: data.shipmentTrackingNumber }
-                );
+              onSubmit={handleSubmit(
+                async (data) => {
+                  if (
+                    row.actionType === ACTION_TYPE.enum('YahooDispatchActionType') &&
+                    !data.internationalShippingCosts
+                  ) {
+                    setError('internationalShippingCosts', { message: '必填' });
+                    return
+                  }
 
-                if (res.error) {
-                  enqueueSnackbar(res.error, { variant: 'error' });
-                  return;
+                  const res = await Shipped(
+                    row.id,
+                    row.actionType === ACTION_TYPE.enum('YahooDispatchActionType')
+                      ? {
+                          internationalShippingCosts: data.internationalShippingCosts,
+                          shipmentTrackingNumber: data.shipmentTrackingNumber,
+                        }
+                      : { shipmentTrackingNumber: data.shipmentTrackingNumber }
+                  );
+
+                  if (res.error) {
+                    enqueueSnackbar(res.error, { variant: 'error' });
+                    return;
+                  }
+                  enqueueSnackbar('已標示為已寄出', { variant: 'success' });
+                  popupState.close();
+                },
+                (err) => {
+                  console.log(err);
                 }
-                enqueueSnackbar('已標示為已寄出', { variant: 'success' });
-                popupState.close();
-              })}
+              )}
             >
               <Typography variant="subtitle1">標示為已寄出</Typography>
               <Stack spacing={1.5} mt={2}>

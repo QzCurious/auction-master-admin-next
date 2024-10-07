@@ -1,3 +1,4 @@
+import { type Metadata } from 'next';
 import { GetAuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
@@ -34,7 +35,6 @@ import Typography from '@mui/material/Typography/Typography';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
-import { type Metadata } from 'next';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
 import { SearchParamsPagination } from '@/components/SearchParamsPagination';
@@ -254,7 +254,7 @@ async function Content({ searchParams }: PageProps) {
                                         <Typography component="span" variant="body2" color="primary">
                                           收到匯款 {currencySign('TWD')}
                                           {(row.spaceFee + row.shippingCost).toLocaleString()}
-                                        </Typography>
+                                        </Typography>{' '}
                                         後再執行
                                         <Typography component="span" variant="body2" color="primary">
                                           確認付款
@@ -280,7 +280,7 @@ async function Content({ searchParams }: PageProps) {
                                         <Typography component="span" variant="body2" color="primary">
                                           收到匯款 {currencySign('TWD')}
                                           {row.spaceFee.toLocaleString()}
-                                        </Typography>
+                                        </Typography>{' '}
                                         後再執行
                                         <Typography component="span" variant="body2" color="primary">
                                           確認付款
