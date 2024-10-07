@@ -84,7 +84,7 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
                 <TableCell>
                   <table>
                     <tbody>
-                      {row.items.map((item) => (
+                      {row.items?.map((item) => (
                         <tr key={item.id}>
                           <td style={{ paddingRight: 2 }}>
                             <Stack title="倉庫編號" direction="row" alignItems="center" sx={{ whiteSpace: 'nowrap' }}>
@@ -146,7 +146,7 @@ export function ShippingsTable({ query, rows, count }: ShippingsTableProps) {
                           </td>
 
                           {(function iife() {
-                            const auctionItem = row.auctionItems.find((auctionItem) => auctionItem.itemId === item.id);
+                            const auctionItem = row.auctionItems?.find((auctionItem) => auctionItem.itemId === item.id);
                             if (!auctionItem) return;
                             return (
                               <PopupState key={auctionItem.auctionId} variant="popper">

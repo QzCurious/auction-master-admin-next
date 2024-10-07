@@ -25,8 +25,8 @@ export interface Shipping {
   id: string;
   actionType: ACTION_TYPE['value'];
   shipmentType: SHIPMENT_TYPE['value'];
-  itemIds: Array<number>;
-  auctionIds: Array<string>;
+  itemIds?: Array<number>;
+  auctionIds?: Array<string>;
   address: string;
   storeNumber?: string;
   storeName?: string;
@@ -38,8 +38,8 @@ export interface Shipping {
   status: SHIPPING_STATUS['value'];
   createdAt: string;
   updatedAt: string;
-  items: Array<Item>;
-  auctionItems: Array<AuctionItem>;
+  items?: Array<Item>;
+  auctionItems?: Array<AuctionItem>;
 }
 
 interface Data {
