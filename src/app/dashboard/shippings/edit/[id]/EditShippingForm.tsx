@@ -29,7 +29,7 @@ const FormSchema = z
   .object({
     actionType: z.number().refine(R.isIncludedIn(ACTION_TYPE.data.map((item) => item.value))),
     shipmentType: z.number().refine(R.isIncludedIn(SHIPMENT_TYPE.data.map((item) => item.value))),
-    // itemIDs: z.array(z.number()),
+    // itemIds: z.array(z.number()),
     // auctionIds: z.array(z.string()),
     address: z.string().min(1, '必填'),
     storeNumber: z.string(),
@@ -57,7 +57,7 @@ export function ShippingFormProvider({ shipping, children }: { shipping: Shippin
     values: {
       actionType: shipping.actionType,
       shipmentType: shipping.shipmentType,
-      // itemIDs: shipping.itemIDs,
+      // itemIds: shipping.itemIds,
       // auctionIds: shipping.auctionIds,
       address: shipping.address,
       storeNumber: shipping.storeNumber ?? '',

@@ -9,7 +9,7 @@ export interface Shipping {
   id: string;
   actionType: ACTION_TYPE['value'];
   shipmentType: SHIPMENT_TYPE['value'];
-  itemIDs: Array<number>;
+  itemIds: Array<number>;
   auctionIds: Array<string>;
   address: string;
   storeNumber?: string;

@@ -129,7 +129,7 @@ async function Content({ searchParams }: PageProps) {
                       {RECORD_TYPE.get('value', row.type).message}
                       <Stack direction="row" spacing={0.5}>
                         <HavePermissionsOnly permissions={['GetItemAndDetails']}>
-                          {row.itemIDs?.map((itemId) => <ItemLink key={itemId} itemId={itemId} />)}
+                          {row.itemIds?.map((itemId) => <ItemLink key={itemId} itemId={itemId} />)}
                         </HavePermissionsOnly>
                       </Stack>
                     </TableCell>

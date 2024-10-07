@@ -13,7 +13,7 @@ const ReqSchema = z
   .object({
     actionType: z.number(),
     shipmentType: z.number(),
-    itemIDs: z.array(z.number()),
+    itemIds: z.array(z.number()),
     auctionIds: z.array(z.string()),
     address: z.string().min(1),
     storeNumber: z.string().min(1),

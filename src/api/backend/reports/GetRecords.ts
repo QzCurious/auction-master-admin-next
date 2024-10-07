@@ -25,7 +25,7 @@ export interface Record {
   opCode: string;
   consignorId: number;
   consignorNickname: string;
-  itemIDs?: number[];
+  itemIds?: number[];
   auctionIds?: string[];
   shippingId?: string;
   exchangeRate?: number;
