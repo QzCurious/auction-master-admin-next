@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { GetShippings } from '@/api/backend/shippings/GetShippings';
+import { GetConfigs } from '@/api/GetConfigs';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { RangeFilter } from '@/domain/crud/RangeFilter';
@@ -47,7 +48,7 @@ async function Content({ searchParams }: PageProps) {
   const query = parseSearchParams(SearchParamsSchema, searchParams);
   const { startAt, endAt } = fixRange(query.startAt, query.endAt);
 
-  const [ShippingsRes] = await Promise.all([
+  const [shippingsRes, configsRes] = await Promise.all([
     GetShippings({
       auctionId: query.auctionId,
       status: query.status.length
@@ -64,13 +65,14 @@ async function Content({ searchParams }: PageProps) {
       limit: query[ROWS_PER_PAGE],
       offset: query[PAGE] * query[ROWS_PER_PAGE],
     }),
+    GetConfigs(),
   ]);
 
-  if (ShippingsRes.error === '1001') {
+  if (shippingsRes.error === '1001' || configsRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetShippings']} />;
   }
 
-  if (ShippingsRes.error === '1003') {
+  if (shippingsRes.error === '1003' || configsRes.error === '1003') {
     return <RedirectAuthError />;
   }
 
@@ -85,7 +87,12 @@ async function Content({ searchParams }: PageProps) {
         <Box mx="auto" />
       </Stack>
 
-      <ShippingsTable query={query} rows={ShippingsRes.data.shippings} count={ShippingsRes.data.count} />
+      <ShippingsTable
+        configs={configsRes.data}
+        query={query}
+        rows={shippingsRes.data.shippings}
+        count={shippingsRes.data.count}
+      />
     </Stack>
   );
 }
