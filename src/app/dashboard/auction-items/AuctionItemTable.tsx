@@ -214,7 +214,7 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                         <Stack alignItems="center" spacing={1}>
                           <div>{AUCTION_ITEM_STATUS.get('value', row.status).message}</div>
                           {row.status === AUCTION_ITEM_STATUS.enum('ClosedStatus') && (
-                            <HavePermissionsOnly permissions={['CompanyPurchased']}>
+                            <HavePermissionsOnly permissions={['CancelAuctionItem']}>
                               <PopupState variant="popover">
                                 {(popupState) => (
                                   <>
