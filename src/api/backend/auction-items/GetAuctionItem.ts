@@ -1,5 +1,7 @@
 'use server';
 
+// eslint-disable-next-line import/named
+import { cache } from 'react';
 import { type AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 
 import { apiClient } from '../../apiClient';
@@ -41,7 +43,7 @@ type ErrorCode =
   // get auction item error
   '21';
 
-export async function GetAuctionItem(id: AuctionItem['auctionId']) {
+async function GetAuctionItem(id: AuctionItem['auctionId']) {
   const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/${id}`, {
     method: 'GET',
     next: { tags: ['auction-items'] },
@@ -49,3 +51,7 @@ export async function GetAuctionItem(id: AuctionItem['auctionId']) {
 
   return res;
 }
+
+const CachedGetAuctionItem = cache(GetAuctionItem);
+
+export { CachedGetAuctionItem as GetAuctionItem };

@@ -4,8 +4,7 @@ import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { GetItemAndDetails } from '@/api/backend/items/GetItemAndDetails';
-import { type Item } from '@/api/backend/items/GetItemsAndDetails';
-import { GetRecords } from '@/api/backend/reports/GetRecords';
+import { GetRecords, type Record } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary, type RecordSummary } from '@/api/backend/reports/GetRecordsSummary';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
@@ -32,6 +31,7 @@ import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography/Typography';
+import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
@@ -48,7 +48,7 @@ import { TypeFilter } from './TypeFilter';
 export const metadata = { title: `交易紀錄 | ${SITE_NAME}` } satisfies Metadata;
 
 interface PageProps {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: { [k in string]: string | string[] | undefined };
 }
 
 export default async function Page(pageProps: PageProps) {
@@ -135,11 +135,7 @@ async function Content({ searchParams }: PageProps) {
                       title={process.env.NODE_ENV === 'development' ? `${row.type} ${RECORD_TYPE.enum(row.type)}` : ''}
                     >
                       {RECORD_TYPE.get('value', row.type).message}
-                      <Stack direction="row" spacing={0.5}>
-                        {row.auctionIds?.map((auctionId) => (
-                          <YahooAuctionItemLink key={auctionId} auctionId={auctionId} />
-                        ))}
-                      </Stack>
+                      <AllKindsOfLinks row={row} />
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={3} alignItems="center">
@@ -729,76 +725,131 @@ function ReportSummeryTable({ summary }: { summary: RecordSummary }) {
   );
 }
 
+async function AllKindsOfLinks({ row }: { row: Record }) {
+  if (row.auctionIds && row.auctionIds.length > 0) {
+    const auctionItemRes = await Promise.all(row.auctionIds.map((x) => GetAuctionItem(x)));
+    const itemRes = await Promise.all(
+      auctionItemRes.map((x) => (x.data?.itemId ? GetItemAndDetails(x.data.itemId) : null))
+    );
+
+    return (
+      <Stack sx={{ mt: 0.5 }}>
+        {row.auctionIds?.map((auctionId, i) => (
+          <Stack key={auctionId} direction="row" spacing={1.5}>
+            <div>
+              {itemRes[i]?.data && (
+                <Link
+                  title={itemRes[i].data.name}
+                  href={`/dashboard/items/edit/${itemRes[i].data.id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <StackSimple fontSize="large" />
+                </Link>
+              )}
+            </div>
+            <div>
+              {auctionItemRes[i]?.data && (
+                <Link
+                  title={auctionItemRes[i].data.name}
+                  href={`/dashboard/auction-items/edit/${auctionItemRes[i].data.auctionId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Gavel fontSize="large" />
+                </Link>
+              )}
+            </div>
+            <div>
+              <Link href={yahooAuctionLink(auctionId)} target="_blank" rel="noreferrer">
+                {auctionId}
+              </Link>
+            </div>
+          </Stack>
+        ))}
+      </Stack>
+    );
+  }
+
+  if (row.itemIds && row.itemIds.length > 0) {
+    const itemRes = await Promise.all(row.itemIds.map((x) => GetItemAndDetails(x)));
+
+    return (
+      <Stack sx={{ mt: 0.5 }}>
+        {row.itemIds?.map((itemId, i) => (
+          <Stack key={itemId} direction="row" spacing={1.5}>
+            <div>
+              {itemRes[i]?.data && (
+                <Link
+                  title={itemRes[i].data.name}
+                  href={`/dashboard/items/edit/${itemRes[i].data.id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <StackSimple fontSize="large" />
+                </Link>
+              )}
+            </div>
+          </Stack>
+        ))}
+      </Stack>
+    );
+  }
+
+  return null;
+}
+
 async function AuctionItemInfo({ auctionId }: { auctionId: AuctionItem['auctionId'] }) {
   const [auctionItemRes] = await Promise.all([GetAuctionItem(auctionId)]);
 
-  if (auctionItemRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
-  }
+  if (!auctionItemRes.data) return null;
 
-  if (auctionItemRes.error === '1003') {
-    return <RedirectAuthError />;
-  }
+  // if (auctionItemRes.error === '1001') {
+  //   return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
+  // }
 
-  if (auctionItemRes.error === '21') {
-    return <Typography color="error">無法取得商品資訊</Typography>;
-  }
+  // if (auctionItemRes.error === '1003') {
+  //   return <RedirectAuthError />;
+  // }
+
+  // if (auctionItemRes.error === '21') {
+  //   return <Typography color="error">無法取得商品資訊</Typography>;
+  // }
 
   return (
-    <div>
-      {/* <p>出品帳號: {auctionItemRes.data.sellerName}</p> */}
-      <p>
-        商品編號:{' '}
-        <a href={letaoLink(auctionItemRes.data.auctionId)} target="_blank" rel="noreferrer">
-          {auctionItemRes.data.auctionId}
-        </a>
-      </p>
-    </div>
+    <HavePermissionsOnly permissions={['GetAuctionItem']}>
+      <div>
+        <p>
+          商品編號:{' '}
+          <a href={letaoLink(auctionItemRes.data.auctionId)} target="_blank" rel="noreferrer">
+            {auctionItemRes.data.auctionId}
+          </a>
+        </p>
+      </div>
+    </HavePermissionsOnly>
   );
 }
 
 async function ConsignorBankInfo({ consignorId }: { consignorId: Consignor['id'] }) {
   const [consignorRes] = await Promise.all([AdminGetConsignor(consignorId)]);
 
-  if (consignorRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
-  }
+  if (!consignorRes.data) return null;
 
-  if (consignorRes.error === '1003') {
-    return <RedirectAuthError />;
-  }
+  // if (consignorRes.error === '1001') {
+  //   return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
+  // }
+
+  // if (consignorRes.error === '1003') {
+  //   return <RedirectAuthError />;
+  // }
 
   return (
-    <>
+    <HavePermissionsOnly permissions={['AdminGetConsignor']}>
       銀行戶名: {consignorRes.data.beneficiaryName}
       <CopyButton text={consignorRes.data.beneficiaryName ?? ''} />
       <br />
       銀行帳戶: ({consignorRes.data.bankCode}) {consignorRes.data.bankAccount}
       <CopyButton text={consignorRes.data.bankAccount} />
-    </>
-  );
-}
-
-async function ItemLink({ itemId }: { itemId: Item['id'] }) {
-  const itemRes = await GetItemAndDetails(itemId);
-  if (!itemRes.data) return null;
-
-  return (
-    <HavePermissionsOnly permissions={['GetItemAndDetails']}>
-      <Link href={`/dashboard/items/edit/${itemId}`} target="_blank" rel="noreferrer">
-        <StackSimple /> {itemRes.data.name}
-      </Link>
     </HavePermissionsOnly>
-  );
-}
-
-async function YahooAuctionItemLink({ auctionId }: { auctionId: AuctionItem['auctionId'] }) {
-  const auctionItemRes = await GetAuctionItem(auctionId);
-  if (!auctionItemRes.data) return null;
-
-  return (
-    <Link href={yahooAuctionLink(auctionId)} target="_blank" rel="noreferrer">
-      {auctionItemRes.data.name}
-    </Link>
   );
 }
