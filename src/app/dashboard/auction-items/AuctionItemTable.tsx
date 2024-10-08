@@ -1,6 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { CancelAuctionItem } from '@/api/backend/auction-items/CancelAuctionItem';
 import { DeleteAuctionItem } from '@/api/backend/auction-items/DeleteAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
@@ -10,7 +11,7 @@ import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
-import { Checkbox, Link } from '@mui/material';
+import { Button, Checkbox, Link } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import { grey } from '@mui/material/colors';
@@ -212,6 +213,38 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                       ) : (
                         <Stack alignItems="center" spacing={1}>
                           <div>{AUCTION_ITEM_STATUS.get('value', row.status).message}</div>
+                          {row.status === AUCTION_ITEM_STATUS.enum('ClosedStatus') && (
+                            <HavePermissionsOnly permissions={['CompanyPurchased']}>
+                              <PopupState variant="popover">
+                                {(popupState) => (
+                                  <>
+                                    <Button
+                                      size="small"
+                                      variant="outlined"
+                                      color="primary"
+                                      {...bindTrigger(popupState)}
+                                    >
+                                      取消競標
+                                    </Button>
+                                    <DoubleCheckPopover
+                                      {...bindPopover(popupState)}
+                                      title="取消日拍競標商品"
+                                      onConfirm={async () => {
+                                        const res = await CancelAuctionItem(row.auctionId);
+                                        if (res.error) {
+                                          enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
+                                          return;
+                                        }
+                                        enqueueSnackbar(`已取消日拍競標商品`, { variant: 'success' });
+                                        popupState.close();
+                                      }}
+                                      onCancel={popupState.close}
+                                    />
+                                  </>
+                                )}
+                              </PopupState>
+                            </HavePermissionsOnly>
+                          )}
                           {row.status === AUCTION_ITEM_STATUS.enum('ClosedStatus') &&
                             row.closedPrice < row.reservePrice && (
                               <HavePermissionsOnly permissions={['CompanyPurchased']}>

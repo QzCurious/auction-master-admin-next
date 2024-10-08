@@ -15,12 +15,19 @@ export default function Page() {
         'ClosedStatus',
         'ConsignorRequestCancellationStatus',
         'AwaitingConsignorPayFeeStatus',
+        'NoBidsPlacedStatus',
       ],
       adjudicator: 'system',
     },
     StopBiddingStatus: {
       status: 'StopBiddingStatus',
-      nexts: ['InitStatus', 'ClosedStatus', 'ConsignorRequestCancellationStatus', 'AwaitingConsignorPayFeeStatus'],
+      nexts: [
+        'InitStatus',
+        'ClosedStatus',
+        'ConsignorRequestCancellationStatus',
+        'AwaitingConsignorPayFeeStatus',
+        'NoBidsPlacedStatus',
+      ],
       adjudicator: 'admin',
     },
     HighestBiddedStatus: {
@@ -45,7 +52,7 @@ export default function Page() {
     },
     ClosedStatus: {
       status: 'ClosedStatus',
-      nexts: ['SoldStatus'],
+      nexts: ['SoldStatus', 'CanceledStatus'],
       adjudicator: 'admin',
     },
     ConsignorRequestCancellationStatus: {
@@ -68,6 +75,10 @@ export default function Page() {
     },
     ConsignorFeePaidStatus: {
       status: 'ConsignorFeePaidStatus',
+      nexts: [],
+    },
+    NoBidsPlacedStatus: {
+      status: 'NoBidsPlacedStatus',
       nexts: [],
     },
   } as const;
