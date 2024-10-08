@@ -8,11 +8,13 @@ export interface Configs {
   defaultCommissionBonusRate: number;
   auctionItemCancellationFee: number;
   costPerSpace: number;
+  conpanyConsignorId: number;
   lineURL: string;
   withdrawalTransferFee: number;
   bankName: string;
   bankCode: string;
   bankAccount: string;
+  packageThreshold: number;
   shippingInfo: {
     company: {
       address: string;

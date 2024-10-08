@@ -4,8 +4,10 @@ import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
 import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
+import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
+import { currencySign } from '@/domain/static/static';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -15,14 +17,18 @@ import {
   FormControl,
   FormHelperText,
   List,
+  Skeleton,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import { useQueries } from '@tanstack/react-query';
+import { Box } from '@mui/system';
+import { EnvelopeSimple, Package } from '@phosphor-icons/react/dist/ssr';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { useAtom, useAtomValue } from 'jotai';
 import { useSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
+import * as R from 'remeda';
 import { z } from 'zod';
 
 import { ListItemSkeleton, pickedItemIdsReducerAtom, PickedListItem } from './PickingList';
@@ -122,6 +128,7 @@ function ShippingForm() {
   const auctionItemQueries = useQueries({
     queries: pickedItemIds.map(GetAuctionItemQueryOptions),
   });
+  const configsRes = useQuery(GetConfigsQueryOptions());
 
   const { enqueueSnackbar } = useSnackbar();
   const {
@@ -255,14 +262,34 @@ function ShippingForm() {
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="body1">
             共 {auctionItemQueries.length} 筆
-            {/* , 運費總計 {currencySign('JPY')}
             {(() => {
-              const sum = R.sum(shippingCostsWithinJapan.map((v) => v || 0));
-              if (Number.isNaN(sum)) {
-                return 0;
+              if (auctionItemQueries.some((q) => q.isPending) || configsRes.isPending) {
+                return (
+                  <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span>, 總值 {currencySign('JPY')}</span>
+                    <Skeleton variant="text" sx={{ width: 80, ml: 0.5 }} />
+                  </Box>
+                );
               }
-              return sum.toLocaleString();
-            })()} */}
+
+              const sum = R.sum(auctionItemQueries.map((q) => q.data?.data?.closedPrice ?? 0));
+
+              return (
+                <span>
+                  , 總值 {currencySign('JPY')}
+                  {sum.toLocaleString()}
+                  {configsRes.data && (
+                    <Typography component="span" sx={{ verticalAlign: 'middle', ml: 0.5 }} color="GrayText">
+                      {sum > configsRes.data.data.packageThreshold ? (
+                        <Package fontSize={24} />
+                      ) : (
+                        <EnvelopeSimple fontSize={20} />
+                      )}
+                    </Typography>
+                  )}
+                </span>
+              );
+            })()}
           </Typography>
 
           <Button type="submit" variant="contained" disabled={isSubmitting}>
