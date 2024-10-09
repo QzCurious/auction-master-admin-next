@@ -5,8 +5,9 @@ import { CancelAuctionItem } from '@/api/backend/auction-items/CancelAuctionItem
 import { DeleteAuctionItem } from '@/api/backend/auction-items/DeleteAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { currencySign, letaoLink } from '@/domain/static/static';
+import { currencySign, letaoLink, yahooAuctionLink } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,7 +24,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
+import { StackSimple } from '@phosphor-icons/react/dist/ssr';
 import { useAtom } from 'jotai';
 import PopupState from 'material-ui-popup-state';
 import { bindPopover, bindTrigger } from 'material-ui-popup-state/hooks';
@@ -33,7 +34,6 @@ import * as R from 'remeda';
 import { CountdownTime } from '@/components/CountdownTime';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import BidPopover from './BidPopover';
 import CompanyPurchasedButton from './CompanyPurchasedButton';
@@ -126,12 +126,21 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                       }}
                     />
                   )}
-                  <Stack>
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ whiteSpace: 'nowrap' }}>
                     <HavePermissionsOnly permissions={['GetItemAndDetails']}>
-                      <Link href={`/dashboard/items/edit/${row.itemId}`} target="_blank" rel="noreferrer">
-                        <Gavel /> 物品
-                      </Link>
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        href={`/dashboard/items/edit/${row.itemId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <StackSimple />
+                      </IconButton>
                     </HavePermissionsOnly>
+                    <Link color="primary" href={yahooAuctionLink(row.auctionId)} target="_blank" rel="noreferrer">
+                      <span title="日拍物品代碼">{row.auctionId}</span>
+                    </Link>
                   </Stack>
                 </TableCell>
                 <TableCell>

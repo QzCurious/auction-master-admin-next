@@ -5,13 +5,15 @@ import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
 import { ShippingClosed } from '@/api/backend/shippings/ShippingClosed';
 import { type Configs } from '@/api/GetConfigs';
+import AuctionItemPreviewPopover from '@/domain/crud/AuctionItemPreviewPopover';
+import ItemPreviewPopover from '@/domain/crud/ItemPreviewPopover';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign, DATE_TIME_FORMAT, yahooAuctionLink } from '@/domain/static/static';
 import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
 import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined';
-import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import {
   Button,
   Divider,
@@ -19,7 +21,6 @@ import {
   FormHelperText,
   InputAdornment,
   Link,
-  Paper,
   Popover,
   Stack,
   TextField,
@@ -36,9 +37,7 @@ import { Box } from '@mui/system';
 import { MapPin } from '@phosphor-icons/react/dist/csr/MapPin';
 import { Phone } from '@phosphor-icons/react/dist/csr/Phone';
 import { EnvelopeSimple, Package } from '@phosphor-icons/react/dist/ssr';
-import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { Notepad } from '@phosphor-icons/react/dist/ssr/Notepad';
-import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { format } from 'date-fns';
 import PopupState from 'material-ui-popup-state';
 import { bindPopover, bindTrigger } from 'material-ui-popup-state/hooks';
@@ -50,7 +49,6 @@ import { z } from 'zod';
 import CopyButton from '@/components/CopyButton';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import { type SearchParamsSchema } from './SearchParamsSchema';
 
@@ -98,56 +96,7 @@ export function ShippingsTable({ configs, query, rows, count }: ShippingsTablePr
                             </Stack>
                           </td>
                           <td style={{ padding: 0 }}>
-                            <PopupState key={item.id} variant="popper">
-                              {(popupState) => (
-                                <>
-                                  <IconButton {...bindTrigger(popupState)} size="small" color="primary" sx={{ p: 0.5 }}>
-                                    <StackSimple />
-                                  </IconButton>
-                                  <Popover
-                                    {...bindPopover(popupState)}
-                                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                  >
-                                    <Paper
-                                      sx={{ p: 1, position: 'relative', maxWidth: '300px', border: '1px solid #eee' }}
-                                      elevation={8}
-                                    >
-                                      <HavePermissionsOnly permissions={['GetItemAndDetails']}>
-                                        <Box
-                                          sx={{
-                                            position: 'absolute',
-                                            borderRadius: 1,
-                                            top: 0,
-                                            right: 0,
-                                            bgcolor: 'white',
-                                          }}
-                                        >
-                                          <IconButton
-                                            LinkComponent={Link}
-                                            color="primary"
-                                            href={`/dashboard/items/edit/${item.id}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                          >
-                                            <LaunchOutlinedIcon fontSize="small" />
-                                          </IconButton>
-                                        </Box>
-                                      </HavePermissionsOnly>
-                                      <a href={item.photos?.[0]?.photo} target="_blank" rel="noreferrer">
-                                        <img
-                                          src={item.photos?.[0]?.photo}
-                                          style={{ display: 'block', maxWidth: '100%' }}
-                                          alt=""
-                                        />
-                                      </a>
-                                      <Typography variant="body2" mt={0.5}>
-                                        {item.name}
-                                      </Typography>
-                                    </Paper>
-                                  </Popover>
-                                </>
-                              )}
-                            </PopupState>
+                            <ItemPreviewPopover item={item} />
                           </td>
 
                           {(function iife() {
@@ -155,74 +104,9 @@ export function ShippingsTable({ configs, query, rows, count }: ShippingsTablePr
                             if (!auctionItem) return;
                             return (
                               <>
-                                <PopupState key={auctionItem.auctionId} variant="popper">
-                                  {(popupState) => (
-                                    <td style={{ padding: 0 }}>
-                                      <IconButton {...bindTrigger(popupState)} size="small" color="primary">
-                                        <Gavel />
-                                      </IconButton>
-
-                                      <Popover
-                                        {...bindPopover(popupState)}
-                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                      >
-                                        <Paper
-                                          sx={{
-                                            p: 1,
-                                            position: 'relative',
-                                            maxWidth: '300px',
-                                            border: '1px solid #eee',
-                                          }}
-                                          elevation={8}
-                                        >
-                                          <Box
-                                            sx={{
-                                              position: 'absolute',
-                                              borderRadius: 1,
-                                              top: 0,
-                                              right: 0,
-                                              py: 0.5,
-                                              px: 1,
-                                              bgcolor: 'white',
-                                            }}
-                                          >
-                                            <HavePermissionsOnly permissions={['GetAuctionItem']}>
-                                              <Box
-                                                sx={{
-                                                  position: 'absolute',
-                                                  borderRadius: 1,
-                                                  top: 0,
-                                                  right: 0,
-                                                  bgcolor: 'white',
-                                                }}
-                                              >
-                                                <IconButton
-                                                  LinkComponent={Link}
-                                                  color="primary"
-                                                  href={`/dashboard/auction-items/edit/${auctionItem.auctionId}`}
-                                                  target="_blank"
-                                                  rel="noreferrer"
-                                                >
-                                                  <LaunchOutlinedIcon fontSize="small" />
-                                                </IconButton>
-                                              </Box>
-                                            </HavePermissionsOnly>
-                                          </Box>
-                                          <a href={auctionItem.photo} target="_blank" rel="noreferrer">
-                                            <img
-                                              src={auctionItem.photo}
-                                              style={{ display: 'block', maxWidth: '100%' }}
-                                              alt=""
-                                            />
-                                          </a>
-                                          <Typography variant="body2" mt={0.5}>
-                                            {auctionItem.name}
-                                          </Typography>
-                                        </Paper>
-                                      </Popover>
-                                    </td>
-                                  )}
-                                </PopupState>
+                                <td style={{ padding: 0 }}>
+                                  <AuctionItemPreviewPopover auctionItem={auctionItem} />
+                                </td>
 
                                 <td>
                                   <Link

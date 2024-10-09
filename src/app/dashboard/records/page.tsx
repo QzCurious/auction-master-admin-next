@@ -7,10 +7,13 @@ import { GetItemAndDetails } from '@/api/backend/items/GetItemAndDetails';
 import { GetRecords, type Record } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary, type RecordSummary } from '@/api/backend/reports/GetRecordsSummary';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import AuctionItemPreviewPopover from '@/domain/crud/AuctionItemPreviewPopover';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
+import ItemPreviewPopover from '@/domain/crud/ItemPreviewPopover';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { RangeFilter } from '@/domain/crud/RangeFilter';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
@@ -31,13 +34,11 @@ import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography/Typography';
-import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { StackSimple } from '@phosphor-icons/react/dist/ssr/StackSimple';
 import { format } from 'date-fns';
 import { Provider } from 'jotai';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import CopyButton from '../../../components/CopyButton';
 import { ReviewSubmitPaymentButtons } from './ReviewSubmitPaymentButtons';
@@ -735,36 +736,14 @@ async function AllKindsOfLinks({ row }: { row: Record }) {
     return (
       <Stack sx={{ mt: 0.5 }}>
         {row.auctionIds?.map((auctionId, i) => (
-          <Stack key={auctionId} direction="row" spacing={1.5}>
-            <div>
-              {itemRes[i]?.data && (
-                <Link
-                  title={itemRes[i].data.name}
-                  href={`/dashboard/items/edit/${itemRes[i].data.id}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <StackSimple fontSize="large" />
-                </Link>
-              )}
-            </div>
-            <div>
-              {auctionItemRes[i]?.data && (
-                <Link
-                  title={auctionItemRes[i].data.name}
-                  href={`/dashboard/auction-items/edit/${auctionItemRes[i].data.auctionId}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Gavel fontSize="large" />
-                </Link>
-              )}
-            </div>
-            <div>
-              <Link href={yahooAuctionLink(auctionId)} target="_blank" rel="noreferrer">
-                {auctionId}
+          <Stack key={auctionId} direction="row" spacing={0.5}>
+            <div>{itemRes[i]?.data && <ItemPreviewPopover item={itemRes[i].data} />}</div>
+            <div>{auctionItemRes[i]?.data && <AuctionItemPreviewPopover auctionItem={auctionItemRes[i].data} />}</div>
+            <Box sx={{ ml: 0.5 }}>
+              <Link color="primary" href={yahooAuctionLink(auctionId)} target="_blank" rel="noreferrer">
+                <span title="日拍物品代碼">{auctionId}</span>
               </Link>
-            </div>
+            </Box>
           </Stack>
         ))}
       </Stack>
