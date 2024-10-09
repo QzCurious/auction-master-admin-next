@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { GetShippings } from '@/api/backend/shippings/GetShippings';
 import { GetConfigs } from '@/api/GetConfigs';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { AuctionIdFilter } from '@/domain/crud/AuctionIdFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { RangeFilter } from '@/domain/crud/RangeFilter';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
@@ -13,11 +14,10 @@ import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { SingleAuctionIdFilter } from '../../../domain/crud/SingleAuctionIdFilter';
+import ExportExcelButton from './ExportExcelButton';
 import { fixRange, MAX_MONTHS, SearchParamsSchema } from './SearchParamsSchema';
 import { ShippingsTable } from './ShippingsTable';
 import { StatusFilter } from './StatusFilter';
-import { AuctionIdFilter } from '@/domain/crud/AuctionIdFilter';
 
 export const metadata = { title: `出貨列表 | ${SITE_NAME}` } satisfies Metadata;
 
@@ -48,26 +48,24 @@ export default async function Page(pageProps: PageProps) {
 async function Content({ searchParams }: PageProps) {
   const query = parseSearchParams(SearchParamsSchema, searchParams);
   const { startAt, endAt } = fixRange(query.startAt, query.endAt);
+  const q = {
+    auctionId: query.auctionId,
+    status: query.status.length
+      ? query.status
+      : [
+          SHIPPING_STATUS.enum('SubmitAppraisalStatus'),
+          SHIPPING_STATUS.enum('ProcessingStatus'),
+          SHIPPING_STATUS.enum('ShippedStatus'),
+        ],
+    endAt,
+    startAt,
+    sort: 'createdAt',
+    order: 'desc',
+    limit: query[ROWS_PER_PAGE],
+    offset: query[PAGE] * query[ROWS_PER_PAGE],
+  } as const;
 
-  const [shippingsRes, configsRes] = await Promise.all([
-    GetShippings({
-      auctionId: query.auctionId,
-      status: query.status.length
-        ? query.status
-        : [
-            SHIPPING_STATUS.enum('SubmitAppraisalStatus'),
-            SHIPPING_STATUS.enum('ProcessingStatus'),
-            SHIPPING_STATUS.enum('ShippedStatus'),
-          ],
-      endAt,
-      startAt,
-      sort: 'createdAt',
-      order: 'desc',
-      limit: query[ROWS_PER_PAGE],
-      offset: query[PAGE] * query[ROWS_PER_PAGE],
-    }),
-    GetConfigs(),
-  ]);
+  const [shippingsRes, configsRes] = await Promise.all([GetShippings(q), GetConfigs()]);
 
   if (shippingsRes.error === '1001' || configsRes.error === '1001') {
     return <WithoutPermissionsError permissions={['GetShippings']} />;
@@ -86,6 +84,8 @@ async function Content({ searchParams }: PageProps) {
         <RemoveSearchBtn<keyof typeof query> fields={['auctionId', 'startAt', 'endAt', 'status']} />
 
         <Box mx="auto" />
+
+        <ExportExcelButton {...q} />
       </Stack>
 
       <ShippingsTable
