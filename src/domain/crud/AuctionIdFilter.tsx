@@ -41,7 +41,7 @@ export function AuctionIdFilter({ values = [] }: AuctionIdFilterProps) {
             if (!ref.current?.value) return;
             const newSearchParams = new URLSearchParams(searchParams);
             newSearchParams.delete(FIELD);
-            for (const v of R.unique([...values, ref.current.value])) {
+            for (const v of R.unique([...values, ref.current.value.trim()])) {
               newSearchParams.append(FIELD, v);
             }
             router.replace(`?${newSearchParams.toString()}`);
