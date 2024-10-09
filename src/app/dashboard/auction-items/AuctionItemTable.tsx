@@ -33,7 +33,7 @@ import * as R from 'remeda';
 import { CountdownTime } from '@/components/CountdownTime';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/components/SearchParamsPagination';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import BidPopover from './BidPopover';
 import CompanyPurchasedButton from './CompanyPurchasedButton';

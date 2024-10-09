@@ -9,6 +9,7 @@ import { throwIfInvalid } from '../../helpers/throwIfInvalid';
 import { withAuth } from '../../withAuth';
 
 const ReqSchema = z.object({
+  auctionId: z.string().array().optional(),
   consignorId: z.coerce.number().optional(),
   status: z.coerce.number().array().optional(),
   sort: z.string().optional(),

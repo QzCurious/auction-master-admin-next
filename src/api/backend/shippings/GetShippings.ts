@@ -11,7 +11,7 @@ import { type AuctionItem } from '../auction-items/GetAuctionItem';
 import { type Item } from '../items/GetItemAndDetails';
 
 const ReqSchema = z.object({
-  auctionId: z.coerce.string().optional(),
+  auctionId: z.string().array().optional(),
   status: z.coerce.number().array().optional(),
   startAt: z.coerce.date().optional(),
   endAt: z.coerce.date().optional(),

@@ -7,7 +7,7 @@ import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { PAGE } from '@/domain/static/static';
 import { useQuery } from '@tanstack/react-query';
 
-import { ConsignorSelect } from '@/components/ConsignorSelect';
+import { ConsignorSelect } from '@/domain/crud/ConsignorSelect';
 import { FilterPopover } from '@/components/FilterPopover';
 
 const FIELD = 'consignorId';

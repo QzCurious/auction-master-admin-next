@@ -9,11 +9,11 @@ import { FilterPopover } from '@/components/FilterPopover';
 
 const FIELD = 'auctionId';
 
-interface AuctionIdFilterProps {
+interface SingleAuctionIdFilterProps {
   value?: string;
 }
 
-export function AuctionIdFilter({ value }: AuctionIdFilterProps) {
+export function SingleAuctionIdFilter({ value }: SingleAuctionIdFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -25,7 +25,7 @@ export function AuctionIdFilter({ value }: AuctionIdFilterProps) {
         const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.delete(FIELD);
         newSearchParams.delete(PAGE);
-        router.push(`?${newSearchParams}`);
+        router.replace(`?${newSearchParams}`);
       }}
     >
       {({ close }) => (
@@ -35,7 +35,7 @@ export function AuctionIdFilter({ value }: AuctionIdFilterProps) {
             const formData = new FormData(e.currentTarget);
             const newSearchParams = new URLSearchParams(searchParams);
             newSearchParams.set(FIELD, formData.get('value') as string);
-            router.push(`?${newSearchParams.toString()}`);
+            router.replace(`?${newSearchParams.toString()}`);
             close();
           }}
         >

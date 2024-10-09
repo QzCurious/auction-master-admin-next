@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import { useAtom } from 'jotai';
 import { type z } from 'zod';
 
-import { SearchParamsPagination } from '@/components/SearchParamsPagination';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import { pickedItemIdsReducerAtom } from './PickingList';
 import { type SearchParamsSchema } from './SearchParamsSchema';

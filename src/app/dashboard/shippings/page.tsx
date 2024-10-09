@@ -13,10 +13,11 @@ import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { AuctionIdFilter } from './AuctionIdFilter';
+import { SingleAuctionIdFilter } from '../../../domain/crud/SingleAuctionIdFilter';
 import { fixRange, MAX_MONTHS, SearchParamsSchema } from './SearchParamsSchema';
 import { ShippingsTable } from './ShippingsTable';
 import { StatusFilter } from './StatusFilter';
+import { AuctionIdFilter } from '@/domain/crud/AuctionIdFilter';
 
 export const metadata = { title: `出貨列表 | ${SITE_NAME}` } satisfies Metadata;
 
@@ -81,7 +82,7 @@ async function Content({ searchParams }: PageProps) {
       <Stack direction="row" flexWrap="wrap" gap={2}>
         <RangeFilter startAt={query.startAt} endAt={query.endAt} within={{ months: MAX_MONTHS }} />
         <StatusFilter selected={query.status} />
-        <AuctionIdFilter value={query.auctionId} />
+        <AuctionIdFilter values={query.auctionId} />
         <RemoveSearchBtn<keyof typeof query> fields={['auctionId', 'startAt', 'endAt', 'status']} />
 
         <Box mx="auto" />

@@ -21,6 +21,7 @@ import { PickForFeePaid } from './PickForFeePaid';
 import { PickForShipping, PickForShippingButtons } from './PickForShipping';
 import { SearchParamsSchema } from './SearchParamsSchema';
 import { StatusFilter } from './StatusFilter';
+import { AuctionIdFilter } from '../../../domain/crud/AuctionIdFilter';
 
 export const metadata = { title: `日拍競標商品列表 | ${SITE_NAME}` } satisfies Metadata;
 
@@ -53,6 +54,7 @@ async function Content({ searchParams }: PageProps) {
 
   const [auctionItemsRes, activeWorkersRes] = await Promise.all([
     GetAuctionItems({
+      auctionId: filters.auctionId,
       consignorId: filters.consignorId,
       status: (() => {
         if (filters.picking === 'shipping') return [AUCTION_ITEM_STATUS.enum('ClosedStatus')];
@@ -90,6 +92,7 @@ async function Content({ searchParams }: PageProps) {
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
           <ConsignorFilter consignorId={filters.consignorId} />
+          <AuctionIdFilter values={filters.auctionId} />
           {!filters.picking && (
             <>
               <StatusFilter selected={filters.status} />

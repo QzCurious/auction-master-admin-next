@@ -50,7 +50,7 @@ import { z } from 'zod';
 import CopyButton from '@/components/CopyButton';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/components/SearchParamsPagination';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import { type SearchParamsSchema } from './SearchParamsSchema';
 

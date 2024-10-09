@@ -37,7 +37,7 @@ import { enqueueSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/components/SearchParamsPagination';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import DeleteDialog from './DeleteDialog';
 

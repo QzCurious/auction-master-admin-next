@@ -26,7 +26,7 @@ import { useSnackbar } from 'notistack';
 
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/components/SearchParamsPagination';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import { statusColor } from './statusColor';
 

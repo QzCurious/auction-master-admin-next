@@ -37,7 +37,7 @@ import { format } from 'date-fns';
 import { Provider } from 'jotai';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/components/SearchParamsPagination';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import CopyButton from '../../../components/CopyButton';
 import { ReviewSubmitPaymentButtons } from './ReviewSubmitPaymentButtons';

@@ -32,7 +32,7 @@ import { format } from 'date-fns';
 import { useSnackbar } from 'notistack';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/components/SearchParamsPagination';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 interface ConsignorVerificationTableProps {
   rows: ConsignorVerification[];

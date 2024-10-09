@@ -92,7 +92,7 @@ export function PickedListItem({ item }: { item: AuctionItem }) {
           <ul>
             <li>
               <Typography color="GrayText" component="span">
-                日拍 Id:
+                日拍物品代碼:
               </Typography>{' '}
               <Typography sx={{ display: 'inline' }} component="span" color="text.primary">
                 {item.auctionId}

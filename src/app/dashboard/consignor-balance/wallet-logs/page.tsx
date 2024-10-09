@@ -28,7 +28,7 @@ import { format } from 'date-fns';
 import { Provider } from 'jotai';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/components/SearchParamsPagination';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import { ActionFilter } from './ActionFilter';
 import { fixRange, MAX_MONTHS, SearchParamsSchema } from './SearchParamsSchema';
