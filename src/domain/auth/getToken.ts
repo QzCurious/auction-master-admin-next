@@ -25,7 +25,8 @@ export async function getToken({ force }: { force?: boolean } = { force: false }
 
   const refreshToken = cookies().get(CookieConfigs.refreshToken.name);
   if (!refreshToken?.value) {
-    throw new Error('BUG: Token expired without refresh token');
+    console.log('BUG: Token expired without refresh token');
+    return { token: null, res: null } as const;
   }
 
   let refreshing = tokenRefreshingMap.get(token.value);
