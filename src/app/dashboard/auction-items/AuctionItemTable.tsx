@@ -4,10 +4,9 @@ import { useSearchParams } from 'next/navigation';
 import { CancelAuctionItem } from '@/api/backend/auction-items/CancelAuctionItem';
 import { DeleteAuctionItem } from '@/api/backend/auction-items/DeleteAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { type Worker } from '@/api/backend/workers/GetActivationWorkers';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { currencySign, letaoLink, yahooAuctionLink } from '@/domain/static/static';
+import { letaoLink, yahooAuctionLink } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -29,25 +28,19 @@ import { useAtom } from 'jotai';
 import PopupState from 'material-ui-popup-state';
 import { bindPopover, bindTrigger } from 'material-ui-popup-state/hooks';
 import { enqueueSnackbar } from 'notistack';
-import * as R from 'remeda';
 
-import { CountdownTime } from '@/components/CountdownTime';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
 
-import BidPopover from './BidPopover';
 import CompanyPurchasedButton from './CompanyPurchasedButton';
 import { pickedItemIdsReducerAtom } from './PickingList';
-import StopWatchButton from './StopWatchButton';
 
 interface AuctionItemTableProps {
   rows: AuctionItem[];
   count: number;
-
-  activationWorkers?: Worker[];
 }
 
-export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItemTableProps) {
+export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
   const searchParams = useSearchParams();
   const isPicking = searchParams.get('stage') === 'picking';
   const [pickedItemIds, dispatch] = useAtom(pickedItemIdsReducerAtom);
@@ -61,20 +54,11 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
               {isPicking && <TableCell sx={{ width: 0 }}>出貨</TableCell>}
               <TableCell sx={{ width: 0 }}>商品圖片</TableCell>
               <TableCell sx={{ minWidth: '200px' }}>商品名稱</TableCell>
-              {!isPicking && (
-                <>
-                  <TableCell>出品帳號</TableCell>
-                  <TableCell>盯標帳號</TableCell>
-                  <TableCell>出價資訊</TableCell>
-                </>
-              )}
 
-              <TableCell>當前金額</TableCell>
               <TableCell>期望金額</TableCell>
 
               {!isPicking && (
                 <>
-                  <TableCell>系統出價</TableCell>
                   <TableCell>狀態</TableCell>
                   <TableCell>操作</TableCell>
                 </>
@@ -148,136 +132,54 @@ export function AuctionItemTable({ rows, count, activationWorkers }: AuctionItem
                     {row.name}
                   </Link>
                 </TableCell>
-                {!isPicking && (
-                  <>
-                    <TableCell>{row.sellerName}</TableCell>
-                    <TableCell>
-                      <Box
-                        sx={{
-                          color: row.bidders?.some((bidder) => bidder.account === row.watcherName)
-                            ? 'primary.main'
-                            : undefined,
-                        }}
-                      >
-                        {row.watcherName}
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <a
-                        style={{ textDecoration: 'none', color: 'inherit' }}
-                        href={letaoLink(row.auctionId)}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {row.bidders?.slice(0, 5)?.map((bidder) => (
-                          <Stack
-                            key={`${bidder.account}-${bidder.lastBidAt}`}
-                            direction="row"
-                            spacing={1}
-                            sx={{
-                              whiteSpace: 'nowrap',
-                              color: bidder.account === row.watcherName ? 'primary.main' : undefined,
-                            }}
-                          >
-                            <span>
-                              {bidder.account} / 評價: {bidder.rating}
-                            </span>
-                            <span style={{ marginLeft: 'auto' }}>
-                              {currencySign('JPY')}
-                              {bidder.bidAmount.toLocaleString()}
-                            </span>
-                          </Stack>
-                        ))}
-                      </a>
-                    </TableCell>
-                  </>
-                )}
 
-                <TableCell sx={{ textAlign: 'right' }}>
-                  <Box color={row.currentPrice >= row.reservePrice ? 'success.main' : 'error.main'}>
-                    {row.currentPrice.toLocaleString()}
-                  </Box>
-                </TableCell>
                 <TableCell sx={{ textAlign: 'right' }}>{row.reservePrice.toLocaleString()}</TableCell>
 
                 {!isPicking && (
                   <>
-                    <TableCell sx={{ textAlign: 'right' }}>{row.highestPrice.toLocaleString()}</TableCell>
                     <TableCell
                       sx={{ whiteSpace: 'nowrap' }}
                       title={process.env.NODE_ENV === 'development' ? AUCTION_ITEM_STATUS.enum(row.status) : undefined}
                     >
-                      {R.isIncludedIn(row.status, [
-                        AUCTION_ITEM_STATUS.enum('InitStatus'),
-                        AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
-                        AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
-                        AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
-                      ]) ? (
-                        <Stack alignItems="center" spacing={1}>
-                          <CountdownTime until={new Date(row.closeAt)} />
-                          <HavePermissionsOnly permissions={['ToggleActivateAuctionItem']}>
-                            <StopWatchButton auctionItem={row} />
+                      <Stack alignItems="center" spacing={1}>
+                        <div>{AUCTION_ITEM_STATUS.get('value', row.status).message}</div>
+                        {row.status === AUCTION_ITEM_STATUS.enum('ClosedStatus') && (
+                          <HavePermissionsOnly permissions={['CancelAuctionItem']}>
+                            <PopupState variant="popover">
+                              {(popupState) => (
+                                <>
+                                  <Button size="small" variant="outlined" color="primary" {...bindTrigger(popupState)}>
+                                    取消競標
+                                  </Button>
+                                  <DoubleCheckPopover
+                                    {...bindPopover(popupState)}
+                                    title="取消日拍競標商品"
+                                    onConfirm={async () => {
+                                      const res = await CancelAuctionItem(row.auctionId);
+                                      if (res.error) {
+                                        enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
+                                        return;
+                                      }
+                                      enqueueSnackbar(`已取消日拍競標商品`, { variant: 'success' });
+                                      popupState.close();
+                                    }}
+                                    onCancel={popupState.close}
+                                  />
+                                </>
+                              )}
+                            </PopupState>
                           </HavePermissionsOnly>
-                        </Stack>
-                      ) : (
-                        <Stack alignItems="center" spacing={1}>
-                          <div>{AUCTION_ITEM_STATUS.get('value', row.status).message}</div>
-                          {row.status === AUCTION_ITEM_STATUS.enum('ClosedStatus') && (
-                            <HavePermissionsOnly permissions={['CancelAuctionItem']}>
-                              <PopupState variant="popover">
-                                {(popupState) => (
-                                  <>
-                                    <Button
-                                      size="small"
-                                      variant="outlined"
-                                      color="primary"
-                                      {...bindTrigger(popupState)}
-                                    >
-                                      取消競標
-                                    </Button>
-                                    <DoubleCheckPopover
-                                      {...bindPopover(popupState)}
-                                      title="取消日拍競標商品"
-                                      onConfirm={async () => {
-                                        const res = await CancelAuctionItem(row.auctionId);
-                                        if (res.error) {
-                                          enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
-                                          return;
-                                        }
-                                        enqueueSnackbar(`已取消日拍競標商品`, { variant: 'success' });
-                                        popupState.close();
-                                      }}
-                                      onCancel={popupState.close}
-                                    />
-                                  </>
-                                )}
-                              </PopupState>
+                        )}
+                        {row.status === AUCTION_ITEM_STATUS.enum('ClosedStatus') &&
+                          row.closedPrice < row.reservePrice && (
+                            <HavePermissionsOnly permissions={['CompanyPurchased']}>
+                              <CompanyPurchasedButton auctionItem={row} />
                             </HavePermissionsOnly>
                           )}
-                          {row.status === AUCTION_ITEM_STATUS.enum('ClosedStatus') &&
-                            row.closedPrice < row.reservePrice && (
-                              <HavePermissionsOnly permissions={['CompanyPurchased']}>
-                                <CompanyPurchasedButton auctionItem={row} />
-                              </HavePermissionsOnly>
-                            )}
-                        </Stack>
-                      )}
+                      </Stack>
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={0.5}>
-                        {R.isIncludedIn(row.status, [
-                          AUCTION_ITEM_STATUS.enum('InitStatus'),
-                          AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
-                          AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
-                          AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
-                        ]) && (
-                          <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0}>
-                            <HavePermissionsOnly permissions={['BidAuctionItem']}>
-                              <BidPopover auctionItem={row} />
-                            </HavePermissionsOnly>
-                          </Stack>
-                        )}
-
                         <HavePermissionsOnly permissions={['GetAuctionItem']}>
                           <IconButton LinkComponent={Link} href={`/dashboard/auction-items/edit/${row.auctionId}`}>
                             <EditIcon />

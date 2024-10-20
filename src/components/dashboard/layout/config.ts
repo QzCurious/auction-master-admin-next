@@ -1,4 +1,4 @@
-import { Wallet } from '@phosphor-icons/react/dist/ssr';
+import { SecurityCamera, Wallet } from '@phosphor-icons/react/dist/ssr';
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { Handshake } from '@phosphor-icons/react/dist/ssr/Handshake';
@@ -67,6 +67,14 @@ export const navItems = [
     PhosphorIcon: Gavel,
     permissions: ['GetAuctionItems'],
     matcher: { type: 'startsWith', href: '/dashboard/auction-items' },
+  },
+  {
+    key: 'watch-list',
+    title: '盯標列表',
+    href: '/dashboard/watch-list',
+    PhosphorIcon: SecurityCamera,
+    permissions: ['GetAuctionItems'],
+    matcher: { type: 'startsWith', href: '/dashboard/watch-list' },
   },
   {
     key: 'shippings',
