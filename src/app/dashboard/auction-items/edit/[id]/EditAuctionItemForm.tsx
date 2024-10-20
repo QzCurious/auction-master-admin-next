@@ -412,8 +412,8 @@ export function EditAuctionItemForm({
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
                   InputProps={{
-                    readOnly: true,
-                    // readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['currentPrice'] }]),
+                    // readOnly: true,
+                    readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['currentPrice'] }]),
                     startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                   }}
                 />
@@ -438,8 +438,8 @@ export function EditAuctionItemForm({
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
                   InputProps={{
-                    readOnly: true,
-                    // readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['highestPrice'] }]),
+                    // readOnly: true,
+                    readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['highestPrice'] }]),
                     startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                   }}
                 />
@@ -460,8 +460,8 @@ export function EditAuctionItemForm({
                   label="結束時間"
                   format="yyyy/MM/dd HH:mm:ss"
                   timeSteps={{ minutes: 1 }}
-                  readOnly
-                  // readOnly={!havePermissions([{ key: 'UpdateAuctionItem', fields: ['closeAt'] }])}
+                  // readOnly
+                  readOnly={!havePermissions([{ key: 'UpdateAuctionItem', fields: ['closeAt'] }])}
                 />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
@@ -484,8 +484,8 @@ export function EditAuctionItemForm({
                     field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value));
                   }}
                   InputProps={{
-                    readOnly: true,
-                    // readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['closedPrice'] }]),
+                    // readOnly: true,
+                    readOnly: !canUpdate || !havePermissions([{ key: 'UpdateAuctionItem', fields: ['closedPrice'] }]),
                     startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
                   }}
                 />
