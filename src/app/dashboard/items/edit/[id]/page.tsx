@@ -3,9 +3,8 @@ import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { GetItemAndDetails } from '@/api/backend/items/GetItemAndDetails';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { havePermissions, PermissionsGuard } from '@/domain/permission/havePermissions.server';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Box, Link } from '@mui/material';
@@ -48,12 +47,8 @@ export default Page;
 async function Content({ params }: PageProps) {
   const itemRes = await GetItemAndDetails(parseInt(params.id));
 
-  if (itemRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetItemAndDetails']} />;
-  }
-
-  if (itemRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (itemRes.error) {
+    return <HandleApiError error={itemRes.error} />;
   }
 
   if (!itemRes.data) {

@@ -7,6 +7,7 @@ import { DeleteRoleForAdmin } from '@/api/backend/admins/DeleteRoleForAdmin';
 import { type Admin } from '@/api/backend/admins/GetAdmin';
 import { UpdateAdmin } from '@/api/backend/admins/UpdateAdmin';
 import { type Role } from '@/api/backend/rbac/GetRoles';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
@@ -62,6 +63,7 @@ export default function EditAdminForm({ admin, roles }: EditAdminFromProps) {
   });
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
+  const handleApiError = useHandleApiError();
 
   return (
     <form
@@ -90,7 +92,7 @@ export default function EditAdminForm({ admin, roles }: EditAdminFromProps) {
           const errors = res.filter((x) => !!x && !!x.error).map((res) => res.error);
           if (errors.length) {
             for (const error of errors) {
-              enqueueSnackbar(error, { variant: 'error' });
+              handleApiError(error);
             }
             return;
           }

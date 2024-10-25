@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { DeleteRole } from '@/api/backend/rbac/DeleteRole';
 import { type Role } from '@/api/backend/rbac/GetRoles';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -32,6 +33,7 @@ interface CustomersTableProps {
 export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
   const searchParams = useSearchParams();
   const { enqueueSnackbar } = useSnackbar();
+  const handleApiError = useHandleApiError();
 
   return (
     <Card>
@@ -83,7 +85,7 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
                                     onConfirm={async () => {
                                       const res = await DeleteRole(row.role);
                                       if (res.error) {
-                                        enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
+                                        handleApiError(res.error);
                                         return;
                                       }
                                       enqueueSnackbar(`已刪除角色 ${row.role}`, { variant: 'success' });

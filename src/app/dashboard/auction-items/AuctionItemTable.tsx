@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { CancelAuctionItem } from '@/api/backend/auction-items/CancelAuctionItem';
 import { DeleteAuctionItem } from '@/api/backend/auction-items/DeleteAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { letaoLink, yahooAuctionLink } from '@/domain/static/static';
@@ -44,6 +45,7 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
   const searchParams = useSearchParams();
   const isPicking = searchParams.get('stage') === 'picking';
   const [pickedItemIds, dispatch] = useAtom(pickedItemIdsReducerAtom);
+  const handleApiError = useHandleApiError();
 
   return (
     <Card>
@@ -157,7 +159,7 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
                                     onConfirm={async () => {
                                       const res = await CancelAuctionItem(row.auctionId);
                                       if (res.error) {
-                                        enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
+                                        handleApiError(res.error);
                                         return;
                                       }
                                       enqueueSnackbar(`已取消日拍競標商品`, { variant: 'success' });
@@ -199,7 +201,7 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
                                   onConfirm={async () => {
                                     const res = await DeleteAuctionItem(row.auctionId);
                                     if (res.error) {
-                                      enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
+                                      handleApiError(res.error);
                                       return;
                                     }
                                     enqueueSnackbar(`已刪除日拍競標商品`, { variant: 'success' });

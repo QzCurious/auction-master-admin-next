@@ -1,17 +1,17 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClient } from '@/api/apiClient';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 
 type Data = 'Success';
 
-type ErrorCode = never;
-
 export async function DeleteAdmin(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/admins/${id}`, {
-    method: 'DELETE',
-  });
+  const res = await apiClientWithToken
+    .delete<SuccessResponseJson<Data>>(`backend/admins/${id}`, {})
+    .json()
+    .catch(createApiErrorServerSide);
 
   revalidateTag('admins');
 

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { AdminLogin } from '@/api/AdminLogin';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -27,7 +27,6 @@ export function SignInForm() {
   const {
     control,
     handleSubmit,
-    setError,
     formState: { isSubmitting, errors },
   } = useForm<z.input<typeof Schema>>({
     defaultValues: {
@@ -36,7 +35,7 @@ export function SignInForm() {
     },
     resolver: zodResolver(Schema),
   });
-  const router = useRouter();
+  const handleApiError = useHandleApiError();
 
   return (
     <Stack spacing={4}>
@@ -47,18 +46,11 @@ export function SignInForm() {
       <form
         onSubmit={handleSubmit(async (data) => {
           const res = await AdminLogin(data);
-          if (res.error === '1004' || res.error === '1502') {
-            setError('root', { message: '帳號或密碼錯誤' });
+          if (res) {
+            handleApiError(res.error);
             return;
           }
-          if (res.error === '1001') {
-            setError('root', { message: '沒有權限' });
-            return;
-          }
-          if (res.error === '1002') {
-            setError('root', { message: '此帳號為禁用狀態，無法登入' });
-            return;
-          }
+
           const goto = new URLSearchParams(location.search).get('goto');
           location.href = goto ?? '/dashboard';
         })}

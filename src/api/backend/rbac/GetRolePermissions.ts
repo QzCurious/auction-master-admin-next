@@ -1,5 +1,6 @@
-import { apiClient } from '@/api/apiClient';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 
 import { type Permission } from './GetPermissions';
 import { type Role } from './GetRoles';
@@ -11,15 +12,15 @@ export interface RolePermissions {
 
 type Data = RolePermissions;
 
-type ErrorCode = never;
-
 export async function GetRolePermissions(role: Role['role']) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/roles/${role}/permissions`, {
-    method: 'GET',
-    next: {
-      tags: ['roles'],
-    },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>(`backend/roles/${role}/permissions`, {
+      next: {
+        tags: ['roles'],
+      },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

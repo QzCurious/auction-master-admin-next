@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import { AdminGetConsignorVerifications } from '@/api/backend/consignor/AdminGetConsignorVerifications';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
 import Stack from '@mui/material/Stack';
@@ -48,12 +47,8 @@ async function Table({ searchParams }: PageProps) {
     }),
   ]);
 
-  if (consignorVerificationsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['AdminGetConsignorVerifications']} />;
-  }
-
-  if (consignorVerificationsRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (consignorVerificationsRes.error) {
+    return <HandleApiError error={consignorVerificationsRes.error} />;
   }
 
   return (

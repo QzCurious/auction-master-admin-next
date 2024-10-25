@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { type GetReports, type Report } from '@/api/backend/reports/GetReports';
 import { GetReportsQueryOptions } from '@/api/backend/reports/GetReports.query';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign, DATE_FORMAT } from '@/domain/static/static';
 import { Card, CardContent, CircularProgress, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Box, Stack } from '@mui/system';
@@ -158,8 +157,7 @@ function Content({ startAt, endAt, slice }: { startAt: Date; endAt: Date; slice:
 
   if (error) return null;
   if (isPending) return <Box mt={3}>Loading...</Box>;
-  if (data.error === '1001') return <WithoutPermissionsError permissions={['GetReports']} />;
-  if (data.error === '1003') return <RedirectAuthError />;
+  if (data.error) return <HandleApiError error={data.error} />;
 
   return (
     <Box mt={3} sx={{ position: 'relative' }}>

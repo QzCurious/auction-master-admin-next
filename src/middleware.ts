@@ -1,7 +1,7 @@
-import { cookies } from 'next/headers';
 import { NextResponse, type NextRequest } from 'next/server';
-import { getToken } from '@/domain/auth/getToken';
+import { getJwt } from '@/domain/auth/getJwt';
 
+import { AdminRefreshToken } from './api/AdminRefreshToken';
 import { CookieConfigs } from './domain/auth/CookieConfigs';
 
 export async function middleware(request: NextRequest) {
@@ -11,24 +11,39 @@ export async function middleware(request: NextRequest) {
 
   // refresh token and set cookie
   const response = NextResponse.next();
-  const token = cookies().get(CookieConfigs.token.name)?.value;
-  const { token: newToken, res } = await getToken();
 
-  if (!newToken) {
-    console.log('middleware: refresh token error', res);
-    response.cookies.delete(CookieConfigs.token.name);
-    response.cookies.delete(CookieConfigs.refreshToken.name);
-    const goto = request.nextUrl.pathname === '/' ? '/dashboard' : request.nextUrl.pathname + request.nextUrl.search;
-    return Response.redirect(new URL(`/auth/sign-in?goto=${goto}`, request.url));
+  const jwt = await getJwt();
+  if (!jwt) {
+    console.log('middleware: token not found');
+    return logout(request);
   }
 
-  if (token !== newToken) {
-    console.log('middleware: new token set');
-    response.cookies.set(CookieConfigs.token.name, newToken, CookieConfigs.token.opts());
+  // jwt still valid
+  if (jwt.exp * 1000 - 30 * 1000 > Date.now()) {
+    return response;
   }
+
+  const res = await AdminRefreshToken();
+
+  if (res.error) {
+    console.log('middleware: refresh token failed');
+    return logout(request);
+  }
+
+  console.log('middleware: token refreshed');
+  response.cookies.set(CookieConfigs.token.name, res.data.token, CookieConfigs.token.opts());
+
   return response;
 }
 
 export const config = {
   matcher: ['/((?!api|auth/sign-in|_next/static|_next/image|favicon\\.ico|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.svg$).*)'],
 };
+
+function logout(request: NextRequest) {
+  const goto = request.nextUrl.pathname + request.nextUrl.search;
+  const response = NextResponse.redirect(new URL(`/auth/sign-in?goto=${goto}`, request.url));
+  response.cookies.delete(CookieConfigs.token.name);
+  response.cookies.delete(CookieConfigs.refreshToken.name);
+  return response;
+}

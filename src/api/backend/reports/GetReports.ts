@@ -1,8 +1,8 @@
 'use server';
 
-import { apiClient } from '@/api/apiClient';
-import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { z } from 'zod';
 
@@ -48,12 +48,14 @@ export async function GetReports(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/reports?${query}`, {
-    method: 'GET',
-    next: {
-      tags: ['reports'],
-    },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>(`backend/reports?${query}`, {
+      next: {
+        tags: ['reports'],
+      },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

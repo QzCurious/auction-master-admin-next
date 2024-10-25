@@ -1,19 +1,19 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClient } from '@/api/apiClient';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 
 import { type Shipping } from './GetShippings';
 
 type Data = 'Success';
 
-type ErrorCode = never;
-
 export async function ProcessingShipping(id: Shipping['id']) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/shippings/${id}/processing`, {
-    method: 'POST',
-  });
+  const res = await apiClientWithToken
+    .post<SuccessResponseJson<Data>>(`backend/shippings/${id}/processing`)
+    .json()
+    .catch(createApiErrorServerSide);
 
   revalidateTag('shippings');
 

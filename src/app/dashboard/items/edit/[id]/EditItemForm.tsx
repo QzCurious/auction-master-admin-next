@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminUpdateItem } from '@/api/backend/items/AdminUpdateItem';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
@@ -118,6 +119,7 @@ export function EditItemForm({ item, consignor }: EditItemFromProps) {
       .filter((f) => f.nexts.length === 0)
       .map((f) => ITEM_STATUS.enum(f.status))
       .includes(item.status as never);
+  const handleApiError = useHandleApiError();
 
   const quillRef = useRef<Quill>(null);
 
@@ -135,12 +137,8 @@ export function EditItemForm({ item, consignor }: EditItemFromProps) {
 
         const res = await AdminUpdateItem(item.id, dirtyValues);
 
-        if (res.error === '1031') {
-          setError('warehouseId', { message: '倉庫編號已存在' });
-          return;
-        }
         if (res.error) {
-          enqueueSnackbar(res.error, { variant: 'error' });
+          handleApiError(res.error);
           return;
         }
         enqueueSnackbar('更新成功', { variant: 'success' });

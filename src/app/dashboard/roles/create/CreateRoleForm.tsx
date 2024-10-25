@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AddPermissionForRole } from '@/api/backend/rbac/AddPermissionForRole';
 import { CreateRole } from '@/api/backend/rbac/CreateRole';
 import { type Permission, type PermissionGroup } from '@/api/backend/rbac/GetPermissions';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { FormSubmissionWithDirtyFields } from '@/helper/FormSubmissionWithDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -56,6 +57,7 @@ export default function CreateRoleForm({ permissionGroups }: CreateRoleFromProps
   } = formMethods;
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
+  const handleApiError = useHandleApiError();
 
   return (
     <FormProvider {...formMethods}>
@@ -65,12 +67,8 @@ export default function CreateRoleForm({ permissionGroups }: CreateRoleFromProps
             role: data.role,
             description: data.description,
           });
-          if (createRoleRes.error === '1000') {
-            setError('role', { message: '角色名稱已存在' });
-            return;
-          }
           if (createRoleRes.error) {
-            enqueueSnackbar(createRoleRes.error, { variant: 'error' });
+            handleApiError(createRoleRes.error);
             return;
           }
 
@@ -84,7 +82,7 @@ export default function CreateRoleForm({ permissionGroups }: CreateRoleFromProps
               ),
             });
             if (addPermissionsForRoleRes.error) {
-              enqueueSnackbar(addPermissionsForRoleRes.error, { variant: 'error' });
+              handleApiError(addPermissionsForRoleRes.error);
               return;
             }
           }

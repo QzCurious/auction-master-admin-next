@@ -9,7 +9,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   if (!itemId) return NextResponse.json({ error: 'id is required' });
 
   const res = await GetItemAndDetails(Number(itemId));
-  if (res.error) throw new Error(res.error);
+  if (res.error) return NextResponse.json(res.error);
 
   const zip = new AdmZip();
 

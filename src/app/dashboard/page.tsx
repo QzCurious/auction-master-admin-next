@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { GetConfigs } from '@/api/GetConfigs';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { SITE_NAME, toPercent } from '@/domain/static/static';
 import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
@@ -22,6 +23,9 @@ export const metadata = { title: `Overview | ${SITE_NAME}` } satisfies Metadata;
 
 export default async function Page() {
   const configsRes = await GetConfigs();
+  if (configsRes.error) {
+    return <HandleApiError error={configsRes.error} />;
+  }
 
   return (
     <Grid container spacing={3}>

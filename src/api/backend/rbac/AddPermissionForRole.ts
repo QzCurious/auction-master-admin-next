@@ -1,9 +1,9 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClient } from '@/api/apiClient';
-import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -18,16 +18,15 @@ const ReqSchema = z.object({
 
 type Data = 'Success';
 
-type ErrorCode = never;
-
 export async function AddPermissionForRole(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/permissions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
+  const res = await apiClientWithToken
+    .post<SuccessResponseJson<Data>>('backend/permissions', {
+      json: data,
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   revalidateTag('roles');
 

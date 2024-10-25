@@ -1,9 +1,9 @@
 'use server';
 
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 import { z } from 'zod';
-
-import { apiClient } from '../../apiClient';
-import { withAuth } from '../../withAuth';
 
 const ReqSchema = z.object({
   limit: z.coerce.number().default(10),
@@ -30,13 +30,13 @@ export interface Worker {
 
 type Data = Worker;
 
-type ErrorCode = never;
-
 export async function GetWorker(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/workers/${id}`, {
-    method: 'GET',
-    next: { tags: ['workers'] },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>(`backend/workers/${id}`, {
+      next: { tags: ['workers'] },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

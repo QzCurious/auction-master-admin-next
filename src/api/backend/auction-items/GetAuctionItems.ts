@@ -1,12 +1,11 @@
 'use server';
 
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { type AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { z } from 'zod';
-
-import { apiClient } from '../../apiClient';
-import { throwIfInvalid } from '../../helpers/throwIfInvalid';
-import { withAuth } from '../../withAuth';
 
 const ReqSchema = z.object({
   auctionId: z.string().array().optional(),
@@ -52,18 +51,18 @@ interface Data {
   count: number;
 }
 
-type ErrorCode = never;
-
 export async function GetAuctionItems(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items?${query}`, {
-    method: 'GET',
-    next: { tags: ['auction-items'] },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>(`backend/auction-items?${query}`, {
+      next: { tags: ['auction-items'] },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

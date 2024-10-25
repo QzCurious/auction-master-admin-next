@@ -1,7 +1,6 @@
-'use server';
-
-import { apiClient } from '@/api/apiClient';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 
 export interface Role {
   role: string;
@@ -10,15 +9,15 @@ export interface Role {
 
 type Data = Array<Role>;
 
-type ErrorCode = never;
-
 export async function GetRoles() {
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/roles', {
-    method: 'GET',
-    next: {
-      tags: ['roles'],
-    },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>('backend/roles', {
+      next: {
+        tags: ['roles'],
+      },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

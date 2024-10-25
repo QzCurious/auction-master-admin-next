@@ -1,6 +1,8 @@
 'use server';
 
-import { apiClient } from '@/api/apiClient';
+import { apiClientBase } from './core/apiClientBase';
+import { createApiErrorServerSide } from './core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from './core/static';
 
 export interface Configs {
   yahooAuctionFeeRate: number;
@@ -38,15 +40,15 @@ export interface Configs {
 
 interface Data extends Configs {}
 
-type ErrorCode = never;
-
 export async function GetConfigs() {
-  const res = await apiClient<Data, ErrorCode>('/configs', {
-    method: 'GET',
-    next: {
-      tags: ['config'],
-    },
-  });
+  const res = await apiClientBase
+    .get<SuccessResponseJson<Data>>('configs', {
+      next: {
+        tags: ['config'],
+      },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

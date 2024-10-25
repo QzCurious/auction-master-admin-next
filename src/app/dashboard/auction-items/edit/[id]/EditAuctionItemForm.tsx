@@ -7,6 +7,7 @@ import { UpdateAuctionItem } from '@/api/backend/auction-items/UpdateAuctionItem
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { type Worker } from '@/api/backend/workers/GetWorker';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
@@ -105,6 +106,7 @@ export function EditAuctionItemForm({
   } = useFormContext<z.output<typeof FormSchema>>();
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
+  const handleApiError = useHandleApiError();
   const canUpdate = true;
 
   return (
@@ -121,7 +123,7 @@ export function EditAuctionItemForm({
           });
 
           if (res.error) {
-            enqueueSnackbar(res.error, { variant: 'error' });
+            handleApiError(res.error);
             return;
           }
           enqueueSnackbar('更新成功', { variant: 'success' });

@@ -5,6 +5,7 @@ import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
 import { Shipped } from '@/api/backend/shippings/Shipped';
 import { ShippingClosed } from '@/api/backend/shippings/ShippingClosed';
 import { type Configs } from '@/api/GetConfigs';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import AuctionItemPreviewPopover from '@/domain/crud/AuctionItemPreviewPopover';
 import ItemPreviewPopover from '@/domain/crud/ItemPreviewPopover';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
@@ -60,6 +61,8 @@ interface ShippingsTableProps {
 }
 
 export function ShippingsTable({ configs, query, rows, count }: ShippingsTableProps) {
+  const handleApiError = useHandleApiError();
+
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
@@ -177,7 +180,7 @@ export function ShippingsTable({ configs, query, rows, count }: ShippingsTablePr
                                 onConfirm={async () => {
                                   const res = await ProcessingShipping(row.id);
                                   if (res.error) {
-                                    enqueueSnackbar(res.error, { variant: 'error' });
+                                    handleApiError(res.error);
                                     return;
                                   }
                                   enqueueSnackbar('已標示為理貨中', { variant: 'success' });
@@ -287,6 +290,7 @@ function ShippedPopover({ row }: { row: Shipping }) {
     },
     resolver: zodResolver(ShippedFormSchema),
   });
+  const handleApiError = useHandleApiError();
 
   return (
     <PopupState variant="popover">
@@ -330,7 +334,7 @@ function ShippedPopover({ row }: { row: Shipping }) {
                   );
 
                   if (res.error) {
-                    enqueueSnackbar(res.error, { variant: 'error' });
+                    handleApiError(res.error);
                     return;
                   }
                   enqueueSnackbar('已標示為已寄出', { variant: 'success' });
@@ -452,6 +456,7 @@ function ShippingClosedPopover({ row }: { row: Shipping }) {
     },
     resolver: zodResolver(ShippingClosedFormSchema),
   });
+  const handleApiError = useHandleApiError()
 
   return (
     <PopupState variant="popover">
@@ -478,7 +483,7 @@ function ShippingClosedPopover({ row }: { row: Shipping }) {
               onSubmit={handleSubmit(async (data) => {
                 const res = await ShippingClosed(row.id, data);
                 if (res.error) {
-                  enqueueSnackbar(res.error, { variant: 'error' });
+                  handleApiError(res.error);
                   return;
                 }
                 enqueueSnackbar('已標示為出貨已結束', { variant: 'success' });

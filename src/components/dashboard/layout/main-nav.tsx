@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useContext, useState } from 'react';
 import RouterLink from 'next/link';
 import SideNavMenu from '@/app/SideNavMenu';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { logout } from '@/domain/auth/logout';
 import refreshTokenAction from '@/domain/auth/refreshTokenAction';
 import { UserContext } from '@/domain/auth/UserContext';
@@ -36,6 +37,7 @@ export function MainNav() {
     variant: 'popover',
   });
   const { enqueueSnackbar } = useSnackbar();
+  const handleApiError = useHandleApiError();
 
   return (
     <React.Fragment>
@@ -144,9 +146,9 @@ export function MainNav() {
           {process.env.NODE_ENV === 'development' && (
             <MenuItem
               onClick={async () => {
-                const error = await refreshTokenAction();
-                if (error) {
-                  enqueueSnackbar(error, { variant: 'error' });
+                const res = await refreshTokenAction();
+                if (res.error) {
+                  handleApiError(res.error);
                   return;
                 }
                 enqueueSnackbar('Token refreshed', { variant: 'success' });

@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
 import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
 import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
+import { HandleApiError, useHandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign } from '@/domain/static/static';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -128,13 +127,13 @@ function ShippingForm() {
   const auctionItemQueries = useQueries({
     queries: pickedItemIds.map(GetAuctionItemQueryOptions),
   });
-  const configsRes = useQuery(GetConfigsQueryOptions());
+  const configsQuery = useQuery(GetConfigsQueryOptions());
 
+  const handleApiError = useHandleApiError();
   const { enqueueSnackbar } = useSnackbar();
   const {
     control,
     handleSubmit,
-    watch,
     formState: { isSubmitting },
   } = useForm<z.output<typeof Schema>>({
     defaultValues: {
@@ -147,11 +146,12 @@ function ShippingForm() {
     resolver: zodResolver(Schema),
   });
 
-  if (auctionItemQueries.some((q) => q.data?.error === '1001')) {
-    return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
+  const auctionItemQueryError = auctionItemQueries.find((q) => q.data?.error);
+  if (auctionItemQueryError?.data?.error) {
+    return <HandleApiError error={auctionItemQueryError.data.error} />;
   }
-  if (auctionItemQueries.some((q) => q.data?.error === '1003')) {
-    return <RedirectAuthError />;
+  if (configsQuery.data?.error) {
+    return <HandleApiError error={configsQuery.data.error} />;
   }
 
   const queries = auctionItemQueries.filter((q) => !q.isError);
@@ -170,7 +170,7 @@ function ShippingForm() {
         });
 
         if (res.error) {
-          enqueueSnackbar(res.error, { variant: 'error' });
+          handleApiError(res.error);
           return;
         }
 
@@ -263,7 +263,7 @@ function ShippingForm() {
           <Typography variant="body1">
             共 {auctionItemQueries.length} 筆
             {(() => {
-              if (auctionItemQueries.some((q) => q.isPending) || configsRes.isPending) {
+              if (auctionItemQueries.some((q) => q.isPending) || configsQuery.isPending) {
                 return (
                   <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
                     <span>, 總值 {currencySign('JPY')}</span>
@@ -278,9 +278,9 @@ function ShippingForm() {
                 <span>
                   , 總值 {currencySign('JPY')}
                   {sum.toLocaleString()}
-                  {configsRes.data && (
+                  {configsQuery.data && (
                     <Typography component="span" sx={{ verticalAlign: 'middle', ml: 0.5 }} color="GrayText">
-                      {sum > configsRes.data.data.packageThreshold ? (
+                      {sum > configsQuery.data.data.packageThreshold ? (
                         <Package fontSize={24} />
                       ) : (
                         <EnvelopeSimple fontSize={20} />

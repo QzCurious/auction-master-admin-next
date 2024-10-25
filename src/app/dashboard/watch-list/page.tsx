@@ -1,12 +1,11 @@
 import { type Metadata } from 'next';
 import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { AuctionIdFilter } from '@/domain/crud/AuctionIdFilter';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { AutoRefreshEffect } from '@/helper/useAutoRefresh';
@@ -64,12 +63,8 @@ async function Content({ searchParams }: PageProps) {
     }),
   ]);
 
-  if (auctionItemsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAuctionItems']} />;
-  }
-
-  if (auctionItemsRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (auctionItemsRes.error) {
+    return <HandleApiError error={auctionItemsRes.error} />;
   }
 
   return (

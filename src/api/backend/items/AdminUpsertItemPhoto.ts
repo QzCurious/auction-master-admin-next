@@ -1,13 +1,11 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-
-import { apiClient } from '../../apiClient';
-import { withAuth } from '../../withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 
 type Data = 'Success';
-
-type ErrorCode = never;
 
 export async function AdminUpsertItemPhoto(id: number, formData: FormData) {
   if (formData.getAll('photo').length === 0) {
@@ -17,10 +15,12 @@ export async function AdminUpsertItemPhoto(id: number, formData: FormData) {
     throw new Error('photo and sorted should have the same length');
   }
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items/${id}/photos`, {
-    method: 'POST',
-    body: formData,
-  });
+  const res = await apiClientWithToken
+    .post<SuccessResponseJson<Data>>(`backend/items/${id}/photos`, {
+      body: formData,
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   revalidateTag('items');
 

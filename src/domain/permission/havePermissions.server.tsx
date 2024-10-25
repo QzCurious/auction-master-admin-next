@@ -1,15 +1,15 @@
 import type React from 'react';
 import { GetAdminPermissions } from '@/api/backend/rbac/GetAdminPermissions';
 
-import { getUser } from '../auth/getToken';
+import { getJwt } from '../auth/getJwt';
 import type { PermissionKey, PermissionKeyField } from './types';
 import WithoutPermissionsError from './WithoutPermissionsError/WithoutPermissionsError';
 
 export async function havePermissions(permissions: Array<PermissionKey> | Array<PermissionKeyField>) {
-  const user = await getUser();
-  if (!user) return false;
+  const jwt = await getJwt();
+  if (!jwt) return false;
 
-  const userPermissionsRes = await GetAdminPermissions(user.account);
+  const userPermissionsRes = await GetAdminPermissions(jwt.account);
   if (!userPermissionsRes.data) return false;
 
   const userPermissions = userPermissionsRes.data;

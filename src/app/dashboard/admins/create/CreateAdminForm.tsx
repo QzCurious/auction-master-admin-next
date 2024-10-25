@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AddRoleForAdmin } from '@/api/backend/admins/AddRoleForAdmin';
 import { CreateAdmin } from '@/api/backend/admins/CreateAdmin';
 import { type Role } from '@/api/backend/rbac/GetRoles';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { ADMIN_STATUS } from '@/domain/static/static-config-mappers';
@@ -65,6 +66,7 @@ export default function CreateAdminForm({ roles }: CreateAdminFromProps) {
   });
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
+  const handleApiError = useHandleApiError();
 
   return (
     <form
@@ -75,18 +77,14 @@ export default function CreateAdminForm({ roles }: CreateAdminFromProps) {
             password: data.password,
             status: data.status,
           });
-          if (createAdminRes.error === '1501') {
-            setError('account', { message: '帳號已存在' });
-            return;
-          }
           if (createAdminRes.error) {
-            enqueueSnackbar(createAdminRes.error, { variant: 'error' });
+            handleApiError(createAdminRes.error);
             return;
           }
           if (havePermissions(['AddRoleForAdmin']) && data.roles.length) {
             const addRolesToAdminRes = await AddRoleForAdmin(data.account, { role: data.roles });
             if (addRolesToAdminRes.error) {
-              enqueueSnackbar(addRolesToAdminRes.error, { variant: 'error' });
+              handleApiError(addRolesToAdminRes.error);
               return;
             }
           }

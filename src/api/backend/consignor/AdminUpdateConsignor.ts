@@ -1,14 +1,13 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
 import * as R from 'remeda';
 import { z } from 'zod';
-
-import { apiClient } from '../../apiClient';
-import { throwIfInvalid } from '../../helpers/throwIfInvalid';
-import { withAuth } from '../../withAuth';
 
 const ReqSchema = z
   .object({
@@ -31,18 +30,18 @@ const ReqSchema = z
 
 type Data = 'Success';
 
-type ErrorCode = never;
-
 export async function AdminUpdateConsignor(id: number, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/consignors/${id}`, {
-    method: 'PATCH',
-    body: urlencoded,
-  });
+  const res = await apiClientWithToken
+    .patch<SuccessResponseJson<Data>>(`backend/consignors/${id}`, {
+      body: urlencoded,
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   revalidateTag('consignors');
 

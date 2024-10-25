@@ -2,9 +2,8 @@ import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
@@ -43,12 +42,8 @@ export default Page;
 async function Content({ params }: PageProps) {
   const [consignorRes] = await Promise.all([AdminGetConsignor(parseInt(params.id))]);
 
-  if (consignorRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
-  }
-
-  if (consignorRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (consignorRes.error) {
+    return <HandleApiError error={consignorRes.error} />;
   }
 
   if (!consignorRes.data) {

@@ -10,6 +10,7 @@ import { ItemArrival } from '@/api/backend/items/ItemArrival';
 import { ItemBidding } from '@/api/backend/items/ItemBidding';
 import { ItemReturnPending } from '@/api/backend/items/ItemReturnPending';
 import { ItemWarehousePersonnelConfirmed } from '@/api/backend/items/ItemWarehousePersonnelConfirmed';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { DATE_TIME_FORMAT } from '@/domain/static/static';
 import { ITEM_STATUS, ITEM_TYPE } from '@/domain/static/static-config-mappers';
@@ -43,6 +44,7 @@ export default function StatusFlowSection({ item }: { item: Item }) {
     variant: 'popover',
   });
   const { enqueueSnackbar } = useSnackbar();
+  const handleApiError = useHandleApiError();
 
   return (
     <Card
@@ -95,7 +97,7 @@ export default function StatusFlowSection({ item }: { item: Item }) {
               onConfirm={async () => {
                 const res = await AdminUpdateItem(item.id, { status });
                 if (res.error) {
-                  enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                  handleApiError(res.error);
                   setShowMore(false);
                   return;
                 }
@@ -118,6 +120,7 @@ export default function StatusFlowSection({ item }: { item: Item }) {
 function StatusFlowUI({ item }: { item: Item }) {
   const { enqueueSnackbar } = useSnackbar();
   const { setError } = useFormContext<FormSchemaType>();
+  const handleApiError = useHandleApiError();
 
   const actionMap = StatusFlow.makeActionMap('admin', {
     SubmitAppraisalStatus: (
@@ -128,7 +131,7 @@ function StatusFlowUI({ item }: { item: Item }) {
           onConfirm={async () => {
             const res = await ItemAppraisalReview(item.id, { action: 'reject' });
             if (res.error) {
-              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              handleApiError(res.error);
               return;
             }
             enqueueSnackbar('已將物品標記為估價失敗', { variant: 'success' });
@@ -144,7 +147,7 @@ function StatusFlowUI({ item }: { item: Item }) {
             }
             const res = await ItemAppraisalReview(item.id, { action: 'approve' });
             if (res.error) {
-              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              handleApiError(res.error);
               return;
             }
             enqueueSnackbar('已將物品標記為已估價', { variant: 'success' });
@@ -160,7 +163,7 @@ function StatusFlowUI({ item }: { item: Item }) {
           onConfirm={async () => {
             const res = await ItemArrival(item.id);
             if (res.error) {
-              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              handleApiError(res.error);
               return;
             }
             enqueueSnackbar('已將物品標記為到貨', { variant: 'success' });
@@ -209,7 +212,7 @@ function StatusFlowUI({ item }: { item: Item }) {
             onConfirm={async () => {
               const res = await ItemReturnPending(item.id);
               if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                handleApiError(res.error);
                 return;
               }
               enqueueSnackbar('已將物品標記為準備退貨', { variant: 'success' });
@@ -223,7 +226,7 @@ function StatusFlowUI({ item }: { item: Item }) {
             onConfirm={async () => {
               const res = await ItemWarehousePersonnelConfirmed(item.id);
               if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                handleApiError(res.error);
                 return;
               }
               enqueueSnackbar('已將物品標記為倉管已確認', { variant: 'success' });
@@ -241,7 +244,7 @@ function StatusFlowUI({ item }: { item: Item }) {
             onConfirm={async () => {
               const res = await ItemReturnPending(item.id);
               if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                handleApiError(res.error);
                 return;
               }
               enqueueSnackbar('已將物品標記為準備退貨', { variant: 'success' });
@@ -255,7 +258,7 @@ function StatusFlowUI({ item }: { item: Item }) {
             onConfirm={async () => {
               const res = await ItemAppraiserConfirmed(item.id);
               if (res.error) {
-                enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+                handleApiError(res.error);
                 return;
               }
               enqueueSnackbar('已將物品標記為鑑價師已確認', { variant: 'success' });
@@ -467,6 +470,7 @@ function ReadyStatusHandleButtons({ item }: { item: Item }) {
   const [auctionId, setAuctionId] = useState('');
   const [error, setError] = useState('');
   const expired = useUntil(item.expireAt, { onFalsy: false });
+  const handleApiError = useHandleApiError();
 
   return (
     <HavePermissionsOnly permissions={['ItemBidding']}>
@@ -490,16 +494,8 @@ function ReadyStatusHandleButtons({ item }: { item: Item }) {
             setError('');
             if (!auctionId) return;
             const res = await ItemBidding(item.id, { auctionId });
-            if (res.error === '1020') {
-              setError('沒有啟用中的盯標帳號');
-              return;
-            }
-            if (res.error === '1025') {
-              setError('日拍物品代號不能重複');
-              return;
-            }
             if (res.error) {
-              enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+              handleApiError(res.error);
               return;
             }
             enqueueSnackbar('已將物品標記為上架', { variant: 'success' });

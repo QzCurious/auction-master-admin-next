@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { BidAuctionItem } from '@/api/backend/auction-items/BidAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign } from '@/domain/static/static';
 import {
   Button,
@@ -59,6 +60,7 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
       price: '',
     },
   });
+  const handleApiError = useHandleApiError();
 
   const min = useMemo(() => {
     if (auctionItem.currentPrice >= 50000) {
@@ -89,7 +91,7 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
             price: parseInt(data.price),
           });
           if (res.error) {
-            enqueueSnackbar(`下標失敗: ${res.error}`, { variant: 'error' });
+            handleApiError(res.error);
             return;
           }
           enqueueSnackbar('下標成功', { variant: 'success' });

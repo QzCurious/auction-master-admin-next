@@ -3,8 +3,7 @@
 import React from 'react';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
+import { HandleApiError, useHandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign } from '@/domain/static/static';
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Skeleton, Typography } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
@@ -33,12 +32,9 @@ export function PickingList() {
     queries: pickedItemIds.map(GetAuctionItemQueryOptions),
   });
 
-  const error = auctionItemQueries.map((q) => q.data?.error);
-  if (error.some((err) => err === '1001')) {
-    return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
-  }
-  if (error.some((err) => err === '1003')) {
-    return <RedirectAuthError />;
+  const auctionItemQueryError = auctionItemQueries.find((q) => q.data?.error);
+  if (auctionItemQueryError?.data?.error) {
+    return <HandleApiError error={auctionItemQueryError.data.error} />;
   }
 
   const queries = auctionItemQueries.filter((q) => !q.isError);

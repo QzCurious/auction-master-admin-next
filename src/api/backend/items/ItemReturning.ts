@@ -1,14 +1,13 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 import * as R from 'remeda';
 import { z } from 'zod';
-
-import { apiClient } from '../../apiClient';
-import { withAuth } from '../../withAuth';
 
 const ReqSchema = z.object({
   consignorId: z.number(),
@@ -24,18 +23,18 @@ const ReqSchema = z.object({
 
 type Data = 'Success';
 
-type ErrorCode = never;
-
 export async function ItemReturning(payload: z.output<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/items/returning', {
-    method: 'POST',
-    body: urlencoded,
-  });
+  const res = await apiClientWithToken
+    .post<SuccessResponseJson<Data>>('backend/items/returning', {
+      body: urlencoded,
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   revalidateTag('items');
 

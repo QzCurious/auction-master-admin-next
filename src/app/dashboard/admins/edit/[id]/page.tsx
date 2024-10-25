@@ -3,9 +3,8 @@ import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
 import { GetAdmin } from '@/api/backend/admins/GetAdmin';
 import { GetRoles } from '@/api/backend/rbac/GetRoles';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { havePermissions, PermissionsGuard } from '@/domain/permission/havePermissions.server';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
@@ -47,12 +46,8 @@ async function Content({ params }: PageProps) {
     (await havePermissions(['GetRoles'])) ? GetRoles() : undefined,
   ]);
 
-  if (adminRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAdmin']} />;
-  }
-
-  if (adminRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (adminRes.error) {
+    return <HandleApiError error={adminRes.error} />;
   }
 
   if (!adminRes.data) {

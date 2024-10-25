@@ -1,12 +1,11 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { z } from 'zod';
-
-import { apiClient } from '../../apiClient';
-import { withAuth } from '../../withAuth';
 
 const ReqSchema = z.object({
   action: z.enum(['approve', 'reject']),
@@ -24,10 +23,12 @@ export async function ItemAppraisalReview(id: number, payload: z.input<typeof Re
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items/${id}/review`, {
-    method: 'POST',
-    body: urlencoded,
-  });
+  const res = await apiClientWithToken
+    .post<SuccessResponseJson<Data>>(`backend/items/${id}/review`, {
+      body: urlencoded,
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   revalidateTag('items');
 

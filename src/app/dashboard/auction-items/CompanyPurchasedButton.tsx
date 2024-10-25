@@ -2,6 +2,7 @@
 
 import { CompanyPurchased } from '@/api/backend/auction-items/CompanyPurchased';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { Button } from '@mui/material';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
@@ -13,6 +14,7 @@ export default function CompanyPurchasedButton({ auctionItem }: { auctionItem: A
     variant: 'popover',
   });
   const { enqueueSnackbar } = useSnackbar();
+  const handleApiError = useHandleApiError();
 
   return (
     <>
@@ -25,7 +27,7 @@ export default function CompanyPurchasedButton({ auctionItem }: { auctionItem: A
         onConfirm={async () => {
           const res = await CompanyPurchased(auctionItem.auctionId);
           if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
+            handleApiError(res.error);
             return;
           }
           enqueueSnackbar(`已標記為公司買回`, { variant: 'success' });

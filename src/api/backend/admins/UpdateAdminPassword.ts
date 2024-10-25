@@ -1,8 +1,8 @@
 'use server';
 
-import { apiClient } from '@/api/apiClient';
-import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { z } from 'zod';
 
@@ -13,22 +13,18 @@ const ReqSchema = z.object({
 
 type Data = 'Success';
 
-type ErrorCode =
-  // password cannot be same as old password
-  | '11'
-  // old password incorrect
-  | '1004';
-
 export async function UpdateAdminPassword(id: number, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/admins/${id}/password`, {
-    method: 'PATCH',
-    body: urlencoded,
-  });
+  const res = await apiClientWithToken
+    .patch<SuccessResponseJson<Data>>(`backend/admins/${id}/password`, {
+      body: urlencoded,
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

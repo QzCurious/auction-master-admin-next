@@ -1,43 +1,27 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-
-import { apiClient, type ApiClientResponse } from '../../apiClient';
-import { withAuth } from '../../withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 
 type Data = 'Success';
 
-type RejectErrorCode = never;
-
-type ApproveErrorCode =
-  // name incorrect
-  | '1005'
-  // identification incorrect
-  | '1006'
-  // consignor verification not exist
-  | '1604';
-
-export async function HandleConsignorVerification(
-  id: number,
-  action: 'reject'
-): Promise<ApiClientResponse<'Success', '1001' | '1003' | RejectErrorCode>>;
-export async function HandleConsignorVerification(
-  id: number,
-  action: 'approve'
-): Promise<ApiClientResponse<'Success', '1001' | '1003' | ApproveErrorCode>>;
 export async function HandleConsignorVerification(id: number, action: 'approve' | 'reject') {
   if (action === 'approve') {
-    const res = await withAuth(apiClient)<Data, ApproveErrorCode>(`/backend/consignors/verifications/${id}/${action}`, {
-      method: 'POST',
-    });
+    const res = await apiClientWithToken
+      .post<SuccessResponseJson<Data>>(`backend/consignors/verifications/${id}/${action}`, {})
+      .json()
+      .catch(createApiErrorServerSide);
 
     revalidateTag('consignorVerifications');
     return res;
   }
 
-  const res = await withAuth(apiClient)<Data, RejectErrorCode>(`/backend/consignors/verifications/${id}/${action}`, {
-    method: 'POST',
-  });
+  const res = await apiClientWithToken
+    .post<SuccessResponseJson<Data>>(`backend/consignors/verifications/${id}/${action}`)
+    .json()
+    .catch(createApiErrorServerSide);
 
   revalidateTag('consignorVerifications');
   return res;

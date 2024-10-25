@@ -6,7 +6,7 @@ import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { GetItemAndDetails } from '@/api/backend/items/GetItemAndDetails';
 import { GetRecords, type Record } from '@/api/backend/reports/GetRecords';
 import { GetRecordsSummary, type RecordSummary } from '@/api/backend/reports/GetRecordsSummary';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import AuctionItemPreviewPopover from '@/domain/crud/AuctionItemPreviewPopover';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import ItemPreviewPopover from '@/domain/crud/ItemPreviewPopover';
@@ -16,7 +16,6 @@ import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import {
   currencySign,
   DATE_TIME_FORMAT,
@@ -97,12 +96,11 @@ async function Content({ searchParams }: PageProps) {
     }),
   ]);
 
-  if (summaryRes.error === '1001' || recordsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetRecords']} />;
+  if (summaryRes.error) {
+    return <HandleApiError error={summaryRes.error} />;
   }
-
-  if (summaryRes.error === '1003' || recordsRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (recordsRes.error) {
+    return <HandleApiError error={recordsRes.error} />;
   }
 
   return (

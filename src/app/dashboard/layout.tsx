@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { GetAdminPermissions } from '@/api/backend/rbac/GetAdminPermissions';
-import { getUser } from '@/domain/auth/getToken';
 import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { getJwt } from '@/domain/auth/getJwt';
 import { UserContextProvider } from '@/domain/auth/UserContext';
 import { PermissionsContextProvider } from '@/domain/permission/PermissionsContext';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
@@ -18,14 +18,14 @@ interface LayoutProps {
 }
 
 export default async function Layout({ children }: LayoutProps) {
-  const user = await getUser();
-  if (!user) {
+  const jwt = await getJwt();
+  if (!jwt) {
     return <RedirectAuthError />;
   }
-  const permissionsRes = await GetAdminPermissions(user.account);
+  const permissionsRes = await GetAdminPermissions(jwt.account);
 
   return (
-    <UserContextProvider user={user}>
+    <UserContextProvider user={jwt}>
       <PermissionsContextProvider permissions={permissionsRes.data ?? {}}>
         <GlobalStyles
           styles={{

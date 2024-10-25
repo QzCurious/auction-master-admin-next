@@ -1,8 +1,8 @@
 'use server';
 
-import { apiClient } from '@/api/apiClient';
-import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { type ADMIN_STATUS } from '@/domain/static/static-config-mappers';
 import { z } from 'zod';
@@ -29,20 +29,20 @@ interface Data {
   count: number;
 }
 
-type ErrorCode = never;
-
 export async function GetAdmins(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/admins?${query.toString()}`, {
-    method: 'GET',
-    next: {
-      tags: ['admins'],
-    },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>(`backend/admins?${query.toString()}`, {
+      next: {
+        tags: ['admins'],
+      },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

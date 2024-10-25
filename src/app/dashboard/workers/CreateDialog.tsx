@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { CreateWorker } from '@/api/backend/workers/CreateWorker';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -31,6 +32,7 @@ const Schema = z.object({
 export default function CreateDialog() {
   const [open, setOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const handleApiError = useHandleApiError();
 
   const {
     control,
@@ -59,7 +61,7 @@ export default function CreateDialog() {
           onSubmit={handleSubmit(async (data) => {
             const res = await CreateWorker({ ...data });
             if (res.error) {
-              enqueueSnackbar(res.error, { variant: 'error' });
+              handleApiError(res.error);
               return;
             }
             enqueueSnackbar('新增成功', { variant: 'success' });

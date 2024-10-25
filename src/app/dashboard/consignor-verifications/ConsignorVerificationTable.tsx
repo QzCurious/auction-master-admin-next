@@ -4,6 +4,8 @@ import * as React from 'react';
 import { useState, useTransition } from 'react';
 import { type ConsignorVerification } from '@/api/backend/consignor/AdminGetConsignorVerifications';
 import { HandleConsignorVerification } from '@/api/backend/consignor/HandleConsignorVerification';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { DATE_FORMAT } from '@/domain/static/static';
 import { CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
@@ -32,7 +34,6 @@ import { format } from 'date-fns';
 import { useSnackbar } from 'notistack';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 interface ConsignorVerificationTableProps {
   rows: ConsignorVerification[];
@@ -105,6 +106,7 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { enqueueSnackbar } = useSnackbar();
+  const handleApiError = useHandleApiError();
 
   return (
     <>
@@ -218,7 +220,7 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
               startTransition(async () => {
                 const res = await HandleConsignorVerification(consignorVerification.id, 'reject');
                 if (res.error) {
-                  enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
+                  handleApiError(res.error);
                   return;
                 }
                 setOpen(false);
@@ -236,12 +238,8 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
             onClick={() => {
               startTransition(async () => {
                 const res = await HandleConsignorVerification(consignorVerification.id, 'approve');
-                if (res.error === '1604') {
-                  enqueueSnackbar(`此身份驗證申請不存在: ${res.error}`, { variant: 'error' });
-                  return;
-                }
                 if (res.error) {
-                  enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error' });
+                  handleApiError(res.error);
                   return;
                 }
                 setOpen(false);

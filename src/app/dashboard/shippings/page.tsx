@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
 import { GetShippings } from '@/api/backend/shippings/GetShippings';
 import { GetConfigs } from '@/api/GetConfigs';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { AuctionIdFilter } from '@/domain/crud/AuctionIdFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { RangeFilter } from '@/domain/crud/RangeFilter';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
 import { Box } from '@mui/material';
@@ -67,12 +66,11 @@ async function Content({ searchParams }: PageProps) {
 
   const [shippingsRes, configsRes] = await Promise.all([GetShippings(q), GetConfigs()]);
 
-  if (shippingsRes.error === '1001' || configsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetShippings']} />;
+  if (shippingsRes.error) {
+    return <HandleApiError error={shippingsRes.error} />;
   }
-
-  if (shippingsRes.error === '1003' || configsRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (configsRes.error) {
+    return <HandleApiError error={configsRes.error} />;
   }
 
   return (

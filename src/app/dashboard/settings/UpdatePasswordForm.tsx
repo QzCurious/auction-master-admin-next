@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useContext, useState } from 'react';
 import { UpdateAdminPassword } from '@/api/backend/admins/UpdateAdminPassword';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { UserContext } from '@/domain/auth/UserContext';
 import { useHandleNoPermissions } from '@/domain/permission/useHandleNoPermissions';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -47,6 +48,7 @@ export function UpdatePasswordForm(): React.JSX.Element {
   });
   const { enqueueSnackbar } = useSnackbar();
   const handleNoPermissions = useHandleNoPermissions();
+  const handleApiError = useHandleApiError();
 
   return (
     <form
@@ -57,16 +59,8 @@ export function UpdatePasswordForm(): React.JSX.Element {
           password: data.password,
         });
 
-        if (res.error === '11') {
-          setError('password', { message: '新密碼不能與舊密碼相同' });
-          return;
-        }
-        if (res.error === '1004') {
-          setError('oldPassword', { message: '舊密碼錯誤' });
-          return;
-        }
         if (res.error) {
-          enqueueSnackbar(`密碼變更失敗: ${res.error}`, { variant: 'error' });
+          handleApiError(res.error);
           return;
         }
 

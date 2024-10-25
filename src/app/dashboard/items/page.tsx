@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import { GetItemsAndDetails } from '@/api/backend/items/GetItemsAndDetails';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { AutoRefreshEffect } from '@/helper/useAutoRefresh';
@@ -67,12 +66,8 @@ async function Content({ searchParams }: PageProps) {
     }),
   ]);
 
-  if (itemsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetItemsAndDetails']} />;
-  }
-
-  if (itemsRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (itemsRes.error) {
+    return <HandleApiError error={itemsRes.error} />;
   }
 
   return (

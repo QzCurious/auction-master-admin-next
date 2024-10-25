@@ -4,8 +4,7 @@ import React from 'react';
 import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetail.query';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign, DATE_FORMAT } from '@/domain/static/static';
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Skeleton, Typography } from '@mui/material';
 import { useQueries, useQuery } from '@tanstack/react-query';
@@ -32,12 +31,9 @@ export function PickingList() {
     queries: pickedItemIds.map(GetItemAndDetailQueryOptions),
   });
 
-  const error = itemQueries.map((q) => q.data?.error);
-  if (error.some((err) => err === '1001')) {
-    return <WithoutPermissionsError permissions={['GetItemAndDetails']} />;
-  }
-  if (error.some((err) => err === '1003')) {
-    return <RedirectAuthError />;
+  const error = itemQueries.find((q) => q.data?.error);
+  if (error?.data?.error) {
+    return <HandleApiError error={error.data.error} />;
   }
 
   const queries = itemQueries.filter((q) => !q.isError);
@@ -82,6 +78,10 @@ export function PickedListItem({ item }: { item: Item }) {
   const configsRes = useQuery(GetConfigsQueryOptions());
   if (configsRes.error) return null;
   if (configsRes.isPending) return null;
+
+  if (configsRes.data.error) {
+    return <HandleApiError error={configsRes.data.error} />;
+  }
 
   return (
     <ListItem alignItems="flex-start">

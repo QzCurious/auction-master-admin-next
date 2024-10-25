@@ -1,12 +1,11 @@
 'use server';
 
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { type CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
 import { z } from 'zod';
-
-import { apiClient } from '../../apiClient';
-import { throwIfInvalid } from '../../helpers/throwIfInvalid';
-import { withAuth } from '../../withAuth';
 
 const ReqSchema = z.object({
   account: z.string().optional(),
@@ -43,18 +42,18 @@ interface Data {
   count: number;
 }
 
-type ErrorCode = never;
-
 export async function AdminGetConsignorVerifications(payload: z.input<typeof ReqSchema>) {
   const parsed = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
   appendEntries(query, parsed);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/consignors/verifications?${query}`, {
-    method: 'GET',
-    next: { tags: ['consignorsVerifications'] },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>(`backend/consignors/verifications?${query}`, {
+      next: { tags: ['consignorsVerifications'] },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

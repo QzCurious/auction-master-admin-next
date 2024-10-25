@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { UpdateAuctionItem } from '@/api/backend/auction-items/UpdateAuctionItem';
 import { GetWorkersQueryOptions } from '@/api/backend/workers/GetWorkers.query';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
@@ -240,6 +241,7 @@ function EditDialog({ row }: { row: AuctionItem }) {
     },
     resolver: zodResolver(FormSchema),
   });
+  const handleApiError = useHandleApiError();
 
   return (
     <>
@@ -258,7 +260,7 @@ function EditDialog({ row }: { row: AuctionItem }) {
               });
 
               if (res.error) {
-                enqueueSnackbar(res.error, { variant: 'error' });
+                handleApiError(res.error);
                 return;
               }
               enqueueSnackbar('更新成功', { variant: 'success' });

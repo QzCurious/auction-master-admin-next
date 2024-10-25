@@ -2,9 +2,8 @@ import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { GetPermissions } from '@/api/backend/rbac/GetPermissions';
 import { GetRolePermissions } from '@/api/backend/rbac/GetRolePermissions';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
@@ -42,12 +41,12 @@ export default Page;
 
 async function Content({ params }: PageProps) {
   const [permissionsRes, rolesPermissionsRes] = await Promise.all([GetPermissions(), GetRolePermissions(params.role)]);
-  if (permissionsRes.error === '1001' || rolesPermissionsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetPermissions', 'GetRolePermissions']} />;
-  }
 
-  if (permissionsRes.error === '1003' || rolesPermissionsRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (permissionsRes.error) {
+    return <HandleApiError error={permissionsRes.error} />;
+  }
+  if (rolesPermissionsRes.error) {
+    return <HandleApiError error={rolesPermissionsRes.error} />;
   }
 
   return (

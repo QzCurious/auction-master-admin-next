@@ -1,12 +1,11 @@
 'use server';
 
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { type WALLET_ACTION } from '@/domain/static/static-config-mappers';
 import { z } from 'zod';
-
-import { apiClient } from '../../apiClient';
-import { throwIfInvalid } from '../../helpers/throwIfInvalid';
-import { withAuth } from '../../withAuth';
 
 const ReqSchema = z.object({
   consignorId: z.coerce.number().optional(),
@@ -42,10 +41,12 @@ export async function AdminGetWalletLogs(payload: z.input<typeof ReqSchema>) {
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/wallets/logs?${query}`, {
-    method: 'GET',
-    next: { tags: ['wallets'] },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>(`backend/wallets/logs?${query}`, {
+      next: { tags: ['wallets'] },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

@@ -1,7 +1,8 @@
 'use server';
 
-import { apiClient } from '@/api/apiClient';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 import { type ADMIN_STATUS } from '@/domain/static/static-config-mappers';
 
 import { type Role } from '../rbac/GetRoles';
@@ -18,15 +19,15 @@ export interface Admin {
 
 interface Data extends Admin {}
 
-type ErrorCode = never;
-
 export async function GetAdmin(id: number) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/admins/${id}`, {
-    method: 'GET',
-    next: {
-      tags: ['admins'],
-    },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>(`backend/admins/${id}`, {
+      next: {
+        tags: ['admins'],
+      },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

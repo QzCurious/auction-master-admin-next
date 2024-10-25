@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { type Worker } from '@/api/backend/workers/GetWorkers';
 import { SetWorkerCookie } from '@/api/backend/workers/SetWorkerCookie';
 import { ToggleActivateWorker } from '@/api/backend/workers/ToggleActivateWorker';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import CookieOutlinedIcon from '@mui/icons-material/CookieOutlined';
@@ -37,7 +39,6 @@ import { enqueueSnackbar } from 'notistack';
 import { Controller, useForm } from 'react-hook-form';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import DeleteDialog from './DeleteDialog';
 
@@ -203,6 +204,7 @@ function CookieInputPopover({ row }: { row: Worker }) {
   const popupState = usePopupState({
     variant: 'popover',
   });
+  const handleApiError = useHandleApiError();
 
   return (
     <>
@@ -225,12 +227,8 @@ function CookieInputPopover({ row }: { row: Worker }) {
           sx={{ p: '16px 20px' }}
           onSubmit={handleSubmit(async (data) => {
             const res = await SetWorkerCookie(row.id, data.cookies);
-            if (res.error === '1401') {
-              enqueueSnackbar('無效的 cookies', { variant: 'error' });
-              return;
-            }
             if (res.error) {
-              enqueueSnackbar(res.error, { variant: 'error' });
+              handleApiError(res.error);
               return;
             }
             enqueueSnackbar('登入 cookies 已設定', { variant: 'success' });

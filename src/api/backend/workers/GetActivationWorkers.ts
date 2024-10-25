@@ -1,9 +1,9 @@
 'use server';
 
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 import { type WORKER_STATUS, type WORKER_TYPE } from '@/domain/static/static-config-mappers';
-
-import { apiClient } from '../../apiClient';
-import { withAuth } from '../../withAuth';
 
 export interface Worker {
   id: number;
@@ -25,13 +25,13 @@ export interface Worker {
 
 type Data = Array<Worker>;
 
-type ErrorCode = never;
-
 export async function GetActivationWorkers() {
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/workers/activation', {
-    method: 'GET',
-    next: { tags: ['workers'] },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>('backend/workers/activation', {
+      next: { tags: ['workers'] },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

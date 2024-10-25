@@ -2,14 +2,14 @@ import { type Metadata } from 'next';
 import Link from 'next/link';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminGetWalletLogs, type WalletLogs } from '@/api/backend/wallets/AdminGetWalletLogs';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { RangeFilter } from '@/domain/crud/RangeFilter';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { WALLET_ACTION } from '@/domain/static/static-config-mappers';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
@@ -28,7 +28,6 @@ import { format } from 'date-fns';
 import { Provider } from 'jotai';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import { ActionFilter } from './ActionFilter';
 import { fixRange, MAX_MONTHS, SearchParamsSchema } from './SearchParamsSchema';
@@ -66,12 +65,8 @@ async function Content({ searchParams }: PageProps) {
     }),
   ]);
 
-  if (walletLogsRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['AdminGetWalletLogs']} />;
-  }
-
-  if (walletLogsRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (walletLogsRes.error) {
+    return <HandleApiError error={walletLogsRes.error} />;
   }
 
   return (
@@ -144,11 +139,8 @@ async function Content({ searchParams }: PageProps) {
 async function ConsignorInfo({ consignorId }: { consignorId: WalletLogs['consignorId'] }) {
   const res = await AdminGetConsignor(consignorId);
 
-  if (res.error === '1001') {
-    return <WithoutPermissionsError permissions={['AdminGetConsignor']} />;
-  }
-  if (res.error === '1003') {
-    return <RedirectAuthError />;
+  if (res.error) {
+    return <HandleApiError error={res.error} />;
   }
 
   return (

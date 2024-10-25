@@ -6,9 +6,8 @@ import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { GetItemAndDetails } from '@/api/backend/items/GetItemAndDetails';
 import { GetWorker } from '@/api/backend/workers/GetWorker';
 import { GetWorkers } from '@/api/backend/workers/GetWorkers';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { havePermissions, PermissionsGuard } from '@/domain/permission/havePermissions.server';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -50,12 +49,8 @@ export default Page;
 async function Content({ params }: PageProps) {
   const auctionItemRes = await GetAuctionItem(params.id);
 
-  if (auctionItemRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAuctionItem']} />;
-  }
-
-  if (auctionItemRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (auctionItemRes.error) {
+    return <HandleApiError error={auctionItemRes.error} />;
   }
 
   if (!auctionItemRes.data) {

@@ -6,8 +6,9 @@ import { CookieConfigs } from '@/domain/auth/CookieConfigs';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { z } from 'zod';
 
-import { apiClient } from './apiClient';
-import { throwIfInvalid } from './helpers/throwIfInvalid';
+import { apiClientBase } from './core/apiClientBase';
+import { createApiErrorServerSide } from './core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from './core/static';
 
 const ReqSchema = z.object({
   account: z.string().min(1, 'Account is required'),
@@ -19,28 +20,20 @@ interface Data {
   refreshToken: string;
 }
 
-type ErrorCode =
-  // PermissionDenied
-  | '1001'
-  // block user
-  | '1002'
-  // PasswordIncorrect
-  | '1004'
-  // AdminNotExist
-  | '1502';
-
 export async function AdminLogin(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await apiClient<Data, ErrorCode>('/backend/session', {
+  const res = await apiClientBase<SuccessResponseJson<Data>>('backend/session', {
     method: 'POST',
     body: urlencoded,
-  });
+  })
+    .json()
+    .catch(createApiErrorServerSide);
 
-  if (res.error) {
+  if (!res.data) {
     return res;
   }
 
@@ -49,5 +42,5 @@ export async function AdminLogin(payload: z.input<typeof ReqSchema>) {
 
   revalidatePath('/', 'layout');
 
-  return res;
+  return null
 }

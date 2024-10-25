@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { AdminGetConsignors } from '@/api/backend/consignor/AdminGetConsignors';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
@@ -57,12 +57,12 @@ async function Table({ searchParams }: PageProps) {
     filters.consignorId ? AdminGetConsignor(filters.consignorId) : null,
   ]);
 
-  if (consignorsRes?.error === '1001' || consignorRes?.error === '1001') {
-    return <WithoutPermissionsError permissions={['AdminGetConsignors']} />;
+  if (consignorsRes?.error) {
+    return <HandleApiError error={consignorsRes.error} />;
   }
 
-  if (consignorsRes?.error === '1003' || consignorRes?.error === '1003') {
-    return <RedirectAuthError />;
+  if (consignorRes?.error) {
+    return <HandleApiError error={consignorRes.error} />;
   }
 
   return (

@@ -2,6 +2,7 @@
 
 import { type Record } from '@/api/backend/reports/GetRecords';
 import { RecordPaymentReview } from '@/api/backend/reports/RecordPaymentReview';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { Button } from '@mui/material';
 import { Stack } from '@mui/system';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
@@ -14,6 +15,7 @@ function ApprovePaymentButton({ recordId }: { recordId: Record['id'] }) {
     variant: 'popover',
   });
   const { enqueueSnackbar } = useSnackbar();
+  const handleApiError = useHandleApiError();
 
   return (
     <>
@@ -27,7 +29,7 @@ function ApprovePaymentButton({ recordId }: { recordId: Record['id'] }) {
         onConfirm={async () => {
           const res = await RecordPaymentReview(recordId, { action: 'approve' });
           if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+            handleApiError(res.error);
             return;
           }
           enqueueSnackbar(`已確認付款`, { variant: 'success' });
@@ -44,6 +46,7 @@ function RejectPaymentButton({ recordId }: { recordId: Record['id'] }) {
     variant: 'popover',
   });
   const { enqueueSnackbar } = useSnackbar();
+  const handleApiError = useHandleApiError();
 
   return (
     <>
@@ -57,7 +60,7 @@ function RejectPaymentButton({ recordId }: { recordId: Record['id'] }) {
         onConfirm={async () => {
           const res = await RecordPaymentReview(recordId, { action: 'reject' });
           if (res.error) {
-            enqueueSnackbar(`操作失敗: ${res.error}`, { variant: 'error', persist: true });
+            handleApiError(res.error);
             return;
           }
           enqueueSnackbar(`已取消付款`, { variant: 'success' });

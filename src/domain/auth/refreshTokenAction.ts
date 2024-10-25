@@ -2,18 +2,19 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { AdminRefreshToken } from '@/api/AdminRefreshToken';
 
 import { CookieConfigs } from './CookieConfigs';
-import { getToken } from './getToken';
 
 export default async function refreshTokenAction() {
-  const { token, res } = await getToken({ force: true });
+  const res = await AdminRefreshToken();
 
-  if (token) {
-    cookies().set(CookieConfigs.token.name, token, CookieConfigs.token.opts());
-    revalidatePath('/', 'layout');
-    return;
+  if (res.error) {
+    return res;
   }
 
-  return `Failed to refresh token: ${res?.error}`;
+  cookies().set(CookieConfigs.token.name, res.data.token, CookieConfigs.token.opts());
+  revalidatePath('/', 'layout');
+
+  return res;
 }

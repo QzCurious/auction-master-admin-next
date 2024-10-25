@@ -1,5 +1,6 @@
-import { apiClient } from '@/api/apiClient';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 import { type PermissionKey } from '@/domain/permission/types';
 
 export interface Permission {
@@ -17,12 +18,11 @@ export interface PermissionGroup {
 
 type Data = Array<PermissionGroup>;
 
-type ErrorCode = never;
-
 export async function GetPermissions() {
-  const res = await withAuth(apiClient)<Data, ErrorCode>('/backend/permissions', {
-    method: 'GET',
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>('backend/permissions', {})
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

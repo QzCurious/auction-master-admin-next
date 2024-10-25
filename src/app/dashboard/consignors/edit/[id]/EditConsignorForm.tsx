@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
@@ -114,6 +115,7 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
   });
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
+  const handleApiError = useHandleApiError();
 
   return (
     <form
@@ -127,9 +129,10 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
 
         const res = await AdminUpdateConsignor(consignor.id, dirtyValues);
         if (res.error) {
-          enqueueSnackbar(res.error, { variant: 'error' });
+          handleApiError(res.error);
           return;
         }
+
         enqueueSnackbar('寄售人資訊已更新', { variant: 'success' });
         if (process.env.NODE_ENV !== 'development') {
           router.push('/dashboard/consignors');

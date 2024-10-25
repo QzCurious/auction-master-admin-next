@@ -2,9 +2,8 @@ import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
 import { GetShipping } from '@/api/backend/shippings/GetShipping';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { SITE_NAME } from '@/domain/static/static';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
@@ -45,12 +44,8 @@ export default Page;
 async function Content({ params }: PageProps) {
   const shippingRes = await GetShipping(params.id);
 
-  if (shippingRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetShipping']} />;
-  }
-
-  if (shippingRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (shippingRes.error) {
+    return <HandleApiError error={shippingRes.error} />;
   }
 
   if (!shippingRes.data) {

@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetail.query';
 import { ItemReturning } from '@/api/backend/items/ItemReturning';
 import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
+import { HandleApiError, useHandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign } from '@/domain/static/static';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -141,16 +140,16 @@ function ReturnItemsForm() {
     },
     resolver: zodResolver(Schema),
   });
+  const handleApiError = useHandleApiError();
 
   const configsRes = useQuery(GetConfigsQueryOptions());
   if (configsRes.error) return null;
   if (configsRes.isPending) return null;
+  if (configsRes.data.error) return <HandleApiError error={configsRes.data.error} />;
 
-  if (itemQueries.some((q) => q.data?.error === '1001')) {
-    return <WithoutPermissionsError permissions={['GetItemAndDetails']} />;
-  }
-  if (itemQueries.some((q) => q.data?.error === '1003')) {
-    return <RedirectAuthError />;
+  const itemQueryError = itemQueries.find((q) => q.data?.error);
+  if (itemQueryError?.data?.error) {
+    return <HandleApiError error={itemQueryError.data.error} />;
   }
 
   const queries = itemQueries.filter((q) => !q.isError);
@@ -173,7 +172,7 @@ function ReturnItemsForm() {
           });
 
           if (res.error) {
-            enqueueSnackbar(res.error, { variant: 'error' });
+            handleApiError(res.error);
             return;
           }
 

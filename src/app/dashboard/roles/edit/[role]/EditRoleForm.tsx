@@ -6,6 +6,7 @@ import { AddPermissionForRole } from '@/api/backend/rbac/AddPermissionForRole';
 import { DeletePermissionForRole } from '@/api/backend/rbac/DeletePermissionForRole';
 import { type Permission, type PermissionGroup } from '@/api/backend/rbac/GetPermissions';
 import { type RolePermissions } from '@/api/backend/rbac/GetRolePermissions';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { FormSubmissionWithDirtyFields } from '@/helper/FormSubmissionWithDirtyFields';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -56,6 +57,7 @@ export default function EditRoleForm({ role, rolePermissions, permissionGroups }
   } = formMethods;
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
+  const handleApiError = useHandleApiError();
 
   return (
     <FormProvider {...formMethods}>
@@ -97,7 +99,7 @@ export default function EditRoleForm({ role, rolePermissions, permissionGroups }
           const errors = res.filter((x) => !!x && !!x.error).map((res) => res.error);
           if (errors.length) {
             for (const error of errors) {
-              enqueueSnackbar(error, { variant: 'error' });
+              handleApiError(error);
             }
             return;
           }

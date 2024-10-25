@@ -1,12 +1,11 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { z } from 'zod';
-
-import { apiClient } from '../../apiClient';
-import { withAuth } from '../../withAuth';
 
 const ReqSchema = z.object({
   auctionId: z.string(),
@@ -14,22 +13,18 @@ const ReqSchema = z.object({
 
 type Data = 'Success';
 
-type ErrorCode =
-  // worker id does not exist
-  | '1020'
-  // auction item not closed
-  | '1025';
-
 export async function ItemBidding(id: number, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/items/${id}/bidding`, {
-    method: 'POST',
-    body: urlencoded,
-  });
+  const res = await apiClientWithToken
+    .post<SuccessResponseJson<Data>>(`backend/items/${id}/bidding`, {
+      body: urlencoded,
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   revalidateTag('items');
 

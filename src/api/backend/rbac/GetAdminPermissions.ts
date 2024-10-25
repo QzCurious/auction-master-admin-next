@@ -1,7 +1,8 @@
-// eslint-disable-next-line import/named
+/* eslint-disable import/named */
 import { cache } from 'react';
-import { apiClient } from '@/api/apiClient';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 import { type PermissionKey } from '@/domain/permission/types';
 
 import { type Admin } from '../admins/GetAdmins';
@@ -10,15 +11,15 @@ export type Permissions = Partial<Record<PermissionKey, { fields: Array<string> 
 
 type Data = Permissions;
 
-type ErrorCode = never;
-
 async function GetAdminPermissions(account: Admin['account']) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/permissions/${account}`, {
-    method: 'GET',
-    next: {
-      tags: ['roles', 'admins'],
-    },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>(`backend/permissions/${account}`, {
+      next: {
+        tags: ['roles', 'admins'],
+      },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }

@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { GetAdmins } from '@/api/backend/admins/GetAdmins';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { Button, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
@@ -58,12 +57,8 @@ async function Table({ searchParams }: PageProps) {
     }),
   ]);
 
-  if (adminRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetAdmins']} />;
-  }
-
-  if (adminRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (adminRes.error) {
+    return <HandleApiError error={adminRes.error} />;
   }
 
   return <AdminTable rows={adminRes.data.admins} count={adminRes.data.count} />;

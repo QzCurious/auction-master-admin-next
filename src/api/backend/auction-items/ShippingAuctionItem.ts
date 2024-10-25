@@ -1,9 +1,9 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClient } from '@/api/apiClient';
-import { throwIfInvalid } from '@/api/helpers/throwIfInvalid';
-import { withAuth } from '@/api/withAuth';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 import { z } from 'zod';
 
@@ -38,18 +38,15 @@ const ReqSchema = z.discriminatedUnion('shipmentType', [
 
 type Data = 'Success';
 
-type ErrorCode = never;
-
 export async function ShippingAuctionItem(payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/shipping`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const res = await apiClientWithToken
+    .post<SuccessResponseJson<Data>>(`backend/auction-items/shipping`, {
+      json: data,
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   revalidateTag('auction-items');
 

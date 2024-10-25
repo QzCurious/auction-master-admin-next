@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { type Worker } from '@/api/backend/workers/GetWorker';
 import { UpdateWorker } from '@/api/backend/workers/UpdateWorker';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
@@ -66,6 +67,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const havePermissions = useHavePermissions();
+  const handleApiError = useHandleApiError();
 
   return (
     <Card
@@ -77,7 +79,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
 
         const res = await UpdateWorker(worker.id, dirtyValues);
         if (res.error) {
-          enqueueSnackbar(res.error, { variant: 'error' });
+          handleApiError(res.error);
           return;
         }
         enqueueSnackbar('更新成功', { variant: 'success' });

@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { type Shipping } from '@/api/backend/shippings/GetShipping';
 import { UpdateShipping } from '@/api/backend/shippings/UpdateShipping';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { currencySign } from '@/domain/static/static';
@@ -91,6 +92,7 @@ export function EditShippingForm({ shipping }: EditShippingFromProps) {
     SHIPPING_STATUS.enum('ClosedStatus'),
     SHIPPING_STATUS.enum('CanceledStatus'),
   ]);
+  const handleApiError = useHandleApiError();
 
   const shipmentType = watch('shipmentType');
 
@@ -119,7 +121,7 @@ export function EditShippingForm({ shipping }: EditShippingFromProps) {
           });
 
           if (res.error) {
-            enqueueSnackbar(res.error, { variant: 'error' });
+            handleApiError(res.error);
             return;
           }
           enqueueSnackbar('更新成功', { variant: 'success' });

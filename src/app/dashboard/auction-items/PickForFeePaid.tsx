@@ -4,6 +4,7 @@ import { useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuctionItemConsignorFeePaid } from '@/api/backend/auction-items/AuctionItemConsignorFeePaid';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { Button, Drawer, Stack, Typography } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
 import { useAtom, useAtomValue } from 'jotai';
@@ -118,6 +119,7 @@ function FeeForm() {
 
   const { enqueueSnackbar } = useSnackbar();
   const [isPending, startTransition] = useTransition();
+  const handleApiError = useHandleApiError();
 
   if (auctionItemQueries.isPending || auctionItemQueries.isError) return;
 
@@ -132,7 +134,7 @@ function FeeForm() {
           const res = await AuctionItemConsignorFeePaid({ auctionId: pickedItemIds });
 
           if (res.error) {
-            enqueueSnackbar(res.error, { variant: 'error' });
+            handleApiError(res.error);
             return;
           }
 

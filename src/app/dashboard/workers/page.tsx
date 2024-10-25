@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import { GetWorkers } from '@/api/backend/workers/GetWorkers';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
+import { HandleApiError } from '@/domain/api/HandleApiError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -56,12 +55,8 @@ async function Content({ searchParams }: PageProps) {
     offset: filters[PAGE] * filters[ROWS_PER_PAGE],
   });
 
-  if (workersRes.error === '1001') {
-    return <WithoutPermissionsError permissions={['GetWorkers']} />;
-  }
-
-  if (workersRes.error === '1003') {
-    return <RedirectAuthError />;
+  if (workersRes.error) {
+    return <HandleApiError error={workersRes.error} />;
   }
 
   return (

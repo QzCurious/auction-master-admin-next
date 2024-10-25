@@ -1,11 +1,11 @@
+/* eslint-disable import/named */
 'use server';
 
-// eslint-disable-next-line import/named
 import { cache } from 'react';
+import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type SuccessResponseJson } from '@/api/core/static';
 import { type AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
-
-import { apiClient } from '../../apiClient';
-import { withAuth } from '../../withAuth';
 
 export interface AuctionItem {
   auctionId: string;
@@ -39,15 +39,13 @@ export interface AuctionItem {
 
 type Data = AuctionItem;
 
-type ErrorCode =
-  // get auction item error
-  '21';
-
 async function GetAuctionItem(id: AuctionItem['auctionId']) {
-  const res = await withAuth(apiClient)<Data, ErrorCode>(`/backend/auction-items/${id}`, {
-    method: 'GET',
-    next: { tags: ['auction-items'] },
-  });
+  const res = await apiClientWithToken
+    .get<SuccessResponseJson<Data>>(`backend/auction-items/${id}`, {
+      next: { tags: ['auction-items'] },
+    })
+    .json()
+    .catch(createApiErrorServerSide);
 
   return res;
 }
