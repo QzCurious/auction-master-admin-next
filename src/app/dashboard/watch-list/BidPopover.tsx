@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { BidAuctionItem } from '@/api/backend/auction-items/BidAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { currencySign } from '@/domain/static/static';
@@ -59,6 +60,22 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
     },
   });
 
+  const min = useMemo(() => {
+    if (auctionItem.currentPrice >= 50000) {
+      return auctionItem.currentPrice + 1000;
+    }
+    if (auctionItem.currentPrice >= 10000) {
+      return auctionItem.currentPrice + 500;
+    }
+    if (auctionItem.currentPrice >= 5000) {
+      return auctionItem.currentPrice + 250;
+    }
+    if (auctionItem.currentPrice >= 1000) {
+      return auctionItem.currentPrice + 100;
+    }
+    return auctionItem.currentPrice + 10;
+  }, [auctionItem.currentPrice]);
+
   return (
     <Box sx={{ p: '16px 20px' }}>
       <Typography variant="subtitle1">立即下標</Typography>
@@ -66,6 +83,7 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
         立即下標並將商品加入日拍競標清單
       </Typography> */}
       <form
+        noValidate
         onSubmit={handleSubmit(async (data) => {
           const res = await BidAuctionItem(auctionItem.auctionId, {
             price: parseInt(data.price),
@@ -83,24 +101,35 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
             control={control}
             rules={{
               required: { value: true, message: '請輸入下標金額' },
-              min: { value: auctionItem.currentPrice + 1, message: '不可小於當前金額' },
+              validate: (value) => {
+                const v = parseInt(value);
+                if (min > v) {
+                  return `下標金額不可低於 ${min} 元`;
+                }
+              },
             }}
             render={({ field, fieldState }) => (
-              <FormControl fullWidth error={!!fieldState.error}>
-                <TextField
-                  {...field}
-                  size="small"
-                  type="number"
-                  fullWidth
-                  onChange={(e) => {
-                    field.onChange(e.target.value === '' ? '' : parseInt(e.target.value));
-                  }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
-                  }}
-                />
-                {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
-              </FormControl>
+              <div>
+                <FormControl fullWidth error={!!fieldState.error}>
+                  <TextField
+                    {...field}
+                    size="small"
+                    type="number"
+                    fullWidth
+                    onChange={(e) => {
+                      field.onChange(e.target.value === '' ? '' : parseInt(e.target.value));
+                    }}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">{currencySign('JPY')}</InputAdornment>,
+                    }}
+                    inputProps={{
+                      min,
+                      step: parseInt(field.value) < min ? min - parseInt(field.value) : min - auctionItem.currentPrice,
+                    }}
+                  />
+                  {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                </FormControl>
+              </div>
             )}
           />
           <Button disabled={isSubmitting} type="submit" variant="contained" size="small">
