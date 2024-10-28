@@ -1,6 +1,6 @@
 import { HTTPError } from 'ky';
 
-import { FailedResponseJson } from '../static';
+import { type FailedResponseJson } from '../static';
 
 // https://github.com/win30221/auction-master-code/blob/main/errno/errno.go
 // Undefined = "9999"  // 系統錯誤

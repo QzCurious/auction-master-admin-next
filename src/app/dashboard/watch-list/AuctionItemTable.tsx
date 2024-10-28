@@ -80,7 +80,13 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
           <TableBody>
             {rows.length === 0 && <EmptyTableRow />}
             {rows.map((row) => (
-              <TableRow hover key={row.auctionId}>
+              <TableRow
+                hover
+                key={row.auctionId}
+                sx={{
+                  backgroundColor: row.watcherName === '' ? 'rgba(255, 0, 0, 0.1)' : undefined
+                }}
+              >
                 <TableCell
                   sx={{ maxWidth: '200px' }}
                   title={process.env.NODE_ENV === 'development' ? row.auctionId.toString() : undefined}
