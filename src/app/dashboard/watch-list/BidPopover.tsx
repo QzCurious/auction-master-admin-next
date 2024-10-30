@@ -50,18 +50,6 @@ export default function BidPopover({ auctionItem }: { auctionItem: AuctionItem }
 }
 
 function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
-  const { enqueueSnackbar } = useSnackbar();
-  const {
-    control,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = useForm({
-    defaultValues: {
-      price: '',
-    },
-  });
-  const handleApiError = useHandleApiError();
-
   const min = useMemo(() => {
     if (auctionItem.currentPrice >= 50000) {
       return auctionItem.currentPrice + 1000;
@@ -77,6 +65,18 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
     }
     return auctionItem.currentPrice + 10;
   }, [auctionItem.currentPrice]);
+  const { enqueueSnackbar } = useSnackbar();
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm({
+    values: {
+      price: min,
+    },
+    resetOptions: { keepDirtyValues: true },
+  });
+  const handleApiError = useHandleApiError();
 
   return (
     <Box sx={{ p: '16px 20px' }}>
@@ -88,7 +88,7 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
         noValidate
         onSubmit={handleSubmit(async (data) => {
           const res = await BidAuctionItem(auctionItem.auctionId, {
-            price: parseInt(data.price),
+            price: data.price,
           });
           if (res.error) {
             handleApiError(res.error);
@@ -104,7 +104,7 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
             rules={{
               required: { value: true, message: '請輸入下標金額' },
               validate: (value) => {
-                const v = parseInt(value);
+                const v = value;
                 if (min > v) {
                   return `下標金額不可低於 ${min} 元`;
                 }
@@ -126,7 +126,7 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
                     }}
                     inputProps={{
                       min,
-                      step: parseInt(field.value) < min ? min - parseInt(field.value) : min - auctionItem.currentPrice,
+                      step: field.value < min ? min - field.value : min - auctionItem.currentPrice,
                     }}
                   />
                   {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
