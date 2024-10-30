@@ -23,7 +23,7 @@ const apiClientBase = ky.extend({
             console.log(`response: [${response.status}]:`, await response.clone().text());
           }
         }
-        return response;
+        return response.clone();
       },
     ],
   },
