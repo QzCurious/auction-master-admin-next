@@ -41,7 +41,7 @@ function createApiError(code: string): ApiError {
     case '22': {
       return {
         code,
-        type: 'throw',
+        type: 'toast',
         message: '系統錯誤',
       };
     }

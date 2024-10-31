@@ -19,7 +19,7 @@ import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import {
   currencySign,
   DATE_TIME_FORMAT,
-  letaoLink,
+  letaoItemLink,
   PAGE,
   ROWS_PER_PAGE,
   SITE_NAME,
@@ -798,7 +798,7 @@ async function AuctionItemInfo({ auctionId }: { auctionId: AuctionItem['auctionI
       <div>
         <p>
           商品編號:{' '}
-          <a href={letaoLink(auctionItemRes.data.auctionId)} target="_blank" rel="noreferrer">
+          <a href={letaoItemLink(auctionItemRes.data.auctionId)} target="_blank" rel="noreferrer">
             {auctionItemRes.data.auctionId}
           </a>
         </p>

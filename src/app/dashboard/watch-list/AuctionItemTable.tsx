@@ -10,7 +10,7 @@ import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
-import { currencySign, letaoLink, yahooAuctionLink } from '@/domain/static/static';
+import { currencySign, letaoBidHistoryLink, letaoItemLink, yahooAuctionLink } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS, WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
@@ -120,7 +120,7 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Link href={letaoLink(row.auctionId)} target="_blank" rel="noreferrer" sx={{ color: 'inherit' }}>
+                  <Link href={letaoItemLink(row.auctionId)} target="_blank" rel="noreferrer" sx={{ color: 'inherit' }}>
                     {row.name}
                   </Link>
                 </TableCell>
@@ -140,7 +140,7 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
                 <TableCell>
                   <a
                     style={{ textDecoration: 'none', color: 'inherit' }}
-                    href={letaoLink(row.auctionId)}
+                    href={letaoBidHistoryLink(row.auctionId)}
                     target="_blank"
                     rel="noreferrer"
                   >

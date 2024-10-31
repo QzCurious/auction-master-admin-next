@@ -7,7 +7,7 @@ import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { letaoLink, yahooAuctionLink } from '@/domain/static/static';
+import { letaoItemLink, yahooAuctionLink } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -130,7 +130,7 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
                   </Stack>
                 </TableCell>
                 <TableCell>
-                  <Link href={letaoLink(row.auctionId)} target="_blank" rel="noreferrer" sx={{ color: 'inherit' }}>
+                  <Link href={letaoItemLink(row.auctionId)} target="_blank" rel="noreferrer" sx={{ color: 'inherit' }}>
                     {row.name}
                   </Link>
                 </TableCell>

@@ -37,6 +37,10 @@ export function yahooAuctionLink(auctionId: AuctionItem['auctionId']) {
   return `https://page.auctions.yahoo.co.jp/jp/auction/${auctionId}`;
 }
 
-export function letaoLink(auctionId: AuctionItem['auctionId']) {
+export function letaoItemLink(auctionId: AuctionItem['auctionId']) {
   return `https://www.letao.com.tw/yahoojp/auctions/item.php?aID=${auctionId}`;
+}
+
+export function letaoBidHistoryLink(auctionId: AuctionItem['auctionId']) {
+  return `https://www.letao.com.tw/yahoojp/auctions/bid_history.php?aID=${auctionId}`;
 }
