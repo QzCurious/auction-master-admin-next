@@ -151,12 +151,12 @@ export default function PhotoListSection({ item }: { item: Item }) {
           id="file-upload"
           name="file-upload"
           type="file"
-          accept="image/png, image/jpeg, image/jpg"
+          accept="image/jpeg"
           hidden
           multiple
           onChange={async (e) => {
-            const files = e.target.files;
-            if (!files) return;
+            const files = e.target.files && Array.from(e.target.files).filter((file) => file.type === 'image/jpeg');
+            if (!files?.length) return;
             const formData = new FormData();
             for (let i = 0; i < files.length && i < LIMIT - item.photos.length; i++) {
               formData.append('photo', files[i]);
