@@ -8,6 +8,7 @@ import { ToggleActivateWorker } from '@/api/backend/workers/ToggleActivateWorker
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { type PaginationSearchParams } from '@/domain/static/static';
 import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import CookieOutlinedIcon from '@mui/icons-material/CookieOutlined';
 import EditIcon from '@mui/icons-material/Edit';
@@ -42,12 +43,12 @@ import EmptyTableRow from '@/components/EmptyTableRow';
 
 import DeleteDialog from './DeleteDialog';
 
-interface WorkerTableProps {
+interface WorkerTableProps extends PaginationSearchParams {
   rows: Worker[];
   count: number;
 }
 
-export function WorkerTable({ rows, count }: WorkerTableProps) {
+export function WorkerTable({ page, rowsPerPage, rows, count }: WorkerTableProps) {
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
@@ -140,7 +141,7 @@ export function WorkerTable({ rows, count }: WorkerTableProps) {
           </Table>
         </TableContainer>
         <Divider />
-        <SearchParamsPagination count={count} />
+        <SearchParamsPagination page={page} rowsPerPage={rowsPerPage} count={count} />
       </Box>
     </Card>
   );

@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { DeleteAdmin } from '@/api/backend/admins/DeleteAdmin';
 import { type Admin } from '@/api/backend/admins/GetAdmins';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
+import { type PaginationSearchParams } from '@/domain/static/static';
 import { ADMIN_STATUS } from '@/domain/static/static-config-mappers';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -26,16 +28,15 @@ import { useSnackbar } from 'notistack';
 
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import { statusColor } from './statusColor';
 
-interface AdminTableProps {
+interface AdminTableProps extends PaginationSearchParams {
   rows: Admin[];
   count: number;
 }
 
-export function AdminTable({ rows, count }: AdminTableProps) {
+export function AdminTable({ page, rowsPerPage, rows, count }: AdminTableProps) {
   const searchParams = useSearchParams();
   const status = searchParams.get('status');
   const account = searchParams.get('account');
@@ -118,7 +119,7 @@ export function AdminTable({ rows, count }: AdminTableProps) {
           </Table>
         </TableContainer>
         <Divider />
-        <SearchParamsPagination count={count} />
+        <SearchParamsPagination page={page} rowsPerPage={rowsPerPage} count={count} />
       </Box>
     </Card>
   );

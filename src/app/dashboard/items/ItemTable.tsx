@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { type Item } from '@/api/backend/items/GetItemsAndDetails';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
+import { type PaginationSearchParams } from '@/domain/static/static';
 import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
 import { Checkbox, Chip, Grid } from '@mui/material';
@@ -13,18 +15,16 @@ import Typography from '@mui/material/Typography';
 import { useAtom } from 'jotai';
 import { type z } from 'zod';
 
-import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
-
 import { pickedItemIdsReducerAtom } from './PickingList';
 import { type SearchParamsSchema } from './SearchParamsSchema';
 
-interface ItemTableProps {
+interface ItemTableProps extends PaginationSearchParams {
   rows: Item[];
   count: number;
   query: z.output<typeof SearchParamsSchema>;
 }
 
-export function ItemTable({ rows, count, query }: ItemTableProps) {
+export function ItemTable({ page, rowsPerPage, rows, count, query }: ItemTableProps) {
   const isPicking = query.stage === 'picking';
   const [pickedItemIds, dispatch] = useAtom(pickedItemIdsReducerAtom);
 
@@ -126,7 +126,7 @@ export function ItemTable({ rows, count, query }: ItemTableProps) {
         })}
       </Grid>
 
-      <SearchParamsPagination count={count} />
+      <SearchParamsPagination page={page} rowsPerPage={rowsPerPage} count={count} />
     </>
   );
 }

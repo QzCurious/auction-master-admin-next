@@ -3,8 +3,9 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
+import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { currencySign, toPercent } from '@/domain/static/static';
+import { currencySign, toPercent, type PaginationSearchParams } from '@/domain/static/static';
 import { CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
 import EditIcon from '@mui/icons-material/Edit';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
@@ -21,16 +22,15 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
-import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 
 import { statusColor } from './statusColor';
 
-interface ConsignorTableProps {
+interface ConsignorTableProps extends PaginationSearchParams {
   rows: Consignor[];
   count: number;
 }
 
-export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.Element {
+export function ConsignorTable({ page, rowsPerPage, rows, count }: ConsignorTableProps): React.JSX.Element {
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
@@ -144,7 +144,7 @@ export function ConsignorTable({ rows, count }: ConsignorTableProps): React.JSX.
           </Table>
         </TableContainer>
         <Divider />
-        <SearchParamsPagination count={count} />
+        <SearchParamsPagination page={page} rowsPerPage={rowsPerPage} count={count} />
       </Box>
     </Card>
   );

@@ -53,6 +53,8 @@ async function Table({ searchParams }: PageProps) {
 
   return (
     <ConsignorVerificationTable
+      page={filters[PAGE]}
+      rowsPerPage={filters[ROWS_PER_PAGE]}
       rows={consignorVerificationsRes.data.consignorVerifications}
       count={consignorVerificationsRes.data.count}
     />

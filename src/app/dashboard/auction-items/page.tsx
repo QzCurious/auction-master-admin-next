@@ -102,7 +102,12 @@ async function Content({ searchParams }: PageProps) {
             */}
         </Stack>
 
-        <AuctionItemTable rows={auctionItemsRes.data.auctionItems} count={auctionItemsRes.data.count} />
+        <AuctionItemTable
+          rows={auctionItemsRes.data.auctionItems}
+          page={filters[PAGE]}
+          rowsPerPage={filters[ROWS_PER_PAGE]}
+          count={auctionItemsRes.data.count}
+        />
       </Stack>
 
       <PickForShipping picking={filters.picking} stage={filters.stage} />

@@ -7,7 +7,7 @@ import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { letaoItemLink, yahooAuctionLink } from '@/domain/static/static';
+import { letaoItemLink, yahooAuctionLink, type PaginationSearchParams } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -36,12 +36,12 @@ import EmptyTableRow from '@/components/EmptyTableRow';
 import CompanyPurchasedButton from './CompanyPurchasedButton';
 import { pickedItemIdsReducerAtom } from './PickingList';
 
-interface AuctionItemTableProps {
+interface AuctionItemTableProps extends PaginationSearchParams {
   rows: AuctionItem[];
   count: number;
 }
 
-export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
+export function AuctionItemTable({ rows, rowsPerPage, page, count }: AuctionItemTableProps) {
   const searchParams = useSearchParams();
   const isPicking = searchParams.get('stage') === 'picking';
   const [pickedItemIds, dispatch] = useAtom(pickedItemIdsReducerAtom);
@@ -231,7 +231,7 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
         </Table>
       </Box>
       <Divider />
-      <SearchParamsPagination count={count} />
+      <SearchParamsPagination page={page} rowsPerPage={rowsPerPage} rowsPerPageOptions={[50, 100]} count={count} />
     </Card>
   );
 }

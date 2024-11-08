@@ -93,7 +93,13 @@ async function Content({ searchParams }: PageProps) {
         {query.picking === 'return' && !query.consignorId ? (
           '退貨請先鎖定寄售人'
         ) : (
-          <ItemTable rows={itemsRes.data.items} count={itemsRes.data.count} query={query} />
+          <ItemTable
+            page={query.page}
+            rowsPerPage={query.rowsPerPage}
+            rows={itemsRes.data.items}
+            count={itemsRes.data.count}
+            query={query}
+          />
         )}
       </Stack>
 

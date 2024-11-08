@@ -61,5 +61,12 @@ async function Table({ searchParams }: PageProps) {
     return <HandleApiError error={adminRes.error} />;
   }
 
-  return <AdminTable rows={adminRes.data.admins} count={adminRes.data.count} />;
+  return (
+    <AdminTable
+      page={filters[PAGE]}
+      rowsPerPage={filters[ROWS_PER_PAGE]}
+      rows={adminRes.data.admins}
+      count={adminRes.data.count}
+    />
+  );
 }

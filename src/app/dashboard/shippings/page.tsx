@@ -87,6 +87,8 @@ async function Content({ searchParams }: PageProps) {
       </Stack>
 
       <ShippingsTable
+        page={query[PAGE]}
+        rowsPerPage={query[ROWS_PER_PAGE]}
         configs={configsRes.data}
         query={query}
         rows={shippingsRes.data.shippings}

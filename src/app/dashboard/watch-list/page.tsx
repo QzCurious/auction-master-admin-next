@@ -79,7 +79,12 @@ async function Content({ searchParams }: PageProps) {
           <Box mx="auto" />
         </Stack>
 
-        <AuctionItemTable rows={auctionItemsRes.data.auctionItems} count={auctionItemsRes.data.count} />
+        <AuctionItemTable
+          page={filters[PAGE]}
+          rowsPerPage={filters[ROWS_PER_PAGE]}
+          rows={auctionItemsRes.data.auctionItems}
+          count={auctionItemsRes.data.count}
+        />
       </Stack>
     </Provider>
   );

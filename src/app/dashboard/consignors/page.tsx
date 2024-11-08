@@ -74,8 +74,17 @@ async function Table({ searchParams }: PageProps) {
         <Box mx="auto" />
       </Stack>
 
-      {consignorsRes && <ConsignorTable rows={consignorsRes.data.consignors} count={consignorsRes.data.count} />}
-      {consignorRes && <ConsignorTable rows={[consignorRes.data]} count={1} />}
+      {consignorsRes && (
+        <ConsignorTable
+          page={filters.page}
+          rowsPerPage={filters.rowsPerPage}
+          rows={consignorsRes.data.consignors}
+          count={consignorsRes.data.count}
+        />
+      )}
+      {consignorRes && (
+        <ConsignorTable page={filters.page} rowsPerPage={filters.rowsPerPage} rows={[consignorRes.data]} count={1} />
+      )}
     </Stack>
   );
 }

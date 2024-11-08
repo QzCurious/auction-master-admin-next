@@ -67,7 +67,12 @@ async function Content({ searchParams }: PageProps) {
         <RemoveSearchBtn<keyof typeof filters> fields={['type', 'status']} />
       </Stack>
 
-      <WorkerTable rows={workersRes.data.workers} count={workersRes.data.count} />
+      <WorkerTable
+        page={filters[PAGE]}
+        rowsPerPage={filters[ROWS_PER_PAGE]}
+        rows={workersRes.data.workers}
+        count={workersRes.data.count}
+      />
     </Stack>
   );
 }

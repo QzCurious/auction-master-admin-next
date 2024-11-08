@@ -10,7 +10,7 @@ import AuctionItemPreviewPopover from '@/domain/crud/AuctionItemPreviewPopover';
 import ItemPreviewPopover from '@/domain/crud/ItemPreviewPopover';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { currencySign, DATE_TIME_FORMAT, yahooAuctionLink } from '@/domain/static/static';
+import { currencySign, DATE_TIME_FORMAT, yahooAuctionLink, type PaginationSearchParams } from '@/domain/static/static';
 import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
@@ -53,14 +53,14 @@ import EmptyTableRow from '@/components/EmptyTableRow';
 
 import { type SearchParamsSchema } from './SearchParamsSchema';
 
-interface ShippingsTableProps {
+interface ShippingsTableProps extends PaginationSearchParams {
   configs: Configs;
   query: z.output<typeof SearchParamsSchema>;
   rows: Shipping[];
   count: number;
 }
 
-export function ShippingsTable({ configs, query, rows, count }: ShippingsTableProps) {
+export function ShippingsTable({ page, rowsPerPage, configs, query, rows, count }: ShippingsTableProps) {
   const handleApiError = useHandleApiError();
 
   return (
@@ -268,7 +268,7 @@ export function ShippingsTable({ configs, query, rows, count }: ShippingsTablePr
         </Table>
       </Box>
       <Divider />
-      <SearchParamsPagination count={count} />
+      <SearchParamsPagination page={page} rowsPerPage={rowsPerPage} count={count} />
     </Card>
   );
 }
@@ -456,7 +456,7 @@ function ShippingClosedPopover({ row }: { row: Shipping }) {
     },
     resolver: zodResolver(ShippingClosedFormSchema),
   });
-  const handleApiError = useHandleApiError()
+  const handleApiError = useHandleApiError();
 
   return (
     <PopupState variant="popover">

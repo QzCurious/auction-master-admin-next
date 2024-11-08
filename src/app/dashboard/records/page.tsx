@@ -533,7 +533,11 @@ async function Content({ searchParams }: PageProps) {
               </TableBody>
             </Table>
 
-            <SearchParamsPagination count={recordsRes.data.count} />
+            <SearchParamsPagination
+              page={filters[PAGE]}
+              rowsPerPage={filters[ROWS_PER_PAGE]}
+              count={recordsRes.data.count}
+            />
           </TableContainer>
         </Card>
       </Stack>

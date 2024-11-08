@@ -10,7 +10,13 @@ import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
-import { currencySign, letaoBidHistoryLink, letaoItemLink, yahooAuctionLink } from '@/domain/static/static';
+import {
+  currencySign,
+  letaoBidHistoryLink,
+  letaoItemLink,
+  yahooAuctionLink,
+  type PaginationSearchParams,
+} from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS, WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
@@ -53,12 +59,12 @@ import EmptyTableRow from '@/components/EmptyTableRow';
 import BidPopover from './BidPopover';
 import StopWatchButton from './StopWatchButton';
 
-interface AuctionItemTableProps {
+interface AuctionItemTableProps extends PaginationSearchParams {
   rows: AuctionItem[];
   count: number;
 }
 
-export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
+export function AuctionItemTable({ page, rowsPerPage, rows, count }: AuctionItemTableProps) {
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
@@ -84,7 +90,7 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
                 hover
                 key={row.auctionId}
                 sx={{
-                  backgroundColor: row.watcherName === '' ? 'rgba(255, 0, 0, 0.1)' : undefined
+                  backgroundColor: row.watcherName === '' ? 'rgba(255, 0, 0, 0.1)' : undefined,
                 }}
               >
                 <TableCell
@@ -202,7 +208,7 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
         </Table>
       </Box>
       <Divider />
-      <SearchParamsPagination count={count} />
+      <SearchParamsPagination page={page} rowsPerPage={rowsPerPage} rowsPerPageOptions={[50, 100]} count={count} />
     </Card>
   );
 }

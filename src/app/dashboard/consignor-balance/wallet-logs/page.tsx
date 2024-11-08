@@ -129,7 +129,11 @@ async function Content({ searchParams }: PageProps) {
             </Table>
           </TableContainer>
           <Divider />
-          <SearchParamsPagination count={walletLogsRes.data.count} />
+          <SearchParamsPagination
+            page={filters[PAGE]}
+            rowsPerPage={filters[ROWS_PER_PAGE]}
+            count={walletLogsRes.data.count}
+          />
         </Card>
       </Stack>
     </Provider>

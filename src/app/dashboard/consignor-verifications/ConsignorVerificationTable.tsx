@@ -7,7 +7,7 @@ import { HandleConsignorVerification } from '@/api/backend/consignor/HandleConsi
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
-import { DATE_FORMAT } from '@/domain/static/static';
+import { DATE_FORMAT, PaginationSearchParams } from '@/domain/static/static';
 import { CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import {
@@ -35,12 +35,17 @@ import { useSnackbar } from 'notistack';
 
 import EmptyTableRow from '@/components/EmptyTableRow';
 
-interface ConsignorVerificationTableProps {
+interface ConsignorVerificationTableProps extends PaginationSearchParams {
   rows: ConsignorVerification[];
   count: number;
 }
 
-export function ConsignorVerificationTable({ rows, count }: ConsignorVerificationTableProps): React.JSX.Element {
+export function ConsignorVerificationTable({
+  page,
+  rowsPerPage,
+  rows,
+  count,
+}: ConsignorVerificationTableProps): React.JSX.Element {
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
@@ -96,7 +101,7 @@ export function ConsignorVerificationTable({ rows, count }: ConsignorVerificatio
           </Table>
         </TableContainer>
         <Divider />
-        <SearchParamsPagination count={count} />
+        <SearchParamsPagination page={page} rowsPerPage={rowsPerPage} count={count} />
       </Box>
     </Card>
   );
