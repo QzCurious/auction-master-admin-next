@@ -58,6 +58,7 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
               <TableCell sx={{ minWidth: '200px' }}>商品名稱</TableCell>
 
               <TableCell>期望金額</TableCell>
+              <TableCell>結標金額</TableCell>
 
               {!isPicking && (
                 <>
@@ -136,6 +137,13 @@ export function AuctionItemTable({ rows, count }: AuctionItemTableProps) {
                 </TableCell>
 
                 <TableCell sx={{ textAlign: 'right' }}>{row.reservePrice.toLocaleString()}</TableCell>
+                <TableCell sx={{ textAlign: 'right' }}>
+                  {row.status === AUCTION_ITEM_STATUS.enum('ClosedStatus') && (
+                    <Box color={row.closedPrice >= row.reservePrice ? 'success.main' : 'error.main'}>
+                      {row.closedPrice.toLocaleString()}
+                    </Box>
+                  )}
+                </TableCell>
 
                 {!isPicking && (
                   <>

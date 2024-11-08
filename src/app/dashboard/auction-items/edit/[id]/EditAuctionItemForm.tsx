@@ -479,7 +479,7 @@ export function EditAuctionItemForm({
               <FormControl fullWidth error={!!fieldState.error}>
                 <TextField
                   {...field}
-                  label="結束金額"
+                  label="結標金額"
                   type="number"
                   fullWidth
                   onChange={(e) => {
