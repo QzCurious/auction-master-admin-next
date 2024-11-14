@@ -50,7 +50,7 @@ export function ActionFilter({ selected }: StatusFilterProps) {
           renderValue={(selected) =>
             selected.length === 0 ? (
               <Typography color="text.secondary" fontStyle="italic">
-                預設
+                全部
               </Typography>
             ) : (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
