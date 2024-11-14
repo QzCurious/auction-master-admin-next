@@ -13,15 +13,9 @@ export function validRange(startAt?: Date, endAt?: Date) {
 }
 
 export function fixRange(startAt?: Date, endAt?: Date) {
-  const wasValid = validRange(startAt, endAt);
-
-  if (wasValid) {
-    return { wasValid, startAt, endAt };
-  }
-
   const defaultEndAt = startOfDay(addDays(new Date(), 1));
   const defaultStartAt = startOfDay(subDays(defaultEndAt, 7));
-  return { wasValid, startAt: defaultStartAt, endAt: defaultEndAt };
+  return { startAt: startAt ?? defaultStartAt, endAt: endAt ?? defaultEndAt };
 }
 
 export const SearchParamsSchema = PaginationSchema.extend({
@@ -31,7 +25,11 @@ export const SearchParamsSchema = PaginationSchema.extend({
     .number()
     .array()
     .transform(R.filter(R.isIncludedIn(SHIPPING_STATUS.data.map((item) => item.value))))
-    .default([]),
+    .default([
+      SHIPPING_STATUS.enum('SubmitAppraisalStatus'),
+      SHIPPING_STATUS.enum('ProcessingStatus'),
+      SHIPPING_STATUS.enum('ShippedStatus'),
+    ]),
   startAt: z.coerce.date().optional(),
   endAt: z.coerce.date().optional(),
 });

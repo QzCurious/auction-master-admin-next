@@ -35,12 +35,14 @@ export function FilterPopover({
         size="small"
         startIcon={
           value ? (
-            <RemoveCircleOutlineIcon
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemove?.();
-              }}
-            />
+            onRemove && (
+              <RemoveCircleOutlineIcon
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove();
+                }}
+              />
+            )
           ) : (
             <AddCircleOutlineIcon />
           )

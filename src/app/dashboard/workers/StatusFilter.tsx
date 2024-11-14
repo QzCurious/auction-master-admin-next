@@ -1,9 +1,9 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { PAGE } from '@/domain/static/static';
 import { WORKER_STATUS } from '@/domain/static/static-config-mappers';
-import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
+import { Box, Chip, MenuItem, Select } from '@mui/material';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
@@ -38,19 +38,26 @@ export function StatusFilter({ selected }: StatusFilterProps) {
           displayEmpty
           size="small"
           value={selected}
-          renderValue={(selected) =>
-            selected.length === 0 ? (
-              <Typography color="text.secondary" fontStyle="italic">
-                全部
-              </Typography>
-            ) : (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((v) => (
-                  <Chip key={v} label={options.find(({ value }) => value === v)?.message} />
-                ))}
-              </Box>
-            )
-          }
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {selected.map((v) => (
+                <Chip key={v} label={options.find(({ value }) => value === v)?.message} />
+              ))}
+            </Box>
+          )}
+          // renderValue={(selected) =>
+          //   selected.length === 0 ? (
+          //     <Typography color="text.secondary" fontStyle="italic">
+          //       全部
+          //     </Typography>
+          //   ) : (
+          //     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          //       {selected.map((v) => (
+          //         <Chip key={v} label={options.find(({ value }) => value === v)?.message} />
+          //       ))}
+          //     </Box>
+          //   )
+          // }
           onChange={(v) => {
             const newSearchParams = new URLSearchParams(searchParams);
             newSearchParams.delete(FIELD);
