@@ -9,7 +9,7 @@ export const DATE_TIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';
 export const ROWS_PER_PAGE = 'rowsPerPage';
 export const PAGE = 'page';
 export const PaginationSchema = z.object({
-  [ROWS_PER_PAGE]: z.coerce.number().min(1).default(10).catch(10),
+  [ROWS_PER_PAGE]: z.coerce.number().min(1).default(50).catch(50),
   [PAGE]: z.coerce.number().min(0).default(0).catch(0),
 });
 export type PaginationSearchParams = z.output<typeof PaginationSchema>;

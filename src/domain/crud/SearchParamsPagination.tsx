@@ -19,7 +19,7 @@ export function SearchParamsPagination({
 
   return (
     <TablePagination
-      rowsPerPageOptions={unique(rowsPerPageOptions ?? [page, 5, 10, 20, 30]).sort((a, b) => a - b)}
+      rowsPerPageOptions={unique(rowsPerPageOptions ?? [rowsPerPage, 50, 100]).sort((a, b) => a - b)}
       labelRowsPerPage="每頁顯示筆數"
       labelDisplayedRows={({ from, to, count }) => `${from} ~ ${to}, 共 ${count} 筆`}
       component="div"
