@@ -28,7 +28,7 @@ export function parseSearchParams<T extends ZodTypeAny>(
   if (q instanceof URLSearchParams) {
     const obj = {} as Shaped;
     for (const [k, s] of Object.entries(unwrappedSchema.shape)) {
-      if (unwrapInnerType(s) instanceof ZodArray) obj[k as keyof Shaped] = q.getAll(k);
+      if (unwrapInnerType(s) instanceof ZodArray) obj[k as keyof Shaped] = q.has(k) ? q.getAll(k) : undefined;
       else obj[k as keyof Shaped] = q.get(k) ?? undefined;
     }
     return schema.parse(obj);
@@ -38,7 +38,7 @@ export function parseSearchParams<T extends ZodTypeAny>(
     const obj = {} as Shaped;
     for (const [k, s] of Object.entries(unwrappedSchema.shape)) {
       if (unwrapInnerType(s) instanceof ZodArray) {
-        obj[k as keyof Shaped] = q[k] == null ? [] : Array.isArray(q[k]) ? q[k] : [q[k]];
+        obj[k as keyof Shaped] = q[k] == null ? undefined : Array.isArray(q[k]) ? q[k] : [q[k]];
       } else obj[k as keyof Shaped] = q[k] ?? undefined;
     }
     return schema.parse(obj);

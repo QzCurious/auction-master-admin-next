@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PAGE } from '@/domain/static/static';
 import { RECORD_TYPE } from '@/domain/static/static-config-mappers';
-import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
+import { Box, Chip, MenuItem, Select } from '@mui/material';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
@@ -36,8 +36,8 @@ export function TypeFilter({ selected }: TypeFilterProps) {
       value={selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.delete(FILED);
         newSearchParams.delete(PAGE);
+        newSearchParams.delete(FILED);
         router.push(`?${newSearchParams}`);
       }}
     >
@@ -48,21 +48,29 @@ export function TypeFilter({ selected }: TypeFilterProps) {
           displayEmpty
           size="small"
           value={selected}
-          renderValue={(selected) =>
-            selected.length === 0 ? (
-              <Typography color="text.secondary" fontStyle="italic">
-                全部
-              </Typography>
-            ) : (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((v) => (
-                  <Chip key={v} label={options.find(({ value }) => value === v)?.message} />
-                ))}
-              </Box>
-            )
-          }
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {selected.map((v) => (
+                <Chip key={v} label={options.find(({ value }) => value === v)?.message} />
+              ))}
+            </Box>
+          )}
+          // renderValue={(selected) =>
+          //   selected.length === 0 ? (
+          //     <Typography color="text.secondary" fontStyle="italic">
+          //       全部
+          //     </Typography>
+          //   ) : (
+          //     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          //       {selected.map((v) => (
+          //         <Chip key={v} label={options.find(({ value }) => value === v)?.message} />
+          //       ))}
+          //     </Box>
+          //   )
+          // }
           onChange={(v) => {
             const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete(PAGE);
             newSearchParams.delete(FILED);
             for (const value of v.target.value) {
               newSearchParams.append(FILED, value.toString());

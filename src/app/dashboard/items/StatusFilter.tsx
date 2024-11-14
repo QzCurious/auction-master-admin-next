@@ -71,8 +71,8 @@ export function StatusFilter({ selected, statusCount }: StatusFilterProps) {
         value={selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
         onRemove={() => {
           const newSearchParams = new URLSearchParams(searchParams);
-          newSearchParams.delete(FIELD);
           newSearchParams.delete(PAGE);
+          newSearchParams.delete(FIELD);
           router.push(`?${newSearchParams}`);
         }}
       >
@@ -83,21 +83,29 @@ export function StatusFilter({ selected, statusCount }: StatusFilterProps) {
             displayEmpty
             size="small"
             value={selected}
-            renderValue={(selected) =>
-              selected.length === 0 ? (
-                <Typography color="text.secondary" fontStyle="italic">
-                  全部
-                </Typography>
-              ) : (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((v) => (
-                    <Chip key={v} label={options.find(({ value }) => value === v)?.message} />
-                  ))}
-                </Box>
-              )
-            }
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selected.map((v) => (
+                  <Chip key={v} label={options.find(({ value }) => value === v)?.message} />
+                ))}
+              </Box>
+            )}
+            // renderValue={(selected) =>
+            //   selected.length === 0 ? (
+            //     <Typography color="text.secondary" fontStyle="italic">
+            //       全部
+            //     </Typography>
+            //   ) : (
+            //     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+            //       {selected.map((v) => (
+            //         <Chip key={v} label={options.find(({ value }) => value === v)?.message} />
+            //       ))}
+            //     </Box>
+            //   )
+            // }
             onChange={(v) => {
               const newSearchParams = new URLSearchParams(searchParams);
+              newSearchParams.delete(PAGE);
               newSearchParams.delete(FIELD);
               for (const value of v.target.value) {
                 newSearchParams.append(FIELD, value.toString());

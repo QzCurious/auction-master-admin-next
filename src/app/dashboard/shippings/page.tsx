@@ -49,13 +49,14 @@ async function Content({ searchParams }: PageProps) {
   const { startAt, endAt } = fixRange(query.startAt, query.endAt);
   const q = {
     auctionId: query.auctionId,
-    status: query.status.length
-      ? query.status
-      : [
-          SHIPPING_STATUS.enum('SubmitAppraisalStatus'),
-          SHIPPING_STATUS.enum('ProcessingStatus'),
-          SHIPPING_STATUS.enum('ShippedStatus'),
-        ],
+    status: query.status,
+    // status: query.status.length
+    //   ? query.status
+    //   : [
+    //       SHIPPING_STATUS.enum('SubmitAppraisalStatus'),
+    //       SHIPPING_STATUS.enum('ProcessingStatus'),
+    //       SHIPPING_STATUS.enum('ShippedStatus'),
+    //     ],
     endAt,
     startAt,
     sort: 'createdAt',
@@ -76,7 +77,8 @@ async function Content({ searchParams }: PageProps) {
   return (
     <Stack spacing={3}>
       <Stack direction="row" flexWrap="wrap" gap={2}>
-        <RangeFilter startAt={query.startAt} endAt={query.endAt} within={{ months: MAX_MONTHS }} />
+        <RangeFilter startAt={startAt} endAt={endAt} within={{ months: MAX_MONTHS }} />
+        {/* <RangeFilter startAt={query.startAt} endAt={query.endAt} within={{ months: MAX_MONTHS }} /> */}
         <StatusFilter selected={query.status} />
         <AuctionIdFilter values={query.auctionId} />
         <RemoveSearchBtn<keyof typeof query> fields={['auctionId', 'startAt', 'endAt', 'status']} />

@@ -49,6 +49,7 @@ export default async function Page(pageProps: PageProps) {
 
 async function Content({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
+  console.log(filters)
 
   const [auctionItemsRes] = await Promise.all([
     GetAuctionItems({
@@ -57,16 +58,17 @@ async function Content({ searchParams }: PageProps) {
       status: (() => {
         if (filters.picking === 'shipping') return [AUCTION_ITEM_STATUS.enum('ClosedStatus')];
         if (filters.picking === 'fee') return [AUCTION_ITEM_STATUS.enum('AwaitingConsignorPayFeeStatus')];
-        if (filters.status.length) return filters.status;
-        return [
-          AUCTION_ITEM_STATUS.enum('InitStatus'),
-          AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
-          AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
-          AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
-          AUCTION_ITEM_STATUS.enum('ClosedStatus'),
-          AUCTION_ITEM_STATUS.enum('AwaitingConsignorPayFeeStatus'),
-          AUCTION_ITEM_STATUS.enum('ConsignorRequestCancellationStatus'),
-        ];
+        return filters.status;
+        // if (filters.status.length) return filters.status;
+        // return [
+        //   AUCTION_ITEM_STATUS.enum('InitStatus'),
+        //   AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
+        //   AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
+        //   AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
+        //   AUCTION_ITEM_STATUS.enum('ClosedStatus'),
+        //   AUCTION_ITEM_STATUS.enum('AwaitingConsignorPayFeeStatus'),
+        //   AUCTION_ITEM_STATUS.enum('ConsignorRequestCancellationStatus'),
+        // ];
       })(),
       sort: 'createdAt',
       order: 'desc',

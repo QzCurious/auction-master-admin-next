@@ -73,8 +73,9 @@ async function Content({ searchParams }: PageProps) {
     <Provider>
       <Stack spacing={3}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
+          <RangeFilter startAt={startAt} endAt={endAt} within={{ months: MAX_MONTHS }} />
+          {/* <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} /> */}
           <ConsignorFilter consignorId={filters.consignorId} />
-          <RangeFilter startAt={filters.startAt} endAt={filters.endAt} within={{ months: MAX_MONTHS }} />
           <ActionFilter selected={filters.action} />
           <RemoveSearchBtn<keyof typeof filters> fields={['consignorId', 'startAt', 'endAt', 'action']} />
         </Stack>
