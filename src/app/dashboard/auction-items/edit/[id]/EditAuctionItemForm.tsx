@@ -138,7 +138,7 @@ export function EditAuctionItemForm({
       )}
     >
       <Stack direction="row" columnGap={2}>
-        <Typography variant="h6">出貨資訊</Typography>
+        <Typography variant="h6">日拍競標商品資訊</Typography>
         <Box sx={{ ml: 'auto' }} />
 
         {process.env.NODE_ENV === 'development' && <Button onClick={() => router.refresh()}>Refetch</Button>}
@@ -184,7 +184,7 @@ export function EditAuctionItemForm({
                             LinkComponent={Link}
                             size="small"
                             color="primary"
-                            href={`/dashboard/consignor/edit/${consignor.id}`}
+                            href={`/dashboard/consignors/edit/${consignor.id}`}
                             target="_blank"
                             rel="noreferrer"
                           >
