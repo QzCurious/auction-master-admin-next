@@ -3,11 +3,11 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
+import { ConsignorSelect } from '@/domain/crud/ConsignorSelect';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { PAGE } from '@/domain/static/static';
 import { useQuery } from '@tanstack/react-query';
 
-import { ConsignorSelect } from '@/domain/crud/ConsignorSelect';
 import { FilterPopover } from '@/components/FilterPopover';
 
 const FIELD = 'consignorId';
@@ -32,6 +32,7 @@ export function ConsignorFilter({ consignorId }: { consignorId?: Consignor['id']
       value={consignorId ? consignorQuery.data?.data?.nickname || '--' : null}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete(PAGE);
         newSearchParams.delete(FIELD);
         router.replace(`?${newSearchParams}`);
       }}
@@ -42,10 +43,10 @@ export function ConsignorFilter({ consignorId }: { consignorId?: Consignor['id']
           sx={{ width: 215 }}
           value={consignorId ?? null}
           onChange={(id, consignor) => {
-            const newSearchParams = new URLSearchParams(searchParams);
-            newSearchParams.delete(PAGE);
             if (!id || !consignor) return;
 
+            const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete(PAGE);
             newSearchParams.set(FIELD, id.toString());
             router.replace(`?${newSearchParams}`);
             close();

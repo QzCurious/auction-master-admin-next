@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PAGE } from '@/domain/static/static';
 import { BONUS_ACTION } from '@/domain/static/static-config-mappers';
-import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
+import { Box, Chip, MenuItem, Select } from '@mui/material';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
@@ -26,8 +26,8 @@ export function ActionFilter({ selected }: StatusFilterProps) {
       value={selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.delete(FIELD);
         newSearchParams.delete(PAGE);
+        newSearchParams.delete(FIELD);
         router.push(`?${newSearchParams}`);
       }}
     >
@@ -60,6 +60,7 @@ export function ActionFilter({ selected }: StatusFilterProps) {
           // }
           onChange={(v) => {
             const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete(PAGE);
             newSearchParams.delete(FIELD);
             for (const value of v.target.value) {
               newSearchParams.append(FIELD, value.toString());

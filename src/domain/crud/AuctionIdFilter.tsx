@@ -27,8 +27,8 @@ export function AuctionIdFilter({ values = [] }: AuctionIdFilterProps) {
       value={values.join(', ')}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.delete(FIELD);
         newSearchParams.delete(PAGE);
+        newSearchParams.delete(FIELD);
         router.push(`?${newSearchParams}`);
       }}
     >
@@ -40,6 +40,7 @@ export function AuctionIdFilter({ values = [] }: AuctionIdFilterProps) {
             e.preventDefault();
             if (!ref.current?.value) return;
             const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete(PAGE);
             newSearchParams.delete(FIELD);
             for (const v of R.unique([...values, ref.current.value.trim()])) {
               newSearchParams.append(FIELD, v);
@@ -56,6 +57,7 @@ export function AuctionIdFilter({ values = [] }: AuctionIdFilterProps) {
                   label={value}
                   onDelete={() => {
                     const newSearchParams = new URLSearchParams(searchParams);
+                    newSearchParams.delete(PAGE);
                     newSearchParams.delete(FIELD);
                     for (const v of values.filter((v) => v !== value)) {
                       newSearchParams.append(FIELD, v);

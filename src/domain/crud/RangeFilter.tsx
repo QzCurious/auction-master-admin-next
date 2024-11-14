@@ -7,6 +7,8 @@ import { addMonths, format, isValid, startOfDay, subMonths } from 'date-fns';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
+import { PAGE } from '../static/static';
+
 interface RangeFilterProps {
   startAt: Date;
   endAt: Date;
@@ -54,6 +56,7 @@ export function RangeFilter({ startAt, endAt, within }: RangeFilterProps) {
 
               if (v && endAt) {
                 const newSearchParams = new URLSearchParams(searchParams);
+                newSearchParams.delete(PAGE);
                 newSearchParams.set('startAt', v.toISOString());
                 newSearchParams.set('endAt', endAt.toISOString());
                 router.replace(`?${newSearchParams}`);
@@ -86,6 +89,7 @@ export function RangeFilter({ startAt, endAt, within }: RangeFilterProps) {
 
               if (startAt && v) {
                 const newSearchParams = new URLSearchParams(searchParams);
+                newSearchParams.delete(PAGE);
                 newSearchParams.set('startAt', startAt.toISOString());
                 newSearchParams.set('endAt', v.toISOString());
                 router.replace(`?${newSearchParams}`);

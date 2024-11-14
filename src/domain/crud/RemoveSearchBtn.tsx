@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@mui/material';
 import * as R from 'remeda';
 
+import { PAGE } from '../static/static';
+
 interface RemoveSearchBtnProps<T extends string> {
   fields: T[];
 }
@@ -22,6 +24,7 @@ export default function RemoveSearchBtn<T extends string>({ fields }: RemoveSear
       LinkComponent={Link}
       onClick={() => {
         const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete(PAGE);
         for (const field of fields) {
           newSearchParams.delete(field);
         }

@@ -26,8 +26,8 @@ export function TypeFilter({ selected }: TypeFilterProps) {
       value={selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.delete(FIELD);
         newSearchParams.delete(PAGE);
+        newSearchParams.delete(FIELD);
         router.push(`?${newSearchParams}`);
       }}
     >
@@ -60,6 +60,7 @@ export function TypeFilter({ selected }: TypeFilterProps) {
           // }
           onChange={(v) => {
             const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete(PAGE);
             newSearchParams.delete(FIELD);
             for (const value of v.target.value) {
               newSearchParams.append(FIELD, value.toString());

@@ -69,6 +69,7 @@ export function ActionFilter({ selected }: StatusFilterProps) {
           // }
           onChange={(v) => {
             const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete(PAGE);
             newSearchParams.delete(FIELD);
             for (const value of v.target.value) {
               newSearchParams.append(FIELD, value.toString());

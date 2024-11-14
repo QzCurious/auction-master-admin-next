@@ -1,9 +1,9 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { PAGE } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { FilterPopover } from '@/components/FilterPopover';
 
@@ -38,8 +38,8 @@ export function StatusFilter({ selected }: StatusFilterProps) {
       value={selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
       onRemove={() => {
         const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.delete(FIELD);
         newSearchParams.delete(PAGE);
+        newSearchParams.delete(FIELD);
         router.push(`?${newSearchParams}`);
       }}
     >
@@ -65,6 +65,7 @@ export function StatusFilter({ selected }: StatusFilterProps) {
           }
           onChange={(v) => {
             const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete(PAGE);
             newSearchParams.delete(FIELD);
             for (const value of v.target.value) {
               newSearchParams.append(FIELD, value.toString());
