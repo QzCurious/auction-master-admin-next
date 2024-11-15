@@ -29,6 +29,7 @@ import { useAtom } from 'jotai';
 import PopupState from 'material-ui-popup-state';
 import { bindPopover, bindTrigger } from 'material-ui-popup-state/hooks';
 import { enqueueSnackbar } from 'notistack';
+import * as R from 'remeda';
 
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 import EmptyTableRow from '@/components/EmptyTableRow';
@@ -138,11 +139,9 @@ export function AuctionItemTable({ rows, rowsPerPage, page, count }: AuctionItem
 
                 <TableCell sx={{ textAlign: 'right' }}>{row.reservePrice.toLocaleString()}</TableCell>
                 <TableCell sx={{ textAlign: 'right' }}>
-                  {row.status === AUCTION_ITEM_STATUS.enum('ClosedStatus') && (
-                    <Box color={row.closedPrice >= row.reservePrice ? 'success.main' : 'error.main'}>
-                      {row.closedPrice.toLocaleString()}
-                    </Box>
-                  )}
+                  <Box color={row.closedPrice >= row.reservePrice ? 'success.main' : 'error.main'}>
+                    {row.closedPrice.toLocaleString()}
+                  </Box>
                 </TableCell>
 
                 {!isPicking && (
