@@ -71,7 +71,7 @@ export function AuctionItemTable({ page, rowsPerPage, rows, count }: AuctionItem
         <Table sx={{ minWidth: '800px' }}>
           <TableHead>
             <TableRow sx={{ whiteSpace: 'nowrap' }}>
-              <TableCell sx={{ width: 0 }}>商品圖片</TableCell>
+              <TableCell sx={{ width: 0, position: 'sticky', left: 0 }}>商品圖片</TableCell>
               <TableCell sx={{ minWidth: '200px' }}>商品名稱</TableCell>
               <TableCell>出品帳號</TableCell>
               <TableCell>盯標帳號</TableCell>
@@ -94,7 +94,7 @@ export function AuctionItemTable({ page, rowsPerPage, rows, count }: AuctionItem
                 }}
               >
                 <TableCell
-                  sx={{ maxWidth: '200px' }}
+                  sx={{ maxWidth: '200px', position: 'sticky', left: 0 }}
                   title={process.env.NODE_ENV === 'development' ? row.auctionId.toString() : undefined}
                 >
                   {row.photo ? (
