@@ -388,7 +388,7 @@ function createApiError(code: string): ApiError {
 
 async function extractErrorCode(err: unknown) {
   if (err instanceof HTTPError) {
-    const res = (await err.response.json()) as FailedResponseJson;
+    const res = (await err.response.clone().json()) as FailedResponseJson;
     return res.status.code;
   }
   throw err;
