@@ -1,4 +1,4 @@
-import { SecurityCamera, Wallet } from '@phosphor-icons/react/dist/ssr';
+import { SecurityCamera, Slideshow, Wallet } from '@phosphor-icons/react/dist/ssr';
 import { Gavel } from '@phosphor-icons/react/dist/ssr/Gavel';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { Handshake } from '@phosphor-icons/react/dist/ssr/Handshake';
@@ -28,6 +28,14 @@ export const navItems = [
     PhosphorIcon: ShieldStar,
     permissions: ['GetAdmins'],
     matcher: { type: 'startsWith', href: '/dashboard/admins' },
+  },
+  {
+    key: 'carousels',
+    title: '輪播圖',
+    href: '/dashboard/carousels',
+    PhosphorIcon: Slideshow,
+    // permissions: ['GetAdmins'],
+    matcher: { type: 'startsWith', href: '/dashboard/carousels' },
   },
   {
     key: 'consignor-verifications',

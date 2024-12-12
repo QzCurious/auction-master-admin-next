@@ -67,5 +67,6 @@ module.exports = {
     '@typescript-eslint/no-unsafe-argument': 'off',
     '@typescript-eslint/no-unnecessary-type-assertion': 'off',
     '@next/next/no-img-element': 'off', // Temporary disabled
+    '@typescript-eslint/only-throw-error': 'off',
   },
 };
