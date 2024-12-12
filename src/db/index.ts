@@ -1,11 +1,14 @@
+import { getMysqlKv } from '@/connect';
+
 import 'dotenv/config';
 
 import { drizzle } from 'drizzle-orm/mysql2';
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is not set');
+async function getDb() {
+  const kv = await getMysqlKv();
+  getDb.__instance = drizzle(`mysql://${kv.host}/${kv.dbname}?user=${kv.account}&password=${kv.password}`);
+  return getDb.__instance;
 }
+getDb.__instance = null as ReturnType<typeof drizzle> | null;
 
-const db = drizzle(process.env.DATABASE_URL);
-
-export { db };
+export { getDb };

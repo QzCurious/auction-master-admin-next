@@ -1,4 +1,4 @@
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { carousel, carouselGroup } from '@/db/schema';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { SITE_NAME } from '@/domain/static/static';
@@ -24,6 +24,7 @@ interface PageProps {
 }
 
 export default async function Page(pageProps: PageProps) {
+  const db = await getDb();
   const groups = await db.select().from(carouselGroup);
   const filters = parseSearchParams(SearchParamsSchema, pageProps.searchParams);
   if (filters.groupId && !groups.some((group) => group.id === filters.groupId)) {
@@ -70,6 +71,7 @@ export default async function Page(pageProps: PageProps) {
 }
 
 async function Table({ searchParams }: PageProps) {
+  const db = await getDb();
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
   const [list, groups] = await Promise.all([
     db
