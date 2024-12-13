@@ -50,16 +50,24 @@ export function CarouselTable({ groups, rows }: CarouselTableProps) {
               {rows.length === 0 && <EmptyTableRow />}
               {rows.map((row) => {
                 return (
-                  <TableRow hover key={row.id} selected={false}>
+                  <TableRow hover key={row.id} selected={false} sx={{}}>
                     <TableCell>{row.sorted}</TableCell>
                     <TableCell width={9999}>
                       <a href={row.mobileImageUrl} style={{ display: 'block' }} target="_blank" rel="noreferrer">
-                        <img src={row.mobileImageUrl} style={{ display: 'block', maxWidth: '100%' }} alt="" />
+                        <img
+                          src={row.mobileImageUrl}
+                          style={{ display: 'block', maxWidth: '100%', maxHeight: 320, margin: 'auto' }}
+                          alt=""
+                        />
                       </a>
                     </TableCell>
                     <TableCell width={9999}>
                       <a href={row.desktopImageUrl} style={{ display: 'block' }} target="_blank" rel="noreferrer">
-                        <img src={row.desktopImageUrl} style={{ display: 'block', maxWidth: '100%' }} alt="" />
+                        <img
+                          src={row.desktopImageUrl}
+                          style={{ display: 'block', maxWidth: '100%', maxHeight: 320, margin: 'auto' }}
+                          alt=""
+                        />
                       </a>
                     </TableCell>
                     <TableCell>
