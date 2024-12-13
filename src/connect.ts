@@ -10,9 +10,6 @@ if (!process.env.CONSUL_URL) {
 export const getS3Kv = lazySingleton(async () => {
   const url = `${process.env.CONSUL_URL}/v1/kv/storage/aws-s3/auction-master`;
   const res = await fetch(url).finally(() => console.log('Consol Data Fetched'));
-  if (!res.ok) {
-    throw new Error('Cannot get consol data');
-  }
 
   if (!res.ok) {
     throw new Error('Cannot get consol s3 data');
@@ -67,6 +64,30 @@ export const getMysqlKv = lazySingleton(async () => {
     // max_open_conns: string;
     // max_idle_conns: string;
     // max_conn_lifetime: string;
+  };
+
+  return kv;
+});
+
+export const getSystemKv = lazySingleton(async () => {
+  const url = `${process.env.CONSUL_URL}/v1/kv/system`;
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error('Cannot get consol system data');
+  }
+
+  const [x] = (await res.json()) as Array<{
+    LockIndex: number;
+    Key: string;
+    Flags: number;
+    Value: string;
+    CreateIndex: number;
+    ModifyIndex: number;
+  }>;
+
+  const kv = dotenv.parse(Buffer.from(x.Value, 'base64')) as {
+    site: string;
   };
 
   return kv;

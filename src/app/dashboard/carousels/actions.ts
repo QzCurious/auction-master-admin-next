@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getS3Client, getS3Kv } from '@/connect';
+import { getS3Client, getS3Kv, getSystemKv } from '@/connect';
 import { getDb } from '@/db';
 import { carousel, carouselGroup } from '@/db/schema';
 import { DeleteObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
@@ -10,7 +10,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 export async function uploadImage(formData: FormData) {
   const file = formData.get('file') as File;
-  const key = uuidv4();
+  const systemKv = await getSystemKv();
+  const key = `${systemKv.site}/carousel/${uuidv4()}`;
   const s3Kv = await getS3Kv();
   const S3 = await getS3Client();
 
