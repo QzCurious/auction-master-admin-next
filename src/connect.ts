@@ -9,7 +9,7 @@ if (!process.env.CONSUL_URL) {
 
 export const getS3Kv = lazySingleton(async () => {
   const url = `${process.env.CONSUL_URL}/v1/kv/storage/aws-s3/auction-master`;
-  const res = await fetch(url).finally(() => console.log('Consol Data Fetched'));
+  const res = await fetch(url);
 
   if (!res.ok) {
     throw new Error('Cannot get consol s3 data');

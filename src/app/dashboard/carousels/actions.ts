@@ -81,6 +81,31 @@ export async function createCarousel(data: typeof carousel.$inferInsert) {
 
 export async function updateCarousel(id: number, data: Partial<typeof carousel.$inferSelect>) {
   const db = await getDb();
+  const [row] = await db.select().from(carousel).where(eq(carousel.id, id));
+  if (!row) {
+    revalidatePath('/', 'layout');
+    return;
+  }
+
+  const s3Kv = await getS3Kv();
+  const S3 = await getS3Client();
+  await Promise.all([
+    row.mobileImageUrl !== data.mobileImageUrl &&
+      S3.send(
+        new DeleteObjectCommand({
+          Bucket: s3Kv.bucket,
+          Key: row.mobileImageUrl.split(`${s3Kv.public_url}/`)[1],
+        })
+      ),
+    row.desktopImageUrl !== data.desktopImageUrl &&
+      S3.send(
+        new DeleteObjectCommand({
+          Bucket: s3Kv.bucket,
+          Key: row.desktopImageUrl.split(`${s3Kv.public_url}/`)[1],
+        })
+      ),
+  ]);
+
   await db.update(carousel).set(data).where(eq(carousel.id, id));
   revalidatePath('/', 'layout');
 }
