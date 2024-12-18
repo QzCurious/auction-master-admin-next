@@ -57,23 +57,21 @@ export default async function Page() {
       <Grid lg={3} sm={6} xs={12}>
         <Card sx={{ height: '100%' }}>
           <CardContent>
-            <Link href={configsRes.data.lineURL} target="_blank" style={{ textDecoration: 'none' }}>
-              <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
-                <Stack spacing={1}>
-                  <Typography color="text.secondary" sx={{}}>
-                    收款帳號
-                  </Typography>
-                  <Typography variant="body1" color="black" sx={{ whiteSpace: 'nowrap' }}>
-                    {configsRes.data.bankName}
-                    <br />
-                    {configsRes.data.bankCode} {configsRes.data.bankAccount}
-                  </Typography>
-                </Stack>
-                <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
-                  <AccountBalanceOutlinedIcon />
-                </Avatar>
+            <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+              <Stack spacing={1}>
+                <Typography color="text.secondary" sx={{}}>
+                  收款帳號
+                </Typography>
+                <Typography variant="body1" color="black" sx={{ whiteSpace: 'nowrap' }}>
+                  {configsRes.data.bankName}
+                  <br />
+                  {configsRes.data.bankCode} {configsRes.data.bankAccount}
+                </Typography>
               </Stack>
-            </Link>
+              <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
+                <AccountBalanceOutlinedIcon />
+              </Avatar>
+            </Stack>
           </CardContent>
         </Card>
       </Grid>
