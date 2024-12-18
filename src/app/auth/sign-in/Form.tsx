@@ -114,16 +114,18 @@ export function SignInForm() {
           </Button>
         </Stack>
       </form>
-      <Alert severity="warning">
-        Use{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          admin
-        </Typography>{' '}
-        with password{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          as123456
-        </Typography>
-      </Alert>
+      {process.env.NODE_ENV === 'development' && (
+        <Alert severity="warning">
+          Use{' '}
+          <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
+            admin
+          </Typography>{' '}
+          with password{' '}
+          <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
+            as123456
+          </Typography>
+        </Alert>
+      )}
     </Stack>
   );
 }
