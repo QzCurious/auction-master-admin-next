@@ -53,22 +53,26 @@ export function CarouselTable({ groups, rows }: CarouselTableProps) {
                   <TableRow hover key={row.id} selected={false} sx={{}}>
                     <TableCell>{row.sorted}</TableCell>
                     <TableCell width={9999}>
-                      <a href={row.mobileImageUrl} style={{ display: 'block' }} target="_blank" rel="noreferrer">
-                        <img
-                          src={row.mobileImageUrl}
-                          style={{ display: 'block', maxWidth: '100%', maxHeight: 320, margin: 'auto' }}
-                          alt=""
-                        />
-                      </a>
+                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <a href={row.mobileImageUrl} target="_blank" rel="noreferrer">
+                          <img
+                            src={row.mobileImageUrl}
+                            style={{ display: 'block', maxWidth: '100%', maxHeight: 320, margin: 'auto' }}
+                            alt=""
+                          />
+                        </a>
+                      </Box>
                     </TableCell>
                     <TableCell width={9999}>
-                      <a href={row.desktopImageUrl} style={{ display: 'block' }} target="_blank" rel="noreferrer">
-                        <img
-                          src={row.desktopImageUrl}
-                          style={{ display: 'block', maxWidth: '100%', maxHeight: 320, margin: 'auto' }}
-                          alt=""
-                        />
-                      </a>
+                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <a href={row.desktopImageUrl} style={{ display: 'block' }} target="_blank" rel="noreferrer">
+                          <img
+                            src={row.desktopImageUrl}
+                            style={{ display: 'block', maxWidth: '100%', maxHeight: 320, margin: 'auto' }}
+                            alt=""
+                          />
+                        </a>
+                      </Box>
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" alignItems="center" gap={0.5}>
