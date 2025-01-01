@@ -7,7 +7,7 @@ name: Docker
 
 on:
   push:
-    branches: ['main']
+    branches: ['main', 'production', 'staging']
     # Publish semver tags as releases.
     tags: ['v*.*.*']
 
@@ -56,6 +56,8 @@ jobs:
           tags: |
             # set latest tag for default branch
             type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=tag
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
