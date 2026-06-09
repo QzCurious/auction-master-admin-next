@@ -1,0 +1,86 @@
+'use client';
+
+import { PAGE } from '@/domain/static/static';
+import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
+import { Box, Chip, MenuItem, Select, Typography } from '@mui/material';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+import { FilterPopover } from '@/components/FilterPopover';
+
+const FIELD = 'status';
+
+const options = [
+  AUCTION_ITEM_STATUS.data[0],
+  AUCTION_ITEM_STATUS.data[1],
+  AUCTION_ITEM_STATUS.data[2],
+  AUCTION_ITEM_STATUS.data[3],
+  AUCTION_ITEM_STATUS.data[4],
+  AUCTION_ITEM_STATUS.data[5],
+  AUCTION_ITEM_STATUS.data[6],
+  AUCTION_ITEM_STATUS.data[7],
+  AUCTION_ITEM_STATUS.data[8],
+  AUCTION_ITEM_STATUS.data[9],
+  AUCTION_ITEM_STATUS.data[10],
+] as const;
+options.length satisfies typeof AUCTION_ITEM_STATUS.data.length;
+
+interface StatusFilterProps {
+  selected: Array<(typeof options)[number]['value']>;
+}
+
+export function StatusFilter({ selected }: StatusFilterProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  return (
+    <FilterPopover
+      label="狀態"
+      value={selected.map((v) => options.find(({ value }) => value === v)?.message).join(', ')}
+      onRemove={() => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete(PAGE);
+        newSearchParams.delete(FIELD);
+        router.push(`?${newSearchParams}`);
+      }}
+    >
+      {({ close }) => (
+        <Select
+          sx={{ minWidth: 240, maxWidth: 360 }}
+          multiple
+          displayEmpty
+          size="small"
+          value={selected}
+          renderValue={(selected) =>
+            selected.length === 0 ? (
+              <Typography color="text.secondary" fontStyle="italic">
+                預設
+              </Typography>
+            ) : (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selected.map((v) => (
+                  <Chip key={v} label={options.find(({ value }) => value === v)?.message} />
+                ))}
+              </Box>
+            )
+          }
+          onChange={(v) => {
+            const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete(PAGE);
+            newSearchParams.delete(FIELD);
+            for (const value of v.target.value) {
+              newSearchParams.append(FIELD, value.toString());
+            }
+            router.push(`?${newSearchParams.toString()}`);
+          }}
+          onClose={close}
+        >
+          {options.map(({ value, key, message }) => (
+            <MenuItem key={value} value={value} sx={{ columnGap: 1 }} title={`${key} ${value}`}>
+              {message}
+            </MenuItem>
+          ))}
+        </Select>
+      )}
+    </FilterPopover>
+  );
+}

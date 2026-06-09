@@ -1,0 +1,119 @@
+import { type Metadata } from 'next';
+import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
+import { HandleApiError } from '@/domain/api/HandleApiError';
+import { AuctionIdFilter } from '@/domain/crud/AuctionIdFilter';
+import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
+import { parseSearchParams } from '@/domain/crud/parseSearchParams';
+import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
+import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
+import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
+import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
+import { AutoRefreshEffect } from '@/helper/useAutoRefresh';
+import { Box } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { Provider } from 'jotai';
+
+import { AuctionItemTable } from './AuctionItemTable';
+import { PickForFeePaid } from './PickForFeePaid';
+import { PickForShipping, PickForShippingButtons } from './PickForShipping';
+import { SearchParamsSchema } from './SearchParamsSchema';
+import { StatusFilter } from './StatusFilter';
+
+export const metadata = { title: `日拍競標商品列表 | ${SITE_NAME}` } satisfies Metadata;
+
+interface PageProps {
+  searchParams: Record<string, string | string[] | undefined>;
+}
+
+export default async function Page(pageProps: PageProps) {
+  return (
+    <Stack spacing={3}>
+      <Stack direction="row" spacing={3}>
+        <Stack spacing={2} direction="row" justifyContent="space-between" sx={{ flex: '1 1 auto' }}>
+          <Typography variant="h4" sx={{ flexShrink: 0 }}>
+            日拍競標商品列表
+          </Typography>
+        </Stack>
+      </Stack>
+
+      <PermissionsGuard permissions={['GetAuctionItems']}>
+        <section>
+          <Content {...pageProps} />
+        </section>
+      </PermissionsGuard>
+    </Stack>
+  );
+}
+
+async function Content({ searchParams }: PageProps) {
+  const filters = parseSearchParams(SearchParamsSchema, searchParams);
+  console.log(filters)
+
+  const [auctionItemsRes] = await Promise.all([
+    GetAuctionItems({
+      auctionId: filters.auctionId,
+      consignorId: filters.consignorId,
+      status: (() => {
+        if (filters.picking === 'shipping') return [AUCTION_ITEM_STATUS.enum('ClosedStatus')];
+        if (filters.picking === 'fee') return [AUCTION_ITEM_STATUS.enum('AwaitingConsignorPayFeeStatus')];
+        return filters.status;
+        // if (filters.status.length) return filters.status;
+        // return [
+        //   AUCTION_ITEM_STATUS.enum('InitStatus'),
+        //   AUCTION_ITEM_STATUS.enum('StopBiddingStatus'),
+        //   AUCTION_ITEM_STATUS.enum('HighestBiddedStatus'),
+        //   AUCTION_ITEM_STATUS.enum('NotHighestBiddedStatus'),
+        //   AUCTION_ITEM_STATUS.enum('ClosedStatus'),
+        //   AUCTION_ITEM_STATUS.enum('AwaitingConsignorPayFeeStatus'),
+        //   AUCTION_ITEM_STATUS.enum('ConsignorRequestCancellationStatus'),
+        // ];
+      })(),
+      sort: 'createdAt',
+      order: 'desc',
+      limit: filters[ROWS_PER_PAGE],
+      offset: filters[PAGE] * filters[ROWS_PER_PAGE],
+    }),
+  ]);
+
+  if (auctionItemsRes.error) {
+    return <HandleApiError error={auctionItemsRes.error} />;
+  }
+
+  return (
+    <Provider>
+      <AutoRefreshEffect ms={10_000} />
+      <Stack spacing={3}>
+        <Stack direction="row" flexWrap="wrap" gap={2}>
+          <ConsignorFilter consignorId={filters.consignorId} />
+          <AuctionIdFilter values={filters.auctionId} />
+          {!filters.picking && (
+            <>
+              <StatusFilter selected={filters.status} />
+              <RemoveSearchBtn<keyof typeof filters> fields={['consignorId', 'status', 'auctionId']} />
+            </>
+          )}
+
+          <Box mx="auto" />
+          <HavePermissionsOnly permissions={['GetAuctionItem', 'ShippingAuctionItem']}>
+            <PickForShippingButtons picking={filters.picking} stage={filters.stage} />
+          </HavePermissionsOnly>
+          {/* TODO
+              <PickForFeePaidButtons picking={filters.picking} stage={filters.stage} />
+            */}
+        </Stack>
+
+        <AuctionItemTable
+          rows={auctionItemsRes.data.auctionItems}
+          page={filters[PAGE]}
+          rowsPerPage={filters[ROWS_PER_PAGE]}
+          count={auctionItemsRes.data.count}
+        />
+      </Stack>
+
+      <PickForShipping picking={filters.picking} stage={filters.stage} />
+      <PickForFeePaid picking={filters.picking} stage={filters.stage} />
+    </Provider>
+  );
+}
