@@ -3,9 +3,7 @@ import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js';
 // eslint-disable-next-line func-names
 export default async function (phase, { defaultConfig }) {
   /** @type {import('next').NextConfig} */
-  const config = {
-    output: 'standalone',
-  };
+  const config = {};
 
   if (phase === PHASE_DEVELOPMENT_SERVER) {
     return config;
