@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { isDemoMode } from '@/config/demo';
 import { type carouselGroup } from '@/db/schema';
 import { Button, Dialog, DialogTitle } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
+import { useState } from 'react';
 
 import CarouselFormDialogContent from './CarouselFormDialogContent';
 
@@ -19,6 +20,7 @@ export default function CreateCarouselDialog({
   return (
     <>
       <Button
+        disabled={isDemoMode}
         onClick={() => setOpen(true)}
         startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
         variant="contained"
