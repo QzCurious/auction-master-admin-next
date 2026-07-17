@@ -87,7 +87,7 @@ async function Table({ searchParams }: PageProps) {
   if (isDemoMode) {
     const list = demoCarousels
       .filter((row) => !filters.groupId || row.groupId === filters.groupId)
-      .toSorted((a, b) => a.sorted - b.sorted);
+      .sort((a, b) => a.sorted - b.sorted);
 
     return <CarouselTable groups={demoCarouselGroups} rows={list} />;
   }
