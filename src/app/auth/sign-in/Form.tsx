@@ -114,18 +114,33 @@ export function SignInForm() {
           </Button>
         </Stack>
       </form>
-      {process.env.NODE_ENV === 'development' && (
-        <Alert severity="warning">
-          Use{' '}
-          <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-            admin
-          </Typography>{' '}
-          with password{' '}
-          <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-            as123456
+      <Alert severity="info">
+        <Stack spacing={0.5}>
+          <Typography sx={{ fontWeight: 700 }} variant="subtitle2">
+            DEMO 帳號
           </Typography>
-        </Alert>
-      )}
+          <Typography variant="body2">
+            超級管理員：帳號{' '}
+            <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
+              admin
+            </Typography>
+            ，密碼{' '}
+            <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
+              demo-admin
+            </Typography>
+          </Typography>
+          <Typography variant="body2">
+            受限操作員：帳號{' '}
+            <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
+              operator
+            </Typography>
+            ，密碼{' '}
+            <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
+              demo-operator
+            </Typography>
+          </Typography>
+        </Stack>
+      </Alert>
     </Stack>
   );
 }
