@@ -1,5 +1,6 @@
 'use client';
 
+import { isDemoMode } from '@/config/demo';
 import { type carousel, type carouselGroup } from '@/db/schema';
 import { DATE_TIME_FORMAT } from '@/domain/static/static';
 import CheckIcon from '@mui/icons-material/Check';
@@ -114,7 +115,7 @@ function DeleteBtn({ row }: { row: typeof carousel.$inferSelect }) {
 
   return (
     <>
-      <IconButton {...bindTrigger(popupState)}>
+      <IconButton {...bindTrigger(popupState)} disabled={isDemoMode}>
         <DeleteIcon />
       </IconButton>
       <DoubleCheckPopover
