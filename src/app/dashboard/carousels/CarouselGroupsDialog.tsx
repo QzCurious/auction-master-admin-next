@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { isDemoMode } from '@/config/demo';
 import { type carouselGroup } from '@/db/schema';
 import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -10,6 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';
+import { useRef, useState } from 'react';
 
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
@@ -58,12 +59,14 @@ function Row({ group }: { group: typeof carouselGroup.$inferSelect }) {
           }}
         >
           <TextField
+            disabled={isDemoMode}
             inputRef={inputRef}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             InputProps={{
               endAdornment: (
                 <IconButton
+                  disabled={isDemoMode}
                   type="submit"
                   sx={{
                     visibility: value !== group.name ? 'visible' : 'hidden',
@@ -94,7 +97,7 @@ function DeleteBtn({ row }: { row: typeof carouselGroup.$inferSelect }) {
 
   return (
     <>
-      <IconButton {...bindTrigger(popupState)}>
+      <IconButton {...bindTrigger(popupState)} disabled={isDemoMode}>
         <DeleteIcon />
       </IconButton>
       <DoubleCheckPopover
