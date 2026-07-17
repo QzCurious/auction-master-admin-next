@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { isDemoMode } from '@/config/demo';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Dialog,
@@ -15,6 +15,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { useSnackbar } from 'notistack';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -42,7 +43,12 @@ export default function CreateGroupDialog() {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} variant="text">
+      <Button
+        disabled={isDemoMode}
+        onClick={() => setOpen(true)}
+        startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
+        variant="text"
+      >
         新增群組
       </Button>
 
@@ -67,7 +73,7 @@ export default function CreateGroupDialog() {
                 name="name"
                 render={({ field, fieldState }) => (
                   <FormControl fullWidth error={!!fieldState.error}>
-                    <TextField label="群組名稱" type="text" {...field} />
+                    <TextField disabled={isDemoMode} label="群組名稱" type="text" {...field} />
                     {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                   </FormControl>
                 )}
@@ -75,7 +81,7 @@ export default function CreateGroupDialog() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="submit" disabled={isSubmitting} variant="contained" color="primary">
+            <Button type="submit" disabled={isDemoMode || isSubmitting} variant="contained" color="primary">
               送出
             </Button>
           </DialogActions>
