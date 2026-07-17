@@ -1,7 +1,10 @@
+import { isDemoMode } from '@/config/demo';
 import { getDb } from '@/db';
 import { carousel, carouselGroup } from '@/db/schema';
+import { demoCarouselGroups, demoCarousels } from '@/demo/carousels';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { SITE_NAME } from '@/domain/static/static';
+import Alert from '@mui/material/Alert';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
@@ -24,8 +27,7 @@ interface PageProps {
 }
 
 export default async function Page(pageProps: PageProps) {
-  const db = await getDb();
-  const groups = await db.select().from(carouselGroup);
+  const groups = isDemoMode ? demoCarouselGroups : await getLiveGroups();
   const filters = parseSearchParams(SearchParamsSchema, pageProps.searchParams);
   if (filters.groupId && !groups.some((group) => group.id === filters.groupId)) {
     redirect('/dashboard/carousels');
@@ -34,6 +36,10 @@ export default async function Page(pageProps: PageProps) {
 
   return (
     <Stack spacing={3}>
+      {isDemoMode && (
+        <Alert severity="info">Demo 模式使用展示資料，新增、編輯、刪除與圖片上傳已停用。</Alert>
+      )}
+
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4">輪播圖</Typography>
@@ -70,9 +76,23 @@ export default async function Page(pageProps: PageProps) {
   );
 }
 
-async function Table({ searchParams }: PageProps) {
+async function getLiveGroups() {
   const db = await getDb();
+  return db.select().from(carouselGroup);
+}
+
+async function Table({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
+
+  if (isDemoMode) {
+    const list = demoCarousels
+      .filter((row) => !filters.groupId || row.groupId === filters.groupId)
+      .sort((a, b) => a.sorted - b.sorted);
+
+    return <CarouselTable groups={demoCarouselGroups} rows={list} />;
+  }
+
+  const db = await getDb();
   const [list, groups] = await Promise.all([
     db
       .select({ ...getTableColumns(carousel), group: carouselGroup.name })

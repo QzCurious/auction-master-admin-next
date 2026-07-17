@@ -1,5 +1,6 @@
 'use client';
 
+import { isDemoMode } from '@/config/demo';
 import { type carousel, type carouselGroup } from '@/db/schema';
 import EditIcon from '@mui/icons-material/Edit';
 import { Dialog, DialogTitle } from '@mui/material';
@@ -16,7 +17,7 @@ export default function EditCarouselDialog(props: {
 
   return (
     <>
-      <IconButton onClick={() => setOpen(true)}>
+      <IconButton disabled={isDemoMode} onClick={() => setOpen(true)}>
         <EditIcon />
       </IconButton>
 

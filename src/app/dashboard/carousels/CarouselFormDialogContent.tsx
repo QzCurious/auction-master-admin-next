@@ -1,6 +1,6 @@
 'use client';
 
-import { type ChangeEvent } from 'react';
+import { isDemoMode } from '@/config/demo';
 import { type carousel, type carouselGroup } from '@/db/schema';
 import { DATE_TIME_FORMAT } from '@/domain/static/static';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,6 +21,7 @@ import {
 import Stack from '@mui/material/Stack';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { useSnackbar } from 'notistack';
+import { type ChangeEvent } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -108,7 +109,7 @@ export default function CarouselFormDialogContent({
             render={({ field, fieldState }) => (
               <FormControl fullWidth error={!!fieldState.error}>
                 <InputLabel>群組</InputLabel>
-                <Select {...field} label="群組" fullWidth>
+                <Select {...field} disabled={isDemoMode} label="群組" fullWidth>
                   {groups.map((group) => (
                     <MenuItem key={group.id} value={group.id}>
                       {group.name}
@@ -138,6 +139,7 @@ export default function CarouselFormDialogContent({
                   )}
                   <FormControl fullWidth error={!!fieldState.error} sx={{ position: 'relative' }}>
                     <TextField
+                      disabled={isDemoMode}
                       label="手機版圖片"
                       inputProps={{ readOnly: true }}
                       type="text"
@@ -147,10 +149,11 @@ export default function CarouselFormDialogContent({
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <IconButton component="label" htmlFor="mobile-image-file-upload">
+                            <IconButton disabled={isDemoMode} component="label" htmlFor="mobile-image-file-upload">
                               <FileUploadIcon />
                             </IconButton>
                             <input
+                              disabled={isDemoMode}
                               type="file"
                               id="mobile-image-file-upload"
                               accept="image/*"
@@ -186,6 +189,7 @@ export default function CarouselFormDialogContent({
                   )}
                   <FormControl fullWidth error={!!fieldState.error} sx={{ position: 'relative' }}>
                     <TextField
+                      disabled={isDemoMode}
                       label="桌面版圖片"
                       inputProps={{ readOnly: true }}
                       type="text"
@@ -195,10 +199,11 @@ export default function CarouselFormDialogContent({
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <IconButton component="label" htmlFor="desktop-image-upload">
+                            <IconButton disabled={isDemoMode} component="label" htmlFor="desktop-image-upload">
                               <FileUploadIcon />
                             </IconButton>
                             <input
+                              disabled={isDemoMode}
                               type="file"
                               id="desktop-image-upload"
                               accept="image/*"
@@ -221,7 +226,7 @@ export default function CarouselFormDialogContent({
             name="sorted"
             render={({ field, fieldState }) => (
               <FormControl fullWidth>
-                <TextField label="排序" type="number" {...field} error={!!fieldState.error} />
+                <TextField disabled={isDemoMode} label="排序" type="number" {...field} error={!!fieldState.error} />
                 {!!fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
               </FormControl>
             )}
@@ -234,6 +239,7 @@ export default function CarouselFormDialogContent({
               <FormControl fullWidth error={!!fieldState.error}>
                 <DateTimePicker
                   {...field}
+                  disabled={isDemoMode}
                   label="發佈時間"
                   format="yyyy/MM/dd HH:mm:ss"
                   slotProps={{
@@ -249,7 +255,7 @@ export default function CarouselFormDialogContent({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button type="submit" disabled={isSubmitting} variant="contained" color="primary">
+        <Button type="submit" disabled={isDemoMode || isSubmitting} variant="contained" color="primary">
           送出
         </Button>
       </DialogActions>
