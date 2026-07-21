@@ -21,7 +21,7 @@ export { apiClientBase };
 
 const sensitiveKeyPattern = /authorization|cookie|password|secret|token/i;
 
-type EntryBody = {
+interface EntryBody {
   entries(): IterableIterator<[string, FormDataEntryValue]>;
 };
 
