@@ -2,6 +2,8 @@
 
 **Demo：<https://auction-master-admin-next.qzcurious.link/>**
 
+![日拍大師管理後台](./docs/demo.png)
+
 Demo 提供兩組帳號，可以直接比較不同權限下的操作範圍：
 
 - 超級管理員：`admin` / `demo-admin`
