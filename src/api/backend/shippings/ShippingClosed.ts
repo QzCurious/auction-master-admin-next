@@ -1,36 +1,15 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
-import { appendEntries } from '@/domain/crud/appendEntries';
-import { z } from 'zod';
+import * as endpoint from '@/api/endpoints/shippings/ShippingClosed';
+import { createActionApi } from '@/server/next/createActionApi';
 
-import { type Shipping } from './GetShippings';
-
-const ReqSchema = z
-  .object({
-    shippingCostsWithinJapan: z.number(),
-  })
-  .partial();
-
-type Data = 'Success';
-
-export async function ShippingClosed(id: Shipping['id'], payload: z.input<typeof ReqSchema>) {
-  const data = throwIfInvalid(payload, ReqSchema);
-
-  const urlencoded = new URLSearchParams();
-  appendEntries(urlencoded, data);
-
-  const res = await apiClientWithToken
-    .post<SuccessResponseJson<Data>>(`backend/shippings/${id}/closed`, {
-      body: urlencoded,
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function ShippingClosed(
+  id: Parameters<typeof endpoint.ShippingClosed>[1],
+  payload: Parameters<typeof endpoint.ShippingClosed>[2]
+) {
+  const res = await endpoint.ShippingClosed(createActionApi(), id, payload).catch(createApiErrorServerSide);
   revalidateTag('shippings');
-
   return res;
 }

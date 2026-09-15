@@ -1,22 +1,19 @@
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import 'server-only';
+
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from '@/api/core/static';
+import * as endpoint from '@/api/endpoints/rbac/GetRoles';
+import { createRenderApi } from '@/server/next/createRenderApi';
 
-export interface Role {
-  role: string;
-  description: string;
-}
-
-type Data = Array<Role>;
-
+export type { Role } from '@/api/endpoints/rbac/GetRoles';
 export async function GetRoles() {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>('backend/roles', {
-      next: {
-        tags: ['roles'],
-      },
-    })
-    .json()
+  const res = await endpoint
+    .GetRoles(
+      createRenderApi().extend({
+        next: {
+          tags: ['roles'],
+        },
+      })
+    )
     .catch(createApiErrorServerSide);
 
   return res;

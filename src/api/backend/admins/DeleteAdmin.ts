@@ -1,19 +1,12 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from '@/api/core/static';
+import * as endpoint from '@/api/endpoints/admins/DeleteAdmin';
+import { createActionApi } from '@/server/next/createActionApi';
 
-type Data = 'Success';
-
-export async function DeleteAdmin(id: number) {
-  const res = await apiClientWithToken
-    .delete<SuccessResponseJson<Data>>(`backend/admins/${id}`, {})
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function DeleteAdmin(id: Parameters<typeof endpoint.DeleteAdmin>[1]) {
+  const res = await endpoint.DeleteAdmin(createActionApi(), id).catch(createApiErrorServerSide);
   revalidateTag('admins');
-
   return res;
 }

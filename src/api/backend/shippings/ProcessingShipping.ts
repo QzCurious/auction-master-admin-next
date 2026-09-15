@@ -1,21 +1,12 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from '@/api/core/static';
+import * as endpoint from '@/api/endpoints/shippings/ProcessingShipping';
+import { createActionApi } from '@/server/next/createActionApi';
 
-import { type Shipping } from './GetShippings';
-
-type Data = 'Success';
-
-export async function ProcessingShipping(id: Shipping['id']) {
-  const res = await apiClientWithToken
-    .post<SuccessResponseJson<Data>>(`backend/shippings/${id}/processing`)
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function ProcessingShipping(id: Parameters<typeof endpoint.ProcessingShipping>[1]) {
+  const res = await endpoint.ProcessingShipping(createActionApi(), id).catch(createApiErrorServerSide);
   revalidateTag('shippings');
-
   return res;
 }

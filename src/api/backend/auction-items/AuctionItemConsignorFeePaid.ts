@@ -1,32 +1,12 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
-import { appendEntries } from '@/domain/crud/appendEntries';
-import { z } from 'zod';
+import * as endpoint from '@/api/endpoints/auction-items/AuctionItemConsignorFeePaid';
+import { createActionApi } from '@/server/next/createActionApi';
 
-const ReqSchema = z.object({
-  auctionId: z.string().array(),
-});
-
-type Data = 'Success';
-
-export async function AuctionItemConsignorFeePaid(payload: z.input<typeof ReqSchema>) {
-  const parsed = throwIfInvalid(payload, ReqSchema);
-
-  const urlencoded = new URLSearchParams();
-  appendEntries(urlencoded, parsed);
-
-  const res = await apiClientWithToken
-    .post<SuccessResponseJson<Data>>(`backend/auction-items/consignor-fee-paid`, {
-      body: urlencoded,
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function AuctionItemConsignorFeePaid(payload: Parameters<typeof endpoint.AuctionItemConsignorFeePaid>[1]) {
+  const res = await endpoint.AuctionItemConsignorFeePaid(createActionApi(), payload).catch(createApiErrorServerSide);
   revalidateTag('auction-items');
-
   return res;
 }

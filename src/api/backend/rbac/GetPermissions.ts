@@ -1,28 +1,12 @@
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
+import 'server-only';
+
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from '@/api/core/static';
-import { type PermissionKey } from '@/domain/permission/types';
+import * as endpoint from '@/api/endpoints/rbac/GetPermissions';
+import { createRenderApi } from '@/server/next/createRenderApi';
 
-export interface Permission {
-  key: PermissionKey;
-  url: string;
-  method: string;
-  fields: Array<string>;
-  description: string;
-}
-
-export interface PermissionGroup {
-  message: string;
-  permissions: Array<Permission>;
-}
-
-type Data = Array<PermissionGroup>;
-
+export type { Permission, PermissionGroup } from '@/api/endpoints/rbac/GetPermissions';
 export async function GetPermissions() {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>('backend/permissions', {})
-    .json()
-    .catch(createApiErrorServerSide);
+  const res = await endpoint.GetPermissions(createRenderApi()).catch(createApiErrorServerSide);
 
   return res;
 }

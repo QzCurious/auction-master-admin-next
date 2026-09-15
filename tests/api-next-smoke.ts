@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import { readFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 
 async function main() {
@@ -15,11 +16,27 @@ async function main() {
   let refreshes = 0;
   let rejectItems = false;
   let refreshStatus = 200;
+  let permissionCode = '0';
+  const exportedTokens: string[] = [];
+  let rejectExport = false;
   const itemTokens: string[] = [];
   const upstream = createServer((request, response) => {
     response.setHeader('Content-Type', 'application/json');
     response.setHeader('Cache-Control', 'no-store');
-    if (request.url === '/backend/session/refresh') {
+    if (request.url === '/backend/session') {
+      response.end(
+        JSON.stringify({ data: { token: fresh, refreshToken: 'smoke-refresh-secret' }, status: { code: '0' } })
+      );
+    } else if (request.url?.startsWith('/backend/shippings/excel')) {
+      exportedTokens.push(request.headers.authorization ?? '');
+      if (rejectExport && request.headers.authorization !== `Bearer ${fresh}`) {
+        response.statusCode = 401;
+        response.end(JSON.stringify({ data: null, status: { code: '1003' } }));
+        return;
+      }
+      response.setHeader('Content-Type', 'application/vnd.ms-excel');
+      response.end(Buffer.from([0, 1, 255]));
+    } else if (request.url === '/backend/session/refresh') {
       refreshes++;
       response.statusCode = refreshStatus;
       response.end(
@@ -40,7 +57,14 @@ async function main() {
         )
       );
     } else if (request.url?.startsWith('/backend/permissions/')) {
-      response.end(JSON.stringify({ data: { GetItemsAndDetails: { fields: [] } }, status: { code: '0' } }));
+      response.statusCode = permissionCode === '0' ? 200 : permissionCode === '1001' ? 403 : 503;
+      response.end(
+        JSON.stringify(
+          permissionCode === '0'
+            ? { data: { GetItemsAndDetails: { fields: [] } }, status: { code: '0' } }
+            : { data: null, status: { code: permissionCode } }
+        )
+      );
     } else {
       response.end(JSON.stringify({ data: {}, status: { code: '0' } }));
     }
@@ -118,6 +142,80 @@ async function main() {
     assert.equal(new URL(external.headers.get('location')!).origin, origin);
     assert.equal(new URL(external.headers.get('location')!).pathname, '/dashboard');
 
+    rejectItems = false;
+    permissionCode = '9999';
+    const permissionFailure = await get('/dashboard/items?limit=21');
+    const permissionFailureBody = await permissionFailure.text();
+    assert.ok(
+      permissionFailure.status === 500 || permissionFailureBody.includes('digest'),
+      'permission service failure must reach an error boundary'
+    );
+    assert.equal(
+      permissionFailure.headers.get('set-cookie'),
+      null,
+      'permission service failure must retain credentials'
+    );
+    permissionCode = '1001';
+    const permissionDenied = await get('/dashboard/items?limit=22');
+    const deniedBody = await permissionDenied.text();
+    assert.equal(permissionDenied.status, 200);
+    assert.ok(deniedBody.includes('你需要以下權限才能繼續'), 'backend denial must render permission feedback');
+    permissionCode = '0';
+
+    const exported = await get('/dashboard/shippings/api/export?id=1&id=2');
+    assert.equal(exported.status, 200);
+    assert.deepEqual(new Uint8Array(await exported.arrayBuffer()), new Uint8Array([0, 1, 255]));
+    assert.ok(exportedTokens.includes(`Bearer ${old}`));
+    rejectExport = true;
+    const beforeExportRefresh = refreshes;
+    const retriedExport = await get('/dashboard/shippings/api/export?id=3');
+    assert.equal(retriedExport.status, 200);
+    assert.equal(refreshes, beforeExportRefresh + 1);
+    assert.ok(
+      retriedExport.headers.get('set-cookie')?.includes(fresh),
+      'Route Handler must persist a reactive refresh'
+    );
+    assert.deepEqual(new Uint8Array(await retriedExport.arrayBuffer()), new Uint8Array([0, 1, 255]));
+
+    // Discover the action ID from this build instead of hard-coding compiler hashes.
+    const signInBundle = await readFile('.next/server/app/auth/sign-in/page.js', 'utf8');
+    const actionReference =
+      /["']?[a-f0-9]{40}["']?:\(\)=>Promise\.resolve\(\)\.then\([^;]+?\.then\(\w+=>\w+\.AdminLogin\)/.exec(
+        signInBundle
+      )?.[0];
+    const actionId = /[a-f0-9]{40}/.exec(actionReference ?? '')?.[0];
+    assert.ok(actionId, 'built login action must be discoverable');
+    const login = await fetch(`${origin}/auth/sign-in`, {
+      method: 'POST',
+      headers: { 'Next-Action': actionId, 'Content-Type': 'text/plain;charset=UTF-8', Origin: origin },
+      body: JSON.stringify([{ account: 'test', password: 'synthetic-password' }]),
+      redirect: 'manual',
+    });
+    const loginBody = await login.text();
+    assert.equal(login.status, 200);
+    assert.ok(login.headers.get('set-cookie')?.includes(fresh));
+    assert.ok(login.headers.get('set-cookie')?.includes('HttpOnly'));
+    assert.ok(
+      !loginBody.includes(fresh) && !loginBody.includes('smoke-refresh-secret'),
+      'login action result must not expose credentials'
+    );
+
+    const loggedOut = await get('/auth/logout');
+    assert.equal(new URL(loggedOut.headers.get('location')!, origin).pathname, '/auth/sign-in');
+    const deleted = loggedOut.headers.getSetCookie();
+    assert.ok(
+      deleted.some(
+        (value) => value.startsWith('admin-token=;') && value.includes('Max-Age=0') && value.includes('Path=/')
+      )
+    );
+    assert.ok(
+      deleted.some(
+        (value) => value.startsWith('admin-refresh-token=;') && value.includes('Max-Age=0') && value.includes('Path=/')
+      )
+    );
+    const repeatLogout = await fetch(`${origin}/auth/logout`, { redirect: 'manual' });
+    assert.equal(repeatLogout.status, 307, 'logout without credentials is idempotent');
+
     refreshStatus = 503;
     const unavailable = await get('/auth/refresh');
     assert.equal(unavailable.status, 503);
@@ -127,7 +225,7 @@ async function main() {
       'logs must not contain tokens'
     );
     console.log(
-      'Next.js smoke passed: proactive cookie forwarding, render fallback, route persistence, loop guard, local return URL, transient failure, and credential non-disclosure.'
+      'Next.js smoke passed: proactive cookie forwarding, render fallback, route persistence, loop guard, local return URL, permission failures, binary export, login/logout, transient failure, and credential non-disclosure.'
     );
   } catch (error) {
     console.error(output);

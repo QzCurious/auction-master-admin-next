@@ -1,32 +1,20 @@
-'use server';
+import 'server-only';
 
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from '@/api/core/static';
-import { type ADMIN_STATUS } from '@/domain/static/static-config-mappers';
+import * as endpoint from '@/api/endpoints/admins/GetAdmin';
+import { createRenderApi } from '@/server/next/createRenderApi';
 
-import { type Role } from '../rbac/GetRoles';
-
-export interface Admin {
-  id: number;
-  account: string;
-  password: string;
-  status: ADMIN_STATUS['value'];
-  createdAt: string;
-  updatedAt: string;
-  roles: Array<Role['role']>;
-}
-
-interface Data extends Admin {}
-
-export async function GetAdmin(id: number) {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>(`backend/admins/${id}`, {
-      next: {
-        tags: ['admins'],
-      },
-    })
-    .json()
+export type { Admin } from '@/api/endpoints/admins/GetAdmin';
+export async function GetAdmin(id: Parameters<typeof endpoint.GetAdmin>[1]) {
+  const res = await endpoint
+    .GetAdmin(
+      createRenderApi().extend({
+        next: {
+          tags: ['admins'],
+        },
+      }),
+      id
+    )
     .catch(createApiErrorServerSide);
 
   return res;

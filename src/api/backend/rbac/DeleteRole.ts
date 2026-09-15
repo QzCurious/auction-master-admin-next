@@ -1,19 +1,12 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from '@/api/core/static';
+import * as endpoint from '@/api/endpoints/rbac/DeleteRole';
+import { createActionApi } from '@/server/next/createActionApi';
 
-type Data = 'Success';
-
-export async function DeleteRole(role: string) {
-  const res = await apiClientWithToken
-    .delete<SuccessResponseJson<Data>>(`backend/roles/${role}`)
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function DeleteRole(role: Parameters<typeof endpoint.DeleteRole>[1]) {
+  const res = await endpoint.DeleteRole(createActionApi(), role).catch(createApiErrorServerSide);
   revalidateTag('roles');
-
   return res;
 }

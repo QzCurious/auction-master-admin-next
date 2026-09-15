@@ -1,28 +1,15 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from '@/api/core/static';
+import * as endpoint from '@/api/endpoints/consignor/HandleConsignorVerification';
+import { createActionApi } from '@/server/next/createActionApi';
 
-type Data = 'Success';
-
-export async function HandleConsignorVerification(id: number, action: 'approve' | 'reject') {
-  if (action === 'approve') {
-    const res = await apiClientWithToken
-      .post<SuccessResponseJson<Data>>(`backend/consignors/verifications/${id}/${action}`, {})
-      .json()
-      .catch(createApiErrorServerSide);
-
-    revalidateTag('consignorVerifications');
-    return res;
-  }
-
-  const res = await apiClientWithToken
-    .post<SuccessResponseJson<Data>>(`backend/consignors/verifications/${id}/${action}`)
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function HandleConsignorVerification(
+  id: Parameters<typeof endpoint.HandleConsignorVerification>[1],
+  action: Parameters<typeof endpoint.HandleConsignorVerification>[2]
+) {
+  const res = await endpoint.HandleConsignorVerification(createActionApi(), id, action).catch(createApiErrorServerSide);
   revalidateTag('consignorVerifications');
   return res;
 }

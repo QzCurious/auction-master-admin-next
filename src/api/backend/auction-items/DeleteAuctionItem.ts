@@ -1,21 +1,12 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from '@/api/core/static';
+import * as endpoint from '@/api/endpoints/auction-items/DeleteAuctionItem';
+import { createActionApi } from '@/server/next/createActionApi';
 
-import { type AuctionItem } from './GetAuctionItems';
-
-type Data = 'Success';
-
-export async function DeleteAuctionItem(id: AuctionItem['auctionId']) {
-  const res = await apiClientWithToken
-    .delete<SuccessResponseJson<Data>>(`backend/auction-items/${id}`, {})
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function DeleteAuctionItem(id: Parameters<typeof endpoint.DeleteAuctionItem>[1]) {
+  const res = await endpoint.DeleteAuctionItem(createActionApi(), id).catch(createApiErrorServerSide);
   revalidateTag('auction-items');
-
   return res;
 }

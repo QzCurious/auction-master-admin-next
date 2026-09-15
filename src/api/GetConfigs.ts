@@ -1,53 +1,19 @@
 'use server';
 
-import { apiClientBase } from './core/apiClientBase';
-import { createApiErrorServerSide } from './core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from './core/static';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import * as endpoint from '@/api/endpoints/GetConfigs';
+import { api } from '@/server/api';
 
-export interface Configs {
-  yahooAuctionFeeRate: number;
-  commissionRate: number;
-  defaultCommissionBonusRate: number;
-  auctionItemCancellationFee: number;
-  costPerSpace: number;
-  conpanyConsignorId: number;
-  lineURL: string;
-  withdrawalTransferFee: number;
-  bankName: string;
-  bankCode: string;
-  bankAccount: string;
-  packageThreshold: number;
-  shippingInfo: {
-    company: {
-      address: string;
-      recipientName: string;
-      phone: string;
-    };
-    sevenEleven: {
-      storeNumber: string;
-      storeName: string;
-      recipientName: string;
-      phone: string;
-    };
-    family: {
-      storeNumber: string;
-      storeName: string;
-      recipientName: string;
-      phone: string;
-    };
-  };
-}
-
-interface Data extends Configs {}
-
+export type { Configs } from '@/api/endpoints/GetConfigs';
 export async function GetConfigs() {
-  const res = await apiClientBase
-    .get<SuccessResponseJson<Data>>('configs', {
-      next: {
-        tags: ['config'],
-      },
-    })
-    .json()
+  const res = await endpoint
+    .GetConfigs(
+      api.extend({
+        next: {
+          tags: ['config'],
+        },
+      })
+    )
     .catch(createApiErrorServerSide);
 
   return res;

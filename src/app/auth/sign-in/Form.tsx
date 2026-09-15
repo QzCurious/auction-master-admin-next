@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AdminLogin } from '@/api/AdminLogin';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
+import { safeReturnPath } from '@/domain/auth/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -52,7 +53,7 @@ export function SignInForm() {
           }
 
           const goto = new URLSearchParams(location.search).get('goto');
-          location.href = goto ?? '/dashboard';
+          location.href = safeReturnPath(goto);
         })}
       >
         <Stack spacing={2}>

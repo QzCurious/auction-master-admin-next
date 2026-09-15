@@ -1,21 +1,12 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from '@/api/core/static';
+import * as endpoint from '@/api/endpoints/workers/DeleteWorker';
+import { createActionApi } from '@/server/next/createActionApi';
 
-import { type Worker } from './GetWorkers';
-
-type Data = 'Success';
-
-export async function DeleteWorker(id: Worker['id']) {
-  const res = await apiClientWithToken
-    .delete<SuccessResponseJson<Data>>(`backend/workers/${id}`)
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function DeleteWorker(id: Parameters<typeof endpoint.DeleteWorker>[1]) {
+  const res = await endpoint.DeleteWorker(createActionApi(), id).catch(createApiErrorServerSide);
   revalidateTag('workers');
-
   return res;
 }

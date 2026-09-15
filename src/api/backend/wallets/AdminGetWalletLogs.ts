@@ -1,51 +1,13 @@
-'use server';
+import 'server-only';
 
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
-import { appendEntries } from '@/domain/crud/appendEntries';
-import { type WALLET_ACTION } from '@/domain/static/static-config-mappers';
-import { z } from 'zod';
+import * as endpoint from '@/api/endpoints/wallets/AdminGetWalletLogs';
+import { createRenderApi } from '@/server/next/createRenderApi';
 
-const ReqSchema = z.object({
-  consignorId: z.coerce.number().optional(),
-  action: z.coerce.number().array().optional(),
-  startAt: z.coerce.date().optional(),
-  endAt: z.coerce.date().optional(),
-  sort: z.string().optional(),
-  order: z.enum(['asc', 'desc']).optional(),
-  limit: z.coerce.number().default(10),
-  offset: z.coerce.number().default(0),
-});
-
-export interface WalletLogs {
-  id: number;
-  consignorId: number;
-  opCode: string;
-  action: WALLET_ACTION['value'];
-  previousBalance: number;
-  netDifference: number;
-  createdAt: string;
-}
-
-interface Data {
-  walletLogs: Array<WalletLogs>;
-  count: number;
-}
-
-type ErrorCode = never;
-
-export async function AdminGetWalletLogs(payload: z.input<typeof ReqSchema>) {
-  const data = throwIfInvalid(payload, ReqSchema);
-
-  const query = new URLSearchParams();
-  appendEntries(query, data);
-
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>(`backend/wallets/logs?${query}`, {
-      next: { tags: ['wallets'] },
-    })
-    .json()
+export type { WalletLogs } from '@/api/endpoints/wallets/AdminGetWalletLogs';
+export async function AdminGetWalletLogs(payload: Parameters<typeof endpoint.AdminGetWalletLogs>[1]) {
+  const res = await endpoint
+    .AdminGetWalletLogs(createRenderApi().extend({ next: { tags: ['wallets'] } }), payload)
     .catch(createApiErrorServerSide);
 
   return res;

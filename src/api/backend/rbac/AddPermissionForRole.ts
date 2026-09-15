@@ -1,34 +1,12 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
-import { z } from 'zod';
+import * as endpoint from '@/api/endpoints/rbac/AddPermissionForRole';
+import { createActionApi } from '@/server/next/createActionApi';
 
-const ReqSchema = z.object({
-  role: z.string().transform((r) => [r]),
-  permissions: z
-    .object({
-      key: z.string(),
-      fields: z.string().array(),
-    })
-    .array(),
-});
-
-type Data = 'Success';
-
-export async function AddPermissionForRole(payload: z.input<typeof ReqSchema>) {
-  const data = throwIfInvalid(payload, ReqSchema);
-
-  const res = await apiClientWithToken
-    .post<SuccessResponseJson<Data>>('backend/permissions', {
-      json: data,
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function AddPermissionForRole(payload: Parameters<typeof endpoint.AddPermissionForRole>[1]) {
+  const res = await endpoint.AddPermissionForRole(createActionApi(), payload).catch(createApiErrorServerSide);
   revalidateTag('roles');
-
   return res;
 }

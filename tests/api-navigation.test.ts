@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { clearTokens, readTokens, writeTokens } from '../src/server/next/cookies';
 import {
   afterRefreshDestination,
   refreshDestination,
   safeReturnPath,
   signInDestination,
-} from '../src/server/next/navigation';
+} from '../src/domain/auth/navigation';
+import { clearTokens, readTokens, writeTokens } from '../src/server/next/cookies';
 
 void test('return destination rejects external, ambiguous, and looping paths', () => {
   for (const value of [

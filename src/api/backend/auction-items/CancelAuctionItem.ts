@@ -1,21 +1,12 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from '@/api/core/static';
+import * as endpoint from '@/api/endpoints/auction-items/CancelAuctionItem';
+import { createActionApi } from '@/server/next/createActionApi';
 
-import { type AuctionItem } from './GetAuctionItems';
-
-type Data = 'Success';
-
-export async function CancelAuctionItem(auctionId: AuctionItem['auctionId']) {
-  const res = await apiClientWithToken
-    .post<SuccessResponseJson<Data>>(`backend/auction-items/${auctionId}/cancellation`, {})
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function CancelAuctionItem(auctionId: Parameters<typeof endpoint.CancelAuctionItem>[1]) {
+  const res = await endpoint.CancelAuctionItem(createActionApi(), auctionId).catch(createApiErrorServerSide);
   revalidateTag('auction-items');
-
   return res;
 }

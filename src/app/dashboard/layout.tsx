@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { GetAdminPermissions } from '@/api/backend/rbac/GetAdminPermissions';
-import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { getJwt } from '@/domain/auth/getJwt';
+import RedirectAuthError from '@/domain/auth/RedirectAuthError';
 import { UserContextProvider } from '@/domain/auth/UserContext';
+import { loadPermissions } from '@/domain/permission/loadPermissions.server';
 import { PermissionsContextProvider } from '@/domain/permission/PermissionsContext';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import Box from '@mui/material/Box';
@@ -22,11 +22,11 @@ export default async function Layout({ children }: LayoutProps) {
   if (!jwt) {
     return <RedirectAuthError />;
   }
-  const permissionsRes = await GetAdminPermissions(jwt.account);
+  const permissions = await loadPermissions(jwt.account);
 
   return (
     <UserContextProvider user={jwt}>
-      <PermissionsContextProvider permissions={permissionsRes.data ?? {}}>
+      <PermissionsContextProvider permissions={permissions ?? {}}>
         <GlobalStyles
           styles={{
             body: {
@@ -83,7 +83,7 @@ export default async function Layout({ children }: LayoutProps) {
 
             <main>
               <Container maxWidth="xl" sx={{ py: '24px' }}>
-                {permissionsRes.data ? children : <WithoutPermissionsError permissions={['GetAdminPermissions']} />}
+                {permissions ? children : <WithoutPermissionsError permissions={['GetAdminPermissions']} />}
               </Container>
             </main>
           </Box>

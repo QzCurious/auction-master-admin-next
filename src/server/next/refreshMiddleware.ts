@@ -3,10 +3,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { AdminRefreshToken } from '@/api/endpoints/AdminRefreshToken';
 import { invalidSessionError } from '@/api/errors';
 import { createApiSession, ensureFreshToken } from '@/api/session';
+import { returnPathHeader, signInDestination } from '@/domain/auth/navigation';
 import { type KyInstance } from 'ky';
 
 import { clearTokens, readTokens, writeTokens } from './cookies';
-import { returnPathHeader, signInDestination } from './navigation';
 
 export async function refreshMiddleware(request: NextRequest, transport: KyInstance) {
   const forwarded = new Headers(request.headers);

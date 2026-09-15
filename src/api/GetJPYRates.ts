@@ -1,20 +1,12 @@
 'use server';
 
-import { apiClientWithToken } from './core/apiClientWithToken';
-import { createApiErrorServerSide } from './core/ApiError/createApiErrorServerSide';
-import { SuccessResponseJson } from './core/static';
-
-interface Data {
-  buying: number;
-  selling: number;
-}
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import * as endpoint from '@/api/endpoints/GetJPYRates';
+import { createActionApi } from '@/server/next/createActionApi';
 
 export async function GetJPYRates() {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>('/backend/jpy-rates', {
-      next: { tags: ['jpy-rates'] },
-    })
-    .json()
+  const res = await endpoint
+    .GetJPYRates(createActionApi().extend({ next: { tags: ['jpy-rates'] } }))
     .catch(createApiErrorServerSide);
 
   return res;

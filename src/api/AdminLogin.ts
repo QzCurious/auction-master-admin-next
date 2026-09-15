@@ -2,45 +2,15 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { CookieConfigs } from '@/domain/auth/CookieConfigs';
-import { appendEntries } from '@/domain/crud/appendEntries';
-import { z } from 'zod';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import * as endpoint from '@/api/endpoints/AdminLogin';
+import { api } from '@/server/api';
+import { writeTokens } from '@/server/next/cookies';
 
-import { apiClientBase } from './core/apiClientBase';
-import { createApiErrorServerSide } from './core/ApiError/createApiErrorServerSide';
-import { throwIfInvalid, type SuccessResponseJson } from './core/static';
-
-const ReqSchema = z.object({
-  account: z.string().min(1, 'Account is required'),
-  password: z.string().min(1, 'Password is required'),
-});
-
-interface Data {
-  token: string;
-  refreshToken: string;
-}
-
-export async function AdminLogin(payload: z.input<typeof ReqSchema>) {
-  const data = throwIfInvalid(payload, ReqSchema);
-
-  const urlencoded = new URLSearchParams();
-  appendEntries(urlencoded, data);
-
-  const res = await apiClientBase<SuccessResponseJson<Data>>('backend/session', {
-    method: 'POST',
-    body: urlencoded,
-  })
-    .json()
-    .catch(createApiErrorServerSide);
-
-  if (!res.data) {
-    return res;
-  }
-
-  cookies().set(CookieConfigs.token.name, res.data.token, CookieConfigs.token.opts());
-  cookies().set(CookieConfigs.refreshToken.name, res.data.refreshToken, CookieConfigs.refreshToken.opts());
-
+export async function AdminLogin(payload: Parameters<typeof endpoint.AdminLogin>[1]) {
+  const res = await endpoint.AdminLogin(api, payload).catch(createApiErrorServerSide);
+  if (!res.data) return res;
+  writeTokens(cookies(), { accessToken: res.data.token, refreshToken: res.data.refreshToken });
   revalidatePath('/', 'layout');
-
-  return null
+  return null;
 }

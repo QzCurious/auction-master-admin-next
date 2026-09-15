@@ -1,19 +1,12 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { type SuccessResponseJson } from '@/api/core/static';
+import * as endpoint from '@/api/endpoints/items/ItemReturnPending';
+import { createActionApi } from '@/server/next/createActionApi';
 
-type Data = 'Success';
-
-export async function ItemReturnPending(id: number) {
-  const res = await apiClientWithToken
-    .post<SuccessResponseJson<Data>>(`backend/items/${id}/return-pending`)
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function ItemReturnPending(id: Parameters<typeof endpoint.ItemReturnPending>[1]) {
+  const res = await endpoint.ItemReturnPending(createActionApi(), id).catch(createApiErrorServerSide);
   revalidateTag('items');
-
   return res;
 }
