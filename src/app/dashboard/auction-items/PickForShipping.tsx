@@ -3,11 +3,11 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
-import { ShippingAuctionItem } from '@/api/backend/auction-items/ShippingAuctionItem';
 import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
 import { HandleApiError, useHandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign } from '@/domain/static/static';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
+import { ShippingAuctionItem } from '@/server-action/backend/auction-items/ShippingAuctionItem';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,

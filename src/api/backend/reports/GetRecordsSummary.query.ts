@@ -1,6 +1,5 @@
+import { GetRecordsSummary } from '@/server-action/backend/reports/GetRecordsSummary';
 import { type QueryOptions } from '@tanstack/react-query';
-
-import { GetRecordsSummary } from './GetRecordsSummary';
 
 export function GetRecordsSummaryQueryOptions(...args: Parameters<typeof GetRecordsSummary>) {
   return {

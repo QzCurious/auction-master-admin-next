@@ -1,10 +1,7 @@
-'use server';
-
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { type WALLET_ACTION } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -35,18 +32,12 @@ interface Data {
 
 type ErrorCode = never;
 
-export async function AdminGetWalletLogs(payload: z.input<typeof ReqSchema>) {
+export async function AdminGetWalletLogs(api: KyInstance, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>(`backend/wallets/logs?${query}`, {
-      next: { tags: ['wallets'] },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/wallets/logs?${query}`, {}).json();
   return res;
 }

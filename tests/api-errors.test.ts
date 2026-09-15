@@ -4,8 +4,8 @@ import { test } from 'node:test';
 import { redirect } from 'next/navigation';
 import ky, { HTTPError, type KyInstance } from 'ky';
 
-import { createApiErrorServerSide } from '../src/api/core/ApiError/createApiErrorServerSide';
-import { invalidSessionError } from '../src/api/errors';
+import { invalidSessionError } from '../src/domain/auth/errors';
+import { createApiErrorServerSide } from '../src/server/next/createApiErrorServerSide';
 
 void test('HTTP errors retain backend codes and the existing toast/redirect shape', async () => {
   for (const [status, code, expectedCode, type] of [

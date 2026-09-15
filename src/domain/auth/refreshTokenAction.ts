@@ -1,8 +1,8 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { createActionSession } from '@/server/next/createActionApi';
+import { createApiErrorServerSide } from '@/server/next/createApiErrorServerSide';
 
 export default async function refreshTokenAction() {
   const result = await (async () => {

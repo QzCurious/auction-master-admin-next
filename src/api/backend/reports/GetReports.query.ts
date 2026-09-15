@@ -1,6 +1,5 @@
+import { GetReports } from '@/server-action/backend/reports/GetReports';
 import { type QueryOptions } from '@tanstack/react-query';
-
-import { GetReports } from './GetReports';
 
 export function GetReportsQueryOptions(...args: Parameters<typeof GetReports>) {
   return {

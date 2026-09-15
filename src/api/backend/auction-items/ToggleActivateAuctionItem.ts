@@ -1,21 +1,14 @@
-'use server';
-
-import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { type SuccessResponseJson } from '@/api/core/static';
-
-import { type AuctionItem } from './GetAuctionItems';
+import { type KyInstance } from 'ky';
 
 type Data = 'Success';
 
-export async function ToggleActivateAuctionItem(id: AuctionItem['auctionId'], status: AuctionItem['status']) {
-  const res = await apiClientWithToken
-    .patch<SuccessResponseJson<Data>>(`backend/auction-items/${id}/${status}`)
-    .json()
-    .catch(createApiErrorServerSide);
-
-  revalidateTag('auction-items');
-
+export async function ToggleActivateAuctionItem(
+  api: KyInstance,
+  id: AuctionItem['auctionId'],
+  status: AuctionItem['status']
+) {
+  const res = await api.patch<SuccessResponseJson<Data>>(`backend/auction-items/${id}/${status}`).json();
   return res;
 }

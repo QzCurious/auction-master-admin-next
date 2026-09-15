@@ -3,12 +3,10 @@
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-
-import { CookieConfigs } from './CookieConfigs';
+import { clearTokens } from '@/server/next/cookies';
 
 export async function logout() {
-  cookies().delete(CookieConfigs.token.name);
-  cookies().delete(CookieConfigs.refreshToken.name);
+  clearTokens(cookies());
   revalidatePath('/', 'layout');
   redirect('/auth/sign-in');
 }

@@ -1,8 +1,5 @@
-'use server';
-
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -30,13 +27,7 @@ export interface Worker {
 
 type Data = Worker;
 
-export async function GetWorker(id: number) {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>(`backend/workers/${id}`, {
-      next: { tags: ['workers'] },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function GetWorker(api: KyInstance, id: number) {
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/workers/${id}`, {}).json();
   return res;
 }

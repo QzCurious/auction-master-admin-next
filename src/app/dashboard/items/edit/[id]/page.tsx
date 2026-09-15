@@ -1,11 +1,11 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
-import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
-import { GetItemAndDetails } from '@/api/backend/items/GetItemAndDetails';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { havePermissions, PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { SITE_NAME } from '@/domain/static/static';
+import { AdminGetConsignor } from '@/server/next/queries/backend/consignor/AdminGetConsignor';
+import { GetItemAndDetails } from '@/server/next/queries/backend/items/GetItemAndDetails';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Box, Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';

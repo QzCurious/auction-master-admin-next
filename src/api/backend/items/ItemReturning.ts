@@ -1,11 +1,7 @@
-'use server';
-
-import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 import * as R from 'remeda';
 import { z } from 'zod';
 
@@ -23,20 +19,16 @@ const ReqSchema = z.object({
 
 type Data = 'Success';
 
-export async function ItemReturning(payload: z.output<typeof ReqSchema>) {
+export async function ItemReturning(api: KyInstance, payload: z.output<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await apiClientWithToken
+  const res = await api
     .post<SuccessResponseJson<Data>>('backend/items/returning', {
       body: urlencoded,
     })
-    .json()
-    .catch(createApiErrorServerSide);
-
-  revalidateTag('items');
-
+    .json();
   return res;
 }

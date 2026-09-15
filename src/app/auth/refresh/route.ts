@@ -1,13 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { invalidSessionError } from '@/api/errors';
-import { clearTokens } from '@/server/next/cookies';
-import { createActionSession } from '@/server/next/createActionApi';
+import { invalidSessionError } from '@/domain/auth/errors';
 import {
   afterRefreshDestination,
   refreshAttemptParam,
   safeReturnPath,
   signInDestination,
-} from '@/server/next/navigation';
+} from '@/domain/auth/navigation';
+import { clearTokens } from '@/server/next/cookies';
+import { createActionSession } from '@/server/next/createActionApi';
 
 export async function GET(request: NextRequest) {
   const response = await refresh(request);

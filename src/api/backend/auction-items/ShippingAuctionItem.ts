@@ -1,10 +1,6 @@
-'use server';
-
-import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 import { z } from 'zod';
 
 const ReqSchema = z.discriminatedUnion('shipmentType', [
@@ -38,17 +34,13 @@ const ReqSchema = z.discriminatedUnion('shipmentType', [
 
 type Data = 'Success';
 
-export async function ShippingAuctionItem(payload: z.input<typeof ReqSchema>) {
+export async function ShippingAuctionItem(api: KyInstance, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
-  const res = await apiClientWithToken
+  const res = await api
     .post<SuccessResponseJson<Data>>(`backend/auction-items/shipping`, {
       json: data,
     })
-    .json()
-    .catch(createApiErrorServerSide);
-
-  revalidateTag('auction-items');
-
+    .json();
   return res;
 }

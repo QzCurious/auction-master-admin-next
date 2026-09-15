@@ -1,9 +1,6 @@
-'use server';
-
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { type SuccessResponseJson } from '@/api/core/static';
 import { type ITEM_STATUS, type ITEM_TYPE } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 
 export interface Item {
   id: number;
@@ -39,13 +36,7 @@ export interface Item {
 
 interface Data extends Item {}
 
-export async function GetItemAndDetails(id: number) {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>(`backend/items/${id}`, {
-      next: { tags: ['items'] },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function GetItemAndDetails(api: KyInstance, id: number) {
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/items/${id}`, {}).json();
   return res;
 }

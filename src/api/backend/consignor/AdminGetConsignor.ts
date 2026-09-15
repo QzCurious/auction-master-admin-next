@@ -1,9 +1,6 @@
-'use server';
-
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { type SuccessResponseJson } from '@/api/core/static';
 import { type CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 
 export interface Consignor {
   id: number;
@@ -32,13 +29,7 @@ export interface Consignor {
 
 interface Data extends Consignor {}
 
-export async function AdminGetConsignor(id: number) {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>(`backend/consignors/${id}`, {
-      next: { tags: ['consignors'] },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function AdminGetConsignor(api: KyInstance, id: number) {
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/consignors/${id}`, {}).json();
   return res;
 }

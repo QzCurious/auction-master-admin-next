@@ -1,10 +1,10 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
-import { GetPermissions } from '@/api/backend/rbac/GetPermissions';
-import { GetRolePermissions } from '@/api/backend/rbac/GetRolePermissions';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { SITE_NAME } from '@/domain/static/static';
+import { GetPermissions } from '@/server/next/queries/backend/rbac/GetPermissions';
+import { GetRolePermissions } from '@/server/next/queries/backend/rbac/GetRolePermissions';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';

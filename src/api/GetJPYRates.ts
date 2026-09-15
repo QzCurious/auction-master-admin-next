@@ -1,21 +1,12 @@
-'use server';
-
-import { apiClientWithToken } from './core/apiClientWithToken';
-import { createApiErrorServerSide } from './core/ApiError/createApiErrorServerSide';
-import { SuccessResponseJson } from './core/static';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
 interface Data {
   buying: number;
   selling: number;
 }
 
-export async function GetJPYRates() {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>('/backend/jpy-rates', {
-      next: { tags: ['jpy-rates'] },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function GetJPYRates(api: KyInstance) {
+  const res = await api.get<SuccessResponseJson<Data>>('/backend/jpy-rates', {}).json();
   return res;
 }

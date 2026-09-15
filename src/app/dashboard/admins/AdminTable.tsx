@@ -3,13 +3,13 @@
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { DeleteAdmin } from '@/api/backend/admins/DeleteAdmin';
 import { type Admin } from '@/api/backend/admins/GetAdmins';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { type PaginationSearchParams } from '@/domain/static/static';
 import { ADMIN_STATUS } from '@/domain/static/static-config-mappers';
+import { DeleteAdmin } from '@/server-action/backend/admins/DeleteAdmin';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Chip, TableContainer } from '@mui/material';

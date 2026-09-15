@@ -1,11 +1,7 @@
-'use server';
-
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type Role } from '@/api/backend/rbac/GetRoles';
 import { type SuccessResponseJson } from '@/api/core/static';
 import { type ADMIN_STATUS } from '@/domain/static/static-config-mappers';
-
-import { type Role } from '../rbac/GetRoles';
+import { type KyInstance } from 'ky';
 
 export interface Admin {
   id: number;
@@ -19,15 +15,7 @@ export interface Admin {
 
 interface Data extends Admin {}
 
-export async function GetAdmin(id: number) {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>(`backend/admins/${id}`, {
-      next: {
-        tags: ['admins'],
-      },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function GetAdmin(api: KyInstance, id: number) {
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/admins/${id}`, {}).json();
   return res;
 }

@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
-import { AdminGetConsignors } from '@/api/backend/consignor/AdminGetConsignors';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
@@ -8,6 +6,8 @@ import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import { havePermissions, PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import WithoutPermissionsError from '@/domain/permission/WithoutPermissionsError/WithoutPermissionsError';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
+import { AdminGetConsignor } from '@/server/next/queries/backend/consignor/AdminGetConsignor';
+import { AdminGetConsignors } from '@/server/next/queries/backend/consignor/AdminGetConsignors';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';

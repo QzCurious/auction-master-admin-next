@@ -1,11 +1,11 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { ConsignorSelect } from '@/domain/crud/ConsignorSelect';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { PAGE } from '@/domain/static/static';
+import { AdminGetConsignor } from '@/server-action/backend/consignor/AdminGetConsignor';
 import { useQuery } from '@tanstack/react-query';
 
 import { FilterPopover } from '@/components/FilterPopover';

@@ -3,12 +3,12 @@ import { test } from 'node:test';
 
 import ky, { HTTPError, type KyInstance } from 'ky';
 
-import { createAuthHooks } from '../src/api/createAuthHooks';
-import { AdminRefreshToken } from '../src/api/endpoints/AdminRefreshToken';
-import { AdminUpdateItem } from '../src/api/endpoints/AdminUpdateItem';
-import { GetItemsAndDetails } from '../src/api/endpoints/GetItemsAndDetails';
-import { invalidSessionError } from '../src/api/errors';
-import { createApiSession, ensureFreshToken, refreshRejectedToken, type Tokens } from '../src/api/session';
+import { AdminUpdateItem } from '../src/api/backend/items/AdminUpdateItem';
+import { GetItemsAndDetails } from '../src/api/backend/items/GetItemsAndDetails';
+import { createAuthHooks } from '../src/domain/auth/createAuthHooks';
+import { invalidSessionError } from '../src/domain/auth/errors';
+import { refreshTokens } from '../src/domain/auth/refreshTokens';
+import { createApiSession, ensureFreshToken, refreshRejectedToken, type Tokens } from '../src/domain/auth/session';
 
 const now = 1_700_000_000_000;
 function token(exp = now / 1000 + 3600, user = 'a') {
@@ -235,9 +235,9 @@ void test('refresh endpoint preserves exact form/header contract and maps defini
     assert.equal(await request.text(), 'refreshToken=refresh-secret');
     return success({ token: updated.accessToken });
   });
-  assert.deepEqual(await AdminRefreshToken(api, old), updated);
+  assert.deepEqual(await refreshTokens(api, old), updated);
   await assert.rejects(
-    AdminRefreshToken(
+    refreshTokens(
       transport(() => expired()),
       old
     ),
@@ -253,7 +253,7 @@ void test('refresh rejection follows backend codes rather than HTTP status', asy
     [503, '1003'],
   ] as const) {
     await assert.rejects(
-      AdminRefreshToken(
+      refreshTokens(
         transport(() => Response.json({ status: { code } }, { status })),
         old
       ),

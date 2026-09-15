@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { GetWorkers } from '@/api/backend/workers/GetWorkers';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
+import { GetWorkers } from '@/server/next/queries/backend/workers/GetWorkers';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 

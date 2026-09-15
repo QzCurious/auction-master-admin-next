@@ -1,9 +1,6 @@
-'use server';
-
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { type SuccessResponseJson } from '@/api/core/static';
 import { type WORKER_STATUS, type WORKER_TYPE } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 
 export interface Worker {
   id: number;
@@ -25,13 +22,7 @@ export interface Worker {
 
 type Data = Array<Worker>;
 
-export async function GetActivationWorkers() {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>('backend/workers/activation', {
-      next: { tags: ['workers'] },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function GetActivationWorkers(api: KyInstance) {
+  const res = await api.get<SuccessResponseJson<Data>>('backend/workers/activation', {}).json();
   return res;
 }

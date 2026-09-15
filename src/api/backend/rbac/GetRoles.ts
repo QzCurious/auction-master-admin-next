@@ -1,6 +1,5 @@
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
 export interface Role {
   role: string;
@@ -9,15 +8,7 @@ export interface Role {
 
 type Data = Array<Role>;
 
-export async function GetRoles() {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>('backend/roles', {
-      next: {
-        tags: ['roles'],
-      },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function GetRoles(api: KyInstance) {
+  const res = await api.get<SuccessResponseJson<Data>>('backend/roles', {}).json();
   return res;
 }

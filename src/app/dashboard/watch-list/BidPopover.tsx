@@ -1,10 +1,10 @@
 'use client';
 
 import { useMemo } from 'react';
-import { BidAuctionItem } from '@/api/backend/auction-items/BidAuctionItem';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign } from '@/domain/static/static';
+import { BidAuctionItem } from '@/server-action/backend/auction-items/BidAuctionItem';
 import {
   Button,
   FormControl,

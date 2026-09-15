@@ -1,9 +1,6 @@
-'use server';
-
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { type SuccessResponseJson } from '@/api/core/static';
 import { type ACTION_TYPE, type SHIPMENT_TYPE, type SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 
 export interface Shipping {
   id: string;
@@ -26,13 +23,7 @@ export interface Shipping {
 
 type Data = Shipping;
 
-export async function GetShipping(id: Shipping['id']) {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>(`backend/shippings/${id}`, {
-      next: { tags: ['shippings'] },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function GetShipping(api: KyInstance, id: Shipping['id']) {
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/shippings/${id}`, {}).json();
   return res;
 }

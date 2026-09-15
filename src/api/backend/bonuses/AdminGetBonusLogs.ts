@@ -1,10 +1,7 @@
-'use server';
-
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { type BONUS_ACTION } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -33,18 +30,12 @@ interface Data {
   count: number;
 }
 
-export async function AdminGetBonusLogs(payload: z.input<typeof ReqSchema>) {
+export async function AdminGetBonusLogs(api: KyInstance, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>(`backend/bonuses/logs?${query}`, {
-      next: { tags: ['bonus'] },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/bonuses/logs?${query}`, {}).json();
   return res;
 }

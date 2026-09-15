@@ -1,7 +1,6 @@
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { type SuccessResponseJson } from '@/api/core/static';
 import { type PermissionKey } from '@/domain/permission/types';
+import { type KyInstance } from 'ky';
 
 export interface Permission {
   key: PermissionKey;
@@ -18,11 +17,7 @@ export interface PermissionGroup {
 
 type Data = Array<PermissionGroup>;
 
-export async function GetPermissions() {
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>('backend/permissions', {})
-    .json()
-    .catch(createApiErrorServerSide);
-
+export async function GetPermissions(api: KyInstance) {
+  const res = await api.get<SuccessResponseJson<Data>>('backend/permissions', {}).json();
   return res;
 }

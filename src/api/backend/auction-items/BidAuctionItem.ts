@@ -1,13 +1,8 @@
-'use server';
-
-import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
 import { z } from 'zod';
-
-import { type AuctionItem } from './GetAuctionItems';
 
 const ReqSchema = z.object({
   price: z.number(),
@@ -15,20 +10,20 @@ const ReqSchema = z.object({
 
 type Data = 'Success';
 
-export async function BidAuctionItem(id: AuctionItem['auctionId'], payload: z.input<typeof ReqSchema>) {
+export async function BidAuctionItem(
+  api: KyInstance,
+  id: AuctionItem['auctionId'],
+  payload: z.input<typeof ReqSchema>
+) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await apiClientWithToken
+  const res = await api
     .post<SuccessResponseJson<Data>>(`backend/auction-items/${id}/bid`, {
       body: urlencoded,
     })
-    .json()
-    .catch(createApiErrorServerSide);
-
-  revalidateTag('auction-items');
-
+    .json();
   return res;
 }

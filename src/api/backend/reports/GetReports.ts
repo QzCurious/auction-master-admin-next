@@ -1,9 +1,6 @@
-'use server';
-
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -42,20 +39,12 @@ type Data = Array<{
 
 type ErrorCode = never;
 
-export async function GetReports(payload: z.input<typeof ReqSchema>) {
+export async function GetReports(api: KyInstance, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>(`backend/reports?${query}`, {
-      next: {
-        tags: ['reports'],
-      },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/reports?${query}`, {}).json();
   return res;
 }

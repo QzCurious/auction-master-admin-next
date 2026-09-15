@@ -1,5 +1,4 @@
 import { type Metadata } from 'next';
-import { GetAuctionItems } from '@/api/backend/auction-items/GetAuctionItems';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { AuctionIdFilter } from '@/domain/crud/AuctionIdFilter';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
@@ -10,6 +9,7 @@ import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { AutoRefreshEffect } from '@/helper/useAutoRefresh';
+import { GetAuctionItems } from '@/server/next/queries/backend/auction-items/GetAuctionItems';
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -49,7 +49,7 @@ export default async function Page(pageProps: PageProps) {
 
 async function Content({ searchParams }: PageProps) {
   const filters = parseSearchParams(SearchParamsSchema, searchParams);
-  console.log(filters)
+  console.log(filters);
 
   const [auctionItemsRes] = await Promise.all([
     GetAuctionItems({

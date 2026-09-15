@@ -2,12 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { type Worker } from '@/api/backend/workers/GetWorker';
-import { UpdateWorker } from '@/api/backend/workers/UpdateWorker';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
+import { UpdateWorker } from '@/server-action/backend/workers/UpdateWorker';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';

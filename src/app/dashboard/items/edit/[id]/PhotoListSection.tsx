@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
-import { AdminDeleteItemPhoto } from '@/api/backend/items/AdminDeleteItemPhoto';
-import { AdminReorderItemPhoto } from '@/api/backend/items/AdminReorderItemPhoto';
-import { AdminUpsertItemPhoto } from '@/api/backend/items/AdminUpsertItemPhoto';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useObjectURL } from '@/helper/useObjectURL';
+import { AdminDeleteItemPhoto } from '@/server-action/backend/items/AdminDeleteItemPhoto';
+import { AdminReorderItemPhoto } from '@/server-action/backend/items/AdminReorderItemPhoto';
+import { AdminUpsertItemPhoto } from '@/server-action/backend/items/AdminUpsertItemPhoto';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ClearIcon from '@mui/icons-material/Clear';
 import DragHandleOutlinedIcon from '@mui/icons-material/DragHandleOutlined';

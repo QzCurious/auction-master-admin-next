@@ -1,13 +1,8 @@
-'use server';
-
-import { revalidateTag } from 'next/cache';
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type Record } from '@/api/backend/reports/GetRecords';
 import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
 import { z } from 'zod';
-
-import { type Record } from './GetRecords';
 
 const ReqSchema = z.object({
   action: z.enum(['approve', 'reject']),
@@ -15,20 +10,16 @@ const ReqSchema = z.object({
 
 type Data = 'Success';
 
-export async function RecordPaymentReview(id: Record['id'], payload: z.input<typeof ReqSchema>) {
+export async function RecordPaymentReview(api: KyInstance, id: Record['id'], payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  const res = await apiClientWithToken
+  const res = await api
     .post<SuccessResponseJson<Data>>(`backend/reports/records/${id}/review`, {
       body: urlencoded,
     })
-    .json()
-    .catch(createApiErrorServerSide);
-
-  revalidateTag('records');
-
+    .json();
   return res;
 }

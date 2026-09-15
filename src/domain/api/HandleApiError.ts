@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 import { redirect } from 'next/navigation';
-import { type ApiError } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type ApiError } from '@/domain/api/ApiError';
+import { signInDestination } from '@/domain/auth/navigation';
 import { useSnackbar } from 'notistack';
 
 export function useHandleApiError() {
@@ -15,7 +16,7 @@ export function useHandleApiError() {
         return;
       }
       if (err.type === 'redirect') {
-        redirect(err.url);
+        redirect(err.url === '/auth/sign-in' ? signInDestination(location.pathname + location.search) : err.url);
       }
       if (err.type === 'throw') {
         throw new Error(err.message);

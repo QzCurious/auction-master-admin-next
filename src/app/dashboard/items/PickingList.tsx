@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetail.query';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
+import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetails.query';
 import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign, DATE_FORMAT } from '@/domain/static/static';

@@ -1,10 +1,7 @@
-'use server';
-
-import { apiClientWithToken } from '@/api/core/apiClientWithToken';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
 import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { type AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 import { z } from 'zod';
 
 const ReqSchema = z.object({
@@ -51,18 +48,12 @@ interface Data {
   count: number;
 }
 
-export async function GetAuctionItems(payload: z.input<typeof ReqSchema>) {
+export async function GetAuctionItems(api: KyInstance, payload: z.input<typeof ReqSchema>) {
   const data = throwIfInvalid(payload, ReqSchema);
 
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  const res = await apiClientWithToken
-    .get<SuccessResponseJson<Data>>(`backend/auction-items?${query}`, {
-      next: { tags: ['auction-items'] },
-    })
-    .json()
-    .catch(createApiErrorServerSide);
-
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/auction-items?${query}`, {}).json();
   return res;
 }

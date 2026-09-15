@@ -1,6 +1,5 @@
+import { GetConfigs } from '@/server-action/GetConfigs';
 import { type QueryOptions } from '@tanstack/react-query';
-
-import { GetConfigs } from './GetConfigs';
 
 export function GetConfigsQueryOptions(...args: Parameters<typeof GetConfigs>) {
   return {

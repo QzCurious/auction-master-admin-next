@@ -1,12 +1,12 @@
 import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 import { NextResponse, type NextRequest } from 'next/server';
-import { AdminRefreshToken } from '@/api/endpoints/AdminRefreshToken';
-import { invalidSessionError } from '@/api/errors';
-import { createApiSession, ensureFreshToken } from '@/api/session';
+import { invalidSessionError } from '@/domain/auth/errors';
+import { returnPathHeader, signInDestination } from '@/domain/auth/navigation';
+import { refreshTokens } from '@/domain/auth/refreshTokens';
+import { createApiSession, ensureFreshToken } from '@/domain/auth/session';
 import { type KyInstance } from 'ky';
 
 import { clearTokens, readTokens, writeTokens } from './cookies';
-import { returnPathHeader, signInDestination } from './navigation';
 
 export async function refreshMiddleware(request: NextRequest, transport: KyInstance) {
   const forwarded = new Headers(request.headers);
@@ -16,7 +16,7 @@ export async function refreshMiddleware(request: NextRequest, transport: KyInsta
   let response = NextResponse.next({ request: { headers: forwarded } });
   const session = createApiSession({
     readTokens: () => readTokens(request.cookies),
-    refreshTokens: (tokens) => AdminRefreshToken(transport, tokens),
+    refreshTokens: (tokens) => refreshTokens(transport, tokens),
     persistTokens: (tokens) => {
       forwardedCookies.set('admin-token', tokens.accessToken);
       forwardedCookies.set('admin-refresh-token', tokens.refreshToken);

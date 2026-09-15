@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { GetRoles } from '@/api/backend/rbac/GetRoles';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { SITE_NAME } from '@/domain/static/static';
+import { GetRoles } from '@/server/next/queries/backend/rbac/GetRoles';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';

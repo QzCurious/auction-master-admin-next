@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { type GetReports, type Report } from '@/api/backend/reports/GetReports';
+import { type Report } from '@/api/backend/reports/GetReports';
 import { GetReportsQueryOptions } from '@/api/backend/reports/GetReports.query';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign, DATE_FORMAT } from '@/domain/static/static';
+import { type GetReports } from '@/server-action/backend/reports/GetReports';
 import { Card, CardContent, CircularProgress, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { DateTimePicker } from '@mui/x-date-pickers';

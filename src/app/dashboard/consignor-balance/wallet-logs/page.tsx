@@ -1,7 +1,6 @@
 import { type Metadata } from 'next';
 import Link from 'next/link';
-import { AdminGetConsignor } from '@/api/backend/consignor/AdminGetConsignor';
-import { AdminGetWalletLogs, type WalletLogs } from '@/api/backend/wallets/AdminGetWalletLogs';
+import { type WalletLogs } from '@/api/backend/wallets/AdminGetWalletLogs';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
@@ -12,6 +11,8 @@ import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { WALLET_ACTION } from '@/domain/static/static-config-mappers';
+import { AdminGetConsignor } from '@/server/next/queries/backend/consignor/AdminGetConsignor';
+import { AdminGetWalletLogs } from '@/server/next/queries/backend/wallets/AdminGetWalletLogs';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { TableContainer } from '@mui/material';
 import Box from '@mui/material/Box';

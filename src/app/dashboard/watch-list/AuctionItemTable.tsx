@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { UpdateAuctionItem } from '@/api/backend/auction-items/UpdateAuctionItem';
 import { GetWorkersQueryOptions } from '@/api/backend/workers/GetWorkers.query';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
@@ -18,6 +17,7 @@ import {
   type PaginationSearchParams,
 } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS, WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
+import { UpdateAuctionItem } from '@/server-action/backend/auction-items/UpdateAuctionItem';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';

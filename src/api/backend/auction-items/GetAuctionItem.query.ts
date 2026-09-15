@@ -1,6 +1,6 @@
+import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItem';
+import { GetAuctionItem } from '@/server-action/backend/auction-items/GetAuctionItem';
 import { type QueryOptions } from '@tanstack/react-query';
-
-import { GetAuctionItem, type AuctionItem } from './GetAuctionItem';
 
 export const GetAuctionItemQueryOptions = (id: AuctionItem['auctionId']) =>
   ({
