@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { GetItemsAndDetails } from '@/api/backend/items/GetItemsAndDetails';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { getItemsAndDetails } from '@/api/endpoints/getItemsAndDetails';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
@@ -8,6 +9,8 @@ import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { AutoRefreshEffect } from '@/helper/useAutoRefresh';
+import { withCacheTags } from '@/server/next/withCacheTags';
+import { withRenderApiSession } from '@/server/next/withRenderApiSession';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
@@ -53,17 +56,19 @@ async function Content({ searchParams }: PageProps) {
   const query = parseSearchParams(SearchParamsSchema, searchParams);
 
   const [itemsRes] = await Promise.all([
-    GetItemsAndDetails({
-      status: (() => {
-        if (query.picking === 'return') return [ITEM_STATUS.enum('WarehouseReturnPendingStatus')];
-        return query.status;
-      })(),
-      limit: query[ROWS_PER_PAGE],
-      offset: query[PAGE] * query[ROWS_PER_PAGE],
-      consignorId: query.consignorId,
-      sort: 'createdAt',
-      order: 'desc',
-    }),
+    withRenderApiSession((api) =>
+      getItemsAndDetails(withCacheTags(api, ['items']), {
+        status: (() => {
+          if (query.picking === 'return') return [ITEM_STATUS.enum('WarehouseReturnPendingStatus')];
+          return query.status;
+        })(),
+        limit: query[ROWS_PER_PAGE],
+        offset: query[PAGE] * query[ROWS_PER_PAGE],
+        consignorId: query.consignorId,
+        sort: 'createdAt',
+        order: 'desc',
+      })
+    ).catch(createApiErrorServerSide),
   ]);
 
   if (itemsRes.error) {

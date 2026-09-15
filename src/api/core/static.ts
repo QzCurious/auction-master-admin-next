@@ -26,7 +26,6 @@ export function throwIfInvalid<D extends z.input<Z>, Z extends z.ZodTypeAny>(dat
   if (!res.success) {
     if (process.env.NODE_ENV === 'development') {
       console.log('Invalid data');
-      console.log('dataObj', dataObj);
     }
     throw new Error('Invalid data', { cause: res.error });
   }

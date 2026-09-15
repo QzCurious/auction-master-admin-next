@@ -1,4 +1,7 @@
+import { isRedirectError } from 'next/dist/client/components/redirect';
+import { ApiFailure, SessionRefreshRequired } from '@/api/errors';
 import { HTTPError } from 'ky';
+import { ZodError } from 'zod';
 
 import { type FailedResponseJson } from '../static';
 
@@ -102,7 +105,7 @@ function isFailedResponseJson(value: unknown): value is FailedResponseJson {
 
 async function extractErrorCode(err: unknown) {
   if (!(err instanceof HTTPError)) {
-    console.error('API request failed:', err instanceof Error ? err.message : String(err));
+    console.error('API request failed');
     return '9999';
   }
 
@@ -114,16 +117,25 @@ async function extractErrorCode(err: unknown) {
       return data.status.code;
     }
   } catch (parseError) {
-    console.error(
-      `Unable to parse API error response [${err.response.status}]:`,
-      parseError instanceof Error ? parseError.message : String(parseError)
-    );
+    console.error(`Unable to parse API error response [${err.response.status}]`);
   }
 
   return '9999';
 }
 
 export async function createApiErrorServerSide(err: unknown) {
-  const code = await extractErrorCode(err);
+  if (err instanceof SessionRefreshRequired || isRedirectError(err)) throw err;
+  const code =
+    err instanceof ApiFailure
+      ? err.kind === 'unauthenticated' || err.kind === 'expired'
+        ? '1003'
+        : err.kind === 'forbidden'
+          ? '1001'
+          : err.code === '1003'
+            ? '9999'
+            : err.code
+      : err instanceof ZodError || (err instanceof Error && err.cause instanceof ZodError)
+        ? '11'
+        : await extractErrorCode(err);
   return { data: null, error: createApiError(code) };
 }

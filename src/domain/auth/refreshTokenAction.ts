@@ -1,20 +1,16 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
-import { AdminRefreshToken } from '@/api/AdminRefreshToken';
-
-import { CookieConfigs } from './CookieConfigs';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { refreshRejectedToken } from '@/api/session';
+import { withApiSession } from '@/server/next/withApiSession';
 
 export default async function refreshTokenAction() {
-  const res = await AdminRefreshToken();
-
-  if (res.error) {
-    return res;
-  }
-
-  cookies().set(CookieConfigs.token.name, res.data.token, CookieConfigs.token.opts());
-  revalidatePath('/', 'layout');
-
-  return res;
+  const result = await withApiSession(async (_api, session) => {
+    const tokens = await session.readTokens();
+    await refreshRejectedToken(session, tokens.accessToken);
+    return { data: 'Success' as const, error: undefined };
+  }).catch(createApiErrorServerSide);
+  if (!result.error) revalidatePath('/', 'layout');
+  return result;
 }
