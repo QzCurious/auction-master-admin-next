@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetail.query';
-import { ItemReturning } from '@/api/backend/items/ItemReturning';
-import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
 import { HandleApiError, useHandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign } from '@/domain/static/static';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
+import { GetItemAndDetailQueryOptions } from '@/query/backend/items/GetItemAndDetail.query';
+import { GetConfigsQueryOptions } from '@/query/GetConfigs.query';
+import { ItemReturning } from '@/server-action/backend/items/ItemReturning';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,

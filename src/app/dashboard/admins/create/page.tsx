@@ -1,8 +1,8 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
-import { GetRoles } from '@/api/backend/rbac/GetRoles';
 import { havePermissions } from '@/domain/permission/havePermissions.server';
 import { SITE_NAME } from '@/domain/static/static';
+import { GetRoles } from '@/server/next/queries/backend/rbac/GetRoles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';

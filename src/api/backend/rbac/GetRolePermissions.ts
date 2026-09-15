@@ -1,21 +1,16 @@
-import 'server-only';
+import { type Permission } from '@/api/backend/rbac/GetPermissions';
+import { type Role } from '@/api/backend/rbac/GetRoles';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/rbac/GetRolePermissions';
-import { createRenderApi } from '@/server/next/createRenderApi';
+export interface RolePermissions {
+  description: string;
+  permission: Permission[];
+}
 
-export type { RolePermissions } from '@/api/endpoints/rbac/GetRolePermissions';
-export async function GetRolePermissions(role: Parameters<typeof endpoint.GetRolePermissions>[1]) {
-  const res = await endpoint
-    .GetRolePermissions(
-      createRenderApi().extend({
-        next: {
-          tags: ['roles'],
-        },
-      }),
-      role
-    )
-    .catch(createApiErrorServerSide);
+type Data = RolePermissions;
 
+export async function GetRolePermissions(api: KyInstance, role: Role['role']) {
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/roles/${role}/permissions`, {}).json();
   return res;
 }

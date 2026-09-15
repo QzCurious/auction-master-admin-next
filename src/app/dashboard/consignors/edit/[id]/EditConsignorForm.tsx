@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
-import { AdminUpdateConsignor } from '@/api/backend/consignor/AdminUpdateConsignor';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { database } from '@/domain/static/address.data';
 import { CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
+import { AdminUpdateConsignor } from '@/server-action/backend/consignor/AdminUpdateConsignor';
 import { zodResolver } from '@hookform/resolvers/zod';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { Button, Chip, Grid, InputAdornment, InputLabel, Link, MenuItem, Select, TextField } from '@mui/material';

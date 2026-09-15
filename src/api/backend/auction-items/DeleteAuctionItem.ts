@@ -1,12 +1,10 @@
-'use server';
+import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/auction-items/DeleteAuctionItem';
-import { createActionApi } from '@/server/next/createActionApi';
+type Data = 'Success';
 
-export async function DeleteAuctionItem(id: Parameters<typeof endpoint.DeleteAuctionItem>[1]) {
-  const res = await endpoint.DeleteAuctionItem(createActionApi(), id).catch(createApiErrorServerSide);
-  revalidateTag('auction-items');
+export async function DeleteAuctionItem(api: KyInstance, id: AuctionItem['auctionId']) {
+  const res = await api.delete<SuccessResponseJson<Data>>(`backend/auction-items/${id}`, {}).json();
   return res;
 }

@@ -1,21 +1,21 @@
-import 'server-only';
+import { type Role } from '@/api/backend/rbac/GetRoles';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type ADMIN_STATUS } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/admins/GetAdmin';
-import { createRenderApi } from '@/server/next/createRenderApi';
+export interface Admin {
+  id: number;
+  account: string;
+  password: string;
+  status: ADMIN_STATUS['value'];
+  createdAt: string;
+  updatedAt: string;
+  roles: Array<Role['role']>;
+}
 
-export type { Admin } from '@/api/endpoints/admins/GetAdmin';
-export async function GetAdmin(id: Parameters<typeof endpoint.GetAdmin>[1]) {
-  const res = await endpoint
-    .GetAdmin(
-      createRenderApi().extend({
-        next: {
-          tags: ['admins'],
-        },
-      }),
-      id
-    )
-    .catch(createApiErrorServerSide);
+interface Data extends Admin {}
 
+export async function GetAdmin(api: KyInstance, id: number) {
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/admins/${id}`, {}).json();
   return res;
 }

@@ -1,14 +1,25 @@
-'use server';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
+import { z } from 'zod';
 
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/admins/UpdateAdminPassword';
-import { createActionApi } from '@/server/next/createActionApi';
+const ReqSchema = z.object({
+  oldPassword: z.string().min(1),
+  password: z.string().min(1),
+});
 
-export async function UpdateAdminPassword(
-  id: Parameters<typeof endpoint.UpdateAdminPassword>[1],
-  payload: Parameters<typeof endpoint.UpdateAdminPassword>[2]
-) {
-  const res = await endpoint.UpdateAdminPassword(createActionApi(), id, payload).catch(createApiErrorServerSide);
+type Data = 'Success';
 
+export async function UpdateAdminPassword(api: KyInstance, id: number, payload: z.input<typeof ReqSchema>) {
+  const data = throwIfInvalid(payload, ReqSchema);
+
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, data);
+
+  const res = await api
+    .patch<SuccessResponseJson<Data>>(`backend/admins/${id}/password`, {
+      body: urlencoded,
+    })
+    .json();
   return res;
 }

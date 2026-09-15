@@ -2,12 +2,12 @@
 
 import React, { useEffect, useReducer } from 'react';
 import { useRouter } from 'next/navigation';
-import { AddPermissionForRole } from '@/api/backend/rbac/AddPermissionForRole';
-import { CreateRole } from '@/api/backend/rbac/CreateRole';
 import { type Permission, type PermissionGroup } from '@/api/backend/rbac/GetPermissions';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { FormSubmissionWithDirtyFields } from '@/helper/FormSubmissionWithDirtyFields';
+import { AddPermissionForRole } from '@/server-action/backend/rbac/AddPermissionForRole';
+import { CreateRole } from '@/server-action/backend/rbac/CreateRole';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Grid, TextField } from '@mui/material';
 import Button from '@mui/material/Button';

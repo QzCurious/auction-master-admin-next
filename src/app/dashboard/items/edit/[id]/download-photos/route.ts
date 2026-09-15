@@ -1,7 +1,7 @@
 import { basename } from 'node:path';
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { GetItemAndDetails } from '@/api/backend/items/GetItemAndDetails';
+import { GetItemAndDetails } from '@/server-action/backend/items/GetItemAndDetails';
 import AdmZip from 'adm-zip';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {

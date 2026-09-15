@@ -3,12 +3,12 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { type Shipping } from '@/api/backend/shippings/GetShipping';
-import { UpdateShipping } from '@/api/backend/shippings/UpdateShipping';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { currencySign } from '@/domain/static/static';
 import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
+import { UpdateShipping } from '@/server-action/backend/shippings/UpdateShipping';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Grid, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';

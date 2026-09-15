@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AddRoleForAdmin } from '@/api/backend/admins/AddRoleForAdmin';
-import { CreateAdmin } from '@/api/backend/admins/CreateAdmin';
 import { type Role } from '@/api/backend/rbac/GetRoles';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { ADMIN_STATUS } from '@/domain/static/static-config-mappers';
+import { AddRoleForAdmin } from '@/server-action/backend/admins/AddRoleForAdmin';
+import { CreateAdmin } from '@/server-action/backend/admins/CreateAdmin';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';

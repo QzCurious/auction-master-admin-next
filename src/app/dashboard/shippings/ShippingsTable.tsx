@@ -1,9 +1,6 @@
 'use client';
 
 import { type Shipping } from '@/api/backend/shippings/GetShippings';
-import { ProcessingShipping } from '@/api/backend/shippings/ProcessingShipping';
-import { Shipped } from '@/api/backend/shippings/Shipped';
-import { ShippingClosed } from '@/api/backend/shippings/ShippingClosed';
 import { type Configs } from '@/api/GetConfigs';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import AuctionItemPreviewPopover from '@/domain/crud/AuctionItemPreviewPopover';
@@ -12,6 +9,9 @@ import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { currencySign, DATE_TIME_FORMAT, yahooAuctionLink, type PaginationSearchParams } from '@/domain/static/static';
 import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
+import { ProcessingShipping } from '@/server-action/backend/shippings/ProcessingShipping';
+import { Shipped } from '@/server-action/backend/shippings/Shipped';
+import { ShippingClosed } from '@/server-action/backend/shippings/ShippingClosed';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
 import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined';

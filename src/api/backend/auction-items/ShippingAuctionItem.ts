@@ -1,12 +1,46 @@
-'use server';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
+import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
+import { z } from 'zod';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/auction-items/ShippingAuctionItem';
-import { createActionApi } from '@/server/next/createActionApi';
+const ReqSchema = z.discriminatedUnion('shipmentType', [
+  z.object({
+    shipmentType: z.literal(SHIPMENT_TYPE.enum('AddressShipmentType')),
+    auctionIds: z.array(z.string()),
+    address: z.string(),
+    recipientName: z.string(),
+    phone: z.string(),
+    remark: z.string().optional(),
+  }),
+  z.object({
+    shipmentType: z.literal(SHIPMENT_TYPE.enum('SevenElevenShipmentType')),
+    auctionIds: z.array(z.string()),
+    storeNumber: z.string(),
+    storeName: z.string(),
+    recipientName: z.string(),
+    phone: z.string(),
+    remark: z.string().optional(),
+  }),
+  z.object({
+    shipmentType: z.literal(SHIPMENT_TYPE.enum('FamilyShipmentType')),
+    auctionIds: z.array(z.string()),
+    storeNumber: z.string(),
+    storeName: z.string(),
+    recipientName: z.string(),
+    phone: z.string(),
+    remark: z.string().optional(),
+  }),
+]);
 
-export async function ShippingAuctionItem(payload: Parameters<typeof endpoint.ShippingAuctionItem>[1]) {
-  const res = await endpoint.ShippingAuctionItem(createActionApi(), payload).catch(createApiErrorServerSide);
-  revalidateTag('auction-items');
+type Data = 'Success';
+
+export async function ShippingAuctionItem(api: KyInstance, payload: z.input<typeof ReqSchema>) {
+  const data = throwIfInvalid(payload, ReqSchema);
+
+  const res = await api
+    .post<SuccessResponseJson<Data>>(`backend/auction-items/shipping`, {
+      json: data,
+    })
+    .json();
   return res;
 }

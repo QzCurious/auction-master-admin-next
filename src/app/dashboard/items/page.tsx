@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { GetItemsAndDetails } from '@/api/endpoints/GetItemsAndDetails';
+import { GetItemsAndDetails } from '@/api/backend/items/GetItemsAndDetails';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
@@ -9,6 +8,7 @@ import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { AutoRefreshEffect } from '@/helper/useAutoRefresh';
+import { createApiErrorServerSide } from '@/server/next/createApiErrorServerSide';
 import { createRenderApi } from '@/server/next/createRenderApi';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';

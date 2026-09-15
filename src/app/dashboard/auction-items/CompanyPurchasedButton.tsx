@@ -1,8 +1,8 @@
 'use client';
 
-import { CompanyPurchased } from '@/api/backend/auction-items/CompanyPurchased';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
+import { CompanyPurchased } from '@/server-action/backend/auction-items/CompanyPurchased';
 import { Button } from '@mui/material';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useSnackbar } from 'notistack';

@@ -1,13 +1,12 @@
-'use server';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/GetJPYRates';
-import { createActionApi } from '@/server/next/createActionApi';
+interface Data {
+  buying: number;
+  selling: number;
+}
 
-export async function GetJPYRates() {
-  const res = await endpoint
-    .GetJPYRates(createActionApi().extend({ next: { tags: ['jpy-rates'] } }))
-    .catch(createApiErrorServerSide);
-
+export async function GetJPYRates(api: KyInstance) {
+  const res = await api.get<SuccessResponseJson<Data>>('/backend/jpy-rates', {}).json();
   return res;
 }

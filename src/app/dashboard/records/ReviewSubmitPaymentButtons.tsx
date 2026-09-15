@@ -1,8 +1,8 @@
 'use client';
 
 import { type Record } from '@/api/backend/reports/GetRecords';
-import { RecordPaymentReview } from '@/api/backend/reports/RecordPaymentReview';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
+import { RecordPaymentReview } from '@/server-action/backend/reports/RecordPaymentReview';
 import { Button } from '@mui/material';
 import { Stack } from '@mui/system';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';

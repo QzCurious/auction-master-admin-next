@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 import { redirect } from 'next/navigation';
-import { type ApiError } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type ApiError } from '@/domain/api/ApiError';
 import { signInDestination } from '@/domain/auth/navigation';
 import { useSnackbar } from 'notistack';
 

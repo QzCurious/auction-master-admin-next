@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { AdminGetConsignor, type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
-import { AdminGetConsignors } from '@/api/backend/consignor/AdminGetConsignors';
+import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
+import { AdminGetConsignor } from '@/server-action/backend/consignor/AdminGetConsignor';
+import { AdminGetConsignors } from '@/server-action/backend/consignor/AdminGetConsignors';
 import { Autocomplete, TextField, Typography, type TextFieldProps } from '@mui/material';
 import { Box, type SxProps } from '@mui/system';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';

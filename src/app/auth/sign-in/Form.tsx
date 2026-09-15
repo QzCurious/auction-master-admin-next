@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { AdminLogin } from '@/api/AdminLogin';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { safeReturnPath } from '@/domain/auth/navigation';
+import { AdminLogin } from '@/server-action/AdminLogin';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';

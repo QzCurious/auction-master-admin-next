@@ -1,15 +1,25 @@
-'use server';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
+import { z } from 'zod';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/items/AdminReorderItemPhoto';
-import { createActionApi } from '@/server/next/createActionApi';
+const ReqSchema = z.object({
+  originalSorted: z.number(),
+  newSorted: z.number(),
+});
 
-export async function AdminReorderItemPhoto(
-  id: Parameters<typeof endpoint.AdminReorderItemPhoto>[1],
-  payload: Parameters<typeof endpoint.AdminReorderItemPhoto>[2]
-) {
-  const res = await endpoint.AdminReorderItemPhoto(createActionApi(), id, payload).catch(createApiErrorServerSide);
-  revalidateTag('items');
+type Data = 'Success';
+
+export async function AdminReorderItemPhoto(api: KyInstance, id: number, payload: z.input<typeof ReqSchema>) {
+  const data = throwIfInvalid(payload, ReqSchema);
+
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, data);
+
+  const res = await api
+    .patch<SuccessResponseJson<Data>>(`backend/items/${id}/photos`, {
+      body: urlencoded,
+    })
+    .json();
   return res;
 }

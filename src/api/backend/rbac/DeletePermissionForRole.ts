@@ -1,12 +1,28 @@
-'use server';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
+import { z } from 'zod';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/rbac/DeletePermissionForRole';
-import { createActionApi } from '@/server/next/createActionApi';
+const ReqSchema = z.object({
+  role: z.string(),
+  permissions: z
+    .object({
+      key: z.string(),
+      fields: z.string().array(),
+    })
+    .array(),
+});
 
-export async function DeletePermissionForRole(payload: Parameters<typeof endpoint.DeletePermissionForRole>[1]) {
-  const res = await endpoint.DeletePermissionForRole(createActionApi(), payload).catch(createApiErrorServerSide);
-  revalidateTag('roles');
+type Data = 'Success';
+
+export async function DeletePermissionForRole(api: KyInstance, payload: z.input<typeof ReqSchema>) {
+  const data = throwIfInvalid(payload, ReqSchema);
+
+  const permissions = data.permissions.flatMap((p) => p.fields.map((f) => `${p.key}:${f}`));
+
+  const query = new URLSearchParams();
+  appendEntries(query, { role: data.role, permissionKey: permissions });
+
+  const res = await api.delete<SuccessResponseJson<Data>>(`/backend/permissions?${query.toString()}`).json();
   return res;
 }

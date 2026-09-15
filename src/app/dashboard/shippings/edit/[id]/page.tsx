@@ -1,10 +1,10 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
-import { GetShipping } from '@/api/backend/shippings/GetShipping';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { SITE_NAME } from '@/domain/static/static';
+import { GetShipping } from '@/server/next/queries/backend/shippings/GetShipping';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';

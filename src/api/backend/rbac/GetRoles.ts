@@ -1,20 +1,14 @@
-import 'server-only';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/rbac/GetRoles';
-import { createRenderApi } from '@/server/next/createRenderApi';
+export interface Role {
+  role: string;
+  description: string;
+}
 
-export type { Role } from '@/api/endpoints/rbac/GetRoles';
-export async function GetRoles() {
-  const res = await endpoint
-    .GetRoles(
-      createRenderApi().extend({
-        next: {
-          tags: ['roles'],
-        },
-      })
-    )
-    .catch(createApiErrorServerSide);
+type Data = Array<Role>;
 
+export async function GetRoles(api: KyInstance) {
+  const res = await api.get<SuccessResponseJson<Data>>('backend/roles', {}).json();
   return res;
 }

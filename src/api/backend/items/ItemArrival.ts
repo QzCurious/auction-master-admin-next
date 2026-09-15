@@ -1,12 +1,9 @@
-'use server';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/items/ItemArrival';
-import { createActionApi } from '@/server/next/createActionApi';
+type Data = 'Success';
 
-export async function ItemArrival(id: Parameters<typeof endpoint.ItemArrival>[1]) {
-  const res = await endpoint.ItemArrival(createActionApi(), id).catch(createApiErrorServerSide);
-  revalidateTag('items');
+export async function ItemArrival(api: KyInstance, id: number) {
+  const res = await api.post<SuccessResponseJson<Data>>(`backend/items/${id}/arrival`).json();
   return res;
 }

@@ -1,5 +1,8 @@
 import { type Metadata } from 'next';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
+import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
+import { type Record } from '@/api/backend/reports/GetRecords';
+import { type RecordSummary } from '@/api/backend/reports/GetRecordsSummary';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import AuctionItemPreviewPopover from '@/domain/crud/AuctionItemPreviewPopover';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
@@ -20,12 +23,11 @@ import {
   yahooAuctionLink,
 } from '@/domain/static/static';
 import { RECORD_STATUS, RECORD_TYPE } from '@/domain/static/static-config-mappers';
-import { GetAuctionItem } from '@/server/next/queries/auction-items/GetAuctionItem';
-import { AdminGetConsignor } from '@/server/next/queries/consignor/AdminGetConsignor';
-import { type Consignor } from '@/server/next/queries/consignor/AdminGetConsignors';
-import { GetItemAndDetails } from '@/server/next/queries/items/GetItemAndDetails';
-import { GetRecords, type Record } from '@/server/next/queries/reports/GetRecords';
-import { GetRecordsSummary, type RecordSummary } from '@/server/next/queries/reports/GetRecordsSummary';
+import { GetAuctionItem } from '@/server/next/queries/backend/auction-items/GetAuctionItem';
+import { AdminGetConsignor } from '@/server/next/queries/backend/consignor/AdminGetConsignor';
+import { GetItemAndDetails } from '@/server/next/queries/backend/items/GetItemAndDetails';
+import { GetRecords } from '@/server/next/queries/backend/reports/GetRecords';
+import { GetRecordsSummary } from '@/server/next/queries/backend/reports/GetRecordsSummary';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { Chip, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Box from '@mui/material/Box';

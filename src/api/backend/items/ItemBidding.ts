@@ -1,15 +1,24 @@
-'use server';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
+import { z } from 'zod';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/items/ItemBidding';
-import { createActionApi } from '@/server/next/createActionApi';
+const ReqSchema = z.object({
+  auctionId: z.string(),
+});
 
-export async function ItemBidding(
-  id: Parameters<typeof endpoint.ItemBidding>[1],
-  payload: Parameters<typeof endpoint.ItemBidding>[2]
-) {
-  const res = await endpoint.ItemBidding(createActionApi(), id, payload).catch(createApiErrorServerSide);
-  revalidateTag('items');
+type Data = 'Success';
+
+export async function ItemBidding(api: KyInstance, id: number, payload: z.input<typeof ReqSchema>) {
+  const data = throwIfInvalid(payload, ReqSchema);
+
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, data);
+
+  const res = await api
+    .post<SuccessResponseJson<Data>>(`backend/items/${id}/bidding`, {
+      body: urlencoded,
+    })
+    .json();
   return res;
 }

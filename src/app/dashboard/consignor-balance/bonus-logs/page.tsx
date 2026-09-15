@@ -1,6 +1,6 @@
 import { type Metadata } from 'next';
 import Link from 'next/link';
-import { AdminGetBonusLogs, type BonusLogs } from '@/api/backend/bonuses/AdminGetBonusLogs';
+import { type BonusLogs } from '@/api/backend/bonuses/AdminGetBonusLogs';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { ConsignorFilter } from '@/domain/crud/ConsignorFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
@@ -11,7 +11,8 @@ import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { DATE_TIME_FORMAT, PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { BONUS_ACTION } from '@/domain/static/static-config-mappers';
-import { AdminGetConsignor } from '@/server/next/queries/consignor/AdminGetConsignor';
+import { AdminGetBonusLogs } from '@/server/next/queries/backend/bonuses/AdminGetBonusLogs';
+import { AdminGetConsignor } from '@/server/next/queries/backend/consignor/AdminGetConsignor';
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import { TableContainer } from '@mui/material';
 import Box from '@mui/material/Box';

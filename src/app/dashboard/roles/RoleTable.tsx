@@ -3,10 +3,10 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { DeleteRole } from '@/api/backend/rbac/DeleteRole';
 import { type Role } from '@/api/backend/rbac/GetRoles';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
+import { DeleteRole } from '@/server-action/backend/rbac/DeleteRole';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { TableContainer } from '@mui/material';

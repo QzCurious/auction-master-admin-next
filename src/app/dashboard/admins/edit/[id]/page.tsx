@@ -1,11 +1,11 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
-import { GetAdmin } from '@/api/backend/admins/GetAdmin';
-import { GetRoles } from '@/api/backend/rbac/GetRoles';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { havePermissions, PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { SITE_NAME } from '@/domain/static/static';
+import { GetAdmin } from '@/server/next/queries/backend/admins/GetAdmin';
+import { GetRoles } from '@/server/next/queries/backend/rbac/GetRoles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';

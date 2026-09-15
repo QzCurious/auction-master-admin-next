@@ -1,12 +1,9 @@
-'use server';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/items/ItemAppraiserConfirmed';
-import { createActionApi } from '@/server/next/createActionApi';
+type Data = 'Success';
 
-export async function ItemAppraiserConfirmed(id: Parameters<typeof endpoint.ItemAppraiserConfirmed>[1]) {
-  const res = await endpoint.ItemAppraiserConfirmed(createActionApi(), id).catch(createApiErrorServerSide);
-  revalidateTag('items');
+export async function ItemAppraiserConfirmed(api: KyInstance, id: number) {
+  const res = await api.post<SuccessResponseJson<Data>>(`backend/items/${id}/appraiser-confirmed`).json();
   return res;
 }

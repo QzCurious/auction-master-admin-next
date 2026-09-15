@@ -1,4 +1,4 @@
-import { type ApiError } from '@/api/core/ApiError/createApiErrorServerSide';
+import { type ApiError } from '@/domain/api/ApiError';
 
 import { type Permissions } from './evaluatePermissions';
 

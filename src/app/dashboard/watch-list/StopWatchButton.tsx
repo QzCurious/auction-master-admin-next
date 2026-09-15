@@ -1,9 +1,9 @@
 'use client';
 
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
-import { ToggleActivateAuctionItem } from '@/api/backend/auction-items/ToggleActivateAuctionItem';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
+import { ToggleActivateAuctionItem } from '@/server-action/backend/auction-items/ToggleActivateAuctionItem';
 import { Button } from '@mui/material';
 import { useSnackbar } from 'notistack';
 

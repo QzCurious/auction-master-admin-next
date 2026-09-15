@@ -1,14 +1,54 @@
-'use server';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
+import { type CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
+import { z } from 'zod';
 
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/consignor/AdminGetConsignors';
-import { createActionApi } from '@/server/next/createActionApi';
+const ReqSchema = z.object({
+  fuzzyNickname: z.string().optional(),
+  status: z.coerce.number().optional(),
+  sort: z.string().optional(),
+  order: z.enum(['asc', 'desc']).optional(),
+  limit: z.coerce.number(),
+  offset: z.coerce.number(),
+});
 
-export type { Consignor } from '@/api/endpoints/consignor/AdminGetConsignors';
-export async function AdminGetConsignors(payload: Parameters<typeof endpoint.AdminGetConsignors>[1]) {
-  const res = await endpoint
-    .AdminGetConsignors(createActionApi().extend({ next: { tags: ['consignors'] } }), payload)
-    .catch(createApiErrorServerSide);
+export interface Consignor {
+  id: number;
+  avatar: string;
+  account: string;
+  password: string;
+  nickname: string;
+  commissionBonusRate: number;
+  name: string;
+  identification: string;
+  gender: 1 | 2;
+  birthday: string;
+  city: string;
+  district: string;
+  streetAddress: string;
+  phone: string;
+  beneficiaryName: string | null;
+  bankCode: string;
+  bankAccount: string;
+  status: CONSIGNOR_STATUS['value'];
+  createdAt: string;
+  updatedAt: string;
+  walletBalance: number;
+  bonusBalance: number;
+}
 
+interface Data {
+  consignors: Array<Consignor>;
+  count: number;
+}
+
+export async function AdminGetConsignors(api: KyInstance, payload: z.input<typeof ReqSchema>) {
+  const data = throwIfInvalid(payload, ReqSchema);
+
+  const query = new URLSearchParams();
+  appendEntries(query, data);
+
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/consignors?${query}`, {}).json();
   return res;
 }

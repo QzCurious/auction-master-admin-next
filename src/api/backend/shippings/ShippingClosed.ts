@@ -1,15 +1,27 @@
-'use server';
+import { type Shipping } from '@/api/backend/shippings/GetShippings';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
+import { z } from 'zod';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/shippings/ShippingClosed';
-import { createActionApi } from '@/server/next/createActionApi';
+const ReqSchema = z
+  .object({
+    shippingCostsWithinJapan: z.number(),
+  })
+  .partial();
 
-export async function ShippingClosed(
-  id: Parameters<typeof endpoint.ShippingClosed>[1],
-  payload: Parameters<typeof endpoint.ShippingClosed>[2]
-) {
-  const res = await endpoint.ShippingClosed(createActionApi(), id, payload).catch(createApiErrorServerSide);
-  revalidateTag('shippings');
+type Data = 'Success';
+
+export async function ShippingClosed(api: KyInstance, id: Shipping['id'], payload: z.input<typeof ReqSchema>) {
+  const data = throwIfInvalid(payload, ReqSchema);
+
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, data);
+
+  const res = await api
+    .post<SuccessResponseJson<Data>>(`backend/shippings/${id}/closed`, {
+      body: urlencoded,
+    })
+    .json();
   return res;
 }

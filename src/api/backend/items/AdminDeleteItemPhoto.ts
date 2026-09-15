@@ -1,15 +1,9 @@
-'use server';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/items/AdminDeleteItemPhoto';
-import { createActionApi } from '@/server/next/createActionApi';
+type Data = 'Success';
 
-export async function AdminDeleteItemPhoto(
-  id: Parameters<typeof endpoint.AdminDeleteItemPhoto>[1],
-  sorted: Parameters<typeof endpoint.AdminDeleteItemPhoto>[2]
-) {
-  const res = await endpoint.AdminDeleteItemPhoto(createActionApi(), id, sorted).catch(createApiErrorServerSide);
-  revalidateTag('items');
+export async function AdminDeleteItemPhoto(api: KyInstance, id: number, sorted: number) {
+  const res = await api.delete<SuccessResponseJson<Data>>(`backend/items/${id}/photos/${sorted}`).json();
   return res;
 }

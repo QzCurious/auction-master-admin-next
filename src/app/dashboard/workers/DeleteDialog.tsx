@@ -1,7 +1,7 @@
 'use client';
 
-import { DeleteWorker } from '@/api/backend/workers/DeleteWorker';
 import { type Worker } from '@/api/backend/workers/GetWorkers';
+import { DeleteWorker } from '@/server-action/backend/workers/DeleteWorker';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';

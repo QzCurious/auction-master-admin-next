@@ -1,25 +1,24 @@
 import assert from 'node:assert/strict';
-import { readdir, readFile } from 'node:fs/promises';
-import path from 'node:path';
 import { test } from 'node:test';
 
 import ky, { HTTPError } from 'ky';
 
-import { AdminLogin } from '../src/api/endpoints/AdminLogin';
-import { CreateAdmin } from '../src/api/endpoints/admins/CreateAdmin';
-import { GetAdmins } from '../src/api/endpoints/admins/GetAdmins';
-import { UpdateAdminPassword } from '../src/api/endpoints/admins/UpdateAdminPassword';
-import { BidAuctionItem } from '../src/api/endpoints/auction-items/BidAuctionItem';
-import { HandleConsignorVerification } from '../src/api/endpoints/consignor/HandleConsignorVerification';
-import { AdminReorderItemPhoto } from '../src/api/endpoints/items/AdminReorderItemPhoto';
-import { AdminUpsertItemPhoto } from '../src/api/endpoints/items/AdminUpsertItemPhoto';
-import { AddPermissionForRole } from '../src/api/endpoints/rbac/AddPermissionForRole';
-import { GetAdminPermissions } from '../src/api/endpoints/rbac/GetAdminPermissions';
-import { GetRecordsSummary } from '../src/api/endpoints/reports/GetRecordsSummary';
-import { ExportShippings } from '../src/api/endpoints/shippings/ExportShippings';
-import { UpdateShipping } from '../src/api/endpoints/shippings/UpdateShipping';
-import { GetWorkers } from '../src/api/endpoints/workers/GetWorkers';
-import { SetWorkerCookie } from '../src/api/endpoints/workers/SetWorkerCookie';
+import { AdminLogin } from '../src/api/AdminLogin';
+import { AdminRefreshToken } from '../src/api/AdminRefreshToken';
+import { CreateAdmin } from '../src/api/backend/admins/CreateAdmin';
+import { GetAdmins } from '../src/api/backend/admins/GetAdmins';
+import { UpdateAdminPassword } from '../src/api/backend/admins/UpdateAdminPassword';
+import { BidAuctionItem } from '../src/api/backend/auction-items/BidAuctionItem';
+import { HandleConsignorVerification } from '../src/api/backend/consignor/HandleConsignorVerification';
+import { AdminReorderItemPhoto } from '../src/api/backend/items/AdminReorderItemPhoto';
+import { AdminUpsertItemPhoto } from '../src/api/backend/items/AdminUpsertItemPhoto';
+import { AddPermissionForRole } from '../src/api/backend/rbac/AddPermissionForRole';
+import { GetAdminPermissions } from '../src/api/backend/rbac/GetAdminPermissions';
+import { GetRecordsSummary } from '../src/api/backend/reports/GetRecordsSummary';
+import { ExportShippings } from '../src/api/backend/shippings/ExportShippings';
+import { UpdateShipping } from '../src/api/backend/shippings/UpdateShipping';
+import { GetWorkers } from '../src/api/backend/workers/GetWorkers';
+import { SetWorkerCookie } from '../src/api/backend/workers/SetWorkerCookie';
 
 function fixture() {
   const requests: Request[] = [];
@@ -136,18 +135,25 @@ void test('shipping export returns the original binary response and preserves qu
   assert.deepEqual(new Uint8Array(await response.arrayBuffer()), new Uint8Array([0, 1, 255]));
 });
 
-void test('all extracted endpoint modules load without Next.js context or configured backend', async () => {
-  const root = path.resolve('src/api/endpoints');
-  async function visit(directory: string): Promise<void> {
-    for (const entry of await readdir(directory, { withFileTypes: true })) {
-      const file = path.join(directory, entry.name);
-      if (entry.isDirectory()) await visit(file);
-      else if (file.endsWith('.ts')) {
-        const source = await readFile(file, 'utf8');
-        assert.doesNotMatch(source, /next\/|@\/server\/|use server|createApiErrorServerSide|apiClientWithToken/);
-        await import(file);
-      }
-    }
-  }
-  await visit(root);
+void test('raw refresh endpoint returns the backend envelope and preserves native failures', async () => {
+  const tokens = { accessToken: 'old-access', refreshToken: 'existing-refresh' };
+  const api = ky.create({
+    prefixUrl: 'https://upstream.example/',
+    retry: 0,
+    fetch: async (input) => {
+      const request = input as Request;
+      assert.equal(request.url, 'https://upstream.example/backend/session/refresh');
+      assert.equal(request.headers.get('Authorization'), 'Bearer old-access');
+      assert.equal(await request.text(), 'refreshToken=existing-refresh');
+      return Response.json({ data: { token: 'new-access' }, status: { code: '0' } });
+    },
+  });
+  assert.deepEqual(await AdminRefreshToken(api, tokens), { data: { token: 'new-access' }, status: { code: '0' } });
+  const rejected = api.extend({
+    fetch: async () => Response.json({ data: null, status: { code: '1003' } }, { status: 401 }),
+  });
+  await assert.rejects(
+    AdminRefreshToken(rejected, tokens),
+    (error) => error instanceof HTTPError && error.response.status === 401
+  );
 });

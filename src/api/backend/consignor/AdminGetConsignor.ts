@@ -1,14 +1,35 @@
-'use server';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type CONSIGNOR_STATUS } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/consignor/AdminGetConsignor';
-import { createActionApi } from '@/server/next/createActionApi';
+export interface Consignor {
+  id: number;
+  avatar: string;
+  account: string;
+  password: string;
+  nickname: string;
+  commissionBonusRate: number;
+  name: string;
+  identification: string;
+  gender: 1 | 2;
+  birthday: string;
+  city: string;
+  district: string;
+  streetAddress: string;
+  phone: string;
+  beneficiaryName: string | null;
+  bankCode: string;
+  bankAccount: string;
+  status: CONSIGNOR_STATUS['value'];
+  createdAt: string;
+  updatedAt: string;
+  walletBalance: number;
+  bonusBalance: number;
+}
 
-export type { Consignor } from '@/api/endpoints/consignor/AdminGetConsignor';
-export async function AdminGetConsignor(id: Parameters<typeof endpoint.AdminGetConsignor>[1]) {
-  const res = await endpoint
-    .AdminGetConsignor(createActionApi().extend({ next: { tags: ['consignors'] } }), id)
-    .catch(createApiErrorServerSide);
+interface Data extends Consignor {}
 
+export async function AdminGetConsignor(api: KyInstance, id: number) {
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/consignors/${id}`, {}).json();
   return res;
 }

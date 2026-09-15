@@ -2,9 +2,9 @@ import 'server-only';
 
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { createAuthHooks } from '@/api/createAuthHooks';
-import { createApiSession } from '@/api/session';
+import { createAuthHooks } from '@/domain/auth/createAuthHooks';
 import { refreshDestination, returnPathHeader, signInDestination } from '@/domain/auth/navigation';
+import { createApiSession } from '@/domain/auth/session';
 import { api } from '@/server/api';
 
 import { readTokens } from './cookies';

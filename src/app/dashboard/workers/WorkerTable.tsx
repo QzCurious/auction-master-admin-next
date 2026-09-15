@@ -3,13 +3,13 @@
 import { useTransition } from 'react';
 import Link from 'next/link';
 import { type Worker } from '@/api/backend/workers/GetWorkers';
-import { SetWorkerCookie } from '@/api/backend/workers/SetWorkerCookie';
-import { ToggleActivateWorker } from '@/api/backend/workers/ToggleActivateWorker';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { type PaginationSearchParams } from '@/domain/static/static';
 import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
+import { SetWorkerCookie } from '@/server-action/backend/workers/SetWorkerCookie';
+import { ToggleActivateWorker } from '@/server-action/backend/workers/ToggleActivateWorker';
 import CookieOutlinedIcon from '@mui/icons-material/CookieOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import {

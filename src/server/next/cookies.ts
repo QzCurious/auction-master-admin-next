@@ -1,6 +1,6 @@
-import { invalidSessionError } from '@/api/errors';
-import { type Tokens } from '@/api/session';
 import { CookieConfigs } from '@/domain/auth/CookieConfigs';
+import { invalidSessionError } from '@/domain/auth/errors';
+import { type Tokens } from '@/domain/auth/session';
 
 type CookieOptions = ReturnType<typeof CookieConfigs.token.opts> & { path?: string };
 export interface CookieReader {

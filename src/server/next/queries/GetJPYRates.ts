@@ -1,7 +1,7 @@
 import 'server-only';
 
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/GetJPYRates';
+import * as endpoint from '@/api/GetJPYRates';
+import { createApiErrorServerSide } from '@/server/next/createApiErrorServerSide';
 import { createRenderApi } from '@/server/next/createRenderApi';
 
 export async function GetJPYRates() {

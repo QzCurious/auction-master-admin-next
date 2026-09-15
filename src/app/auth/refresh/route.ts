@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { invalidSessionError } from '@/api/errors';
+import { invalidSessionError } from '@/domain/auth/errors';
 import {
   afterRefreshDestination,
   refreshAttemptParam,

@@ -1,12 +1,9 @@
-'use server';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/rbac/DeleteRole';
-import { createActionApi } from '@/server/next/createActionApi';
+type Data = 'Success';
 
-export async function DeleteRole(role: Parameters<typeof endpoint.DeleteRole>[1]) {
-  const res = await endpoint.DeleteRole(createActionApi(), role).catch(createApiErrorServerSide);
-  revalidateTag('roles');
+export async function DeleteRole(api: KyInstance, role: string) {
+  const res = await api.delete<SuccessResponseJson<Data>>(`backend/roles/${role}`).json();
   return res;
 }

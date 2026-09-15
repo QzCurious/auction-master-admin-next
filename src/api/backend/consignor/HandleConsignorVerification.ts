@@ -1,15 +1,16 @@
-'use server';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/consignor/HandleConsignorVerification';
-import { createActionApi } from '@/server/next/createActionApi';
+type Data = 'Success';
 
-export async function HandleConsignorVerification(
-  id: Parameters<typeof endpoint.HandleConsignorVerification>[1],
-  action: Parameters<typeof endpoint.HandleConsignorVerification>[2]
-) {
-  const res = await endpoint.HandleConsignorVerification(createActionApi(), id, action).catch(createApiErrorServerSide);
-  revalidateTag('consignorVerifications');
+export async function HandleConsignorVerification(api: KyInstance, id: number, action: 'approve' | 'reject') {
+  if (action === 'approve') {
+    const res = await api
+      .post<SuccessResponseJson<Data>>(`backend/consignors/verifications/${id}/${action}`, {})
+      .json();
+    return res;
+  }
+
+  const res = await api.post<SuccessResponseJson<Data>>(`backend/consignors/verifications/${id}/${action}`).json();
   return res;
 }

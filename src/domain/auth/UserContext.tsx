@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { createContext } from 'react';
-import type { JwtPayload } from '@/api/JwtPayload';
+import type { JwtPayload } from '@/domain/auth/JwtPayload';
 
 export const UserContext = createContext<User | null>(null);
 export interface User extends Pick<JwtPayload, 'id' | 'account'> {}

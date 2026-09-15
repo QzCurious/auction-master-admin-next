@@ -1,7 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { type JwtPayload } from '@/api/JwtPayload';
+import { type JwtPayload } from '@/domain/auth/JwtPayload';
 import { jwtDecode } from 'jwt-decode';
 
 import { CookieConfigs } from './CookieConfigs';

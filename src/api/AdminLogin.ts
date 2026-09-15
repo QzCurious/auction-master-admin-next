@@ -1,16 +1,27 @@
-'use server';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
+import { z } from 'zod';
 
-import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/AdminLogin';
-import { api } from '@/server/api';
-import { writeTokens } from '@/server/next/cookies';
+const ReqSchema = z.object({
+  account: z.string().min(1, 'Account is required'),
+  password: z.string().min(1, 'Password is required'),
+});
 
-export async function AdminLogin(payload: Parameters<typeof endpoint.AdminLogin>[1]) {
-  const res = await endpoint.AdminLogin(api, payload).catch(createApiErrorServerSide);
-  if (!res.data) return res;
-  writeTokens(cookies(), { accessToken: res.data.token, refreshToken: res.data.refreshToken });
-  revalidatePath('/', 'layout');
-  return null;
+interface Data {
+  token: string;
+  refreshToken: string;
+}
+
+export async function AdminLogin(api: KyInstance, payload: z.input<typeof ReqSchema>) {
+  const data = throwIfInvalid(payload, ReqSchema);
+
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, data);
+
+  const res = await api<SuccessResponseJson<Data>>('backend/session', {
+    method: 'POST',
+    body: urlencoded,
+  }).json();
+  return res;
 }

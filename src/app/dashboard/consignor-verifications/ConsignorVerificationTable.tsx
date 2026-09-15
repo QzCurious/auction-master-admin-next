@@ -3,12 +3,12 @@
 import * as React from 'react';
 import { useState, useTransition } from 'react';
 import { type ConsignorVerification } from '@/api/backend/consignor/AdminGetConsignorVerifications';
-import { HandleConsignorVerification } from '@/api/backend/consignor/HandleConsignorVerification';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { DATE_FORMAT, type PaginationSearchParams } from '@/domain/static/static';
 import { CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
+import { HandleConsignorVerification } from '@/server-action/backend/consignor/HandleConsignorVerification';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import {
   Button,

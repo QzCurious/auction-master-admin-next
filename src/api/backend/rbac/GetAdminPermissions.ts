@@ -1,26 +1,13 @@
-import 'server-only';
+import { type Admin } from '@/api/backend/admins/GetAdmins';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type Permissions } from '@/domain/permission/evaluatePermissions';
+import { type KyInstance } from 'ky';
 
-// React's server-only cache export is provided by Next.js.
-// eslint-disable-next-line import/named
-import { cache } from 'react';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/rbac/GetAdminPermissions';
-import { createRenderApi } from '@/server/next/createRenderApi';
+export type { Permissions } from '@/domain/permission/evaluatePermissions';
 
-export type { Permissions } from '@/api/endpoints/rbac/GetAdminPermissions';
-async function GetAdminPermissions(account: Parameters<typeof endpoint.GetAdminPermissions>[1]) {
-  const res = await endpoint
-    .GetAdminPermissions(
-      createRenderApi().extend({
-        next: {
-          tags: ['roles', 'admins'],
-        },
-      }),
-      account
-    )
-    .catch(createApiErrorServerSide);
+type Data = Permissions;
 
+export async function GetAdminPermissions(api: KyInstance, account: Admin['account']) {
+  const res = await api.get<SuccessResponseJson<Data>>(`backend/permissions/${account}`, {}).json();
   return res;
 }
-const CachedGetAdminPermissions = cache(GetAdminPermissions);
-export { CachedGetAdminPermissions as GetAdminPermissions };

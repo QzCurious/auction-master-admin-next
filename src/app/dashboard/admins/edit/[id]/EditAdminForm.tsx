@@ -2,16 +2,16 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AddRoleForAdmin } from '@/api/backend/admins/AddRoleForAdmin';
-import { DeleteRoleForAdmin } from '@/api/backend/admins/DeleteRoleForAdmin';
 import { type Admin } from '@/api/backend/admins/GetAdmin';
-import { UpdateAdmin } from '@/api/backend/admins/UpdateAdmin';
 import { type Role } from '@/api/backend/rbac/GetRoles';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { ADMIN_STATUS } from '@/domain/static/static-config-mappers';
+import { AddRoleForAdmin } from '@/server-action/backend/admins/AddRoleForAdmin';
+import { DeleteRoleForAdmin } from '@/server-action/backend/admins/DeleteRoleForAdmin';
+import { UpdateAdmin } from '@/server-action/backend/admins/UpdateAdmin';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Chip, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
 import Card from '@mui/material/Card';

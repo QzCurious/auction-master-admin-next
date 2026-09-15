@@ -1,10 +1,9 @@
 import 'server-only';
 
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/GetConfigs';
+import * as endpoint from '@/api/GetConfigs';
 import { api } from '@/server/api';
+import { createApiErrorServerSide } from '@/server/next/createApiErrorServerSide';
 
-export type { Configs } from '@/api/endpoints/GetConfigs';
 export async function GetConfigs() {
   const res = await endpoint
     .GetConfigs(

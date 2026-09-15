@@ -1,10 +1,10 @@
 import 'server-only';
 
 import { cookies } from 'next/headers';
-import { createAuthHooks } from '@/api/createAuthHooks';
-import { AdminRefreshToken } from '@/api/endpoints/AdminRefreshToken';
-import { invalidSessionError } from '@/api/errors';
-import { createApiSession } from '@/api/session';
+import { createAuthHooks } from '@/domain/auth/createAuthHooks';
+import { invalidSessionError } from '@/domain/auth/errors';
+import { refreshTokens } from '@/domain/auth/refreshTokens';
+import { createApiSession } from '@/domain/auth/session';
 import { api } from '@/server/api';
 
 import { clearTokens, readTokens, writeTokens } from './cookies';
@@ -23,7 +23,7 @@ export function createActionSession() {
     },
     refreshTokens: async (tokens) => {
       try {
-        return await AdminRefreshToken(api, tokens);
+        return await refreshTokens(api, tokens);
       } catch (error) {
         if (error === invalidSessionError) clearTokens(store);
         throw error;

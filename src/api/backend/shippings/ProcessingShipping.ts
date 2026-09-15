@@ -1,12 +1,10 @@
-'use server';
+import { type Shipping } from '@/api/backend/shippings/GetShippings';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/shippings/ProcessingShipping';
-import { createActionApi } from '@/server/next/createActionApi';
+type Data = 'Success';
 
-export async function ProcessingShipping(id: Parameters<typeof endpoint.ProcessingShipping>[1]) {
-  const res = await endpoint.ProcessingShipping(createActionApi(), id).catch(createApiErrorServerSide);
-  revalidateTag('shippings');
+export async function ProcessingShipping(api: KyInstance, id: Shipping['id']) {
+  const res = await api.post<SuccessResponseJson<Data>>(`backend/shippings/${id}/processing`).json();
   return res;
 }

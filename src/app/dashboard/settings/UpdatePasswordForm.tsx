@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 import { useContext, useState } from 'react';
-import { UpdateAdminPassword } from '@/api/backend/admins/UpdateAdminPassword';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { UserContext } from '@/domain/auth/UserContext';
 import { useHandleNoPermissions } from '@/domain/permission/useHandleNoPermissions';
+import { UpdateAdminPassword } from '@/server-action/backend/admins/UpdateAdminPassword';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, TextField } from '@mui/material';
 import Card from '@mui/material/Card';

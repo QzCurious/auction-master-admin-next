@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { AdminGetConsignorVerifications } from '@/api/backend/consignor/AdminGetConsignorVerifications';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
+import { AdminGetConsignorVerifications } from '@/server/next/queries/backend/consignor/AdminGetConsignorVerifications';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 

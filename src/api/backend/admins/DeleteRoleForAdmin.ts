@@ -1,15 +1,22 @@
-'use server';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
+import { z } from 'zod';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/admins/DeleteRoleForAdmin';
-import { createActionApi } from '@/server/next/createActionApi';
+const ReqSchema = z.object({
+  role: z.string().array(),
+});
 
-export async function DeleteRoleForAdmin(
-  account: Parameters<typeof endpoint.DeleteRoleForAdmin>[1],
-  payload: Parameters<typeof endpoint.DeleteRoleForAdmin>[2]
-) {
-  const res = await endpoint.DeleteRoleForAdmin(createActionApi(), account, payload).catch(createApiErrorServerSide);
-  revalidateTag('admins');
+type Data = 'Success';
+
+export async function DeleteRoleForAdmin(api: KyInstance, account: string, payload: z.input<typeof ReqSchema>) {
+  throwIfInvalid(payload, ReqSchema);
+
+  const query = new URLSearchParams();
+  appendEntries(query, payload);
+
+  const res = await api
+    .delete<SuccessResponseJson<Data>>(`backend/admins/account/${account}/roles?${query.toString()}`, {})
+    .json();
   return res;
 }

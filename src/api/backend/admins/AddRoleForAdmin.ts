@@ -1,15 +1,24 @@
-'use server';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
+import { z } from 'zod';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/admins/AddRoleForAdmin';
-import { createActionApi } from '@/server/next/createActionApi';
+const ReqSchema = z.object({
+  role: z.string().array(),
+});
 
-export async function AddRoleForAdmin(
-  account: Parameters<typeof endpoint.AddRoleForAdmin>[1],
-  payload: Parameters<typeof endpoint.AddRoleForAdmin>[2]
-) {
-  const res = await endpoint.AddRoleForAdmin(createActionApi(), account, payload).catch(createApiErrorServerSide);
-  revalidateTag('admins');
+type Data = 'Success';
+
+export async function AddRoleForAdmin(api: KyInstance, account: string, payload: z.input<typeof ReqSchema>) {
+  const data = throwIfInvalid(payload, ReqSchema);
+
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, data);
+
+  const res = await api
+    .post<SuccessResponseJson<Data>>(`backend/admins/account/${account}/roles`, {
+      body: urlencoded,
+    })
+    .json();
   return res;
 }

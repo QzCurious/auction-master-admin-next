@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { SITE_NAME } from '@/domain/static/static';
-import { AdminGetConsignor } from '@/server/next/queries/consignor/AdminGetConsignor';
+import { AdminGetConsignor } from '@/server/next/queries/backend/consignor/AdminGetConsignor';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';

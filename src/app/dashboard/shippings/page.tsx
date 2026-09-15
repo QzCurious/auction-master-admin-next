@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { GetShippings } from '@/api/backend/shippings/GetShippings';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { AuctionIdFilter } from '@/domain/crud/AuctionIdFilter';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
@@ -8,6 +7,7 @@ import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
+import { GetShippings } from '@/server/next/queries/backend/shippings/GetShippings';
 import { GetConfigs } from '@/server/next/queries/GetConfigs';
 import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';

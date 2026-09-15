@@ -1,12 +1,10 @@
-'use server';
+import { type Worker } from '@/api/backend/workers/GetWorkers';
+import { type SuccessResponseJson } from '@/api/core/static';
+import { type KyInstance } from 'ky';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/workers/DeleteWorker';
-import { createActionApi } from '@/server/next/createActionApi';
+type Data = 'Success';
 
-export async function DeleteWorker(id: Parameters<typeof endpoint.DeleteWorker>[1]) {
-  const res = await endpoint.DeleteWorker(createActionApi(), id).catch(createApiErrorServerSide);
-  revalidateTag('workers');
+export async function DeleteWorker(api: KyInstance, id: Worker['id']) {
+  const res = await api.delete<SuccessResponseJson<Data>>(`backend/workers/${id}`).json();
   return res;
 }

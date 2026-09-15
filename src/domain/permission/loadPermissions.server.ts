@@ -2,8 +2,8 @@ import 'server-only';
 
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { GetAdminPermissions } from '@/api/backend/rbac/GetAdminPermissions';
 import { returnPathHeader, signInDestination } from '@/domain/auth/navigation';
+import { GetAdminPermissions } from '@/server/next/queries/backend/rbac/GetAdminPermissions';
 
 import { permissionResult } from './permissionResult';
 

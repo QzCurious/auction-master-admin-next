@@ -1,10 +1,10 @@
 import { type Metadata } from 'next';
 import RouterLink from 'next/link';
 import { notFound } from 'next/navigation';
-import { GetWorker } from '@/api/backend/workers/GetWorker';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { PermissionsGuard } from '@/domain/permission/havePermissions.server';
 import { SITE_NAME } from '@/domain/static/static';
+import { GetWorker } from '@/server/next/queries/backend/workers/GetWorker';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Box, Link } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';

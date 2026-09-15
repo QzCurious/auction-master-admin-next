@@ -1,15 +1,44 @@
-'use server';
+import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
+import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
+import { appendEntries } from '@/domain/crud/appendEntries';
+import { type KyInstance } from 'ky';
+import { z } from 'zod';
 
-import { revalidateTag } from 'next/cache';
-import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import * as endpoint from '@/api/endpoints/auction-items/UpdateAuctionItem';
-import { createActionApi } from '@/server/next/createActionApi';
+const ReqSchema = z
+  .object({
+    auctionId: z.string(),
+    consignorId: z.number(),
+    itemId: z.number(),
+    sellerId: z.number(),
+    watcherId: z.number(),
+    name: z.string(),
+    photo: z.string(),
+    reservePrice: z.number(),
+    currentPrice: z.number(),
+    highestPrice: z.number(),
+    closeAt: z.coerce.date(),
+    closedPrice: z.number(),
+    shippingCostsWithinJapan: z.number(),
+    status: z.coerce.number(),
+  })
+  .partial();
+
+type Data = 'Success';
 
 export async function UpdateAuctionItem(
-  id: Parameters<typeof endpoint.UpdateAuctionItem>[1],
-  payload: Parameters<typeof endpoint.UpdateAuctionItem>[2]
+  api: KyInstance,
+  id: AuctionItem['auctionId'],
+  payload: z.input<typeof ReqSchema>
 ) {
-  const res = await endpoint.UpdateAuctionItem(createActionApi(), id, payload).catch(createApiErrorServerSide);
-  revalidateTag('auction-items');
+  const data = throwIfInvalid(payload, ReqSchema);
+
+  const urlencoded = new URLSearchParams();
+  appendEntries(urlencoded, data);
+
+  const res = await api
+    .patch<SuccessResponseJson<Data>>(`backend/auction-items/${id}`, {
+      body: urlencoded,
+    })
+    .json();
   return res;
 }

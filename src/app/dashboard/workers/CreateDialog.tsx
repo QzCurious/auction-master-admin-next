@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { CreateWorker } from '@/api/backend/workers/CreateWorker';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { WORKER_TYPE } from '@/domain/static/static-config-mappers';
+import { CreateWorker } from '@/server-action/backend/workers/CreateWorker';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
