@@ -11,11 +11,5 @@ export async function ItemBidding(
 ) {
   const res = await endpoint.ItemBidding(createActionApi(), id, payload).catch(createApiErrorServerSide);
   revalidateTag('items');
-  revalidateTag('auction-items');
-  revalidateTag('shippings');
-  revalidateTag('records');
-  revalidateTag('reports');
-  revalidateTag('wallets');
-  revalidateTag('bonus');
   return res;
 }

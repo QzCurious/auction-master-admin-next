@@ -10,7 +10,6 @@ export async function ToggleActivateAuctionItem(
   status: Parameters<typeof endpoint.ToggleActivateAuctionItem>[2]
 ) {
   const res = await endpoint.ToggleActivateAuctionItem(createActionApi(), id, status).catch(createApiErrorServerSide);
-  revalidateTag('items');
   revalidateTag('auction-items');
   return res;
 }

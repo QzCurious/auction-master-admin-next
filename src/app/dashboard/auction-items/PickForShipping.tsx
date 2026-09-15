@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
 import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
 import { HandleApiError, useHandleApiError } from '@/domain/api/HandleApiError';
-import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { currencySign } from '@/domain/static/static';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 import { ShippingAuctionItem } from '@/server-action/backend/auction-items/ShippingAuctionItem';
@@ -122,7 +121,6 @@ const Schema = z.object({
   remark: z.string(),
 });
 function ShippingForm() {
-  const runApiMutation = useRunApiMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const pickedItemIds = useAtomValue(pickedItemIdsReducerAtom);
@@ -156,7 +154,7 @@ function ShippingForm() {
     return <HandleApiError error={configsQuery.data.error} />;
   }
 
-  const queries = auctionItemQueries;
+  const queries = auctionItemQueries.filter((q) => !q.isError);
   // const shippingCostsWithinJapan = watch('shippingCostsWithinJapan');
 
   return (
@@ -164,26 +162,12 @@ function ShippingForm() {
       component="form"
       sx={{ width: '100%', height: '100%', bgcolor: 'background.paper' }}
       onSubmit={handleSubmit(async (data) => {
-        const res = await runApiMutation(
-          [
-            ['auction-items'],
-            ['items'],
-            ['shippings'],
-            ['records'],
-            ['/reports/records'],
-            ['/reports/records/summary'],
-            ['reports'],
-            ['wallets'],
-            ['bonus'],
-          ],
-          () =>
-            ShippingAuctionItem({
-              ...data,
-              shipmentType: SHIPMENT_TYPE.enum('AddressShipmentType'),
-              auctionIds: pickedItemIds,
-              // shippingCostsWithinJapan: R.sum(data.shippingCostsWithinJapan),
-            })
-        );
+        const res = await ShippingAuctionItem({
+          ...data,
+          shipmentType: SHIPMENT_TYPE.enum('AddressShipmentType'),
+          auctionIds: pickedItemIds,
+          // shippingCostsWithinJapan: R.sum(data.shippingCostsWithinJapan),
+        });
 
         if (res.error) {
           handleApiError(res.error);
@@ -200,7 +184,7 @@ function ShippingForm() {
       <List sx={{ flex: 1, overflow: 'auto' }}>
         {queries.map((item, i) => (
           <React.Fragment key={pickedItemIds[i]}>
-            {item.isPending || item.isError ? <ListItemSkeleton /> : <PickedListItem item={item.data.data!} />}
+            {item.isPending ? <ListItemSkeleton /> : <PickedListItem item={item.data.data!} />}
             {/* <Controller
               control={control}
               name={`shippingCostsWithinJapan.${i}`}
@@ -308,11 +292,7 @@ function ShippingForm() {
             })()}
           </Typography>
 
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={isSubmitting || auctionItemQueries.some((query) => query.isPending || query.isError)}
-          >
+          <Button type="submit" variant="contained" disabled={isSubmitting}>
             出貨
           </Button>
         </Stack>

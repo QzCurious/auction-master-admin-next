@@ -8,6 +8,5 @@ import { createApiErrorServerSide } from '@/server/next/createApiErrorServerSide
 export async function AdminUpdateItem(id: number, payload: Parameters<typeof itemApi.AdminUpdateItem>[2]) {
   const res = await itemApi.AdminUpdateItem(createActionApi(), id, payload).catch(createApiErrorServerSide);
   revalidateTag('items');
-  revalidateTag('auction-items');
   return res;
 }

@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { type Role } from '@/api/backend/rbac/GetRoles';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
-import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { ADMIN_STATUS } from '@/domain/static/static-config-mappers';
@@ -47,7 +46,6 @@ const FormSchema = z
   });
 
 export default function CreateAdminForm({ roles }: CreateAdminFromProps) {
-  const runApiMutation = useRunApiMutation();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>();
   const {
@@ -57,7 +55,6 @@ export default function CreateAdminForm({ roles }: CreateAdminFromProps) {
     getValues,
     setError,
   } = useForm<z.output<typeof FormSchema>>({
-    resetOptions: { keepDirtyValues: true },
     values: {
       account: '',
       roles: [],
@@ -75,21 +72,17 @@ export default function CreateAdminForm({ roles }: CreateAdminFromProps) {
     <form
       onSubmit={handleSubmit(
         async (data) => {
-          const createAdminRes = await runApiMutation([['admins']], () =>
-            CreateAdmin({
-              account: data.account,
-              password: data.password,
-              status: data.status,
-            })
-          );
+          const createAdminRes = await CreateAdmin({
+            account: data.account,
+            password: data.password,
+            status: data.status,
+          });
           if (createAdminRes.error) {
             handleApiError(createAdminRes.error);
             return;
           }
           if (havePermissions(['AddRoleForAdmin']) && data.roles.length) {
-            const addRolesToAdminRes = await runApiMutation([['admins']], () =>
-              AddRoleForAdmin(data.account, { role: data.roles })
-            );
+            const addRolesToAdminRes = await AddRoleForAdmin(data.account, { role: data.roles });
             if (addRolesToAdminRes.error) {
               handleApiError(addRolesToAdminRes.error);
               return;

@@ -8,7 +8,6 @@ import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { type Worker } from '@/api/backend/workers/GetWorker';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
-import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { currencySign } from '@/domain/static/static';
@@ -65,7 +64,6 @@ export function AuctionItemFormProvider({
   children: React.ReactNode;
 }) {
   const form = useForm<z.input<typeof FormSchema>>({
-    resetOptions: { keepDirtyValues: true },
     values: {
       consignorId: auctionItem.consignorId,
       itemId: auctionItem.itemId,
@@ -97,7 +95,6 @@ export function EditAuctionItemForm({
   sellers,
   watchers,
 }: EditAuctionItemFromProps) {
-  const runApiMutation = useRunApiMutation();
   const router = useRouter();
   const {
     watch,
@@ -121,23 +118,9 @@ export function EditAuctionItemForm({
           const dirtyValues = getDirtyFields(data, dirtyFields);
           if (Object.keys(dirtyValues).length === 0) return;
 
-          const res = await runApiMutation(
-            [
-              ['auction-items'],
-              ['items'],
-              ['shippings'],
-              ['records'],
-              ['/reports/records'],
-              ['/reports/records/summary'],
-              ['reports'],
-              ['wallets'],
-              ['bonus'],
-            ],
-            () =>
-              UpdateAuctionItem(auctionItem.auctionId, {
-                ...dirtyValues,
-              })
-          );
+          const res = await UpdateAuctionItem(auctionItem.auctionId, {
+            ...dirtyValues,
+          });
 
           if (res.error) {
             handleApiError(res.error);

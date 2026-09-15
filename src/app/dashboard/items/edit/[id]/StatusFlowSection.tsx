@@ -4,7 +4,6 @@ import type React from 'react';
 import { useEffect, useState } from 'react';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
-import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { DATE_TIME_FORMAT } from '@/domain/static/static';
 import { ITEM_STATUS, ITEM_TYPE } from '@/domain/static/static-config-mappers';
@@ -37,7 +36,6 @@ import { type FormSchemaType } from './EditItemForm';
 import TriggerToFlowFigure from './TriggerToFlowFigure';
 
 export default function StatusFlowSection({ item }: { item: Item }) {
-  const runApiMutation = useRunApiMutation();
   const [status, setStatus] = useState(item.status);
   useEffect(() => setStatus(item.status), [item.status]);
 
@@ -97,9 +95,7 @@ export default function StatusFlowSection({ item }: { item: Item }) {
               title="更新物品狀態"
               description="此欄位修改需再確認"
               onConfirm={async () => {
-                const res = await runApiMutation([['items'], ['auction-items']], () =>
-                  AdminUpdateItem(item.id, { status })
-                );
+                const res = await AdminUpdateItem(item.id, { status });
                 if (res.error) {
                   handleApiError(res.error);
                   setShowMore(false);
@@ -122,7 +118,6 @@ export default function StatusFlowSection({ item }: { item: Item }) {
 }
 
 function StatusFlowUI({ item }: { item: Item }) {
-  const runApiMutation = useRunApiMutation();
   const { enqueueSnackbar } = useSnackbar();
   const { setError } = useFormContext<FormSchemaType>();
   const handleApiError = useHandleApiError();
@@ -134,9 +129,7 @@ function StatusFlowUI({ item }: { item: Item }) {
           text="估價失敗"
           popoverTitle="標記為估價失敗"
           onConfirm={async () => {
-            const res = await runApiMutation([['items'], ['auction-items']], () =>
-              ItemAppraisalReview(item.id, { action: 'reject' })
-            );
+            const res = await ItemAppraisalReview(item.id, { action: 'reject' });
             if (res.error) {
               handleApiError(res.error);
               return;
@@ -152,9 +145,7 @@ function StatusFlowUI({ item }: { item: Item }) {
               setError('type', { message: '請選擇物品類型' });
               return;
             }
-            const res = await runApiMutation([['items'], ['auction-items']], () =>
-              ItemAppraisalReview(item.id, { action: 'approve' })
-            );
+            const res = await ItemAppraisalReview(item.id, { action: 'approve' });
             if (res.error) {
               handleApiError(res.error);
               return;
@@ -170,7 +161,7 @@ function StatusFlowUI({ item }: { item: Item }) {
           text="到貨"
           popoverTitle="標記為到貨"
           onConfirm={async () => {
-            const res = await runApiMutation([['items'], ['auction-items']], () => ItemArrival(item.id));
+            const res = await ItemArrival(item.id);
             if (res.error) {
               handleApiError(res.error);
               return;
@@ -219,7 +210,7 @@ function StatusFlowUI({ item }: { item: Item }) {
             text="準備退貨"
             popoverTitle="標記為準備退貨"
             onConfirm={async () => {
-              const res = await runApiMutation([['items'], ['auction-items']], () => ItemReturnPending(item.id));
+              const res = await ItemReturnPending(item.id);
               if (res.error) {
                 handleApiError(res.error);
                 return;
@@ -233,9 +224,7 @@ function StatusFlowUI({ item }: { item: Item }) {
             text="倉管確認"
             popoverTitle="標記為倉管已確認"
             onConfirm={async () => {
-              const res = await runApiMutation([['items'], ['auction-items']], () =>
-                ItemWarehousePersonnelConfirmed(item.id)
-              );
+              const res = await ItemWarehousePersonnelConfirmed(item.id);
               if (res.error) {
                 handleApiError(res.error);
                 return;
@@ -253,7 +242,7 @@ function StatusFlowUI({ item }: { item: Item }) {
             text="準備退貨"
             popoverTitle="標記為準備退貨"
             onConfirm={async () => {
-              const res = await runApiMutation([['items'], ['auction-items']], () => ItemReturnPending(item.id));
+              const res = await ItemReturnPending(item.id);
               if (res.error) {
                 handleApiError(res.error);
                 return;
@@ -267,7 +256,7 @@ function StatusFlowUI({ item }: { item: Item }) {
             text="鑑價師確認"
             popoverTitle="標記為鑑價師已確認"
             onConfirm={async () => {
-              const res = await runApiMutation([['items'], ['auction-items']], () => ItemAppraiserConfirmed(item.id));
+              const res = await ItemAppraiserConfirmed(item.id);
               if (res.error) {
                 handleApiError(res.error);
                 return;
@@ -477,7 +466,6 @@ function ApproveBtn({
 }
 
 function ReadyStatusHandleButtons({ item }: { item: Item }) {
-  const runApiMutation = useRunApiMutation();
   const { enqueueSnackbar } = useSnackbar();
   const [auctionId, setAuctionId] = useState('');
   const [error, setError] = useState('');
@@ -505,20 +493,7 @@ function ReadyStatusHandleButtons({ item }: { item: Item }) {
           onConfirm={async () => {
             setError('');
             if (!auctionId) return;
-            const res = await runApiMutation(
-              [
-                ['items'],
-                ['auction-items'],
-                ['shippings'],
-                ['records'],
-                ['/reports/records'],
-                ['/reports/records/summary'],
-                ['reports'],
-                ['wallets'],
-                ['bonus'],
-              ],
-              () => ItemBidding(item.id, { auctionId })
-            );
+            const res = await ItemBidding(item.id, { auctionId });
             if (res.error) {
               handleApiError(res.error);
               return;

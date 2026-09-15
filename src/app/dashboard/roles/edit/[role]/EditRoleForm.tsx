@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { type Permission, type PermissionGroup } from '@/api/backend/rbac/GetPermissions';
 import { type RolePermissions } from '@/api/backend/rbac/GetRolePermissions';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
-import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { FormSubmissionWithDirtyFields } from '@/helper/FormSubmissionWithDirtyFields';
 import { AddPermissionForRole } from '@/server-action/backend/rbac/AddPermissionForRole';
@@ -39,10 +38,8 @@ const FormSchema = z.object({
 });
 
 export default function EditRoleForm({ role, rolePermissions, permissionGroups }: EditRoleFromProps) {
-  const runApiMutation = useRunApiMutation();
   const router = useRouter();
   const formMethods = useForm<z.output<typeof FormSchema>>({
-    resetOptions: { keepDirtyValues: true },
     values: {
       permissions: {
         ...R.mapToObj(
@@ -94,16 +91,10 @@ export default function EditRoleForm({ role, rolePermissions, permissionGroups }
             );
 
           const res = await Promise.all([
-            addPermissions &&
-              addPermissions.length &&
-              runApiMutation([['roles'], ['admins']], () =>
-                AddPermissionForRole({ role, permissions: addPermissions })
-              ),
+            addPermissions && addPermissions.length && AddPermissionForRole({ role, permissions: addPermissions }),
             deletePermissions &&
               deletePermissions.length &&
-              runApiMutation([['roles'], ['admins']], () =>
-                DeletePermissionForRole({ role, permissions: deletePermissions })
-              ),
+              DeletePermissionForRole({ role, permissions: deletePermissions }),
           ]);
           const errors = res.filter((x) => !!x && !!x.error).map((res) => res.error);
           if (errors.length) {

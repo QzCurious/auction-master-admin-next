@@ -8,6 +8,5 @@ import { createApiErrorServerSide } from '@/server/next/createApiErrorServerSide
 export async function ItemAppraiserConfirmed(id: Parameters<typeof endpoint.ItemAppraiserConfirmed>[1]) {
   const res = await endpoint.ItemAppraiserConfirmed(createActionApi(), id).catch(createApiErrorServerSide);
   revalidateTag('items');
-  revalidateTag('auction-items');
   return res;
 }

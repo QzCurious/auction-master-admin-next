@@ -37,17 +37,13 @@ export function PickingList() {
     return <HandleApiError error={auctionItemQueryError.data.error} />;
   }
 
-  const queries = auctionItemQueries;
+  const queries = auctionItemQueries.filter((q) => !q.isError);
 
   return (
     <List sx={{ flex: 1, overflow: 'auto' }}>
       {queries.map((item, i) => (
         <React.Fragment key={pickedItemIds[i]}>
-          {item.isPending || item.isError ? (
-            <ListItemSkeleton />
-          ) : (
-            !!item.data.data && <PickedListItem item={item.data.data} />
-          )}
+          {item.isPending ? <ListItemSkeleton /> : !!item.data.data && <PickedListItem item={item.data.data} />}
           <Divider variant="inset" component="li" />
         </React.Fragment>
       ))}

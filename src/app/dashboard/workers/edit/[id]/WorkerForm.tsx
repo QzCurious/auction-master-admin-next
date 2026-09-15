@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { type Worker } from '@/api/backend/workers/GetWorker';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
-import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
@@ -42,14 +41,12 @@ const FormSchema = z.object({
 });
 
 export function WorkerForm({ worker }: WorkerFromProps) {
-  const runApiMutation = useRunApiMutation();
   const {
     control,
     handleSubmit,
     formState: { isSubmitting, dirtyFields, defaultValues },
     getValues,
   } = useForm<z.input<typeof FormSchema>>({
-    resetOptions: { keepDirtyValues: true },
     values: {
       type: worker.type,
       url: worker.url,
@@ -80,7 +77,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
         const dirtyValues = getDirtyFields(data, dirtyFields);
         if (Object.keys(dirtyValues).length === 0) return;
 
-        const res = await runApiMutation([['workers'], ['GetWorkers']], () => UpdateWorker(worker.id, dirtyValues));
+        const res = await UpdateWorker(worker.id, dirtyValues);
         if (res.error) {
           handleApiError(res.error);
           return;

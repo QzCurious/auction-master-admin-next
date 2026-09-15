@@ -11,6 +11,5 @@ export async function AdminDeleteItemPhoto(
 ) {
   const res = await endpoint.AdminDeleteItemPhoto(createActionApi(), id, sorted).catch(createApiErrorServerSide);
   revalidateTag('items');
-  revalidateTag('auction-items');
   return res;
 }

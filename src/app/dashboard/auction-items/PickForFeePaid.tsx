@@ -4,7 +4,6 @@ import { useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
-import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { AuctionItemConsignorFeePaid } from '@/server-action/backend/auction-items/AuctionItemConsignorFeePaid';
 import { Button, Drawer, Stack, Typography } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
@@ -100,7 +99,6 @@ export function PickForFeePaid({ picking, stage }: Pick<z.output<typeof SearchPa
 }
 
 function FeeForm() {
-  const runApiMutation = useRunApiMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const pickedItemIds = useAtomValue(pickedItemIdsReducerAtom);
@@ -133,20 +131,7 @@ function FeeForm() {
       onSubmit={(e) => {
         e.preventDefault();
         startTransition(async () => {
-          const res = await runApiMutation(
-            [
-              ['auction-items'],
-              ['items'],
-              ['shippings'],
-              ['records'],
-              ['/reports/records'],
-              ['/reports/records/summary'],
-              ['reports'],
-              ['wallets'],
-              ['bonus'],
-            ],
-            () => AuctionItemConsignorFeePaid({ auctionId: pickedItemIds })
-          );
+          const res = await AuctionItemConsignorFeePaid({ auctionId: pickedItemIds });
 
           if (res.error) {
             handleApiError(res.error);

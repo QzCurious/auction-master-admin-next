@@ -11,11 +11,5 @@ export async function UpdateShipping(
 ) {
   const res = await endpoint.UpdateShipping(createActionApi(), id, payload).catch(createApiErrorServerSide);
   revalidateTag('shippings');
-  revalidateTag('items');
-  revalidateTag('auction-items');
-  revalidateTag('records');
-  revalidateTag('reports');
-  revalidateTag('wallets');
-  revalidateTag('bonus');
   return res;
 }

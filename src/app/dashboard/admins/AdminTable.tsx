@@ -4,9 +4,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { type Admin } from '@/api/backend/admins/GetAdmins';
-import { useHandleApiError as useHandleMutationError } from '@/domain/api/HandleApiError';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
-import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { type PaginationSearchParams } from '@/domain/static/static';
@@ -128,8 +126,6 @@ export function AdminTable({ page, rowsPerPage, rows, count }: AdminTableProps) 
 }
 
 function DeleteBtn({ row }: { row: Admin }) {
-  const handleMutationError = useHandleMutationError();
-  const runApiMutation = useRunApiMutation();
   const popupState = usePopupState({
     variant: 'popover',
   });
@@ -145,11 +141,7 @@ function DeleteBtn({ row }: { row: Admin }) {
         title="刪除管理員"
         description={`您確定要刪除 ${row.account} 嗎?`}
         onConfirm={async () => {
-          const mutationResult = await runApiMutation([['admins']], () => DeleteAdmin(row.id));
-          if (mutationResult.error) {
-            handleMutationError(mutationResult.error);
-            return;
-          }
+          await DeleteAdmin(row.id);
           enqueueSnackbar(`${row.account} 已刪除`, { variant: 'success' });
           popupState.close();
         }}

@@ -10,6 +10,5 @@ export async function ItemWarehousePersonnelConfirmed(
 ) {
   const res = await endpoint.ItemWarehousePersonnelConfirmed(createActionApi(), id).catch(createApiErrorServerSide);
   revalidateTag('items');
-  revalidateTag('auction-items');
   return res;
 }

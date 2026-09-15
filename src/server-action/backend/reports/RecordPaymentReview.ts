@@ -11,8 +11,5 @@ export async function RecordPaymentReview(
 ) {
   const res = await endpoint.RecordPaymentReview(createActionApi(), id, payload).catch(createApiErrorServerSide);
   revalidateTag('records');
-  revalidateTag('reports');
-  revalidateTag('wallets');
-  revalidateTag('bonus');
   return res;
 }

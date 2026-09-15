@@ -10,7 +10,6 @@ export async function HandleConsignorVerification(
   action: Parameters<typeof endpoint.HandleConsignorVerification>[2]
 ) {
   const res = await endpoint.HandleConsignorVerification(createActionApi(), id, action).catch(createApiErrorServerSide);
-  revalidateTag('consignorsVerifications');
-  revalidateTag('consignors');
+  revalidateTag('consignorVerifications');
   return res;
 }

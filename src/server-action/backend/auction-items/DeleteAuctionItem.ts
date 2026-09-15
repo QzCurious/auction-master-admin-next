@@ -8,11 +8,5 @@ import { createApiErrorServerSide } from '@/server/next/createApiErrorServerSide
 export async function DeleteAuctionItem(id: Parameters<typeof endpoint.DeleteAuctionItem>[1]) {
   const res = await endpoint.DeleteAuctionItem(createActionApi(), id).catch(createApiErrorServerSide);
   revalidateTag('auction-items');
-  revalidateTag('items');
-  revalidateTag('shippings');
-  revalidateTag('records');
-  revalidateTag('reports');
-  revalidateTag('wallets');
-  revalidateTag('bonus');
   return res;
 }

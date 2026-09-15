@@ -11,6 +11,5 @@ export async function AdminUpsertItemPhoto(
 ) {
   const res = await endpoint.AdminUpsertItemPhoto(createActionApi(), id, formData).catch(createApiErrorServerSide);
   revalidateTag('items');
-  revalidateTag('auction-items');
   return res;
 }

@@ -11,6 +11,5 @@ export async function ItemAppraisalReview(
 ) {
   const res = await endpoint.ItemAppraisalReview(createActionApi(), id, payload).catch(createApiErrorServerSide);
   revalidateTag('items');
-  revalidateTag('auction-items');
   return res;
 }

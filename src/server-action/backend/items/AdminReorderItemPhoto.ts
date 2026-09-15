@@ -11,6 +11,5 @@ export async function AdminReorderItemPhoto(
 ) {
   const res = await endpoint.AdminReorderItemPhoto(createActionApi(), id, payload).catch(createApiErrorServerSide);
   revalidateTag('items');
-  revalidateTag('auction-items');
   return res;
 }

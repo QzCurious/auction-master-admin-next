@@ -3,7 +3,6 @@
 import { useMemo } from 'react';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
-import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { currencySign } from '@/domain/static/static';
 import { BidAuctionItem } from '@/server-action/backend/auction-items/BidAuctionItem';
 import {
@@ -51,7 +50,6 @@ export default function BidPopover({ auctionItem }: { auctionItem: AuctionItem }
 }
 
 function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
-  const runApiMutation = useRunApiMutation();
   const min = useMemo(() => {
     if (auctionItem.currentPrice >= 50000) {
       return auctionItem.currentPrice + 1000;
@@ -89,11 +87,9 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
       <form
         noValidate
         onSubmit={handleSubmit(async (data) => {
-          const res = await runApiMutation([['items'], ['auction-items']], () =>
-            BidAuctionItem(auctionItem.auctionId, {
-              price: data.price,
-            })
-          );
+          const res = await BidAuctionItem(auctionItem.auctionId, {
+            price: data.price,
+          });
           if (res.error) {
             handleApiError(res.error);
             return;

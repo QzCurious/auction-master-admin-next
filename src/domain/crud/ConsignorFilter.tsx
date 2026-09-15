@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { ConsignorSelect } from '@/domain/crud/ConsignorSelect';
-import { requireActionSuccess } from '@/domain/data/actionResult';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { PAGE } from '@/domain/static/static';
 import { AdminGetConsignor } from '@/server-action/backend/consignor/AdminGetConsignor';
@@ -18,7 +17,7 @@ export function ConsignorFilter({ consignorId }: { consignorId?: Consignor['id']
   const searchParams = useSearchParams();
   const havePermissions = useHavePermissions();
   const consignorQuery = useQuery({
-    queryFn: () => requireActionSuccess(AdminGetConsignor(consignorId!)),
+    queryFn: () => AdminGetConsignor(consignorId!),
     queryKey: ['consignor', consignorId],
     enabled: !!consignorId,
   });

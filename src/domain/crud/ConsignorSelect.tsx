@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
-import { requireActionSuccess } from '@/domain/data/actionResult';
 import { AdminGetConsignor } from '@/server-action/backend/consignor/AdminGetConsignor';
 import { AdminGetConsignors } from '@/server-action/backend/consignor/AdminGetConsignors';
 import { Autocomplete, TextField, Typography, type TextFieldProps } from '@mui/material';
@@ -22,20 +21,20 @@ export function ConsignorSelect({
 }) {
   const [inputValue, setInputValue] = useState('');
   const consignorQuery = useQuery({
-    queryFn: () => requireActionSuccess(AdminGetConsignor(Number(value))),
+    queryFn: () => AdminGetConsignor(Number(value)),
     queryKey: ['consignor', value],
     enabled: value != null,
   });
 
   const _inputValue = inputValue || (consignorQuery.data?.data?.nickname ?? '');
   const { data, error, isFetching } = useQuery({
-    queryFn: () => requireActionSuccess(AdminGetConsignors({ fuzzyNickname: _inputValue, limit: 20, offset: 0 })),
+    queryFn: () => AdminGetConsignors({ fuzzyNickname: _inputValue, limit: 20, offset: 0 }),
     queryKey: ['consignors', _inputValue],
     placeholderData: keepPreviousData,
     enabled: !!_inputValue,
   });
 
-  // QueryCache presents failures while preserving the current input.
+  if (error || consignorQuery.error) throw new Error('Bug');
 
   return (
     <Autocomplete

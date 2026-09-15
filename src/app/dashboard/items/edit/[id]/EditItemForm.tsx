@@ -7,7 +7,6 @@ import { type Consignor } from '@/api/backend/consignor/AdminGetConsignor';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
-import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { currencySign } from '@/domain/static/static';
@@ -79,7 +78,6 @@ const FormSchema = z
 
 export function ItemFormProvider({ item, children }: { item: Item; children: React.ReactNode }) {
   const form = useForm<z.input<typeof FormSchema>>({
-    resetOptions: { keepDirtyValues: true },
     values: {
       type: item.type,
       isNew: item.isNew,
@@ -103,7 +101,6 @@ export function ItemFormProvider({ item, children }: { item: Item; children: Rea
 }
 
 export function EditItemForm({ item, consignor }: EditItemFromProps) {
-  const runApiMutation = useRunApiMutation();
   const router = useRouter();
   const {
     watch,
@@ -138,7 +135,7 @@ export function EditItemForm({ item, consignor }: EditItemFromProps) {
         const dirtyValues = getDirtyFields(fixedData, dirtyFields);
         if (Object.keys(dirtyValues).length === 0) return;
 
-        const res = await runApiMutation([['items'], ['auction-items']], () => AdminUpdateItem(item.id, dirtyValues));
+        const res = await AdminUpdateItem(item.id, dirtyValues);
 
         if (res.error) {
           handleApiError(res.error);

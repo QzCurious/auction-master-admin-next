@@ -8,6 +8,5 @@ import { createApiErrorServerSide } from '@/server/next/createApiErrorServerSide
 export async function ItemArrival(id: Parameters<typeof endpoint.ItemArrival>[1]) {
   const res = await endpoint.ItemArrival(createActionApi(), id).catch(createApiErrorServerSide);
   revalidateTag('items');
-  revalidateTag('auction-items');
   return res;
 }

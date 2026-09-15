@@ -11,11 +11,5 @@ export async function UpdateAuctionItem(
 ) {
   const res = await endpoint.UpdateAuctionItem(createActionApi(), id, payload).catch(createApiErrorServerSide);
   revalidateTag('auction-items');
-  revalidateTag('items');
-  revalidateTag('shippings');
-  revalidateTag('records');
-  revalidateTag('reports');
-  revalidateTag('wallets');
-  revalidateTag('bonus');
   return res;
 }

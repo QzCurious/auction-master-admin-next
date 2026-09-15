@@ -8,11 +8,5 @@ import { createApiErrorServerSide } from '@/server/next/createApiErrorServerSide
 export async function ProcessingShipping(id: Parameters<typeof endpoint.ProcessingShipping>[1]) {
   const res = await endpoint.ProcessingShipping(createActionApi(), id).catch(createApiErrorServerSide);
   revalidateTag('shippings');
-  revalidateTag('items');
-  revalidateTag('auction-items');
-  revalidateTag('records');
-  revalidateTag('reports');
-  revalidateTag('wallets');
-  revalidateTag('bonus');
   return res;
 }

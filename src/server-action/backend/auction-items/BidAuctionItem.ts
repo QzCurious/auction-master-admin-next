@@ -10,7 +10,6 @@ export async function BidAuctionItem(
   payload: Parameters<typeof endpoint.BidAuctionItem>[2]
 ) {
   const res = await endpoint.BidAuctionItem(createActionApi(), id, payload).catch(createApiErrorServerSide);
-  revalidateTag('items');
   revalidateTag('auction-items');
   return res;
 }

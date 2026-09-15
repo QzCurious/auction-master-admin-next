@@ -8,6 +8,5 @@ import { createApiErrorServerSide } from '@/server/next/createApiErrorServerSide
 export async function AddPermissionForRole(payload: Parameters<typeof endpoint.AddPermissionForRole>[1]) {
   const res = await endpoint.AddPermissionForRole(createActionApi(), payload).catch(createApiErrorServerSide);
   revalidateTag('roles');
-  revalidateTag('admins');
   return res;
 }

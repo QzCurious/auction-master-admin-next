@@ -3,9 +3,8 @@
 import { useTransition } from 'react';
 import Link from 'next/link';
 import { type Worker } from '@/api/backend/workers/GetWorkers';
-import { useHandleApiError, useHandleApiError as useHandleMutationError } from '@/domain/api/HandleApiError';
+import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
-import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { type PaginationSearchParams } from '@/domain/static/static';
 import { WORKER_STATUS, WORKER_TYPE } from '@/domain/static/static-config-mappers';
@@ -149,8 +148,6 @@ export function WorkerTable({ page, rowsPerPage, rows, count }: WorkerTableProps
 }
 
 function StatusSwitch({ row }: { row: Worker }) {
-  const handleMutationError = useHandleMutationError();
-  const runApiMutation = useRunApiMutation();
   const [isPending, startTransition] = useTransition();
   return (
     <Switch
@@ -158,16 +155,11 @@ function StatusSwitch({ row }: { row: Worker }) {
       size="small"
       onChange={(e) => {
         startTransition(async () => {
-          const mutationResult = await runApiMutation([['workers'], ['GetWorkers']], () =>
-            ToggleActivateWorker(row.id, {
-              status: e.target.checked
-                ? WORKER_STATUS.enum('ActiveStatus')
-                : WORKER_STATUS.enum('AwaitingSetupCompletionStatus'),
-            })
-          );
-          if (mutationResult.error) {
-            handleMutationError(mutationResult.error);
-          }
+          await ToggleActivateWorker(row.id, {
+            status: e.target.checked
+              ? WORKER_STATUS.enum('ActiveStatus')
+              : WORKER_STATUS.enum('AwaitingSetupCompletionStatus'),
+          });
         });
       }}
       disabled={isPending}
@@ -176,8 +168,6 @@ function StatusSwitch({ row }: { row: Worker }) {
 }
 
 function StatusSelect({ row }: { row: Worker }) {
-  const handleMutationError = useHandleMutationError();
-  const runApiMutation = useRunApiMutation();
   const [isPending, startTransition] = useTransition();
   return (
     <Select
@@ -185,14 +175,9 @@ function StatusSelect({ row }: { row: Worker }) {
       size="small"
       onChange={(e) => {
         startTransition(async () => {
-          const mutationResult = await runApiMutation([['workers'], ['GetWorkers']], () =>
-            ToggleActivateWorker(row.id, {
-              status: Number(e.target.value),
-            })
-          );
-          if (mutationResult.error) {
-            handleMutationError(mutationResult.error);
-          }
+          await ToggleActivateWorker(row.id, {
+            status: Number(e.target.value),
+          });
         });
       }}
       disabled={isPending || row.status === WORKER_STATUS.enum('InvalidatedStatus')}
@@ -207,7 +192,6 @@ function StatusSelect({ row }: { row: Worker }) {
 }
 
 function CookieInputPopover({ row }: { row: Worker }) {
-  const runApiMutation = useRunApiMutation();
   const {
     control,
     handleSubmit,
@@ -243,9 +227,7 @@ function CookieInputPopover({ row }: { row: Worker }) {
           component="form"
           sx={{ p: '16px 20px' }}
           onSubmit={handleSubmit(async (data) => {
-            const res = await runApiMutation([['workers'], ['GetWorkers']], () =>
-              SetWorkerCookie(row.id, data.cookies)
-            );
+            const res = await SetWorkerCookie(row.id, data.cookies);
             if (res.error) {
               handleApiError(res.error);
               return;

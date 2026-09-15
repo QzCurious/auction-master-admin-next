@@ -11,8 +11,5 @@ export async function AdminUpdateConsignor(
 ) {
   const res = await endpoint.AdminUpdateConsignor(createActionApi(), id, payload).catch(createApiErrorServerSide);
   revalidateTag('consignors');
-  revalidateTag('items');
-  revalidateTag('auction-items');
-  revalidateTag('shippings');
   return res;
 }
