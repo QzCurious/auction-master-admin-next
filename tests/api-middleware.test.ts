@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { NextRequest } from 'next/server';
+import ky, { type KyInstance } from 'ky';
 
-import { createApiTransport } from '../src/api/transport';
 import { refreshMiddleware } from '../src/server/next/refreshMiddleware';
 
 function token(exp: number) {
@@ -20,8 +20,10 @@ function request(accessToken = token(1)) {
 }
 
 void test('middleware forwards updated cookies and emits HttpOnly response cookies', async () => {
-  const transport = createApiTransport({
-    baseUrl: 'https://api.example',
+  const transport = ky.create({
+    prefixUrl: 'https://api.example',
+    retry: 0,
+    redirect: 'error',
     fetch: async () => Response.json({ data: { token: fresh } }),
   });
   const response = await refreshMiddleware(request(), transport);
@@ -36,8 +38,10 @@ void test('middleware forwards updated cookies and emits HttpOnly response cooki
 
 void test('fresh middleware request does not refresh or write cookies', async () => {
   let calls = 0;
-  const transport = createApiTransport({
-    baseUrl: 'https://api.example',
+  const transport = ky.create({
+    prefixUrl: 'https://api.example',
+    retry: 0,
+    redirect: 'error',
     fetch: async () => {
       calls++;
       return Response.json({});
@@ -55,8 +59,10 @@ void test('definitive refresh rejection clears cookies; transient failure retain
     [403, '1001'],
     [503, '9999'],
   ] as const) {
-    const transport = createApiTransport({
-      baseUrl: 'https://api.example',
+    const transport = ky.create({
+      prefixUrl: 'https://api.example',
+      retry: 0,
+      redirect: 'error',
       fetch: async () => Response.json({ status: { code } }, { status }),
     });
     const response = await refreshMiddleware(request(), transport);

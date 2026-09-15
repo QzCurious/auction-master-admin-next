@@ -6,9 +6,3 @@ export const invalidSessionError = {
   type: 'redirect',
   url: '/auth/sign-in',
 } satisfies ApiError;
-
-export class SessionRefreshRequired extends Error {
-  constructor() {
-    super('Session refresh requires a cookie-writable context');
-  }
-}

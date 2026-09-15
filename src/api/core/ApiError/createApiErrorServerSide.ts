@@ -1,5 +1,5 @@
 import { isRedirectError } from 'next/dist/client/components/redirect';
-import { invalidSessionError, SessionRefreshRequired } from '@/api/errors';
+import { invalidSessionError } from '@/api/errors';
 import { HTTPError } from 'ky';
 
 import { type FailedResponseJson } from '../static';
@@ -123,7 +123,7 @@ async function extractErrorCode(err: unknown) {
 }
 
 export async function createApiErrorServerSide(err: unknown) {
-  if (err instanceof SessionRefreshRequired || isRedirectError(err)) throw err;
+  if (isRedirectError(err)) throw err;
   if (err === invalidSessionError) return { data: null, error: invalidSessionError };
   const code = await extractErrorCode(err);
   return { data: null, error: createApiError(code) };

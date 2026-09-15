@@ -1,17 +1,16 @@
-import { HTTPError } from 'ky';
+import { HTTPError, type KyInstance } from 'ky';
 
 import { type FailedResponseJson, type SuccessResponseJson } from '../core/static';
 import { invalidSessionError } from '../errors';
 import { type Tokens } from '../session';
-import { type ApiTransport } from '../transport';
 
-export async function AdminRefreshToken(transport: ApiTransport, tokens: Tokens): Promise<Tokens> {
+export async function AdminRefreshToken(transport: KyInstance, tokens: Tokens): Promise<Tokens> {
   const response = await transport
-    .request<SuccessResponseJson<{ token: string }>>('backend/session/refresh', {
-      method: 'POST',
+    .post<SuccessResponseJson<{ token: string }>>('backend/session/refresh', {
       headers: { Authorization: `Bearer ${tokens.accessToken}` },
       body: new URLSearchParams({ refreshToken: tokens.refreshToken }),
     })
+    .json()
     .catch(async (error: unknown) => {
       if (error instanceof HTTPError) {
         const body = (await error.response

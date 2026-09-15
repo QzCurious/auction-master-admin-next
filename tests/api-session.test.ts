@@ -1,15 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { HTTPError } from 'ky';
+import ky, { HTTPError, type KyInstance } from 'ky';
 
+import { createAuthHooks } from '../src/api/createAuthHooks';
 import { AdminRefreshToken } from '../src/api/endpoints/AdminRefreshToken';
 import { AdminUpdateItem } from '../src/api/endpoints/AdminUpdateItem';
 import { GetItemsAndDetails } from '../src/api/endpoints/GetItemsAndDetails';
-import { invalidSessionError, SessionRefreshRequired } from '../src/api/errors';
+import { invalidSessionError } from '../src/api/errors';
 import { createApiSession, ensureFreshToken, refreshRejectedToken, type Tokens } from '../src/api/session';
-import { createApiTransport } from '../src/api/transport';
-import { withCacheTags } from '../src/server/next/withCacheTags';
 
 const now = 1_700_000_000_000;
 function token(exp = now / 1000 + 3600, user = 'a') {
@@ -20,20 +19,27 @@ const updated: Tokens = { ...old, accessToken: token(now / 1000 + 7200) };
 const success = (data: unknown = 'Success') => Response.json({ data, status: { code: '0' } });
 const expired = () => Response.json({ data: null, status: { code: '1003' } }, { status: 401 });
 function transport(fetcher: (request: Request, init?: RequestInit) => Response | Promise<Response>) {
-  return createApiTransport({
-    baseUrl: 'https://api.example/',
+  return ky.create({
+    prefixUrl: 'https://api.example/',
+    retry: 0,
+    redirect: 'error',
     fetch: async (input, init) => fetcher(input as Request, init),
   });
 }
-function session(overrides: Partial<Parameters<typeof createApiSession>[0]> = {}) {
-  return createApiSession({
-    transport: transport(() => success()),
+function session(overrides: Partial<Parameters<typeof createApiSession>[0]> & { transport?: KyInstance } = {}) {
+  const state = createApiSession({
     readTokens: () => old,
     refreshTokens: async () => updated,
     persistTokens: () => undefined,
     now: () => now,
     ...overrides,
   });
+  const auth = createAuthHooks(state);
+  const api = (overrides.transport ?? transport(() => success())).extend({
+    retry: { limit: 1, methods: ['get'], statusCodes: [401], delay: () => 0 },
+    hooks: { beforeRequest: [auth.beforeRequest], beforeRetry: [auth.beforeRetry] },
+  });
+  return { ...state, api };
 }
 
 void test('lazy token reader runs once and sessions isolate users on a shared transport', async () => {
@@ -52,7 +58,7 @@ void test('lazy token reader runs once and sessions isolate users on a shared tr
   });
   const b = session({ transport: shared, readTokens: () => ({ ...old, accessToken: token(undefined, 'b') }) });
   assert.equal(reads, 0);
-  await Promise.all([a.api.request('one'), b.api.request('two'), a.api.request('three')]);
+  await Promise.all([a.api('one').json(), b.api('two').json(), a.api('three').json()]);
   assert.equal(reads, 1);
   assert.equal(seen.filter((value) => value === `Bearer ${old.accessToken}`).length, 2);
   assert.ok(seen.includes(`Bearer ${token(undefined, 'b')}`));
@@ -77,7 +83,7 @@ void test('near expiry refreshes before mutation and persists once, retaining re
       return success();
     }),
   });
-  await auth.api.request('write', { method: 'PATCH', body: new URLSearchParams({ name: 'item' }) });
+  await auth.api('write', { method: 'PATCH', body: new URLSearchParams({ name: 'item' }) }).json();
   await auth.persistTokens();
   await auth.persistTokens();
   assert.equal(refreshes, 1);
@@ -100,7 +106,7 @@ void test('parallel rejection shares refresh and late rejection reuses the new t
       return request.headers.get('Authorization') === `Bearer ${old.accessToken}` ? expired() : success();
     }),
   });
-  await Promise.all([auth.api.request('one'), auth.api.request('two')]);
+  await Promise.all([auth.api('one').json(), auth.api('two').json()]);
   assert.equal(refreshes, 1);
   assert.equal(requests, 4);
   assert.equal(await refreshRejectedToken(auth, old.accessToken), updated.accessToken);
@@ -132,7 +138,7 @@ void test('read retry is bounded; writes and non-expiry failures are never repla
       },
     });
     await assert.rejects(
-      auth.api.request('item', { method }),
+      auth.api('item', { method }).json(),
       (e: unknown) => e instanceof HTTPError && e.response.status === 401
     );
     assert.equal(calls, method === 'GET' ? 2 : 1);
@@ -153,7 +159,7 @@ void test('read retry is bounded; writes and non-expiry failures are never repla
       },
     });
     await assert.rejects(
-      auth.api.request('item'),
+      auth.api('item').json(),
       (e: unknown) => e instanceof HTTPError && e.response.status === status
     );
     assert.equal(refreshes, 0);
@@ -201,7 +207,7 @@ void test('successful refresh remains persistable after downstream failure', asy
       saved = tokens;
     },
   });
-  await assert.rejects(auth.api.request('items'), (e: unknown) => e instanceof HTTPError && e.response.status === 503);
+  await assert.rejects(auth.api('items').json(), (e: unknown) => e instanceof HTTPError && e.response.status === 503);
   await auth.persistTokens();
   assert.deepEqual(saved, updated);
 });
@@ -211,13 +217,14 @@ void test('missing/malformed credentials fail before sending; render adapter can
     const auth = session({ readTokens: () => ({ ...old, accessToken: value }) });
     await assert.rejects(ensureFreshToken(auth), (e: unknown) => e === invalidSessionError);
   }
+  const renderRedirect = new Error('Render redirect');
   const auth = session({
     readTokens: () => ({ ...old, accessToken: token(1) }),
     refreshTokens: async () => {
-      throw new SessionRefreshRequired();
+      throw renderRedirect;
     },
   });
-  await assert.rejects(auth.api.request('items'), SessionRefreshRequired);
+  await assert.rejects(auth.api('items').json(), (error: unknown) => error === renderRedirect);
 });
 
 void test('refresh endpoint preserves exact form/header contract and maps definitive rejection', async () => {
@@ -265,7 +272,7 @@ void test('pilot query preserves repeated filters/defaults and adapter cache tag
       return success({ items: [], count: 0, statusCounts: {} });
     }),
   }).api;
-  await GetItemsAndDetails(withCacheTags(api, ['items']), { consignorId: 4, status: [1, 2] });
+  await GetItemsAndDetails(api.extend({ next: { tags: ['items'] } }), { consignorId: 4, status: [1, 2] });
 });
 
 void test('pilot mutation preserves false, zero, date and null omission; validates before HTTP', async () => {
@@ -293,4 +300,71 @@ void test('pilot mutation preserves false, zero, date and null omission; validat
   });
   await assert.rejects(AdminUpdateItem(api, 12, { reservePrice: 0 }));
   assert.equal(calls, 1);
+});
+
+void test('auth hooks compose with additional native Ky hooks and preserve their order', async () => {
+  const events: string[] = [];
+  const state = createApiSession({
+    readTokens: () => old,
+    refreshTokens: async () => {
+      events.push('refresh');
+      return updated;
+    },
+    persistTokens: () => {
+      events.push('persist');
+    },
+    now: () => now,
+  });
+  const auth = createAuthHooks(state);
+  const api = transport((request) => {
+    events.push('fetch');
+    assert.equal(request.headers.get('X-Extra'), 'present');
+    return request.headers.get('Authorization') === `Bearer ${old.accessToken}` ? expired() : success();
+  }).extend({
+    retry: { limit: 1, methods: ['get'], statusCodes: [401], delay: () => 0 },
+    hooks: {
+      beforeRequest: [
+        auth.beforeRequest,
+        (request) => {
+          events.push('extra-before-request');
+          request.headers.set('X-Extra', 'present');
+        },
+      ],
+      beforeRetry: [
+        auth.beforeRetry,
+        () => {
+          events.push('extra-before-retry');
+        },
+      ],
+    },
+  });
+  await api.get('items').json();
+  assert.deepEqual(events, [
+    'extra-before-request',
+    'fetch',
+    'refresh',
+    'persist',
+    'extra-before-retry',
+    'extra-before-request',
+    'fetch',
+  ]);
+});
+
+void test('network failures do not gain retries when auth hooks are registered', async () => {
+  let calls = 0;
+  let refreshes = 0;
+  const failure = new Error('Connection failed');
+  const auth = session({
+    transport: transport(() => {
+      calls++;
+      throw failure;
+    }),
+    refreshTokens: async () => {
+      refreshes++;
+      return updated;
+    },
+  });
+  await assert.rejects(auth.api.get('items').json(), (error: unknown) => error === failure);
+  assert.equal(calls, 1);
+  assert.equal(refreshes, 0);
 });

@@ -1,16 +1,12 @@
 import { jwtDecode } from 'jwt-decode';
-import { HTTPError } from 'ky';
 
-import { type FailedResponseJson } from './core/static';
 import { invalidSessionError } from './errors';
-import { type ApiClient, type ApiRequestOptions, type ApiTransport } from './transport';
 
 export interface Tokens {
   accessToken: string;
   refreshToken: string;
 }
 export interface SessionOptions {
-  transport: ApiTransport;
   readTokens: () => Tokens | Promise<Tokens>;
   refreshTokens: (tokens: Tokens) => Promise<Tokens>;
   persistTokens: (tokens: Tokens) => void | Promise<void>;
@@ -77,31 +73,7 @@ export function createApiSession(options: SessionOptions) {
     now: options.now ?? Date.now,
   };
 
-  const api: ApiClient = {
-    async request<T>(path: string, requestOptions: ApiRequestOptions = {}) {
-      const token = await ensureFreshToken(session);
-      const send = (accessToken: string) => {
-        const headers = new Headers(requestOptions.headers);
-        headers.set('Authorization', `Bearer ${accessToken}`);
-        return options.transport.request<T>(path, { ...requestOptions, headers });
-      };
-      try {
-        return await send(token);
-      } catch (error) {
-        const method = (requestOptions.method ?? 'GET').toUpperCase();
-        // Backend mutation rejection ordering is not established: never replay writes.
-        if (!(error instanceof HTTPError) || error.response.status !== 401 || method !== 'GET') throw error;
-        const body = (await error.response
-          .clone()
-          .json()
-          .catch(() => null)) as FailedResponseJson | null;
-        if (body?.status?.code !== '1003') throw error;
-        return send(await refreshRejectedToken(session, token));
-      }
-    },
-  };
-
-  return { ...session, api };
+  return session;
 }
 
 export type ApiSession = ReturnType<typeof createApiSession>;

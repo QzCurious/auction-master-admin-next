@@ -1,10 +1,9 @@
 import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { ITEM_TYPE } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 import * as R from 'remeda';
 import { z } from 'zod';
-
-import { type ApiClient } from '../transport';
 
 export const UpdateItemSchema = z
   .object({
@@ -29,11 +28,11 @@ export const UpdateItemSchema = z
 
 type Data = 'Success';
 
-export async function AdminUpdateItem(api: ApiClient, id: number, payload: z.input<typeof UpdateItemSchema>) {
+export async function AdminUpdateItem(api: KyInstance, id: number, payload: z.input<typeof UpdateItemSchema>) {
   const data = throwIfInvalid(payload, UpdateItemSchema);
 
   const urlencoded = new URLSearchParams();
   appendEntries(urlencoded, data);
 
-  return api.request<SuccessResponseJson<Data>>(`backend/items/${id}`, { method: 'PATCH', body: urlencoded });
+  return api.patch<SuccessResponseJson<Data>>(`backend/items/${id}`, { body: urlencoded }).json();
 }

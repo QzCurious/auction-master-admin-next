@@ -3,19 +3,18 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { AdminRefreshToken } from '@/api/endpoints/AdminRefreshToken';
 import { invalidSessionError } from '@/api/errors';
 import { createApiSession, ensureFreshToken } from '@/api/session';
-import { type ApiTransport } from '@/api/transport';
+import { type KyInstance } from 'ky';
 
 import { clearTokens, readTokens, writeTokens } from './cookies';
 import { returnPathHeader, signInDestination } from './navigation';
 
-export async function refreshMiddleware(request: NextRequest, transport: ApiTransport) {
+export async function refreshMiddleware(request: NextRequest, transport: KyInstance) {
   const forwarded = new Headers(request.headers);
   // Overwrite browser-provided internal metadata.
   forwarded.set(returnPathHeader, request.nextUrl.pathname + request.nextUrl.search);
   const forwardedCookies = new RequestCookies(forwarded);
   let response = NextResponse.next({ request: { headers: forwarded } });
   const session = createApiSession({
-    transport,
     readTokens: () => readTokens(request.cookies),
     refreshTokens: (tokens) => AdminRefreshToken(transport, tokens),
     persistTokens: (tokens) => {

@@ -1,9 +1,8 @@
 import { throwIfInvalid, type SuccessResponseJson } from '@/api/core/static';
 import { appendEntries } from '@/domain/crud/appendEntries';
 import { type ITEM_STATUS, type ITEM_TYPE } from '@/domain/static/static-config-mappers';
+import { type KyInstance } from 'ky';
 import { z } from 'zod';
-
-import { type ApiClient } from '../transport';
 
 export const ItemsQuerySchema = z.object({
   consignorId: z.coerce.number().optional(),
@@ -56,11 +55,11 @@ interface Data {
   statusCounts: StatusCount;
 }
 
-export async function GetItemsAndDetails(api: ApiClient, payload: z.input<typeof ItemsQuerySchema>) {
+export async function GetItemsAndDetails(api: KyInstance, payload: z.input<typeof ItemsQuerySchema>) {
   const data = throwIfInvalid(payload, ItemsQuerySchema);
 
   const query = new URLSearchParams();
   appendEntries(query, data);
 
-  return api.request<SuccessResponseJson<Data>>(`backend/items?${query}`);
+  return api.get<SuccessResponseJson<Data>>(`backend/items?${query}`).json();
 }

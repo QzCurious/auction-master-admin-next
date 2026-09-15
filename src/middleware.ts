@@ -1,13 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
+import { api } from './server/api';
 import { refreshMiddleware } from './server/next/refreshMiddleware';
-import { transport } from './server/transport';
 
 export async function middleware(request: NextRequest) {
   if (process.env.NEXT_PUBLIC_IS_MAINTENANCE && request.nextUrl.pathname !== '/maintenance') {
     return NextResponse.redirect(new URL('/maintenance', request.url));
   }
-  return refreshMiddleware(request, transport);
+  return refreshMiddleware(request, api);
 }
 
 export const config = {

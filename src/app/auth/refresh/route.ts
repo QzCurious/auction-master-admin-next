@@ -1,14 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { invalidSessionError } from '@/api/errors';
-import { refreshRejectedToken } from '@/api/session';
 import { clearTokens } from '@/server/next/cookies';
+import { createActionSession } from '@/server/next/createActionApi';
 import {
   afterRefreshDestination,
   refreshAttemptParam,
   safeReturnPath,
   signInDestination,
 } from '@/server/next/navigation';
-import { withApiSession } from '@/server/next/withApiSession';
 
 export async function GET(request: NextRequest) {
   const response = await refresh(request);
@@ -22,10 +21,9 @@ async function refresh(request: NextRequest) {
     return NextResponse.redirect(new URL(signInDestination(returnPath), request.url));
   }
   try {
-    await withApiSession(async (_api, session) => {
-      const tokens = await session.readTokens();
-      await refreshRejectedToken(session, tokens.accessToken);
-    });
+    const session = createActionSession();
+    await session.refresh();
+    await session.persistTokens();
     return NextResponse.redirect(new URL(afterRefreshDestination(returnPath), request.url));
   } catch (error) {
     if (error === invalidSessionError) {

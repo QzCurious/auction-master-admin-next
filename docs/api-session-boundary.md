@@ -8,33 +8,35 @@ This is an architecture migration. Preserve existing API function names, HTTP me
 
 ## Ownership and usage
 
-- `api/transport.ts`: HTTP execution using Ky and its existing `HTTPError` behavior. The shared instance/configuration in `server/` never retains user credentials.
+- `api/core/apiClientBase.ts` and `server/api.ts`: shared native Ky configuration, with no user credentials. Endpoints accept `KyInstance` and use its standard methods and `HTTPError`.
+- `api/createAuthHooks.ts`: returns individual `beforeRequest` and `beforeRetry` functions. Factories register them explicitly in Ky hook arrays so callers can compose additional hooks.
 - `api/session.ts`: lazy `readTokens` thunk evaluated once per session; current credentials, pending refresh, and persistence revision are isolated per invocation. `ensureFreshToken` handles the 30-second expiry margin. `refreshRejectedToken` reuses a newer token or shares a pending refresh.
 - `api/endpoints/`: existing validation, serialization, response shapes, and upstream paths. The pilot moves only `GetItemsAndDetails` and `AdminUpdateItem`, plus the shared refresh endpoint.
 - `server/next/`: HttpOnly cookie readers/writers, request-cookie forwarding, cache tags, navigation, and execution-context adapters.
 
 ```ts
 // Server Action or Route Handler: this context can persist cookies.
-const result = await withApiSession((api) => AdminUpdateItem(api, id, payload));
+const result = await AdminUpdateItem(createActionApi(), id, payload);
 revalidateTag('items');
 
 // Server Component: refresh must happen in a separate cookie-writable response.
-const result = await withRenderApiSession((api) =>
-  GetItemsAndDetails(withCacheTags(api, ['items']), filters)
-);
+const api = createRenderApi().extend({ next: { tags: ['items'] } });
+const result = await GetItemsAndDetails(api, filters);
 ```
 
 The browser calls the existing action and supplies no token argument. The browser's HttpOnly cookies carry tokens to Next.js; only server code supplies the upstream Bearer header. The raw token is never returned from the explicit refresh action, rendered into HTML, or logged. Existing JWT claims used by the UI remain unchanged. JWT decoding is only an expiry hint; the backend must verify signatures and permissions.
 
-Server Actions belong at browser entry points, not at every endpoint. The item edit form calls `AdminUpdateItem`; the items page calls `GetItemsAndDetails` directly through `withRenderApiSession`. There is no item-list action because it has no browser caller. Client components import its types directly from the endpoint module using type-only imports.
+Server Actions belong at browser entry points, not at every endpoint. The item edit form calls `AdminUpdateItem`; the items page calls `GetItemsAndDetails` directly using `createRenderApi()`. There is no item-list action because it has no browser caller. Client components import its types directly from the endpoint module using type-only imports.
+
+The action factory is also usable in Route Handlers. Middleware only needs the base Ky instance for its refresh endpoint and writes both response cookies and forwarded request cookies. Each action/render instance owns its session state; no authenticated singleton is shared between users.
 
 ## Refresh and persistence
 
 1. Middleware proactively refreshes near-expiry credentials. It updates both the forwarded request cookie header (for the current render) and response cookies (for subsequent browser requests), preserving other cookies.
 2. API sessions also check expiry before sending. Only HTTP 401 with backend code `1003` triggers reactive refresh for eligible reads. Only the individual GET request is retried, once; a callback containing several operations is never replayed.
-3. Refresh calls the existing `POST backend/session/refresh` through the base transport, using the current Bearer token and form-encoded `refreshToken`. The endpoint returns an access token; the existing refresh token is retained.
-4. `persistTokens()` invokes the injected writer only after credentials change. Failed persistence can be retried. A successful refresh is persisted in the writable adapter's `finally` block even if a later endpoint fails. Definitively invalid sessions clear cookies; transient failures do not log users out.
-5. A render that needs refresh signals `SessionRefreshRequired`. The adapter redirects to `/auth/refresh?goto=...`; that route writes cookies and redirects back. An `__auth_retry=1` query marker bounds the flow: another rejected read redirects to sign-in instead of refreshing again. The marker remains until navigating to a clean URL. Return destinations are validated local paths; auth/API/internal destinations are rejected. Refresh route responses are not cacheable.
+3. Refresh calls the existing `POST backend/session/refresh` through the base Ky instance, using the current Bearer token and form-encoded `refreshToken`. The endpoint returns an access token; the existing refresh token is retained.
+4. `persistTokens()` invokes the injected writer only after credentials change. Failed persistence can be retried. Auth hooks persist a successful refresh before sending the next request, so cookies are saved even if that request fails. Explicit refresh callers persist before returning. Definitively invalid sessions clear cookies; transient failures do not log users out.
+5. A render that needs refresh redirects to `/auth/refresh?goto=...`; that route writes cookies and redirects back. An `__auth_retry=1` query marker bounds the flow: another rejected read redirects to sign-in instead of refreshing again. The marker remains until navigating to a clean URL. Return destinations are validated local paths; auth/API/internal destinations are rejected. Refresh route responses are not cacheable.
 
 ## Deliberate stage boundaries and limitations
 
