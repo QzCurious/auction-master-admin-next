@@ -22,6 +22,8 @@ const result = await withRenderApiSession((api) =>
 
 The browser calls the existing action and supplies no token argument. The browser's HttpOnly cookies carry tokens to Next.js; only server code supplies the upstream Bearer header. The raw token is never returned from the explicit refresh action, rendered into HTML, or logged. Existing JWT claims used by the UI remain unchanged. JWT decoding is only an expiry hint; the backend must verify signatures and permissions.
 
+Server Actions belong at browser entry points, not at every endpoint. The item edit form calls `AdminUpdateItem`; the items page calls `getItemsAndDetails` directly through `withRenderApiSession`. There is no item-list action because it has no browser caller. Client components import its types directly from the endpoint module using type-only imports.
+
 ## Refresh and persistence
 
 1. Middleware proactively refreshes near-expiry credentials. It updates both the forwarded request cookie header (for the current render) and response cookies (for subsequent browser requests), preserving other cookies.

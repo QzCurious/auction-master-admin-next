@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { type StatusCount } from '@/api/backend/items/GetItemsAndDetails';
+import { type StatusCount } from '@/api/endpoints/getItemsAndDetails';
 import { PAGE } from '@/domain/static/static';
 import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { StatusFlow } from '@/domain/static/StatusFlow';
