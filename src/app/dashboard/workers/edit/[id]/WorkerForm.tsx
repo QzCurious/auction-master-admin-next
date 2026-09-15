@@ -80,7 +80,7 @@ export function WorkerForm({ worker }: WorkerFromProps) {
         const dirtyValues = getDirtyFields(data, dirtyFields);
         if (Object.keys(dirtyValues).length === 0) return;
 
-        const res = await runApiMutation('UpdateWorker', () => UpdateWorker(worker.id, dirtyValues));
+        const res = await runApiMutation([['workers'], ['GetWorkers']], () => UpdateWorker(worker.id, dirtyValues));
         if (res.error) {
           handleApiError(res.error);
           return;

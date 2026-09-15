@@ -96,10 +96,12 @@ export default function EditRoleForm({ role, rolePermissions, permissionGroups }
           const res = await Promise.all([
             addPermissions &&
               addPermissions.length &&
-              runApiMutation('AddPermissionForRole', () => AddPermissionForRole({ role, permissions: addPermissions })),
+              runApiMutation([['roles'], ['admins']], () =>
+                AddPermissionForRole({ role, permissions: addPermissions })
+              ),
             deletePermissions &&
               deletePermissions.length &&
-              runApiMutation('DeletePermissionForRole', () =>
+              runApiMutation([['roles'], ['admins']], () =>
                 DeletePermissionForRole({ role, permissions: deletePermissions })
               ),
           ]);

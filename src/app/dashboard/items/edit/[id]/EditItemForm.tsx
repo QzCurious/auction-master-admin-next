@@ -138,7 +138,7 @@ export function EditItemForm({ item, consignor }: EditItemFromProps) {
         const dirtyValues = getDirtyFields(fixedData, dirtyFields);
         if (Object.keys(dirtyValues).length === 0) return;
 
-        const res = await runApiMutation('AdminUpdateItem', () => AdminUpdateItem(item.id, dirtyValues));
+        const res = await runApiMutation([['items'], ['auction-items']], () => AdminUpdateItem(item.id, dirtyValues));
 
         if (res.error) {
           handleApiError(res.error);

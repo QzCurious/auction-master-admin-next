@@ -29,7 +29,7 @@ export default function DeleteDialog({ worker }: { worker: Worker }) {
         title="刪除 Worker"
         description={`您確定要刪除 ${worker.name} 嗎?`}
         onConfirm={async () => {
-          const mutationResult = await runApiMutation('DeleteWorker', () => DeleteWorker(worker.id));
+          const mutationResult = await runApiMutation([['workers'], ['GetWorkers']], () => DeleteWorker(worker.id));
           if (mutationResult.error) {
             handleMutationError(mutationResult.error);
             return;

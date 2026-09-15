@@ -6,16 +6,15 @@ This is the third preparation PR for issues #4–#6, before the React Router mig
 
 - `src/api/`: HTTP operations and backend response contracts. No cache invalidation or UI policy.
 - Adjacent `*.query.ts`: call the mirrored Server Action and `requireActionSuccess`. Inline consignor query functions use the same helper.
-- `src/domain/data/freshness.ts`: router-independent mutation-to-consumer inventory. Dependency groups include every cached filter/ID in a group, not just the visible page.
-- `src/server/next/revalidateMutation.ts`: invalidate Next tags after a successful mutation. A failed action does not invalidate. Server Actions update the current Next route tree; do not also call `router.refresh()` for the same mutation.
-- `useRunApiMutation`: TanStack mutation lifecycle, with no automatic mutation retries. On success, invalidate matching queries; active observers refetch and inactive entries become stale. This is separate from the Next cache.
+- Server Actions call `revalidateTag` directly for each affected tag after the endpoint settles, including when the adapter returns an error envelope, so users can receive newer server state. Server Actions update the current Next route tree; do not also call `router.refresh()` for the same mutation.
+- `useRunApiMutation`: TanStack mutation lifecycle, with no automatic mutation retries. Call sites supply explicit query-key prefixes. On success, invalidate those queries; active observers refetch and inactive entries become stale. This is separate from the Next cache.
 - Components: success messages, validation, navigation, dialog closing and deliberate selection clearing. The adapter preserves their success envelope and existing error handling, while TanStack itself records failures as `error`.
 
 One browser has one QueryClient created by Providers. A request still has its own authenticated session; query caching never stores credentials.
 
 ## Mutation inventory
 
-The executable inventory is `mutationEffects`. These groups map to both Next tags and browser query prefixes; `GetWorkers` maps to `workers`, `consignor` to `consignors`, and both record query prefixes to `records`.
+Each Server Action declares its Next tags directly. Browser mutation call sites declare the affected TanStack query-key prefixes directly, including `GetWorkers`, `consignor`, `/reports/records`, and `/reports/records/summary` where relevant. Prefix invalidation includes every cached filter/ID, not just the visible page. There is no mutation-name registry.
 
 | Mutation family | Consumers refreshed |
 | --- | --- |
@@ -41,7 +40,7 @@ HTTP operations still throw native `HTTPError`, retaining backend codes. The ser
 
 Queries reject on failure rather than caching error envelopes as successful data. QueryCache presents the existing localized feedback once per failed fetch, even with multiple observers. Missing authentication navigates to sign-in with the current return path. Failed background fetches retain the last successful cache data. Queries have no automatic retry; focus, reconnection, explicit invalidation or a new mount can retry stale reads. Unknown transport failures use the existing generic message.
 
-Mutations likewise reject internally, so TanStack records an error and skips success invalidation. The compatibility runner then returns the familiar failure envelope for existing forms to present and keep their drafts/dialogs open. Callers must inspect `result.error` before success effects; deletes, worker activation and photo actions now do so. Do not wrap an entire multi-operation workflow in a replay/retry callback.
+Browser mutations likewise reject internally, so TanStack records an error and skips browser-query success invalidation. Server Actions still revalidate their Next tags after an error result. The compatibility runner then returns the familiar failure envelope for existing forms to present and keep their drafts/dialogs open. Callers must inspect `result.error` before success effects; deletes, worker activation and photo actions now do so. Do not wrap an entire multi-operation workflow in a replay/retry callback.
 
 ## Polling, drafts and selection
 
@@ -51,6 +50,6 @@ Reactive edit forms use `keepDirtyValues` when server props change: unsaved fiel
 
 ## Verification and limits
 
-The API regression suite exercises real QueryClient/QueryObserver/MutationObserver behavior, the real React mutation hook in jsdom, preserved dirty form fields, query error feedback and last-good data, active/inactive invalidation, mutation failures, polling policy, and an audit that mapped action callers cannot bypass invalidation. Existing HTTP/session/permission/architecture tests remain in place. Production smoke uses a local synthetic upstream, not production credentials.
+The API regression suite exercises real QueryClient/QueryObserver/MutationObserver behavior, the real React mutation hook in jsdom, preserved dirty form fields, query error feedback and last-good data, active/inactive invalidation, mutation failures, polling policy, and direct Server Action tag invalidation after both successful and failed upstream results. Existing HTTP/session/permission/architecture tests remain in place. Production smoke uses a local synthetic upstream, not production credentials.
 
 The backend remains the authority for mutation success and permissions. This PR cannot make another browser/tab or a backend background job push updates; those are discovered through existing polling, focus/reconnection or subsequent navigation. Cross-request token refresh coordination is unchanged. Polling policy and cache tests are deterministic; they do not substitute for a full live-backend workflow acceptance test.

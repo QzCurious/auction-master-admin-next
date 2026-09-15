@@ -1,10 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { MutationObserver, QueryObserver } from '@tanstack/react-query';
+import { MutationObserver } from '@tanstack/react-query';
 
 import { ActionResultError, requireActionSuccess } from '../src/domain/data/actionResult';
-import { affectsQuery, mutationEffects } from '../src/domain/data/freshness';
 import { shouldPoll } from '../src/domain/data/polling';
 import { createQueryClient } from '../src/domain/data/queryClient';
 
@@ -27,43 +26,6 @@ void test('failed action envelopes are query failures with original feedback, ne
   assert.equal(client.getQueryData(['items', 1]), undefined);
   assert.deepEqual(feedback, ['1001']);
   assert.equal(attempts, 1);
-  client.clear();
-});
-
-void test('successful shipping invalidates all affected query variants and refetches active detail', async () => {
-  const client = createQueryClient(() => {});
-  const keys = [
-    ['auction-items', 1],
-    ['items', 2],
-    ['/reports/records', { offset: 0 }],
-    ['/reports/records/summary'],
-    ['reports'],
-    ['GetWorkers'],
-  ];
-  for (const key of keys) client.setQueryData(key, 'before');
-  let reads = 0;
-  const observer = new QueryObserver(client, {
-    queryKey: keys[0],
-    queryFn: async () => {
-      reads++;
-      return 'after';
-    },
-    staleTime: Infinity,
-  });
-  const unsubscribe = observer.subscribe(() => {});
-  const mutation = new MutationObserver(client, {
-    mutationFn: () => requireActionSuccess(Promise.resolve({ data: 'ok', error: undefined })),
-    onSuccess: () => client.invalidateQueries({ predicate: (q) => affectsQuery('ShippingAuctionItem', q.queryKey) }),
-  });
-  await mutation.mutate(undefined);
-  assert.equal(reads, 1);
-  assert.equal(client.getQueryData(keys[0]), 'after');
-  for (const key of keys.slice(1, -1)) assert.equal(client.getQueryState(key)?.isInvalidated, true);
-  assert.equal(client.getQueryState(keys.at(-1)!)?.isInvalidated, false);
-  assert.ok(mutationEffects.ShippingAuctionItem.includes('shippings'));
-  assert.deepEqual(mutationEffects.HandleConsignorVerification, ['consignorsVerifications', 'consignors']);
-  assert.ok(mutationEffects.AddPermissionForRole.includes('admins'));
-  unsubscribe();
   client.clear();
 });
 
@@ -113,36 +75,62 @@ void test('polling pauses when hidden, refreshing, editing, or selecting and res
   }
 });
 
-void test('every mapped server mutation invalidates only after success and client calls use the mutation adapter', async () => {
+void test('server mutations revalidate directly after both successful and failed upstream results', async () => {
   const { readFile, readdir } = await import('node:fs/promises');
   const path = await import('node:path');
+  const { runInNewContext } = await import('node:vm');
   const ts = await import('typescript');
   async function files(dir: string): Promise<string[]> {
     const entries = await readdir(dir, { withFileTypes: true });
     return (
       await Promise.all(
-        entries.map((entry) => (entry.isDirectory() ? files(path.join(dir, entry.name)) : [path.join(dir, entry.name)]))
+        entries.map((entry) => {
+          const file = path.join(dir, entry.name);
+          return entry.isDirectory() ? files(file) : [file];
+        })
       )
     ).flat();
   }
-  const actions = await files('src/server-action/backend');
-  for (const name of Object.keys(mutationEffects)) {
-    const file = actions.find((file) => path.basename(file) === `${name}.ts`);
-    assert.ok(file, name);
-    assert.match(await readFile(file, 'utf8'), new RegExp(`if \\(!res.error\\) revalidateMutation\\('${name}'\\)`));
+  let checked = 0;
+  for (const file of await files('src/server-action/backend')) {
+    const source = await readFile(file, 'utf8');
+    if (!source.includes("from 'next/cache'")) continue;
+    const tags: string[] = [];
+    let fail = false;
+    const result = { data: 'saved', error: undefined };
+    const failure = { data: null, error: { code: '9999' } };
+    const exports: Record<string, (...args: unknown[]) => Promise<unknown>> = {};
+    const code = ts.transpileModule(source, {
+      compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+    }).outputText;
+    runInNewContext(code, {
+      exports,
+      require: (name: string) => {
+        if (name === 'next/cache') return { revalidateTag: (tag: string) => tags.push(tag) };
+        if (name.startsWith('@/api/'))
+          return new Proxy(
+            {},
+            {
+              get: () => async () => {
+                if (fail) throw new Error('upstream unavailable');
+                return result;
+              },
+            }
+          );
+        if (name.endsWith('/createActionApi')) return { createActionApi: () => ({}) };
+        if (name.endsWith('/createApiErrorServerSide')) return { createApiErrorServerSide: () => failure };
+        throw new Error(`Unexpected import: ${name}`);
+      },
+    });
+    const action = Object.values(exports)[0];
+    assert.equal(await action(), result, file);
+    assert.ok(tags.length > 0, `${file}: success must invalidate`);
+    const successTags = [...tags];
+    tags.length = 0;
+    fail = true;
+    assert.equal(await action(), failure, file);
+    assert.deepEqual(tags, successTags, `${file}: failure should still refresh the same tags`);
+    checked++;
   }
-  for (const file of (await files('src/app')).filter((file) => file.endsWith('.tsx'))) {
-    const text = await readFile(file, 'utf8');
-    const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-    function visit(node: import('typescript').Node) {
-      if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text in mutationEffects) {
-        let parent = node.parent;
-        while (parent && !(ts.isCallExpression(parent) && parent.expression.getText(source) === 'runApiMutation'))
-          parent = parent.parent;
-        assert.ok(parent, `${file}: ${node.expression.text} bypasses client invalidation`);
-      }
-      ts.forEachChild(node, visit);
-    }
-    visit(source);
-  }
+  assert.ok(checked > 0);
 });

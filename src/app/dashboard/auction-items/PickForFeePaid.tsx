@@ -133,8 +133,19 @@ function FeeForm() {
       onSubmit={(e) => {
         e.preventDefault();
         startTransition(async () => {
-          const res = await runApiMutation('AuctionItemConsignorFeePaid', () =>
-            AuctionItemConsignorFeePaid({ auctionId: pickedItemIds })
+          const res = await runApiMutation(
+            [
+              ['auction-items'],
+              ['items'],
+              ['shippings'],
+              ['records'],
+              ['/reports/records'],
+              ['/reports/records/summary'],
+              ['reports'],
+              ['wallets'],
+              ['bonus'],
+            ],
+            () => AuctionItemConsignorFeePaid({ auctionId: pickedItemIds })
           );
 
           if (res.error) {

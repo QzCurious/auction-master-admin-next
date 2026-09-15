@@ -163,16 +163,28 @@ function ReturnItemsForm() {
         component="form"
         sx={{ width: '100%', height: '100%', bgcolor: 'background.paper' }}
         onSubmit={handleSubmit(async (data) => {
-          const res = await runApiMutation('ItemReturning', () =>
-            ItemReturning({
-              shipmentType: SHIPMENT_TYPE.enum('AddressShipmentType'),
-              address: data.address,
-              phone: data.phone,
-              recipientName: data.recipientName,
-              itemId: pickedItemIds,
-              consignorId: Number(searchParams.get('consignorId')),
-              shippingCosts: shippingCostsWithinJapan,
-            })
+          const res = await runApiMutation(
+            [
+              ['items'],
+              ['auction-items'],
+              ['shippings'],
+              ['records'],
+              ['/reports/records'],
+              ['/reports/records/summary'],
+              ['reports'],
+              ['wallets'],
+              ['bonus'],
+            ],
+            () =>
+              ItemReturning({
+                shipmentType: SHIPMENT_TYPE.enum('AddressShipmentType'),
+                address: data.address,
+                phone: data.phone,
+                recipientName: data.recipientName,
+                itemId: pickedItemIds,
+                consignorId: Number(searchParams.get('consignorId')),
+                shippingCosts: shippingCostsWithinJapan,
+              })
           );
 
           if (res.error) {

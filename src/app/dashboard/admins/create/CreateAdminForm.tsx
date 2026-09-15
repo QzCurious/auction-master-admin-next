@@ -75,7 +75,7 @@ export default function CreateAdminForm({ roles }: CreateAdminFromProps) {
     <form
       onSubmit={handleSubmit(
         async (data) => {
-          const createAdminRes = await runApiMutation('CreateAdmin', () =>
+          const createAdminRes = await runApiMutation([['admins']], () =>
             CreateAdmin({
               account: data.account,
               password: data.password,
@@ -87,7 +87,7 @@ export default function CreateAdminForm({ roles }: CreateAdminFromProps) {
             return;
           }
           if (havePermissions(['AddRoleForAdmin']) && data.roles.length) {
-            const addRolesToAdminRes = await runApiMutation('AddRoleForAdmin', () =>
+            const addRolesToAdminRes = await runApiMutation([['admins']], () =>
               AddRoleForAdmin(data.account, { role: data.roles })
             );
             if (addRolesToAdminRes.error) {

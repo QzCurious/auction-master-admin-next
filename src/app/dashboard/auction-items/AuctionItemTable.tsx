@@ -166,8 +166,19 @@ export function AuctionItemTable({ rows, rowsPerPage, page, count }: AuctionItem
                                     {...bindPopover(popupState)}
                                     title="取消日拍競標商品"
                                     onConfirm={async () => {
-                                      const res = await runApiMutation('CancelAuctionItem', () =>
-                                        CancelAuctionItem(row.auctionId)
+                                      const res = await runApiMutation(
+                                        [
+                                          ['auction-items'],
+                                          ['items'],
+                                          ['shippings'],
+                                          ['records'],
+                                          ['/reports/records'],
+                                          ['/reports/records/summary'],
+                                          ['reports'],
+                                          ['wallets'],
+                                          ['bonus'],
+                                        ],
+                                        () => CancelAuctionItem(row.auctionId)
                                       );
                                       if (res.error) {
                                         handleApiError(res.error);
@@ -210,8 +221,19 @@ export function AuctionItemTable({ rows, rowsPerPage, page, count }: AuctionItem
                                   {...bindPopover(popupState)}
                                   title="刪除日拍競標商品"
                                   onConfirm={async () => {
-                                    const res = await runApiMutation('DeleteAuctionItem', () =>
-                                      DeleteAuctionItem(row.auctionId)
+                                    const res = await runApiMutation(
+                                      [
+                                        ['auction-items'],
+                                        ['items'],
+                                        ['shippings'],
+                                        ['records'],
+                                        ['/reports/records'],
+                                        ['/reports/records/summary'],
+                                        ['reports'],
+                                        ['wallets'],
+                                        ['bonus'],
+                                      ],
+                                      () => DeleteAuctionItem(row.auctionId)
                                     );
                                     if (res.error) {
                                       handleApiError(res.error);

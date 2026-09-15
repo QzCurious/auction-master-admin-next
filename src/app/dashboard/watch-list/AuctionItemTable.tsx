@@ -270,10 +270,22 @@ function EditDialog({ row }: { row: AuctionItem }) {
               const dirtyValues = getDirtyFields(data, dirtyFields);
               if (Object.keys(dirtyValues).length === 0) return;
 
-              const res = await runApiMutation('UpdateAuctionItem', () =>
-                UpdateAuctionItem(row.auctionId, {
-                  ...dirtyValues,
-                })
+              const res = await runApiMutation(
+                [
+                  ['auction-items'],
+                  ['items'],
+                  ['shippings'],
+                  ['records'],
+                  ['/reports/records'],
+                  ['/reports/records/summary'],
+                  ['reports'],
+                  ['wallets'],
+                  ['bonus'],
+                ],
+                () =>
+                  UpdateAuctionItem(row.auctionId, {
+                    ...dirtyValues,
+                  })
               );
 
               if (res.error) {

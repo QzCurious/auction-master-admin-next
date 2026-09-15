@@ -164,13 +164,25 @@ function ShippingForm() {
       component="form"
       sx={{ width: '100%', height: '100%', bgcolor: 'background.paper' }}
       onSubmit={handleSubmit(async (data) => {
-        const res = await runApiMutation('ShippingAuctionItem', () =>
-          ShippingAuctionItem({
-            ...data,
-            shipmentType: SHIPMENT_TYPE.enum('AddressShipmentType'),
-            auctionIds: pickedItemIds,
-            // shippingCostsWithinJapan: R.sum(data.shippingCostsWithinJapan),
-          })
+        const res = await runApiMutation(
+          [
+            ['auction-items'],
+            ['items'],
+            ['shippings'],
+            ['records'],
+            ['/reports/records'],
+            ['/reports/records/summary'],
+            ['reports'],
+            ['wallets'],
+            ['bonus'],
+          ],
+          () =>
+            ShippingAuctionItem({
+              ...data,
+              shipmentType: SHIPMENT_TYPE.enum('AddressShipmentType'),
+              auctionIds: pickedItemIds,
+              // shippingCostsWithinJapan: R.sum(data.shippingCostsWithinJapan),
+            })
         );
 
         if (res.error) {

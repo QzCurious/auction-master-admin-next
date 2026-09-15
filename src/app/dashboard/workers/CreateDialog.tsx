@@ -61,7 +61,7 @@ export default function CreateDialog() {
       <Dialog open={open} onClose={() => setOpen(false)} closeAfterTransition>
         <form
           onSubmit={handleSubmit(async (data) => {
-            const res = await runApiMutation('CreateWorker', () => CreateWorker({ ...data }));
+            const res = await runApiMutation([['workers'], ['GetWorkers']], () => CreateWorker({ ...data }));
             if (res.error) {
               handleApiError(res.error);
               return;

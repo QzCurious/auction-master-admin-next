@@ -117,12 +117,24 @@ export function EditShippingForm({ shipping }: EditShippingFromProps) {
             return;
           }
 
-          const res = await runApiMutation('UpdateShipping', () =>
-            UpdateShipping(shipping.id, {
-              ...dirtyValues,
-              internationalShippingCosts:
-                dirtyValues.internationalShippingCosts === '' ? undefined : dirtyValues.internationalShippingCosts,
-            })
+          const res = await runApiMutation(
+            [
+              ['shippings'],
+              ['items'],
+              ['auction-items'],
+              ['records'],
+              ['/reports/records'],
+              ['/reports/records/summary'],
+              ['reports'],
+              ['wallets'],
+              ['bonus'],
+            ],
+            () =>
+              UpdateShipping(shipping.id, {
+                ...dirtyValues,
+                internationalShippingCosts:
+                  dirtyValues.internationalShippingCosts === '' ? undefined : dirtyValues.internationalShippingCosts,
+              })
           );
 
           if (res.error) {

@@ -85,7 +85,9 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
                                     title="刪除角色"
                                     description={`您確定要刪除 ${row.role} 嗎?`}
                                     onConfirm={async () => {
-                                      const res = await runApiMutation('DeleteRole', () => DeleteRole(row.role));
+                                      const res = await runApiMutation([['roles'], ['admins']], () =>
+                                        DeleteRole(row.role)
+                                      );
                                       if (res.error) {
                                         handleApiError(res.error);
                                         return;

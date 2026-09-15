@@ -225,7 +225,7 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
             color="error"
             onClick={() => {
               startTransition(async () => {
-                const res = await runApiMutation('HandleConsignorVerification', () =>
+                const res = await runApiMutation([['consignorsVerifications'], ['consignors'], ['consignor']], () =>
                   HandleConsignorVerification(consignorVerification.id, 'reject')
                 );
                 if (res.error) {
@@ -246,7 +246,7 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
             color="primary"
             onClick={() => {
               startTransition(async () => {
-                const res = await runApiMutation('HandleConsignorVerification', () =>
+                const res = await runApiMutation([['consignorsVerifications'], ['consignors'], ['consignor']], () =>
                   HandleConsignorVerification(consignorVerification.id, 'approve')
                 );
                 if (res.error) {

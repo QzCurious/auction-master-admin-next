@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import { test } from 'node:test';
 
 import React from 'react';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider, QueryObserver } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
 import { createQueryClient } from '../src/domain/data/queryClient';
@@ -31,7 +31,7 @@ void test('real mutation hook keeps failures out of success cache and refreshes 
   const hook = renderHook(() => useRunApiMutation(), { wrapper });
   client.setQueryData(['GetWorkers', { type: 'seller' }], { data: [] });
   await act(async () => {
-    const result = await hook.result.current('DeleteWorker', async () => ({
+    const result = await hook.result.current([['GetWorkers']], async () => ({
       data: null,
       error: { code: '1100', type: 'toast' as const, message: '查無 worker id' },
     }));
@@ -40,10 +40,37 @@ void test('real mutation hook keeps failures out of success cache and refreshes 
   assert.equal(client.getMutationCache().getAll().at(-1)?.state.status, 'error');
   assert.equal(client.getQueryState(['GetWorkers', { type: 'seller' }])?.isInvalidated, false);
   await act(async () => {
-    await hook.result.current('UpdateWorker', async () => ({ data: 'ok', error: undefined }));
+    await hook.result.current([['GetWorkers']], async () => ({ data: 'ok', error: undefined }));
   });
   assert.equal(client.getMutationCache().getAll().at(-1)?.state.status, 'success');
   assert.equal(client.getQueryState(['GetWorkers', { type: 'seller' }])?.isInvalidated, true);
+
+  const recordKey = ['/reports/records', { offset: 20 }];
+  const summaryKey = ['/reports/records/summary'];
+  client.setQueryData(recordKey, 'old records');
+  client.setQueryData(summaryKey, 'old summary');
+  client.setQueryData(['items', 42], 'unrelated');
+  let reads = 0;
+  const observer = new QueryObserver(client, {
+    queryKey: recordKey,
+    queryFn: async () => {
+      reads++;
+      return 'fresh records';
+    },
+    staleTime: Infinity,
+  });
+  const unsubscribe = observer.subscribe(() => {});
+  await act(async () => {
+    await hook.result.current([['/reports/records'], ['/reports/records/summary']], async () => ({
+      data: 'ok',
+      error: undefined,
+    }));
+  });
+  assert.equal(reads, 1);
+  assert.equal(client.getQueryData(recordKey), 'fresh records');
+  assert.equal(client.getQueryState(summaryKey)?.isInvalidated, true);
+  assert.equal(client.getQueryState(['items', 42])?.isInvalidated, false);
+  unsubscribe();
 
   const form = renderHook(
     ({ name, remark }) => {

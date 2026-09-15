@@ -66,7 +66,7 @@ export default function CreateRoleForm({ permissionGroups }: CreateRoleFromProps
     <FormProvider {...formMethods}>
       <FormSubmissionWithDirtyFields<z.output<typeof FormSchema>>
         onValid={async (data) => {
-          const createRoleRes = await runApiMutation('CreateRole', () =>
+          const createRoleRes = await runApiMutation([['roles'], ['admins']], () =>
             CreateRole({
               role: data.role,
               description: data.description,
@@ -78,7 +78,7 @@ export default function CreateRoleForm({ permissionGroups }: CreateRoleFromProps
           }
 
           if (havePermissions(['AddPermissionForRole'])) {
-            const addPermissionsForRoleRes = await runApiMutation('AddPermissionForRole', () =>
+            const addPermissionsForRoleRes = await runApiMutation([['roles'], ['admins']], () =>
               AddPermissionForRole({
                 role: data.role,
                 permissions: R.pipe(

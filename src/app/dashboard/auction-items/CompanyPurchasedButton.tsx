@@ -27,7 +27,20 @@ export default function CompanyPurchasedButton({ auctionItem }: { auctionItem: A
         {...bindPopover(popupState)}
         title="確認公司買回"
         onConfirm={async () => {
-          const res = await runApiMutation('CompanyPurchased', () => CompanyPurchased(auctionItem.auctionId));
+          const res = await runApiMutation(
+            [
+              ['auction-items'],
+              ['items'],
+              ['shippings'],
+              ['records'],
+              ['/reports/records'],
+              ['/reports/records/summary'],
+              ['reports'],
+              ['wallets'],
+              ['bonus'],
+            ],
+            () => CompanyPurchased(auctionItem.auctionId)
+          );
           if (res.error) {
             handleApiError(res.error);
             return;

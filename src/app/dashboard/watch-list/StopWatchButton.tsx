@@ -21,7 +21,7 @@ export default function StopWatchButton({ auctionItem }: { auctionItem: AuctionI
         size="small"
         variant="outlined"
         onClick={async () => {
-          const res = await runApiMutation('ToggleActivateAuctionItem', () =>
+          const res = await runApiMutation([['items'], ['auction-items']], () =>
             ToggleActivateAuctionItem(auctionItem.auctionId, AUCTION_ITEM_STATUS.enum('InitStatus'))
           );
           if (res.error) {
@@ -43,7 +43,7 @@ export default function StopWatchButton({ auctionItem }: { auctionItem: AuctionI
       size="small"
       variant="outlined"
       onClick={async () => {
-        const res = await runApiMutation('ToggleActivateAuctionItem', () =>
+        const res = await runApiMutation([['items'], ['auction-items']], () =>
           ToggleActivateAuctionItem(auctionItem.auctionId, AUCTION_ITEM_STATUS.enum('StopBiddingStatus'))
         );
         if (res.error) {

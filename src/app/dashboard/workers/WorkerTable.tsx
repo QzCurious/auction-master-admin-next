@@ -158,7 +158,7 @@ function StatusSwitch({ row }: { row: Worker }) {
       size="small"
       onChange={(e) => {
         startTransition(async () => {
-          const mutationResult = await runApiMutation('ToggleActivateWorker', () =>
+          const mutationResult = await runApiMutation([['workers'], ['GetWorkers']], () =>
             ToggleActivateWorker(row.id, {
               status: e.target.checked
                 ? WORKER_STATUS.enum('ActiveStatus')
@@ -185,7 +185,7 @@ function StatusSelect({ row }: { row: Worker }) {
       size="small"
       onChange={(e) => {
         startTransition(async () => {
-          const mutationResult = await runApiMutation('ToggleActivateWorker', () =>
+          const mutationResult = await runApiMutation([['workers'], ['GetWorkers']], () =>
             ToggleActivateWorker(row.id, {
               status: Number(e.target.value),
             })
@@ -243,7 +243,9 @@ function CookieInputPopover({ row }: { row: Worker }) {
           component="form"
           sx={{ p: '16px 20px' }}
           onSubmit={handleSubmit(async (data) => {
-            const res = await runApiMutation('SetWorkerCookie', () => SetWorkerCookie(row.id, data.cookies));
+            const res = await runApiMutation([['workers'], ['GetWorkers']], () =>
+              SetWorkerCookie(row.id, data.cookies)
+            );
             if (res.error) {
               handleApiError(res.error);
               return;

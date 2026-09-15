@@ -180,8 +180,19 @@ export function ShippingsTable({ page, rowsPerPage, configs, query, rows, count 
                                 {...bindPopover(popupState)}
                                 title="標示為理貨中"
                                 onConfirm={async () => {
-                                  const res = await runApiMutation('ProcessingShipping', () =>
-                                    ProcessingShipping(row.id)
+                                  const res = await runApiMutation(
+                                    [
+                                      ['shippings'],
+                                      ['items'],
+                                      ['auction-items'],
+                                      ['records'],
+                                      ['/reports/records'],
+                                      ['/reports/records/summary'],
+                                      ['reports'],
+                                      ['wallets'],
+                                      ['bonus'],
+                                    ],
+                                    () => ProcessingShipping(row.id)
                                   );
                                   if (res.error) {
                                     handleApiError(res.error);
@@ -328,16 +339,28 @@ function ShippedPopover({ row }: { row: Shipping }) {
                     return;
                   }
 
-                  const res = await runApiMutation('Shipped', () =>
-                    Shipped(
-                      row.id,
-                      row.actionType === ACTION_TYPE.enum('YahooDispatchActionType')
-                        ? {
-                            internationalShippingCosts: data.internationalShippingCosts,
-                            shipmentTrackingNumber: data.shipmentTrackingNumber,
-                          }
-                        : { shipmentTrackingNumber: data.shipmentTrackingNumber }
-                    )
+                  const res = await runApiMutation(
+                    [
+                      ['shippings'],
+                      ['items'],
+                      ['auction-items'],
+                      ['records'],
+                      ['/reports/records'],
+                      ['/reports/records/summary'],
+                      ['reports'],
+                      ['wallets'],
+                      ['bonus'],
+                    ],
+                    () =>
+                      Shipped(
+                        row.id,
+                        row.actionType === ACTION_TYPE.enum('YahooDispatchActionType')
+                          ? {
+                              internationalShippingCosts: data.internationalShippingCosts,
+                              shipmentTrackingNumber: data.shipmentTrackingNumber,
+                            }
+                          : { shipmentTrackingNumber: data.shipmentTrackingNumber }
+                      )
                   );
 
                   if (res.error) {
@@ -489,7 +512,20 @@ function ShippingClosedPopover({ row }: { row: Shipping }) {
               component="form"
               sx={{ p: '16px 20px' }}
               onSubmit={handleSubmit(async (data) => {
-                const res = await runApiMutation('ShippingClosed', () => ShippingClosed(row.id, data));
+                const res = await runApiMutation(
+                  [
+                    ['shippings'],
+                    ['items'],
+                    ['auction-items'],
+                    ['records'],
+                    ['/reports/records'],
+                    ['/reports/records/summary'],
+                    ['reports'],
+                    ['wallets'],
+                    ['bonus'],
+                  ],
+                  () => ShippingClosed(row.id, data)
+                );
                 if (res.error) {
                   handleApiError(res.error);
                   return;

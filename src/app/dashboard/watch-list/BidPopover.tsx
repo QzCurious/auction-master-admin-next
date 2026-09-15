@@ -89,7 +89,7 @@ function BidPopoverContent({ auctionItem }: { auctionItem: AuctionItem }) {
       <form
         noValidate
         onSubmit={handleSubmit(async (data) => {
-          const res = await runApiMutation('BidAuctionItem', () =>
+          const res = await runApiMutation([['items'], ['auction-items']], () =>
             BidAuctionItem(auctionItem.auctionId, {
               price: data.price,
             })

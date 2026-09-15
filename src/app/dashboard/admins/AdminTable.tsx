@@ -145,7 +145,7 @@ function DeleteBtn({ row }: { row: Admin }) {
         title="刪除管理員"
         description={`您確定要刪除 ${row.account} 嗎?`}
         onConfirm={async () => {
-          const mutationResult = await runApiMutation('DeleteAdmin', () => DeleteAdmin(row.id));
+          const mutationResult = await runApiMutation([['admins']], () => DeleteAdmin(row.id));
           if (mutationResult.error) {
             handleMutationError(mutationResult.error);
             return;

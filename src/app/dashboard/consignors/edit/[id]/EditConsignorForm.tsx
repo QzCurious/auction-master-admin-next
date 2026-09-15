@@ -130,7 +130,10 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
         const dirtyValues = getDirtyFields(fixedData, dirtyFields);
         if (Object.keys(dirtyValues).length === 0) return;
 
-        const res = await runApiMutation('AdminUpdateConsignor', () => AdminUpdateConsignor(consignor.id, dirtyValues));
+        const res = await runApiMutation(
+          [['consignors'], ['consignor'], ['items'], ['auction-items'], ['shippings']],
+          () => AdminUpdateConsignor(consignor.id, dirtyValues)
+        );
         if (res.error) {
           handleApiError(res.error);
           return;

@@ -121,10 +121,22 @@ export function EditAuctionItemForm({
           const dirtyValues = getDirtyFields(data, dirtyFields);
           if (Object.keys(dirtyValues).length === 0) return;
 
-          const res = await runApiMutation('UpdateAuctionItem', () =>
-            UpdateAuctionItem(auctionItem.auctionId, {
-              ...dirtyValues,
-            })
+          const res = await runApiMutation(
+            [
+              ['auction-items'],
+              ['items'],
+              ['shippings'],
+              ['records'],
+              ['/reports/records'],
+              ['/reports/records/summary'],
+              ['reports'],
+              ['wallets'],
+              ['bonus'],
+            ],
+            () =>
+              UpdateAuctionItem(auctionItem.auctionId, {
+                ...dirtyValues,
+              })
           );
 
           if (res.error) {

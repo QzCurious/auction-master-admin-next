@@ -91,7 +91,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
         if (side === 'right' && ontoI + 1 === i) return;
 
         startTransition(async () => {
-          const mutationResult = await runApiMutation('AdminReorderItemPhoto', () =>
+          const mutationResult = await runApiMutation([['items'], ['auction-items']], () =>
             AdminReorderItemPhoto(item.id, {
               originalSorted: i + 1,
               newSorted: ontoI + 1,
@@ -173,7 +173,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
               formData.append('sorted', `${i + item.photos.length + 1}`);
             }
             startTransition(async () => {
-              const mutationResult = await runApiMutation('AdminUpsertItemPhoto', () =>
+              const mutationResult = await runApiMutation([['items'], ['auction-items']], () =>
                 AdminUpsertItemPhoto(item.id, formData)
               );
               if (mutationResult.error) {
@@ -255,7 +255,7 @@ export default function PhotoListSection({ item }: { item: Item }) {
                             onClick={() => {
                               startTransition(async () => {
                                 field.value instanceof File && revokeUrl(field.value);
-                                const mutationResult = await runApiMutation('AdminDeleteItemPhoto', () =>
+                                const mutationResult = await runApiMutation([['items'], ['auction-items']], () =>
                                   AdminDeleteItemPhoto(item.id, i + 1)
                                 );
                                 if (mutationResult.error) {

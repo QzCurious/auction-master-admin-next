@@ -83,7 +83,7 @@ export default function EditAdminForm({ admin, roles }: EditAdminFromProps) {
           const res = await Promise.all([
             (dirtyFields.status || dirtyFields.password) &&
               havePermissions(['UpdateAdmin']) &&
-              runApiMutation('UpdateAdmin', () =>
+              runApiMutation([['admins']], () =>
                 UpdateAdmin(admin.id, {
                   status: dirtyFields.status ? (data.status ?? admin.status) : undefined,
                   password: dirtyFields.password ? data.password : undefined,
@@ -91,12 +91,10 @@ export default function EditAdminForm({ admin, roles }: EditAdminFromProps) {
               ),
             addPermissions &&
               addPermissions.length &&
-              runApiMutation('AddRoleForAdmin', () => AddRoleForAdmin(admin.account, { role: addPermissions })),
+              runApiMutation([['admins']], () => AddRoleForAdmin(admin.account, { role: addPermissions })),
             deletedPermissions &&
               deletedPermissions.length &&
-              runApiMutation('DeleteRoleForAdmin', () =>
-                DeleteRoleForAdmin(admin.account, { role: deletedPermissions })
-              ),
+              runApiMutation([['admins']], () => DeleteRoleForAdmin(admin.account, { role: deletedPermissions })),
           ]);
           const errors = res.filter((x) => !!x && !!x.error).map((res) => res.error);
           if (errors.length) {

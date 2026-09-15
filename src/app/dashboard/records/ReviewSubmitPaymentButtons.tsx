@@ -29,8 +29,9 @@ function ApprovePaymentButton({ recordId }: { recordId: Record['id'] }) {
         title="確認付款完成"
         description="將此交易標示為已付款"
         onConfirm={async () => {
-          const res = await runApiMutation('RecordPaymentReview', () =>
-            RecordPaymentReview(recordId, { action: 'approve' })
+          const res = await runApiMutation(
+            [['records'], ['/reports/records'], ['/reports/records/summary'], ['reports'], ['wallets'], ['bonus']],
+            () => RecordPaymentReview(recordId, { action: 'approve' })
           );
           if (res.error) {
             handleApiError(res.error);
@@ -63,8 +64,9 @@ function RejectPaymentButton({ recordId }: { recordId: Record['id'] }) {
         title="取消付款"
         description="將此交易標示為取消付款"
         onConfirm={async () => {
-          const res = await runApiMutation('RecordPaymentReview', () =>
-            RecordPaymentReview(recordId, { action: 'reject' })
+          const res = await runApiMutation(
+            [['records'], ['/reports/records'], ['/reports/records/summary'], ['reports'], ['wallets'], ['bonus']],
+            () => RecordPaymentReview(recordId, { action: 'reject' })
           );
           if (res.error) {
             handleApiError(res.error);
