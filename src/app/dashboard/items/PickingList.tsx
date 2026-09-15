@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
+import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetails.query';
+import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign, DATE_FORMAT } from '@/domain/static/static';
-import { GetItemAndDetailQueryOptions } from '@/query/backend/items/GetItemAndDetail.query';
-import { GetConfigsQueryOptions } from '@/query/GetConfigs.query';
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Skeleton, Typography } from '@mui/material';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';

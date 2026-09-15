@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { type Report } from '@/api/backend/reports/GetReports';
+import { GetReportsQueryOptions } from '@/api/backend/reports/GetReports.query';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { currencySign, DATE_FORMAT } from '@/domain/static/static';
-import { GetReportsQueryOptions } from '@/query/backend/reports/GetReports.query';
 import { type GetReports } from '@/server-action/backend/reports/GetReports';
 import { Card, CardContent, CircularProgress, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Box, Stack } from '@mui/system';

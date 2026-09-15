@@ -65,7 +65,7 @@ async function sourceGraph() {
 void test('all 70 API operations exist at their original hierarchy and load without request context', async () => {
   const actual = (await sourceFiles('src/api'))
     .map((file) => path.relative('src/api', file))
-    .filter((file) => file !== 'core/static.ts')
+    .filter((file) => file !== 'core/static.ts' && !file.endsWith('.query.ts'))
     .sort();
   assert.deepEqual(
     actual,
@@ -84,12 +84,13 @@ void test('all 70 API operations exist at their original hierarchy and load with
   assert.ok(!Object.keys(config.compilerOptions.paths).some((alias) => alias.startsWith('$api')));
 });
 
-void test('the entire API dependency graph excludes framework, session, environment, and presentation adapters', async () => {
+void test('HTTP operation dependencies exclude framework, query, session, and presentation adapters', async () => {
   const graph = await sourceGraph();
   const visited = new Set<string>();
   function visit(file: string) {
     if (visited.has(file)) return;
     visited.add(file);
+    assert.ok(!file.endsWith('.query.ts'), `HTTP operations must not import query adapters: ${file}`);
     const source = graph.sources.get(file)!;
     assert.doesNotMatch(
       source,
@@ -121,7 +122,7 @@ void test('the entire API dependency graph excludes framework, session, environm
     }
     inspect(graph.parsed.get(file)!);
   }
-  for (const file of graph.sources.keys()) if (file.startsWith('src/api/')) visit(file);
+  for (const file of graph.sources.keys()) if (file.startsWith('src/api/') && !file.endsWith('.query.ts')) visit(file);
 });
 
 void test('browser dependency graphs reach Server Actions instead of raw HTTP operations', async () => {
@@ -132,7 +133,10 @@ void test('browser dependency graphs reach Server Actions instead of raw HTTP op
     visited.add(file);
     const source = graph.sources.get(file)!;
     if (/['"]use server['"]/.test(source)) return; // Next.js replaces this module with a remote action reference.
-    assert.ok(!file.startsWith('src/api/'), `browser runtime must call a Server Action: ${file}`);
+    assert.ok(
+      !file.startsWith('src/api/') || file.endsWith('.query.ts'),
+      `browser runtime must call a Server Action: ${file}`
+    );
     assert.ok(!file.startsWith('src/server/'), `browser runtime must not import server infrastructure: ${file}`);
     for (const specifier of graph.imports(file, true)) {
       const dependency = graph.resolve(file, specifier);
@@ -140,6 +144,11 @@ void test('browser dependency graphs reach Server Actions instead of raw HTTP op
     }
   }
   for (const [file, source] of graph.sources) if (/['"]use client['"]/.test(source)) visit(file);
+  for (const file of await sourceFiles('src/api')) {
+    if (!file.endsWith('.query.ts')) continue;
+    assert.ok(graph.sources.has(file.replace('.query.ts', '.ts')), `query options must sit beside their API: ${file}`);
+    visit(file);
+  }
   for (const file of await sourceFiles('src/server-action')) {
     assert.match(graph.sources.get(file)!, /^['"]use server['"];/, file);
     const api = file.replace('src/server-action/', 'src/api/');

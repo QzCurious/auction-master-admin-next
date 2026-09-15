@@ -2,8 +2,8 @@
 
 import { useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { GetAuctionItemQueryOptions } from '@/api/backend/auction-items/GetAuctionItem.query';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
-import { GetAuctionItemQueryOptions } from '@/query/backend/auction-items/GetAuctionItem.query';
 import { AuctionItemConsignorFeePaid } from '@/server-action/backend/auction-items/AuctionItemConsignorFeePaid';
 import { Button, Drawer, Stack, Typography } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';

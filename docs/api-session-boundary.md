@@ -6,14 +6,16 @@ Related to #4, #5, and #6. PR #11 established the session boundary; delivery PR 
 
 ```text
 src/
-  api/                             # Framework-independent HTTP operations and contracts
+  api/                             # HTTP operations with adjacent query-option adapters
     AdminLogin.ts
     AdminRefreshToken.ts
     GetConfigs.ts
+    GetConfigs.query.ts             # TanStack adapter calling its Server Action
     GetJPYRates.ts
     backend/
       items/AdminUpdateItem.ts
       items/GetItemsAndDetails.ts
+      items/GetItemAndDetails.query.ts
       shippings/ExportShippings.ts
       ...                          # Original resource hierarchy and function names
     core/static.ts                 # Response envelopes and pure validation helper
@@ -21,11 +23,6 @@ src/
   server-action/                   # Browser-callable Next.js wrappers, mirroring API paths
     AdminLogin.ts
     backend/items/AdminUpdateItem.ts
-    ...
-
-  query/                           # Existing TanStack Query adapters and query keys
-    GetConfigs.query.ts
-    backend/items/GetItemAndDetail.query.ts
     ...
 
   server/
@@ -118,3 +115,5 @@ npm run test:api:next
 The HTTP smoke test runs the built Next.js app on port 16008 with a synthetic upstream on 16009. It covers middleware forwarding, rendering fallback, refresh-route persistence, loop protection, local destinations, permission denial versus outage, binary export with reactive refresh, login/logout, and credential non-disclosure.
 
 The tests do not contact the deployed backend. Deployed screen verification, concurrent refresh reuse/rotation semantics, and backend mutation rejection ordering remain unverified. Keep those acceptance checks visible in #4/#5. Data invalidation/query-error/polling redesign remains #6 / delivery PR 3; the React Router migration remains separate.
+
+Query options are colocated as `*.query.ts` beside the corresponding HTTP operation. They keep existing query keys and call Server Actions. Raw HTTP operations remain framework-independent and must not import query adapters; client runtime graphs may import query adapters but cannot reach raw HTTP operations.
