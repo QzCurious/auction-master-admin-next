@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { type Item } from '@/api/backend/items/GetItemAndDetails';
+import { useHandleApiError as useHandleMutationError } from '@/domain/api/HandleApiError';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useObjectURL } from '@/helper/useObjectURL';
 import { AdminDeleteItemPhoto } from '@/server-action/backend/items/AdminDeleteItemPhoto';
@@ -35,6 +37,8 @@ const PhotoListSchema = z.object({
 });
 
 export default function PhotoListSection({ item }: { item: Item }) {
+  const handleMutationError = useHandleMutationError();
+  const runApiMutation = useRunApiMutation();
   const LIMIT = 10;
   const theme = useTheme();
   const { control } = useForm<z.input<typeof PhotoListSchema>>({
@@ -87,10 +91,16 @@ export default function PhotoListSection({ item }: { item: Item }) {
         if (side === 'right' && ontoI + 1 === i) return;
 
         startTransition(async () => {
-          await AdminReorderItemPhoto(item.id, {
-            originalSorted: i + 1,
-            newSorted: ontoI + 1,
-          });
+          const mutationResult = await runApiMutation('AdminReorderItemPhoto', () =>
+            AdminReorderItemPhoto(item.id, {
+              originalSorted: i + 1,
+              newSorted: ontoI + 1,
+            })
+          );
+          if (mutationResult.error) {
+            handleMutationError(mutationResult.error);
+            return;
+          }
           move(i, ontoI);
         });
       }
@@ -163,7 +173,12 @@ export default function PhotoListSection({ item }: { item: Item }) {
               formData.append('sorted', `${i + item.photos.length + 1}`);
             }
             startTransition(async () => {
-              await AdminUpsertItemPhoto(item.id, formData);
+              const mutationResult = await runApiMutation('AdminUpsertItemPhoto', () =>
+                AdminUpsertItemPhoto(item.id, formData)
+              );
+              if (mutationResult.error) {
+                handleMutationError(mutationResult.error);
+              }
               // for (const f of Array.from(files)) {
               //   append(f);
               // }
@@ -240,7 +255,13 @@ export default function PhotoListSection({ item }: { item: Item }) {
                             onClick={() => {
                               startTransition(async () => {
                                 field.value instanceof File && revokeUrl(field.value);
-                                await AdminDeleteItemPhoto(item.id, i + 1);
+                                const mutationResult = await runApiMutation('AdminDeleteItemPhoto', () =>
+                                  AdminDeleteItemPhoto(item.id, i + 1)
+                                );
+                                if (mutationResult.error) {
+                                  handleMutationError(mutationResult.error);
+                                  return;
+                                }
                                 remove(i);
                               });
                             }}

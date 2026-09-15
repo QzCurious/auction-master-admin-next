@@ -2,12 +2,14 @@
 
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { ToggleActivateAuctionItem } from '@/server-action/backend/auction-items/ToggleActivateAuctionItem';
 import { Button } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
 export default function StopWatchButton({ auctionItem }: { auctionItem: AuctionItem }) {
+  const runApiMutation = useRunApiMutation();
   const { enqueueSnackbar } = useSnackbar();
   const handleApiError = useHandleApiError();
 
@@ -19,7 +21,9 @@ export default function StopWatchButton({ auctionItem }: { auctionItem: AuctionI
         size="small"
         variant="outlined"
         onClick={async () => {
-          const res = await ToggleActivateAuctionItem(auctionItem.auctionId, AUCTION_ITEM_STATUS.enum('InitStatus'));
+          const res = await runApiMutation('ToggleActivateAuctionItem', () =>
+            ToggleActivateAuctionItem(auctionItem.auctionId, AUCTION_ITEM_STATUS.enum('InitStatus'))
+          );
           if (res.error) {
             handleApiError(res.error);
             return;
@@ -39,9 +43,8 @@ export default function StopWatchButton({ auctionItem }: { auctionItem: AuctionI
       size="small"
       variant="outlined"
       onClick={async () => {
-        const res = await ToggleActivateAuctionItem(
-          auctionItem.auctionId,
-          AUCTION_ITEM_STATUS.enum('StopBiddingStatus')
+        const res = await runApiMutation('ToggleActivateAuctionItem', () =>
+          ToggleActivateAuctionItem(auctionItem.auctionId, AUCTION_ITEM_STATUS.enum('StopBiddingStatus'))
         );
         if (res.error) {
           handleApiError(res.error);

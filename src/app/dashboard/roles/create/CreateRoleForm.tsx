@@ -4,6 +4,7 @@ import React, { useEffect, useReducer } from 'react';
 import { useRouter } from 'next/navigation';
 import { type Permission, type PermissionGroup } from '@/api/backend/rbac/GetPermissions';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { FormSubmissionWithDirtyFields } from '@/helper/FormSubmissionWithDirtyFields';
 import { AddPermissionForRole } from '@/server-action/backend/rbac/AddPermissionForRole';
@@ -38,8 +39,10 @@ const FormSchema = z.object({
 });
 
 export default function CreateRoleForm({ permissionGroups }: CreateRoleFromProps) {
+  const runApiMutation = useRunApiMutation();
   const router = useRouter();
   const formMethods = useForm<z.output<typeof FormSchema>>({
+    resetOptions: { keepDirtyValues: true },
     values: {
       role: '',
       description: '',
@@ -63,24 +66,28 @@ export default function CreateRoleForm({ permissionGroups }: CreateRoleFromProps
     <FormProvider {...formMethods}>
       <FormSubmissionWithDirtyFields<z.output<typeof FormSchema>>
         onValid={async (data) => {
-          const createRoleRes = await CreateRole({
-            role: data.role,
-            description: data.description,
-          });
+          const createRoleRes = await runApiMutation('CreateRole', () =>
+            CreateRole({
+              role: data.role,
+              description: data.description,
+            })
+          );
           if (createRoleRes.error) {
             handleApiError(createRoleRes.error);
             return;
           }
 
           if (havePermissions(['AddPermissionForRole'])) {
-            const addPermissionsForRoleRes = await AddPermissionForRole({
-              role: data.role,
-              permissions: R.pipe(
-                data.permissions,
-                R.entries(),
-                R.map(([k, v]) => ({ key: k, fields: v }))
-              ),
-            });
+            const addPermissionsForRoleRes = await runApiMutation('AddPermissionForRole', () =>
+              AddPermissionForRole({
+                role: data.role,
+                permissions: R.pipe(
+                  data.permissions,
+                  R.entries(),
+                  R.map(([k, v]) => ({ key: k, fields: v }))
+                ),
+              })
+            );
             if (addPermissionsForRoleRes.error) {
               handleApiError(addPermissionsForRoleRes.error);
               return;

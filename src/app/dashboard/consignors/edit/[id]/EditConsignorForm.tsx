@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { type Consignor } from '@/api/backend/consignor/AdminGetConsignors';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { database } from '@/domain/static/address.data';
@@ -84,6 +85,7 @@ const FormSchema = z
   });
 
 export default function EditConsignorForm({ consignor }: EditConsignorFromProps) {
+  const runApiMutation = useRunApiMutation();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>();
   const {
@@ -94,6 +96,7 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
     getValues,
     setValue,
   } = useForm<z.output<typeof FormSchema>>({
+    resetOptions: { keepDirtyValues: true },
     values: {
       password: '',
       confirmPassword: '',
@@ -127,7 +130,7 @@ export default function EditConsignorForm({ consignor }: EditConsignorFromProps)
         const dirtyValues = getDirtyFields(fixedData, dirtyFields);
         if (Object.keys(dirtyValues).length === 0) return;
 
-        const res = await AdminUpdateConsignor(consignor.id, dirtyValues);
+        const res = await runApiMutation('AdminUpdateConsignor', () => AdminUpdateConsignor(consignor.id, dirtyValues));
         if (res.error) {
           handleApiError(res.error);
           return;

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { WORKER_TYPE } from '@/domain/static/static-config-mappers';
 import { CreateWorker } from '@/server-action/backend/workers/CreateWorker';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,6 +31,7 @@ const Schema = z.object({
 });
 
 export default function CreateDialog() {
+  const runApiMutation = useRunApiMutation();
   const [open, setOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const handleApiError = useHandleApiError();
@@ -59,7 +61,7 @@ export default function CreateDialog() {
       <Dialog open={open} onClose={() => setOpen(false)} closeAfterTransition>
         <form
           onSubmit={handleSubmit(async (data) => {
-            const res = await CreateWorker({ ...data });
+            const res = await runApiMutation('CreateWorker', () => CreateWorker({ ...data }));
             if (res.error) {
               handleApiError(res.error);
               return;

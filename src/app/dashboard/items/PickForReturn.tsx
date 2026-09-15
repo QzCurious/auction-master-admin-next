@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { GetItemAndDetailQueryOptions } from '@/api/backend/items/GetItemAndDetails.query';
 import { GetConfigsQueryOptions } from '@/api/GetConfigs.query';
 import { HandleApiError, useHandleApiError } from '@/domain/api/HandleApiError';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { currencySign } from '@/domain/static/static';
 import { SHIPMENT_TYPE } from '@/domain/static/static-config-mappers';
 import { ItemReturning } from '@/server-action/backend/items/ItemReturning';
@@ -118,6 +119,7 @@ const Schema = z.object({
   phone: z.string().min(1, { message: '必填' }),
 });
 function ReturnItemsForm() {
+  const runApiMutation = useRunApiMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const pickedItemIds = useAtomValue(pickedItemIdsReducerAtom);
@@ -152,7 +154,7 @@ function ReturnItemsForm() {
     return <HandleApiError error={itemQueryError.data.error} />;
   }
 
-  const queries = itemQueries.filter((q) => !q.isError);
+  const queries = itemQueries;
   const shippingCostsWithinJapan = watch('shippingCostsWithinJapan');
 
   return (
@@ -161,15 +163,17 @@ function ReturnItemsForm() {
         component="form"
         sx={{ width: '100%', height: '100%', bgcolor: 'background.paper' }}
         onSubmit={handleSubmit(async (data) => {
-          const res = await ItemReturning({
-            shipmentType: SHIPMENT_TYPE.enum('AddressShipmentType'),
-            address: data.address,
-            phone: data.phone,
-            recipientName: data.recipientName,
-            itemId: pickedItemIds,
-            consignorId: Number(searchParams.get('consignorId')),
-            shippingCosts: shippingCostsWithinJapan,
-          });
+          const res = await runApiMutation('ItemReturning', () =>
+            ItemReturning({
+              shipmentType: SHIPMENT_TYPE.enum('AddressShipmentType'),
+              address: data.address,
+              phone: data.phone,
+              recipientName: data.recipientName,
+              itemId: pickedItemIds,
+              consignorId: Number(searchParams.get('consignorId')),
+              shippingCosts: shippingCostsWithinJapan,
+            })
+          );
 
           if (res.error) {
             handleApiError(res.error);
@@ -187,7 +191,7 @@ function ReturnItemsForm() {
         <List sx={{ flex: 1, overflow: 'auto' }}>
           {queries.map((item, i) => (
             <React.Fragment key={pickedItemIds[i]}>
-              {item.isPending ? <ListItemSkeleton /> : <PickedListItem item={item.data.data!} />}
+              {item.isPending || item.isError ? <ListItemSkeleton /> : <PickedListItem item={item.data.data!} />}
               {/* <Controller
                 control={control}
                 name={`shippingCostsWithinJapan.${i}`}
@@ -306,7 +310,11 @@ function ReturnItemsForm() {
               })()} */}
             </Typography>
 
-            <Button type="submit" variant="contained" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isSubmitting || itemQueries.some((query) => query.isPending || query.isError)}
+            >
               退貨
             </Button>
           </Stack>

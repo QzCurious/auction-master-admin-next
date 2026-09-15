@@ -2,6 +2,7 @@
 
 import { type Record } from '@/api/backend/reports/GetRecords';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { RecordPaymentReview } from '@/server-action/backend/reports/RecordPaymentReview';
 import { Button } from '@mui/material';
 import { Stack } from '@mui/system';
@@ -11,6 +12,7 @@ import { useSnackbar } from 'notistack';
 import DoubleCheckPopover from '@/components/DoubleCheckPopover';
 
 function ApprovePaymentButton({ recordId }: { recordId: Record['id'] }) {
+  const runApiMutation = useRunApiMutation();
   const popupState = usePopupState({
     variant: 'popover',
   });
@@ -27,7 +29,9 @@ function ApprovePaymentButton({ recordId }: { recordId: Record['id'] }) {
         title="確認付款完成"
         description="將此交易標示為已付款"
         onConfirm={async () => {
-          const res = await RecordPaymentReview(recordId, { action: 'approve' });
+          const res = await runApiMutation('RecordPaymentReview', () =>
+            RecordPaymentReview(recordId, { action: 'approve' })
+          );
           if (res.error) {
             handleApiError(res.error);
             return;
@@ -42,6 +46,7 @@ function ApprovePaymentButton({ recordId }: { recordId: Record['id'] }) {
 }
 
 function RejectPaymentButton({ recordId }: { recordId: Record['id'] }) {
+  const runApiMutation = useRunApiMutation();
   const popupState = usePopupState({
     variant: 'popover',
   });
@@ -58,7 +63,9 @@ function RejectPaymentButton({ recordId }: { recordId: Record['id'] }) {
         title="取消付款"
         description="將此交易標示為取消付款"
         onConfirm={async () => {
-          const res = await RecordPaymentReview(recordId, { action: 'reject' });
+          const res = await runApiMutation('RecordPaymentReview', () =>
+            RecordPaymentReview(recordId, { action: 'reject' })
+          );
           if (res.error) {
             handleApiError(res.error);
             return;

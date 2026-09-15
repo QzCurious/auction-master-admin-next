@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { type Role } from '@/api/backend/rbac/GetRoles';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { DeleteRole } from '@/server-action/backend/rbac/DeleteRole';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -31,6 +32,7 @@ interface CustomersTableProps {
 }
 
 export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
+  const runApiMutation = useRunApiMutation();
   const searchParams = useSearchParams();
   const { enqueueSnackbar } = useSnackbar();
   const handleApiError = useHandleApiError();
@@ -83,7 +85,7 @@ export function RoleTable({ rows }: CustomersTableProps): React.JSX.Element {
                                     title="刪除角色"
                                     description={`您確定要刪除 ${row.role} 嗎?`}
                                     onConfirm={async () => {
-                                      const res = await DeleteRole(row.role);
+                                      const res = await runApiMutation('DeleteRole', () => DeleteRole(row.role));
                                       if (res.error) {
                                         handleApiError(res.error);
                                         return;

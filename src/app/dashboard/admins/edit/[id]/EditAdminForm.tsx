@@ -6,6 +6,7 @@ import { type Admin } from '@/api/backend/admins/GetAdmin';
 import { type Role } from '@/api/backend/rbac/GetRoles';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { ADMIN_STATUS } from '@/domain/static/static-config-mappers';
@@ -46,6 +47,7 @@ const FormSchema = z
   });
 
 export default function EditAdminForm({ admin, roles }: EditAdminFromProps) {
+  const runApiMutation = useRunApiMutation();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>();
   const {
@@ -54,6 +56,7 @@ export default function EditAdminForm({ admin, roles }: EditAdminFromProps) {
     formState: { isSubmitting, dirtyFields, defaultValues },
     getValues,
   } = useForm<z.output<typeof FormSchema>>({
+    resetOptions: { keepDirtyValues: true },
     values: {
       ...admin,
       password: '',
@@ -80,14 +83,20 @@ export default function EditAdminForm({ admin, roles }: EditAdminFromProps) {
           const res = await Promise.all([
             (dirtyFields.status || dirtyFields.password) &&
               havePermissions(['UpdateAdmin']) &&
-              UpdateAdmin(admin.id, {
-                status: dirtyFields.status ? (data.status ?? admin.status) : undefined,
-                password: dirtyFields.password ? data.password : undefined,
-              }),
-            addPermissions && addPermissions.length && AddRoleForAdmin(admin.account, { role: addPermissions }),
+              runApiMutation('UpdateAdmin', () =>
+                UpdateAdmin(admin.id, {
+                  status: dirtyFields.status ? (data.status ?? admin.status) : undefined,
+                  password: dirtyFields.password ? data.password : undefined,
+                })
+              ),
+            addPermissions &&
+              addPermissions.length &&
+              runApiMutation('AddRoleForAdmin', () => AddRoleForAdmin(admin.account, { role: addPermissions })),
             deletedPermissions &&
               deletedPermissions.length &&
-              DeleteRoleForAdmin(admin.account, { role: deletedPermissions }),
+              runApiMutation('DeleteRoleForAdmin', () =>
+                DeleteRoleForAdmin(admin.account, { role: deletedPermissions })
+              ),
           ]);
           const errors = res.filter((x) => !!x && !!x.error).map((res) => res.error);
           if (errors.length) {

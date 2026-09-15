@@ -36,13 +36,17 @@ export function PickingList() {
     return <HandleApiError error={error.data.error} />;
   }
 
-  const queries = itemQueries.filter((q) => !q.isError);
+  const queries = itemQueries;
 
   return (
     <List sx={{ flex: 1, overflow: 'auto' }}>
       {queries.map((item, i) => (
         <React.Fragment key={pickedItemIds[i]}>
-          {item.isPending ? <ListItemSkeleton /> : !!item.data.data && <PickedListItem item={item.data.data} />}
+          {item.isPending || item.isError ? (
+            <ListItemSkeleton />
+          ) : (
+            !!item.data.data && <PickedListItem item={item.data.data} />
+          )}
           <Divider variant="inset" component="li" />
         </React.Fragment>
       ))}

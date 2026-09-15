@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { type AuctionItem } from '@/api/backend/auction-items/GetAuctionItems';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { letaoItemLink, yahooAuctionLink, type PaginationSearchParams } from '@/domain/static/static';
 import { AUCTION_ITEM_STATUS } from '@/domain/static/static-config-mappers';
@@ -43,6 +44,7 @@ interface AuctionItemTableProps extends PaginationSearchParams {
 }
 
 export function AuctionItemTable({ rows, rowsPerPage, page, count }: AuctionItemTableProps) {
+  const runApiMutation = useRunApiMutation();
   const searchParams = useSearchParams();
   const isPicking = searchParams.get('stage') === 'picking';
   const [pickedItemIds, dispatch] = useAtom(pickedItemIdsReducerAtom);
@@ -164,7 +166,9 @@ export function AuctionItemTable({ rows, rowsPerPage, page, count }: AuctionItem
                                     {...bindPopover(popupState)}
                                     title="取消日拍競標商品"
                                     onConfirm={async () => {
-                                      const res = await CancelAuctionItem(row.auctionId);
+                                      const res = await runApiMutation('CancelAuctionItem', () =>
+                                        CancelAuctionItem(row.auctionId)
+                                      );
                                       if (res.error) {
                                         handleApiError(res.error);
                                         return;
@@ -206,7 +210,9 @@ export function AuctionItemTable({ rows, rowsPerPage, page, count }: AuctionItem
                                   {...bindPopover(popupState)}
                                   title="刪除日拍競標商品"
                                   onConfirm={async () => {
-                                    const res = await DeleteAuctionItem(row.auctionId);
+                                    const res = await runApiMutation('DeleteAuctionItem', () =>
+                                      DeleteAuctionItem(row.auctionId)
+                                    );
                                     if (res.error) {
                                       handleApiError(res.error);
                                       return;

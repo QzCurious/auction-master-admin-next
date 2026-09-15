@@ -7,6 +7,7 @@ import { GetWorkersQueryOptions } from '@/api/backend/workers/GetWorkers.query';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import {
@@ -220,6 +221,7 @@ const FormSchema = z.object({
 });
 
 function EditDialog({ row }: { row: AuctionItem }) {
+  const runApiMutation = useRunApiMutation();
   const [open, setOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const havePermissions = useHavePermissions();
@@ -246,6 +248,7 @@ function EditDialog({ row }: { row: AuctionItem }) {
     handleSubmit,
     formState: { dirtyFields, isSubmitting },
   } = useForm<z.input<typeof FormSchema>>({
+    resetOptions: { keepDirtyValues: true },
     values: {
       sellerId: row.sellerId,
       watcherId: row.watcherId,
@@ -267,9 +270,11 @@ function EditDialog({ row }: { row: AuctionItem }) {
               const dirtyValues = getDirtyFields(data, dirtyFields);
               if (Object.keys(dirtyValues).length === 0) return;
 
-              const res = await UpdateAuctionItem(row.auctionId, {
-                ...dirtyValues,
-              });
+              const res = await runApiMutation('UpdateAuctionItem', () =>
+                UpdateAuctionItem(row.auctionId, {
+                  ...dirtyValues,
+                })
+              );
 
               if (res.error) {
                 handleApiError(res.error);

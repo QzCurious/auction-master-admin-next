@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { type Shipping } from '@/api/backend/shippings/GetShipping';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { getDirtyFields } from '@/domain/crud/getDirtyFields';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { useHavePermissions } from '@/domain/permission/useHavePermissions';
 import { currencySign } from '@/domain/static/static';
 import { ACTION_TYPE, SHIPMENT_TYPE, SHIPPING_STATUS } from '@/domain/static/static-config-mappers';
@@ -55,6 +56,7 @@ const FormSchema = z
 
 export function ShippingFormProvider({ shipping, children }: { shipping: Shipping; children: React.ReactNode }) {
   const form = useForm<z.input<typeof FormSchema>>({
+    resetOptions: { keepDirtyValues: true },
     values: {
       actionType: shipping.actionType,
       shipmentType: shipping.shipmentType,
@@ -77,6 +79,7 @@ export function ShippingFormProvider({ shipping, children }: { shipping: Shippin
 }
 
 export function EditShippingForm({ shipping }: EditShippingFromProps) {
+  const runApiMutation = useRunApiMutation();
   const router = useRouter();
   const {
     watch,
@@ -114,11 +117,13 @@ export function EditShippingForm({ shipping }: EditShippingFromProps) {
             return;
           }
 
-          const res = await UpdateShipping(shipping.id, {
-            ...dirtyValues,
-            internationalShippingCosts:
-              dirtyValues.internationalShippingCosts === '' ? undefined : dirtyValues.internationalShippingCosts,
-          });
+          const res = await runApiMutation('UpdateShipping', () =>
+            UpdateShipping(shipping.id, {
+              ...dirtyValues,
+              internationalShippingCosts:
+                dirtyValues.internationalShippingCosts === '' ? undefined : dirtyValues.internationalShippingCosts,
+            })
+          );
 
           if (res.error) {
             handleApiError(res.error);

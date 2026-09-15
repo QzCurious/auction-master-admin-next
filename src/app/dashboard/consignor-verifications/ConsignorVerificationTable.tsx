@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react';
 import { type ConsignorVerification } from '@/api/backend/consignor/AdminGetConsignorVerifications';
 import { useHandleApiError } from '@/domain/api/HandleApiError';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
+import { useRunApiMutation } from '@/domain/data/useRunApiMutation';
 import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { DATE_FORMAT, type PaginationSearchParams } from '@/domain/static/static';
 import { CONSIGNOR_VERIFICATION_STATUS } from '@/domain/static/static-config-mappers';
@@ -108,6 +109,7 @@ export function ConsignorVerificationTable({
 }
 
 function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorVerification }) {
+  const runApiMutation = useRunApiMutation();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { enqueueSnackbar } = useSnackbar();
@@ -223,7 +225,9 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
             color="error"
             onClick={() => {
               startTransition(async () => {
-                const res = await HandleConsignorVerification(consignorVerification.id, 'reject');
+                const res = await runApiMutation('HandleConsignorVerification', () =>
+                  HandleConsignorVerification(consignorVerification.id, 'reject')
+                );
                 if (res.error) {
                   handleApiError(res.error);
                   return;
@@ -242,7 +246,9 @@ function AuditBtn({ consignorVerification }: { consignorVerification: ConsignorV
             color="primary"
             onClick={() => {
               startTransition(async () => {
-                const res = await HandleConsignorVerification(consignorVerification.id, 'approve');
+                const res = await runApiMutation('HandleConsignorVerification', () =>
+                  HandleConsignorVerification(consignorVerification.id, 'approve')
+                );
                 if (res.error) {
                   handleApiError(res.error);
                   return;
