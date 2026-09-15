@@ -3,9 +3,9 @@ import { test } from 'node:test';
 
 import { HTTPError } from 'ky';
 
-import { getItemsAndDetails } from '../src/api/endpoints/getItemsAndDetails';
-import { refreshTokens } from '../src/api/endpoints/refreshTokens';
-import { updateItem } from '../src/api/endpoints/updateItem';
+import { AdminRefreshToken } from '../src/api/endpoints/AdminRefreshToken';
+import { AdminUpdateItem } from '../src/api/endpoints/AdminUpdateItem';
+import { GetItemsAndDetails } from '../src/api/endpoints/GetItemsAndDetails';
 import { invalidSessionError, SessionRefreshRequired } from '../src/api/errors';
 import { createApiSession, ensureFreshToken, refreshRejectedToken, type Tokens } from '../src/api/session';
 import { createApiTransport } from '../src/api/transport';
@@ -228,9 +228,9 @@ void test('refresh endpoint preserves exact form/header contract and maps defini
     assert.equal(await request.text(), 'refreshToken=refresh-secret');
     return success({ token: updated.accessToken });
   });
-  assert.deepEqual(await refreshTokens(api, old), updated);
+  assert.deepEqual(await AdminRefreshToken(api, old), updated);
   await assert.rejects(
-    refreshTokens(
+    AdminRefreshToken(
       transport(() => expired()),
       old
     ),
@@ -247,7 +247,7 @@ void test('pilot query preserves repeated filters/defaults and adapter cache tag
       return success({ items: [], count: 0, statusCounts: {} });
     }),
   }).api;
-  await getItemsAndDetails(withCacheTags(api, ['items']), { consignorId: 4, status: [1, 2] });
+  await GetItemsAndDetails(withCacheTags(api, ['items']), { consignorId: 4, status: [1, 2] });
 });
 
 void test('pilot mutation preserves false, zero, date and null omission; validates before HTTP', async () => {
@@ -266,13 +266,13 @@ void test('pilot mutation preserves false, zero, date and null omission; validat
       return success();
     }),
   }).api;
-  await updateItem(api, 12, {
+  await AdminUpdateItem(api, 12, {
     name: 'item & name',
     isNew: false,
     space: 0,
     description: null,
     expireAt: new Date('2030-01-02'),
   });
-  await assert.rejects(updateItem(api, 12, { reservePrice: 0 }));
+  await assert.rejects(AdminUpdateItem(api, 12, { reservePrice: 0 }));
   assert.equal(calls, 1);
 });

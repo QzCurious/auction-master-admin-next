@@ -1,6 +1,6 @@
 import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 import { NextResponse, type NextRequest } from 'next/server';
-import { refreshTokens } from '@/api/endpoints/refreshTokens';
+import { AdminRefreshToken } from '@/api/endpoints/AdminRefreshToken';
 import { invalidSessionError } from '@/api/errors';
 import { createApiSession, ensureFreshToken } from '@/api/session';
 import { type ApiTransport } from '@/api/transport';
@@ -17,7 +17,7 @@ export async function refreshMiddleware(request: NextRequest, transport: ApiTran
   const session = createApiSession({
     transport,
     readTokens: () => readTokens(request.cookies),
-    refreshTokens: (tokens) => refreshTokens(transport, tokens),
+    refreshTokens: (tokens) => AdminRefreshToken(transport, tokens),
     persistTokens: (tokens) => {
       forwardedCookies.set('admin-token', tokens.accessToken);
       forwardedCookies.set('admin-refresh-token', tokens.refreshToken);

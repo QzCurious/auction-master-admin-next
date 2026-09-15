@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { cookies } from 'next/headers';
-import { refreshTokens } from '@/api/endpoints/refreshTokens';
+import { AdminRefreshToken } from '@/api/endpoints/AdminRefreshToken';
 import { invalidSessionError } from '@/api/errors';
 import { createApiSession, type ApiSession } from '@/api/session';
 import { type ApiClient } from '@/api/transport';
@@ -14,7 +14,7 @@ export async function withApiSession<T>(operation: (api: ApiClient, session: Api
   const session = createApiSession({
     transport,
     readTokens: () => readTokens(cookies()),
-    refreshTokens: (tokens) => refreshTokens(transport, tokens),
+    refreshTokens: (tokens) => AdminRefreshToken(transport, tokens),
     persistTokens: (tokens) => {
       writeTokens(cookies(), tokens);
     },

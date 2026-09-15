@@ -6,23 +6,23 @@ Related to #4, #5, and #6. This is the first stage of the three-PR plan; it does
 
 - `api/transport.ts`: HTTP execution using Ky and its existing `HTTPError` behavior. The shared instance/configuration in `server/` never retains user credentials.
 - `api/session.ts`: lazy `readTokens` thunk evaluated once per session; current credentials, pending refresh, and persistence revision are isolated per invocation. `ensureFreshToken` handles the 30-second expiry margin. `refreshRejectedToken` reuses a newer token or shares a pending refresh.
-- `api/endpoints/`: existing validation, serialization, response shapes, and upstream paths. The pilot moves only `getItemsAndDetails` and `updateItem`, plus the shared refresh endpoint.
+- `api/endpoints/`: existing validation, serialization, response shapes, and upstream paths. The pilot moves only `GetItemsAndDetails` and `AdminUpdateItem`, plus the shared refresh endpoint.
 - `server/next/`: HttpOnly cookie readers/writers, request-cookie forwarding, cache tags, navigation, and execution-context adapters.
 
 ```ts
 // Server Action or Route Handler: this context can persist cookies.
-const result = await withApiSession((api) => updateItem(api, id, payload));
+const result = await withApiSession((api) => AdminUpdateItem(api, id, payload));
 revalidateTag('items');
 
 // Server Component: refresh must happen in a separate cookie-writable response.
 const result = await withRenderApiSession((api) =>
-  getItemsAndDetails(withCacheTags(api, ['items']), filters)
+  GetItemsAndDetails(withCacheTags(api, ['items']), filters)
 );
 ```
 
 The browser calls the existing action and supplies no token argument. The browser's HttpOnly cookies carry tokens to Next.js; only server code supplies the upstream Bearer header. The raw token is never returned from the explicit refresh action, rendered into HTML, or logged. Existing JWT claims used by the UI remain unchanged. JWT decoding is only an expiry hint; the backend must verify signatures and permissions.
 
-Server Actions belong at browser entry points, not at every endpoint. The item edit form calls `AdminUpdateItem`; the items page calls `getItemsAndDetails` directly through `withRenderApiSession`. There is no item-list action because it has no browser caller. Client components import its types directly from the endpoint module using type-only imports.
+Server Actions belong at browser entry points, not at every endpoint. The item edit form calls `AdminUpdateItem`; the items page calls `GetItemsAndDetails` directly through `withRenderApiSession`. There is no item-list action because it has no browser caller. Client components import its types directly from the endpoint module using type-only imports.
 
 ## Refresh and persistence
 

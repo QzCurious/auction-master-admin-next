@@ -29,7 +29,7 @@ export const UpdateItemSchema = z
 
 type Data = 'Success';
 
-export async function updateItem(api: ApiClient, id: number, payload: z.input<typeof UpdateItemSchema>) {
+export async function AdminUpdateItem(api: ApiClient, id: number, payload: z.input<typeof UpdateItemSchema>) {
   const data = throwIfInvalid(payload, UpdateItemSchema);
 
   const urlencoded = new URLSearchParams();

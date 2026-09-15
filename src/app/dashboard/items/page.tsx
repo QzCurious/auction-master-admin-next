@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
-import { getItemsAndDetails } from '@/api/endpoints/getItemsAndDetails';
+import { GetItemsAndDetails } from '@/api/endpoints/GetItemsAndDetails';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
@@ -57,7 +57,7 @@ async function Content({ searchParams }: PageProps) {
 
   const [itemsRes] = await Promise.all([
     withRenderApiSession((api) =>
-      getItemsAndDetails(withCacheTags(api, ['items']), {
+      GetItemsAndDetails(withCacheTags(api, ['items']), {
         status: (() => {
           if (query.picking === 'return') return [ITEM_STATUS.enum('WarehouseReturnPendingStatus')];
           return query.status;

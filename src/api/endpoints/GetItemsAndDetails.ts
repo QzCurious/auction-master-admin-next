@@ -56,7 +56,7 @@ interface Data {
   statusCounts: StatusCount;
 }
 
-export async function getItemsAndDetails(api: ApiClient, payload: z.input<typeof ItemsQuerySchema>) {
+export async function GetItemsAndDetails(api: ApiClient, payload: z.input<typeof ItemsQuerySchema>) {
   const data = throwIfInvalid(payload, ItemsQuerySchema);
 
   const query = new URLSearchParams();

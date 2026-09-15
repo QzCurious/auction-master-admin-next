@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { type Item } from '@/api/endpoints/getItemsAndDetails';
+import { type Item } from '@/api/endpoints/GetItemsAndDetails';
 import { SearchParamsPagination } from '@/domain/crud/SearchParamsPagination';
 import { type PaginationSearchParams } from '@/domain/static/static';
 import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
