@@ -49,13 +49,18 @@ void test('fresh middleware request does not refresh or write cookies', async ()
 });
 
 void test('definitive refresh rejection clears cookies; transient failure retains session', async () => {
-  for (const status of [401, 503]) {
+  for (const [status, code] of [
+    [401, '1003'],
+    [503, '1003'],
+    [403, '1001'],
+    [503, '9999'],
+  ] as const) {
     const transport = createApiTransport({
       baseUrl: 'https://api.example',
-      fetch: async () => Response.json({ status: { code: '1003' } }, { status }),
+      fetch: async () => Response.json({ status: { code } }, { status }),
     });
     const response = await refreshMiddleware(request(), transport);
-    if (status === 401) {
+    if (code === '1003') {
       assert.equal(response.status, 307);
       assert.equal(
         new URL(response.headers.get('location')!).searchParams.get('goto'),

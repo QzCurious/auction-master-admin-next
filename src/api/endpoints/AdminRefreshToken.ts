@@ -1,6 +1,6 @@
 import { HTTPError } from 'ky';
 
-import { type SuccessResponseJson } from '../core/static';
+import { type FailedResponseJson, type SuccessResponseJson } from '../core/static';
 import { invalidSessionError } from '../errors';
 import { type Tokens } from '../session';
 import { type ApiTransport } from '../transport';
@@ -12,9 +12,13 @@ export async function AdminRefreshToken(transport: ApiTransport, tokens: Tokens)
       headers: { Authorization: `Bearer ${tokens.accessToken}` },
       body: new URLSearchParams({ refreshToken: tokens.refreshToken }),
     })
-    .catch((error: unknown) => {
-      if (error instanceof HTTPError && [401, 403].includes(error.response.status)) {
-        throw invalidSessionError;
+    .catch(async (error: unknown) => {
+      if (error instanceof HTTPError) {
+        const body = (await error.response
+          .clone()
+          .json()
+          .catch(() => null)) as FailedResponseJson | null;
+        if (body?.status?.code === '1003') throw invalidSessionError;
       }
       throw error;
     });

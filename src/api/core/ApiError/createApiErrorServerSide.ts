@@ -113,7 +113,7 @@ async function extractErrorCode(err: unknown) {
     const data = cachedData === undefined ? await err.response.json() : cachedData;
 
     if (isFailedResponseJson(data)) {
-      return err.response.status >= 500 && data.status.code === '1003' ? '9999' : data.status.code;
+      return data.status.code;
     }
   } catch (parseError) {
     console.error(`Unable to parse API error response [${err.response.status}]`);

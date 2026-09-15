@@ -14,7 +14,8 @@ void test('HTTP errors retain backend codes and the existing toast/redirect shap
     [401, '1002', '1002', 'toast'],
     [401, '1003', '1003', 'redirect'],
     [400, '1113', '1113', 'toast'],
-    [503, '1003', '9999', 'toast'],
+    [503, '1003', '1003', 'redirect'],
+    [403, '9999', '9999', 'toast'],
   ] as const) {
     const api = createApiTransport({
       baseUrl: 'https://api.example',

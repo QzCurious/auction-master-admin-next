@@ -238,6 +238,24 @@ void test('refresh endpoint preserves exact form/header contract and maps defini
   );
 });
 
+void test('refresh rejection follows backend codes rather than HTTP status', async () => {
+  for (const [status, code] of [
+    [401, '1002'],
+    [403, '1001'],
+    [503, '9999'],
+    [503, '1003'],
+  ] as const) {
+    await assert.rejects(
+      AdminRefreshToken(
+        transport(() => Response.json({ status: { code } }, { status })),
+        old
+      ),
+      (error: unknown) =>
+        code === '1003' ? error === invalidSessionError : error instanceof HTTPError && error.response.status === status
+    );
+  }
+});
+
 void test('pilot query preserves repeated filters/defaults and adapter cache tags', async () => {
   const api = session({
     transport: transport((request, init) => {

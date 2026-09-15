@@ -2,6 +2,10 @@
 
 Related to #4, #5, and #6. This is the first stage of the three-PR plan; it does not complete those issues or migrate routers.
 
+## Contract preservation
+
+This is an architecture migration. Preserve existing API function names, HTTP methods and paths, payload serialization, validation, response envelopes, and backend error-code meanings. Do not infer new error meanings from HTTP status or add contract changes as part of extraction.
+
 ## Ownership and usage
 
 - `api/transport.ts`: HTTP execution using Ky and its existing `HTTPError` behavior. The shared instance/configuration in `server/` never retains user credentials.
@@ -37,7 +41,7 @@ Server Actions belong at browser entry points, not at every endpoint. The item e
 - **Mutation replay is disabled.** This repository does not establish that the backend rejects expired credentials before executing a write. Mutations receive proactive refresh, but an expired-token response is returned through the existing login-required presentation rather than replaying the mutation. Confirm backend rejection ordering before enabling automatic mutation retries.
 - Refresh deduplication is **within one invocation**, not across browser requests, tabs, app processes, or middleware/render boundaries. The observed client contract does not return a rotated refresh token, but that does not prove the backend allows concurrent reuse or that every issued access token remains valid. No global user-token cache or persistence layer is introduced. Backend refresh semantics must be confirmed before claiming cross-request serialization or single-use refresh-token support.
 - Remaining endpoint wrappers keep their existing payloads/signatures through `apiClientWithToken`. Middleware refreshes proactively for them. Its old retry hook, which refreshed without writing the browser cookie, is removed; a reactive expired-token response on an unmigrated endpoint follows the existing login-required error path. PR 2 migrates those callers to explicit writable/render adapters and removes the compatibility client and legacy refresh helper.
-- HTTP errors flow directly to the existing `createApiErrorServerSide` backend-code/toast/redirect handler. There is no custom API error classification. Local invalid credentials use the existing redirect error shape; refresh-endpoint HTTP 401/403 responses invalidate the session. HTTP 5xx responses cannot turn into login redirects just because their body contains code `1003`. Full query failure semantics, permission evaluation, invalidation inventory, and polling behavior remain PR 2/3 work.
+- HTTP errors flow directly to the existing `createApiErrorServerSide` backend-code/toast/redirect handler. There is no custom API error classification. Local invalid credentials use the existing redirect error shape; refresh responses use the same backend-code handler. Backend code `1003` redirects to sign-in regardless of HTTP status; other backend codes retain their original toast behavior. Full query failure semantics, permission evaluation, invalidation inventory, and polling behavior remain PR 2/3 work.
 - Cookie defaults remain host-scoped, HttpOnly, SameSite Strict, and Secure when the configured host uses HTTPS. Cookie lifetimes and backend endpoints are unchanged.
 
 ## Validation
