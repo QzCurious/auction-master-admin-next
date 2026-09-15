@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { HTTPError } from 'ky';
+
 import { getItemsAndDetails } from '../src/api/endpoints/getItemsAndDetails';
 import { refreshTokens } from '../src/api/endpoints/refreshTokens';
 import { updateItem } from '../src/api/endpoints/updateItem';
-import { ApiFailure, SessionRefreshRequired } from '../src/api/errors';
+import { invalidSessionError, SessionRefreshRequired } from '../src/api/errors';
 import { createApiSession, ensureFreshToken, refreshRejectedToken, type Tokens } from '../src/api/session';
 import { createApiTransport } from '../src/api/transport';
 import { withCacheTags } from '../src/server/next/withCacheTags';
@@ -131,12 +133,12 @@ void test('read retry is bounded; writes and non-expiry failures are never repla
     });
     await assert.rejects(
       auth.api.request('item', { method }),
-      (e: unknown) => e instanceof ApiFailure && e.kind === 'expired'
+      (e: unknown) => e instanceof HTTPError && e.response.status === 401
     );
     assert.equal(calls, method === 'GET' ? 2 : 1);
     assert.equal(refreshes, method === 'GET' ? 1 : 0);
   }
-  for (const [status, code, kind] of [
+  for (const [status, code] of [
     [403, '1001', 'forbidden'],
     [503, '1003', 'service'],
     [400, '11', 'validation'],
@@ -150,7 +152,10 @@ void test('read retry is bounded; writes and non-expiry failures are never repla
         return updated;
       },
     });
-    await assert.rejects(auth.api.request('item'), (e: unknown) => e instanceof ApiFailure && e.kind === kind);
+    await assert.rejects(
+      auth.api.request('item'),
+      (e: unknown) => e instanceof HTTPError && e.response.status === status
+    );
     assert.equal(refreshes, 0);
   }
 });
@@ -161,7 +166,7 @@ void test('failed refresh is shared and never persisted; persistence failure rem
   const auth = session({
     refreshTokens: async () => {
       refreshes++;
-      throw new ApiFailure('service');
+      throw new Error('Service unavailable');
     },
     persistTokens: () => {
       writes++;
@@ -196,7 +201,7 @@ void test('successful refresh remains persistable after downstream failure', asy
       saved = tokens;
     },
   });
-  await assert.rejects(auth.api.request('items'), (e: unknown) => e instanceof ApiFailure && e.kind === 'service');
+  await assert.rejects(auth.api.request('items'), (e: unknown) => e instanceof HTTPError && e.response.status === 503);
   await auth.persistTokens();
   assert.deepEqual(saved, updated);
 });
@@ -204,10 +209,7 @@ void test('successful refresh remains persistable after downstream failure', asy
 void test('missing/malformed credentials fail before sending; render adapter can signal refresh', async () => {
   for (const value of ['', 'malformed', 'e30.e30.signature']) {
     const auth = session({ readTokens: () => ({ ...old, accessToken: value }) });
-    await assert.rejects(
-      ensureFreshToken(auth),
-      (e: unknown) => e instanceof ApiFailure && e.kind === 'unauthenticated'
-    );
+    await assert.rejects(ensureFreshToken(auth), (e: unknown) => e === invalidSessionError);
   }
   const auth = session({
     readTokens: () => ({ ...old, accessToken: token(1) }),
@@ -232,7 +234,7 @@ void test('refresh endpoint preserves exact form/header contract and maps defini
       transport(() => expired()),
       old
     ),
-    (e: unknown) => e instanceof ApiFailure && e.kind === 'unauthenticated'
+    (e: unknown) => e === invalidSessionError
   );
 });
 

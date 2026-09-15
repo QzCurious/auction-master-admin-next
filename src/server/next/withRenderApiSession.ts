@@ -2,7 +2,7 @@ import 'server-only';
 
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { ApiFailure, SessionRefreshRequired } from '@/api/errors';
+import { invalidSessionError, SessionRefreshRequired } from '@/api/errors';
 import { createApiSession } from '@/api/session';
 import { type ApiClient } from '@/api/transport';
 import { transport } from '@/server/transport';
@@ -29,7 +29,7 @@ export async function withRenderApiSession<T>(operation: (api: ApiClient) => Pro
     if (error instanceof SessionRefreshRequired) {
       redirect(refreshDestination(returnPath) ?? signInDestination(returnPath));
     }
-    if (error instanceof ApiFailure && error.kind === 'unauthenticated') redirect(signInDestination(returnPath));
+    if (error === invalidSessionError) redirect(signInDestination(returnPath));
     throw error;
   }
 }

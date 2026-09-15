@@ -1,7 +1,6 @@
 import { isRedirectError } from 'next/dist/client/components/redirect';
-import { ApiFailure, SessionRefreshRequired } from '@/api/errors';
+import { invalidSessionError, SessionRefreshRequired } from '@/api/errors';
 import { HTTPError } from 'ky';
-import { ZodError } from 'zod';
 
 import { type FailedResponseJson } from '../static';
 
@@ -114,7 +113,7 @@ async function extractErrorCode(err: unknown) {
     const data = cachedData === undefined ? await err.response.json() : cachedData;
 
     if (isFailedResponseJson(data)) {
-      return data.status.code;
+      return err.response.status >= 500 && data.status.code === '1003' ? '9999' : data.status.code;
     }
   } catch (parseError) {
     console.error(`Unable to parse API error response [${err.response.status}]`);
@@ -125,17 +124,7 @@ async function extractErrorCode(err: unknown) {
 
 export async function createApiErrorServerSide(err: unknown) {
   if (err instanceof SessionRefreshRequired || isRedirectError(err)) throw err;
-  const code =
-    err instanceof ApiFailure
-      ? err.kind === 'unauthenticated' || err.kind === 'expired'
-        ? '1003'
-        : err.kind === 'forbidden'
-          ? '1001'
-          : err.code === '1003'
-            ? '9999'
-            : err.code
-      : err instanceof ZodError || (err instanceof Error && err.cause instanceof ZodError)
-        ? '11'
-        : await extractErrorCode(err);
+  if (err === invalidSessionError) return { data: null, error: invalidSessionError };
+  const code = await extractErrorCode(err);
   return { data: null, error: createApiError(code) };
 }

@@ -2,7 +2,7 @@ import 'server-only';
 
 import { cookies } from 'next/headers';
 import { refreshTokens } from '@/api/endpoints/refreshTokens';
-import { ApiFailure } from '@/api/errors';
+import { invalidSessionError } from '@/api/errors';
 import { createApiSession, type ApiSession } from '@/api/session';
 import { type ApiClient } from '@/api/transport';
 import { transport } from '@/server/transport';
@@ -23,7 +23,7 @@ export async function withApiSession<T>(operation: (api: ApiClient, session: Api
   try {
     return await operation(session.api, session);
   } catch (error) {
-    invalid = error instanceof ApiFailure && error.kind === 'unauthenticated';
+    invalid = error === invalidSessionError;
     throw error;
   } finally {
     if (invalid) clearTokens(cookies());

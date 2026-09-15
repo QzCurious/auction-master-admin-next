@@ -1,4 +1,4 @@
-import { ApiFailure } from '@/api/errors';
+import { invalidSessionError } from '@/api/errors';
 import { type Tokens } from '@/api/session';
 import { CookieConfigs } from '@/domain/auth/CookieConfigs';
 
@@ -13,7 +13,7 @@ export interface CookieWriter {
 export function readTokens(store: CookieReader): Tokens {
   const accessToken = store.get(CookieConfigs.token.name)?.value;
   const refreshToken = store.get(CookieConfigs.refreshToken.name)?.value;
-  if (!accessToken || !refreshToken) throw new ApiFailure('unauthenticated', 'f-1001');
+  if (!accessToken || !refreshToken) throw invalidSessionError;
   return { accessToken, refreshToken };
 }
 

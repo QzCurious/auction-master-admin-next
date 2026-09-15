@@ -1,6 +1,8 @@
 import { jwtDecode } from 'jwt-decode';
+import { HTTPError } from 'ky';
 
-import { ApiFailure } from './errors';
+import { type FailedResponseJson } from './core/static';
+import { invalidSessionError } from './errors';
 import { type ApiClient, type ApiRequestOptions, type ApiTransport } from './transport';
 
 export interface Tokens {
@@ -27,7 +29,7 @@ export function createApiSession(options: SessionOptions) {
   async function readTokens() {
     current ??= Promise.resolve().then(options.readTokens);
     const tokens = await current;
-    if (!tokens.accessToken || !tokens.refreshToken) throw new ApiFailure('unauthenticated', 'f-1001');
+    if (!tokens.accessToken || !tokens.refreshToken) throw invalidSessionError;
     return tokens;
   }
 
@@ -35,7 +37,7 @@ export function createApiSession(options: SessionOptions) {
     if (refreshFailure) throw refreshFailure;
     refreshing ??= (async () => {
       const tokens = await options.refreshTokens(await readTokens());
-      if (!tokens.accessToken || !tokens.refreshToken) throw new ApiFailure('service');
+      if (!tokens.accessToken || !tokens.refreshToken) throw new Error('Invalid refresh response');
       current = Promise.resolve(tokens);
       revision += 1;
       return tokens.accessToken;
@@ -88,7 +90,12 @@ export function createApiSession(options: SessionOptions) {
       } catch (error) {
         const method = (requestOptions.method ?? 'GET').toUpperCase();
         // Backend mutation rejection ordering is not established: never replay writes.
-        if (!(error instanceof ApiFailure) || error.kind !== 'expired' || method !== 'GET') throw error;
+        if (!(error instanceof HTTPError) || error.response.status !== 401 || method !== 'GET') throw error;
+        const body = (await error.response
+          .clone()
+          .json()
+          .catch(() => null)) as FailedResponseJson | null;
+        if (body?.status?.code !== '1003') throw error;
         return send(await refreshRejectedToken(session, token));
       }
     },
@@ -106,9 +113,9 @@ export async function ensureFreshToken(session: AuthState): Promise<string> {
   try {
     exp = jwtDecode<{ exp?: number }>(accessToken).exp;
   } catch {
-    throw new ApiFailure('unauthenticated', '1003');
+    throw invalidSessionError;
   }
-  if (typeof exp !== 'number' || !Number.isFinite(exp)) throw new ApiFailure('unauthenticated', '1003');
+  if (typeof exp !== 'number' || !Number.isFinite(exp)) throw invalidSessionError;
   // This is an expiry hint, not signature verification; the backend authorizes requests.
   return exp * 1000 <= session.now() + 30_000 ? session.refresh() : accessToken;
 }

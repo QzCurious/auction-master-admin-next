@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { ApiFailure } from '@/api/errors';
+import { invalidSessionError } from '@/api/errors';
 import { refreshRejectedToken } from '@/api/session';
 import { clearTokens } from '@/server/next/cookies';
 import {
@@ -28,7 +28,7 @@ async function refresh(request: NextRequest) {
     });
     return NextResponse.redirect(new URL(afterRefreshDestination(returnPath), request.url));
   } catch (error) {
-    if (error instanceof ApiFailure && ['unauthenticated', 'expired', 'forbidden'].includes(error.kind)) {
+    if (error === invalidSessionError) {
       const response = NextResponse.redirect(new URL(signInDestination(returnPath), request.url));
       clearTokens(response.cookies);
       return response;

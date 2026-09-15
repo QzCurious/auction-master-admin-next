@@ -1,7 +1,7 @@
 import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 import { NextResponse, type NextRequest } from 'next/server';
 import { refreshTokens } from '@/api/endpoints/refreshTokens';
-import { ApiFailure } from '@/api/errors';
+import { invalidSessionError } from '@/api/errors';
 import { createApiSession, ensureFreshToken } from '@/api/session';
 import { type ApiTransport } from '@/api/transport';
 
@@ -30,7 +30,7 @@ export async function refreshMiddleware(request: NextRequest, transport: ApiTran
     await session.persistTokens();
     return response;
   } catch (error) {
-    if (error instanceof ApiFailure && ['unauthenticated', 'expired', 'forbidden'].includes(error.kind)) {
+    if (error === invalidSessionError) {
       const redirect = NextResponse.redirect(
         new URL(signInDestination(request.nextUrl.pathname + request.nextUrl.search), request.url)
       );

@@ -1,5 +1,7 @@
+import { HTTPError } from 'ky';
+
 import { type SuccessResponseJson } from '../core/static';
-import { ApiFailure } from '../errors';
+import { invalidSessionError } from '../errors';
 import { type Tokens } from '../session';
 import { type ApiTransport } from '../transport';
 
@@ -11,12 +13,12 @@ export async function refreshTokens(transport: ApiTransport, tokens: Tokens): Pr
       body: new URLSearchParams({ refreshToken: tokens.refreshToken }),
     })
     .catch((error: unknown) => {
-      if (error instanceof ApiFailure && ['expired', 'unauthenticated', 'forbidden'].includes(error.kind)) {
-        throw new ApiFailure('unauthenticated', '1003', error.status);
+      if (error instanceof HTTPError && [401, 403].includes(error.response.status)) {
+        throw invalidSessionError;
       }
       throw error;
     });
   if (!response.data || typeof response.data.token !== 'string' || !response.data.token)
-    throw new ApiFailure('service');
+    throw new Error('Invalid refresh response');
   return { accessToken: response.data.token, refreshToken: tokens.refreshToken };
 }

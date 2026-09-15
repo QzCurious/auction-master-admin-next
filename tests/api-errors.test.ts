@@ -2,18 +2,48 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { redirect } from 'next/navigation';
+import { HTTPError } from 'ky';
 
 import { createApiErrorServerSide } from '../src/api/core/ApiError/createApiErrorServerSide';
-import { ApiFailure, SessionRefreshRequired } from '../src/api/errors';
+import { invalidSessionError, SessionRefreshRequired } from '../src/api/errors';
 import { createApiTransport } from '../src/api/transport';
 
-void test('compatibility adapter maps meanings without turning service failure into logout', async () => {
-  const unavailable = await createApiErrorServerSide(new ApiFailure('service', '1003', 503));
-  assert.equal(unavailable.error.type, 'toast');
-  const forbidden = await createApiErrorServerSide(new ApiFailure('forbidden', '9999', 403));
-  assert.equal(forbidden.error.code, '1001');
-  const expired = await createApiErrorServerSide(new ApiFailure('expired', '1003', 401));
-  assert.equal(expired.error.type, 'redirect');
+void test('HTTP errors retain backend codes and the existing toast/redirect shape', async () => {
+  for (const [status, code, expectedCode, type] of [
+    [403, '1001', '1001', 'toast'],
+    [401, '1002', '1002', 'toast'],
+    [401, '1003', '1003', 'redirect'],
+    [400, '1113', '1113', 'toast'],
+    [503, '1003', '9999', 'toast'],
+  ] as const) {
+    const api = createApiTransport({
+      baseUrl: 'https://api.example',
+      fetch: async () => Response.json({ status: { code } }, { status }),
+    });
+    const result = await api.request('items').catch(createApiErrorServerSide);
+    assert.deepEqual(result, {
+      data: null,
+      error:
+        type === 'redirect'
+          ? { code: expectedCode, type, url: '/auth/sign-in' }
+          : {
+              code: expectedCode,
+              type,
+              message:
+                expectedCode === '1001'
+                  ? '沒有權限'
+                  : expectedCode === '1002'
+                    ? '登入錯誤'
+                    : expectedCode === '1113'
+                      ? '請提供 item id'
+                      : '系統錯誤',
+            },
+    });
+  }
+});
+
+void test('local invalid sessions and navigation signals keep their behavior', async () => {
+  assert.deepEqual(await createApiErrorServerSide(invalidSessionError), { data: null, error: invalidSessionError });
   await assert.rejects(createApiErrorServerSide(new SessionRefreshRequired()), SessionRefreshRequired);
   let redirectError: unknown;
   try {
@@ -24,7 +54,7 @@ void test('compatibility adapter maps meanings without turning service failure i
   await assert.rejects(createApiErrorServerSide(redirectError), (error: unknown) => error === redirectError);
 });
 
-void test('transport failures do not retain credentials or untrusted response messages', async () => {
+void test('HTTP errors stay intact internally; client errors omit upstream credentials and messages', async () => {
   const secret = 'synthetic-secret';
   for (const fetcher of [
     async () => {
@@ -32,15 +62,17 @@ void test('transport failures do not retain credentials or untrusted response me
     },
     async () => Response.json({ status: { code: '9999', message: secret }, token: secret }, { status: 503 }),
     async () => new Response(secret, { status: 502 }),
-    async () => Response.json({ status: { code: secret } }, { status: 503 }),
   ]) {
     const api = createApiTransport({ baseUrl: 'https://api.example', fetch: fetcher });
-    await assert.rejects(api.request('items', { headers: { Authorization: `Bearer ${secret}` } }), (error: unknown) => {
-      assert.ok(error instanceof ApiFailure);
-      assert.ok(!JSON.stringify(error).includes(secret));
-      assert.ok(!error.message.includes(secret));
-      assert.equal(error.cause, undefined);
-      return true;
-    });
+    const result = await api
+      .request('items', { headers: { Authorization: `Bearer ${secret}` } })
+      .catch(createApiErrorServerSide);
+    assert.deepEqual(result, { data: null, error: { code: '9999', type: 'toast', message: '系統錯誤' } });
+    assert.ok(!JSON.stringify(result).includes(secret));
   }
+  const api = createApiTransport({
+    baseUrl: 'https://api.example',
+    fetch: async () => new Response('', { status: 503 }),
+  });
+  await assert.rejects(api.request('items'), HTTPError);
 });
