@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { GetItemsAndDetails } from '@/api/backend/items/GetItemsAndDetails';
+import { createApiErrorServerSide } from '@/api/core/ApiError/createApiErrorServerSide';
+import { GetItemsAndDetails } from '@/api/endpoints/GetItemsAndDetails';
 import { HandleApiError } from '@/domain/api/HandleApiError';
 import { parseSearchParams } from '@/domain/crud/parseSearchParams';
 import RemoveSearchBtn from '@/domain/crud/RemoveSearchBtn';
@@ -8,6 +9,7 @@ import { HavePermissionsOnly } from '@/domain/permission/HavePermissionsOnly';
 import { PAGE, ROWS_PER_PAGE, SITE_NAME } from '@/domain/static/static';
 import { ITEM_STATUS } from '@/domain/static/static-config-mappers';
 import { AutoRefreshEffect } from '@/helper/useAutoRefresh';
+import { createRenderApi } from '@/server/next/createRenderApi';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
@@ -53,7 +55,7 @@ async function Content({ searchParams }: PageProps) {
   const query = parseSearchParams(SearchParamsSchema, searchParams);
 
   const [itemsRes] = await Promise.all([
-    GetItemsAndDetails({
+    GetItemsAndDetails(createRenderApi().extend({ next: { tags: ['items'] } }), {
       status: (() => {
         if (query.picking === 'return') return [ITEM_STATUS.enum('WarehouseReturnPendingStatus')];
         return query.status;
@@ -63,7 +65,7 @@ async function Content({ searchParams }: PageProps) {
       consignorId: query.consignorId,
       sort: 'createdAt',
       order: 'desc',
-    }),
+    }).catch(createApiErrorServerSide),
   ]);
 
   if (itemsRes.error) {
